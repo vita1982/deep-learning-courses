@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>深度学习课程站</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- 顶部导航 -->
+    <nav class="top-nav">
+        <div class="nav-container">
+            <a href="index.html" class="logo">📚 深度学习课程站</a>
+            <div class="nav-links">
+                <a href="index.html" class="active">课程首页</a>
+                <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 英雄区 -->
+    <header class="hero">
+        <div class="hero-content">
+            <h1>深度学习</h1>
+            <p class="hero-subtitle">系统化的深度学习课程，从基础到实战</p>
+            <p class="hero-meta">基于《动手学深度学习》课程 · 持续更新中</p>
+        </div>
+    </header>
+
+    <!-- 课程列表 -->
+    <main class="course-grid">
+        <div class="container">
+            <h2 class="section-title">📖 课程目录</h2>
+            <div class="grid">
+
+                <!-- 课程 1: CNN -->
+                <article class="course-card">
+                    <div class="course-header">
+                        <span class="course-num">04</span>
+                        <div class="course-tags">
+                            <span class="tag tag-blue">核心课</span>
+                            <span class="tag tag-green">已完成</span>
+                        </div>
+                    </div>
+                    <h3 class="course-title">卷积神经网络（CNN）</h3>
+                    <p class="course-desc">
+                        从单隐含层网络的参数爆炸问题出发，系统讲解卷积运算、二维卷积层、填充与步幅、多输入输出通道、1×1 卷积层、池化层等核心概念，并深入剖析 CNN 的权值共享、局部性与平移不变性优势。
+                    </p>
+                    <ul class="course-topics">
+                        <li>卷积运算与互相关</li>
+                        <li>填充、步幅与多通道</li>
+                        <li>1×1 卷积与池化层</li>
+                        <li>层次特征学习</li>
+                    </ul>
+                    <a href="courses/cnn/index.html" class="course-btn">开始学习 →</a>
+                </article>
+
+                <!-- 占位课程 2 -->
+                <article class="course-card course-placeholder">
+                    <div class="course-header">
+                        <span class="course-num">--</span>
+                        <div class="course-tags">
+                            <span class="tag tag-yellow">敬请期待</span>
+                        </div>
+                    </div>
+                    <h3 class="course-title">更多课程</h3>
+                    <p class="course-desc">
+                        后续将陆续上线：循环神经网络（RNN）、注意力机制与Transformer、优化算法、计算机视觉实战、自然语言处理等章节。
+                    </p>
+                    <div class="course-topics-placeholder">
+                        <span>RNN / LSTM</span>
+                        <span>Attention</span>
+                        <span>Transformer</span>
+                        <span>NLP</span>
+                        <span>CV</span>
+                    </div>
+                    <span class="course-btn disabled">即将上线</span>
+                </article>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="site-footer">
+        <p>深度学习课程站 · 使用纯静态 HTML/CSS/JS 构建，托管于 GitHub Pages</p>
+        <p>本网站使用纯静态 HTML/CSS/JS 构建，托管于 GitHub Pages</p>
+    </footer>
+
+</body>
+</html>
