@@ -2,6 +2,42 @@
 
 基于纯静态 HTML/CSS/JS 构建的课程网站，可部署到 GitHub Pages 等免费静态托管平台。
 
+---
+
+## 🚀 一键部署到 GitHub（Windows）
+
+1. 在 GitHub 登录 vita1982 账号，创建空仓库：`deep-learning-courses`
+   - 不要勾选 README、.gitignore 等初始化文件
+
+2. 将整个 `course-site` 文件夹复制到本地任意位置
+
+3. 进入 `course-site` 文件夹，双击运行 `deploy.bat`
+
+4. 脚本会自动完成 Git 初始化、提交、推送
+
+5. 如果提示输入密码，请使用 GitHub **Personal Access Token**（不是登录密码）
+
+6. 推送成功后，进入仓库 **Settings → Pages** 启用 GitHub Pages
+
+---
+
+## 🔑 使用 SSH 方式部署（推荐，无需每次输入Token）
+
+如果你已经将本机的 SSH 公钥添加到 GitHub 账户，可以直接用 SSH 方式推送：
+
+```bash
+cd course-site
+git init
+git add .
+git commit -m "init: 深度学习课程站"
+
+git remote add origin git@github.com:vita1982/deep-learning-courses.git
+git branch -M main
+git push -u origin main
+```
+
+---
+
 ## 📁 目录结构
 
 ```
@@ -13,32 +49,11 @@ course-site/
 │   └── cnn/
 │       ├── index.html          # 第04讲：卷积神经网络（CNN）
 │       └── images/             # 课程图片资源
+├── deploy.bat                  # Windows 一键部署脚本
 └── README.md
 ```
 
-## 🚀 部署到 GitHub Pages（推荐）
-
-### 方式一：直接上传（最简单）
-
-1. 在 GitHub 创建一个新仓库，例如 `deep-learning-courses`
-2. 将本目录下所有文件上传到仓库根目录
-3. 进入仓库 **Settings → Pages**
-4. 在 **Source** 中选择 `Deploy from a branch`，分支选 `main`，目录选 `/ (root)`
-5. 保存后等待约 1 分钟，访问 `https://你的用户名.github.io/deep-learning-courses/` 即可
-
-### 方式二：使用 Git 命令行
-
-```bash
-# 初始化仓库
-git init
-git add .
-git commit -m "init: 深度学习课程站"
-
-# 关联远程仓库（替换为你的仓库地址）
-git remote add origin https://github.com/你的用户名/deep-learning-courses.git
-git branch -M main
-git push -u origin main
-```
+---
 
 ## 📝 添加新课程
 
@@ -47,7 +62,7 @@ git push -u origin main
 3. 将课程图片放入 `courses/rnn/images/` 目录
 4. 修改主页 `index.html`，在课程网格中添加新卡片
 
-新课程的 `index.html` 建议从现有课程（如 `courses/cnn/index.html`）复制结构，保留顶部返回导航和 KaTeX 公式渲染支持。
+---
 
 ## 🎨 技术特点
 
@@ -57,10 +72,6 @@ git push -u origin main
 - **平滑导航**：左侧目录自动高亮当前章节
 - **免费部署**：完全兼容 GitHub Pages / Netlify / Vercel
 
-## 🖼️ 图片资源说明
-
-课程讲义中的图片路径保持相对路径 `images/xxx`，确保与课程页面的 `index.html` 位于同一目录层级即可正确加载。
-
 ---
 
-*基于《动手学深度学习》课程 · 持续更新中*
+*深度学习课程站 · 持续更新中*
