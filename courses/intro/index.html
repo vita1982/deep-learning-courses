@@ -544,7 +544,15 @@
             .course-nav-title { display: none; }
         }
     
-    </style>
+    
+        /* ===== 第01讲自定义：双排图片统一高度，避免宽高比不一导致参差 ===== */
+        .img-row .img-col img {
+            width: 100%;
+            height: 300px;
+            object-fit: contain;
+            background: #FFFFFF;
+        }
+</style>
 </head>
 <body>
 <!-- 课程顶部导航 -->
@@ -689,7 +697,7 @@
 </ul>
 
 <div class="img-container">
-    <img src="images/nn_hidden_layers.jpg" alt="含多个隐含层的神经网络：4个输入，多个隐含层，2个输出" style="max-width:45%; background:#0B1220; border-radius:8px; padding:12px;">
+    <img src="images/nn_layers.png" alt="神经网络三层结构：4个输入、3个隐含层、2个输出" style="max-width:60%;">
     <div class="img-caption">一个"深"网络：4 个输入（\(x_1 \sim x_4\)）、3 个隐含层（分别有 5、3、2 个神经元）、2 个输出（\(o_1\)、\(o_2\)）。隐含层一层叠一层，网络就"深"了。</div>
 </div>
 
@@ -907,15 +915,14 @@
 </table>
 
 
-<div class="img-row">
-    <div class="img-col">
-        <img src="images/imagenet_banner.jpg" alt="ImageNet 大规模图像数据库" style="max-width:100%;">
-        <div class="img-caption">图像分类：ImageNet 大规模图像数据库（image-net.org）。</div>
-    </div>
-    <div class="img-col">
-        <img src="images/imagenet_error_rates.jpg" alt="ImageNet竞赛历年错误率" style="max-width:100%;">
-        <div class="img-caption">ImageNet 竞赛错误率：2012 年深度学习（AlexNet）首次把错误率降到 25% 以下，此后每年大幅刷新，2017 年已有 29/38 支队伍错误率低于 5%。（图：Quartz）</div>
-    </div>
+<div class="img-container">
+    <img src="images/imagenet_banner.jpg" alt="ImageNet 大规模图像数据库" style="max-width:55%;">
+    <div class="img-caption">图像分类：ImageNet 大规模图像数据库（image-net.org）。</div>
+</div>
+
+<div class="img-container">
+    <img src="images/imagenet_error_rates.jpg" alt="ImageNet竞赛历年错误率" style="max-width:42%;">
+    <div class="img-caption">ImageNet 竞赛错误率：2012 年深度学习（AlexNet）首次把错误率降到 25% 以下，此后每年大幅刷新，2017 年已有 29/38 支队伍错误率低于 5%。（图：Quartz）</div>
 </div>
 
 <div class="img-container">
