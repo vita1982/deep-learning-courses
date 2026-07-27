@@ -572,11 +572,11 @@
         <li><a href="#sec1">一、课程简介</a></li>
         <li><a href="#sec2">二、什么是深度学习</a></li>
         <li><a href="#sec3">三、深度学习发展简史</a></li>
-        <li><a href="#sec4">四、深度学习为什么火热</a></li>
+        <li><a href="#sec4">四、深度学习为什么现在火热</a></li>
         <li><a href="#sec5">五、深度学习典型应用</a></li>
         <li><a href="#sec6">六、深度学习主流框架</a></li>
         <li><a href="#sec7">七、实验环境配置</a></li>
-        <li><a href="#sec8">八、动手实操：安装PyTorch</a></li>
+        <li><a href="#sec8">八、动手实操：安装PyTorch并验证</a></li>
         <li><a href="#sec9">九、本讲小结与自测</a></li>
     </ul>
 </nav>
@@ -600,18 +600,22 @@
 <h3>1.1 课程基本信息</h3>
 
 <table class="compare-table">
-    <tr><th style="width:22%;">项目</th><th>内容</th></tr>
-    <tr><td><strong>课程名称</strong></td><td>动手学深度学习</td></tr>
-    <tr><td><strong>课程安排</strong></td><td><strong>16 学时理论 + 16 学时实践</strong>（共 32 学时）</td></tr>
-    <tr><td><strong>教材</strong></td><td>《动手学深度学习》，在线阅读：<a href="http://zh.gluon.ai/" target="_blank" rel="noopener">zh.gluon.ai</a></td></tr>
-    <tr><td><strong>考核方式</strong></td><td><span class="tag tag-blue">10% 出勤</span> <span class="tag tag-blue">40% 实验与课堂表现</span> <span class="tag tag-red">50% 课程综合设计</span></td></tr>
-    <tr><td><strong>学习基础</strong></td><td>Python、线性代数等；最好学过<strong>机器学习</strong>（没学过也能跟上，但需要课后补一补）</td></tr>
+<thead>
+<tr><th style="width:22%;">项目</th><th>内容</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>课程名称</strong></td><td>动手学深度学习</td></tr>
+<tr><td><strong>课程安排</strong></td><td><strong>16 学时理论 + 16 学时实践</strong>（共 32 学时）</td></tr>
+<tr><td><strong>教材</strong></td><td>《动手学深度学习》，在线阅读：<a href="http://zh.gluon.ai/" target="_blank" rel="noopener">zh.gluon.ai</a></td></tr>
+<tr><td><strong>考核方式</strong></td><td><span class="tag tag-blue">10% 出勤</span> <span class="tag tag-blue">40% 实验与课堂表现</span> <span class="tag tag-red">50% 课程综合设计</span></td></tr>
+<tr><td><strong>学习基础</strong></td><td>Python、线性代数等；最好学过<strong>机器学习</strong>（没学过也能跟上，但需要课后补一补）</td></tr>
+</tbody>
+</table>
 
 <div class="img-container">
     <img src="images/textbook_d2l.jpg" alt="《动手学深度学习》教材封面" style="max-width:28%;">
     <div class="img-caption">课程教材：《动手学深度学习》（Aston Zhang、李沐 等著），全书配套可运行的代码，在线免费阅读。</div>
 </div>
-</table>
 
 <div class="alert-info">
     <strong>💡 给初学者的话：</strong>这门课"实践"占了一半学时，考核里实验和综合设计加起来占 90%——它是一门<strong>动手课</strong>。光听懂不算学会，一定要自己把代码跑起来。
@@ -620,15 +624,19 @@
 <h3>1.2 全学期课程地图</h3>
 
 <table class="compare-table">
-    <tr><th style="width:10%;">章次</th><th>内容</th><th style="width:32%;">学时分配</th></tr>
-    <tr><td>01</td><td><strong>深度学习概述（本讲）</strong></td><td>理论 1 学时 + 实验 1 学时</td></tr>
-    <tr><td>02</td><td>深度学习基础</td><td>理论 2 学时</td></tr>
-    <tr><td>03</td><td>深度神经网络</td><td>理论 6 学时 + 实验 4 学时</td></tr>
-    <tr><td>04</td><td>卷积神经网络</td><td>理论 2 学时 + 实验 2 学时</td></tr>
-    <tr><td>05</td><td>循环和递归神经网络</td><td>理论 2 学时 + 实验 2 学时</td></tr>
-    <tr><td>06</td><td>深度学习在计算机视觉的应用</td><td>理论 1 学时 + 实验 3 学时</td></tr>
-    <tr><td>07</td><td>深度学习在自然语言处理中的应用</td><td>理论 1 学时 + 实验 3 学时</td></tr>
-    <tr><td>08</td><td>注意力机制、Transformer、大语言模型</td><td>理论 1 学时 + 实验 1 学时</td></tr>
+<thead>
+<tr><th style="width:10%;">章次</th><th>内容</th><th style="width:32%;">学时分配</th></tr>
+</thead>
+<tbody>
+<tr><td>01</td><td><strong>深度学习概述（本讲）</strong></td><td>理论 1 学时 + 实验 1 学时</td></tr>
+<tr><td>02</td><td>深度学习基础</td><td>理论 2 学时</td></tr>
+<tr><td>03</td><td>深度神经网络</td><td>理论 6 学时 + 实验 4 学时</td></tr>
+<tr><td>04</td><td>卷积神经网络</td><td>理论 2 学时 + 实验 2 学时</td></tr>
+<tr><td>05</td><td>循环和递归神经网络</td><td>理论 2 学时 + 实验 2 学时</td></tr>
+<tr><td>06</td><td>深度学习在计算机视觉的应用</td><td>理论 1 学时 + 实验 3 学时</td></tr>
+<tr><td>07</td><td>深度学习在自然语言处理中的应用</td><td>理论 1 学时 + 实验 3 学时</td></tr>
+<tr><td>08</td><td>注意力机制、Transformer、大语言模型</td><td>理论 1 学时 + 实验 1 学时</td></tr>
+</tbody>
 </table>
 
 <p><strong>地图解读：</strong>第 03 章"深度神经网络"学时最多（共 10 学时），是全课程的核心与难点；第 04、05 章分别对应图像和文本两大类主流模型；最后三章是前沿应用，最终落到<strong>大语言模型（LLM）</strong>上。本讲是整个旅程的起点。</p>
@@ -651,7 +659,7 @@
 </div>
 <div class="img-container">
     <img src="images/book_deep_learning.jpg" alt="花书《深度学习》中文版" style="max-width:45%;">
-    <div class="img-caption">"花书"《Deep Learning》中文版《深度学习》——作者 Goodfellow、Bengio 等于 2018 年获图灵奖。</div>
+    <div class="img-caption">"花书"《Deep Learning》中文版《深度学习》——作者之一 Bengio 于 2018 年与 Hinton、LeCun 同获图灵奖。</div>
 </div>
 
 <hr class="divider">
@@ -678,12 +686,16 @@
 <p><strong>第二步：考虑更多因素。</strong>现实中房价不只由面积决定。把更多特征加进来，一个神经元就不够用了，需要<strong>多个神经元协同工作</strong>——这就是"神经网络"：</p>
 
 <table class="compare-table">
-    <tr><th>输入特征</th><th>符号</th><th>说明</th></tr>
-    <tr><td>面积</td><td>\(x_1\)</td><td>房屋建筑面积</td></tr>
-    <tr><td>朝向</td><td>\(x_2\)</td><td>南北通透还是东西向</td></tr>
-    <tr><td>房间数</td><td>\(x_3\)</td><td>几室几厅</td></tr>
-    <tr><td>配套</td><td>\(x_4\)</td><td>周边学校、地铁、商场等</td></tr>
-    <tr><td><strong>输出：价格</strong></td><td>\(y\)</td><td>网络的预测结果</td></tr>
+<thead>
+<tr><th>输入特征</th><th>符号</th><th>说明</th></tr>
+</thead>
+<tbody>
+<tr><td>面积</td><td>\(x_1\)</td><td>房屋建筑面积</td></tr>
+<tr><td>朝向</td><td>\(x_2\)</td><td>南北通透还是东西向</td></tr>
+<tr><td>房间数</td><td>\(x_3\)</td><td>几室几厅</td></tr>
+<tr><td>配套</td><td>\(x_4\)</td><td>周边学校、地铁、商场等</td></tr>
+<tr><td><strong>输出：价格</strong></td><td>\(y\)</td><td>网络的预测结果</td></tr>
+</tbody>
 </table>
 
 <h3>2.2 神经网络的三层结构</h3>
@@ -740,11 +752,15 @@
 </div>
 
 <table class="compare-table">
-    <tr><th style="width:24%;">方法</th><th>流程</th><th style="width:30%;">特征由谁提供？</th></tr>
-    <tr><td><strong>基于规则的系统</strong></td><td>输入 → 手工设计的程序 → 输出</td><td>人（规则全是人写的）</td></tr>
-    <tr><td><strong>经典机器学习</strong></td><td>输入 → 手工设计的特征 → 从特征映射 → 输出</td><td>人设计特征，机器只学映射</td></tr>
-    <tr><td><strong>表示学习</strong></td><td>输入 → 自动学习的特征 → 从特征映射 → 输出</td><td>机器自己学特征</td></tr>
-    <tr><td><strong>深度学习</strong></td><td>输入 → 简单特征 → 更抽象的特征（多层）→ 映射 → 输出</td><td>机器<strong>分层</strong>学习由简单到抽象的特征</td></tr>
+<thead>
+<tr><th style="width:24%;">方法</th><th>流程</th><th style="width:30%;">特征由谁提供？</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>基于规则的系统</strong></td><td>输入 → 手工设计的程序 → 输出</td><td>人（规则全是人写的）</td></tr>
+<tr><td><strong>经典机器学习</strong></td><td>输入 → 手工设计的特征 → 从特征映射 → 输出</td><td>人设计特征，机器只学映射</td></tr>
+<tr><td><strong>表示学习</strong></td><td>输入 → 自动学习的特征 → 从特征映射 → 输出</td><td>机器自己学特征</td></tr>
+<tr><td><strong>深度学习</strong></td><td>输入 → 简单特征 → 更抽象的特征（多层）→ 映射 → 输出</td><td>机器<strong>分层</strong>学习由简单到抽象的特征</td></tr>
+</tbody>
 </table>
 
 <p><strong>举个识别人脸的例子</strong>：传统方法需要人告诉机器"先看边缘、再看五官比例"；而深度学习自己逐层总结——底层学边缘和色块 → 中层学眼睛、鼻子 → 高层学整张脸的轮廓。<strong>特征不再靠人教，而是机器从数据中自动学出来的。</strong></p>
@@ -771,10 +787,14 @@
 <p>人工神经元正是对这一过程的简化模仿，三者一一对应：</p>
 
 <table class="compare-table">
-    <tr><th>生物神经元</th><th>人工神经元</th></tr>
-    <tr><td>树突接收来自其他神经元的信号</td><td><strong>输入</strong>：来自上一个神经元的数值</td></tr>
-    <tr><td>细胞体整合信号，足够强才"发放"</td><td><strong>计算在此发生</strong>：加权求和 + 激活函数</td></tr>
-    <tr><td>轴突把信号传给下一个神经元</td><td><strong>输出</strong>：发到下一个神经元</td></tr>
+<thead>
+<tr><th>生物神经元</th><th>人工神经元</th></tr>
+</thead>
+<tbody>
+<tr><td>树突接收来自其他神经元的信号</td><td><strong>输入</strong>：来自上一个神经元的数值</td></tr>
+<tr><td>细胞体整合信号，足够强才"发放"</td><td><strong>计算在此发生</strong>：加权求和 + 激活函数</td></tr>
+<tr><td>轴突把信号传给下一个神经元</td><td><strong>输出</strong>：发到下一个神经元</td></tr>
+</tbody>
 </table>
 
 <div class="alert-warning">
@@ -796,23 +816,22 @@
 <h3>3.1 第一次浪潮（20 世纪 40—60 年代）：控制论时期</h3>
 
 <div class="card">
-    <div class="card-title">1957 年 · Frank Rosenblatt · 第一代感知机（Mark I Perceptron）</div>
+    <div class="card-title">1957 年 · Frank Rosenblatt · 第一代感知机（Perceptron）</div>
     <p style="margin-bottom:0;">第一个可以"学习"的神经网络模型，能够完成简单的分类任务，曾在全世界引起轰动——人们第一次看到了"机器自己学会做事"的可能。</p>
 </div>
-<div class="img-row">
-    <div class="img-col">
-        <img src="images/mark1_perceptron.jpg" alt="Mark I 感知机硬件" style="max-width:100%;">
-        <div class="img-caption">Mark I 感知机的硬件控制面板——当时的"神经网络"是一台真正的机器，权重靠电动机调节。</div>
-    </div>
-    <div class="img-col">
-        <img src="images/adaline_diagram.jpg" alt="Adaline 自适应线性元件原理图" style="max-width:100%;">
-        <div class="img-caption">Adaline 原理图：输入线加权求和（Σ），再经量化器输出 ±1——这已经是现代神经元的雏形。</div>
-    </div>
+<div class="img-container">
+    <img src="images/mark1_perceptron.jpg" alt="Mark I 感知机硬件" style="max-width:35%;">
+    <div class="img-caption">Mark I 感知机（1958 年建成的硬件实现）的控制面板——当时的"神经网络"是一台真正的机器，权重靠电动机调节。</div>
 </div>
 
 <div class="card">
     <div class="card-title">1960 年 · Widrow 和 Hoff · Adaline / Madaline</div>
-    <p style="margin-bottom:0;">多层感知器网络，全称 <strong>adaptive linear element</strong>（自适应线性元件），把感知机的思想向前推进了一步。</p>
+    <p style="margin-bottom:0;"><strong>Adaline</strong>（<strong>adaptive linear element</strong>，自适应线性元件，单个神经元）及其多层组合 <strong>Madaline</strong>，把感知机的思想向前推进了一步。</p>
+</div>
+
+<div class="img-container">
+    <img src="images/adaline_diagram.jpg" alt="Adaline 自适应线性元件原理图" style="max-width:50%;">
+    <div class="img-caption">Adaline 原理图：输入线加权求和（Σ），再经量化器输出 ±1——这已经是现代神经元的雏形。</div>
 </div>
 
 <div class="alert-warning">
@@ -891,27 +910,31 @@
 <h3>5.1 计算机视觉（Computer Vision）</h3>
 
 <table class="compare-table">
-    <tr><th style="width:22%;">应用</th><th>说明</th><th style="width:26%;">出处</th></tr>
-    <tr>
+<thead>
+<tr><th style="width:22%;">应用</th><th>说明</th><th style="width:26%;">出处</th></tr>
+</thead>
+<tbody>
+<tr>
         <td><strong>图像分类</strong></td>
         <td>判断整张图片是什么（猫？狗？汽车？）。背后是著名的 <strong>ImageNet</strong> 大规模图像数据库与竞赛，它被称为"改变了 AI 研究方向的数据"</td>
         <td><a href="http://www.image-net.org/" target="_blank" rel="noopener">image-net.org</a>；Yanofsky, Quartz</td>
     </tr>
-    <tr>
+<tr>
         <td><strong>目标检测和分割</strong></td>
         <td>不仅知道图里"有什么"，还要框出"在哪里"（检测），并精确到像素地勾勒每个物体的轮廓（分割）。代表工作：<strong>Mask R-CNN</strong></td>
         <td><a href="https://github.com/matterport/Mask_RCNN" target="_blank" rel="noopener">matterport/Mask_RCNN</a></td>
     </tr>
-    <tr>
+<tr>
         <td><strong>图片风格变换</strong></td>
         <td>把一张照片"画成"梵高、莫奈的风格——保留内容、替换艺术风格（风格迁移）</td>
         <td><a href="https://github.com/zhanghang1989/MXNet-Gluon-Style-Transfer/" target="_blank" rel="noopener">MXNet-Gluon-Style-Transfer</a></td>
     </tr>
-    <tr>
+<tr>
         <td><strong>人脸合成</strong></td>
         <td>凭空生成以假乱真、现实中并不存在的人脸照片</td>
         <td>Karras et al., ICLR 2018</td>
     </tr>
+</tbody>
 </table>
 
 <div class="img-container">
@@ -953,27 +976,31 @@
 <h3>5.2 自然语言处理（NLP）</h3>
 
 <table class="compare-table">
-    <tr><th style="width:22%;">应用</th><th>说明</th><th style="width:26%;">出处</th></tr>
-    <tr>
+<thead>
+<tr><th style="width:22%;">应用</th><th>说明</th><th style="width:26%;">出处</th></tr>
+</thead>
+<tbody>
+<tr>
         <td><strong>自然语言向量类比</strong></td>
         <td>把词语表示成向量后，可以做语义运算（word2vec）</td>
         <td><a href="https://www.tensorflow.org/tutorials/word2vec" target="_blank" rel="noopener">TensorFlow word2vec 教程</a></td>
     </tr>
-    <tr>
+<tr>
         <td><strong>机器翻译</strong></td>
         <td>用神经网络自动翻译（如谷歌神经机器翻译），质量远超传统方法</td>
         <td>PCMag 相关报道</td>
     </tr>
-    <tr>
+<tr>
         <td><strong>自然语言文本合成</strong></td>
         <td>自动生成通顺的文章、摘要甚至诗歌</td>
         <td>Li et al., NAACL 2018</td>
     </tr>
-    <tr>
+<tr>
         <td><strong>自然语言自动问答</strong></td>
-        <td>给定一段文字，自动回答相关问题</td>
+        <td>给定图片或一段文字，自动回答相关问题</td>
         <td>Shi et al., 2018, Arxiv</td>
     </tr>
+</tbody>
 </table>
 
 <div class="img-row">
@@ -1032,43 +1059,47 @@
 
 <div class="img-container">
     <img src="images/framework_ecosystem.jpg" alt="深度学习框架生态：Google、Amazon、Microsoft、Facebook各自的框架" style="max-width:65%;">
-    <div class="img-caption">主流框架背后的"阵营"：Google（TensorFlow、Keras）、Amazon（MXNet、Gluon）、Microsoft（CNTK）、Facebook（Caffe2、PyTorch），以及学术界的 Theano、Chainer 等。</div>
+    <div class="img-caption">主流框架背后的"阵营"：Google（TensorFlow、Keras）、Amazon（MXNet、Gluon）、Microsoft（CNTK）、Facebook（Caffe2、PyTorch），以及 Theano、Chainer（日本 Preferred Networks 公司）等。</div>
 </div>
 
 <h3>6.1 五大框架速览</h3>
 
 <table class="compare-table">
-    <tr><th style="width:14%;">框架</th><th style="width:30%;">特点</th><th>优点</th><th>缺点</th></tr>
-    <tr>
+<thead>
+<tr><th style="width:14%;">框架</th><th style="width:30%;">特点</th><th>优点</th><th>缺点</th></tr>
+</thead>
+<tbody>
+<tr>
         <td><strong>Caffe</strong></td>
         <td>用 Protobuf 配置文件作为界面，网络结构写在 .prototxt 里（如 ResNet-101-deploy.prototxt）</td>
         <td>强大的视觉模型覆盖率；灵活可移植</td>
         <td><strong>不易开发</strong>（改网络结构很麻烦）</td>
     </tr>
-    <tr>
+<tr>
         <td><strong>TensorFlow</strong></td>
         <td>Python 的域特定语言（DSL），Google 开发，示例：实现 Adam 优化算法</td>
         <td>算子丰富、功能全面（训练/部署/可视化生态完整）</td>
         <td><strong>代码可读性有限</strong>（尤其 1.x 版本）</td>
     </tr>
-    <tr>
+<tr>
         <td><strong>Keras</strong></td>
         <td>简单的 Python DSL，可使用多个后端（TensorFlow、MXNet、CNTK……），相当于"统一高层接口"</td>
         <td>比 TensorFlow <strong>简易</strong>，上手快</td>
         <td>相对更慢；封装太深，不易开发和调试</td>
     </tr>
-    <tr>
+<tr>
         <td><strong>PyTorch</strong></td>
         <td>Torch tensors + Chainer 风格的神经网络，动态计算图，写起来像普通 Python</td>
         <td><strong>易开发和调试</strong>（学术界最爱）</td>
         <td>不易配置部署</td>
     </tr>
-    <tr>
+<tr>
         <td><strong>MXNet</strong></td>
         <td>像 Numpy 一样的 Tensor + 像 Keras 一样的神经网络，示例：实现 ResNet、Adam</td>
         <td>高性能、高实用性</td>
         <td>社区生态相对较小</td>
     </tr>
+</tbody>
 </table>
 
 <p style="font-size:15px; color:#64748B;">补充：本课程教材《动手学深度学习》早期版本正是基于 MXNet 的 Gluon 接口编写的。</p>
@@ -1100,15 +1131,19 @@
 <h3>6.3 PyTorch vs TensorFlow</h3>
 
 <table class="compare-table">
-    <tr><th>维度</th><th>PyTorch</th><th>TensorFlow 1</th><th>TensorFlow 2</th></tr>
-    <tr><td><strong>性能</strong></td><td>√√√√</td><td>√√√√</td><td>√√√√</td></tr>
-    <tr><td><strong>生态</strong></td><td>√√√√</td><td>√√√√√√</td><td>√√</td></tr>
-    <tr><td><strong>工业界</strong></td><td>√√√</td><td>√√√√√</td><td>√√</td></tr>
-    <tr><td><strong>学术界</strong></td><td>√√√√√</td><td>√√√</td><td>√√</td></tr>
-    <tr><td><strong>上手难度</strong></td><td>√√√√√</td><td>√√</td><td>√√√√</td></tr>
-    <tr><td><strong>易用性</strong></td><td>√√√√√</td><td>√</td><td>√√√√</td></tr>
-    <tr><td><strong>兼容性</strong></td><td>√√√√</td><td>√</td><td>√</td></tr>
-    <tr><td><strong>发展前景</strong></td><td>√√√√</td><td>0</td><td>√√√√</td></tr>
+<thead>
+<tr><th>维度</th><th>PyTorch</th><th>TensorFlow 1</th><th>TensorFlow 2</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>性能</strong></td><td>√√√√</td><td>√√√√</td><td>√√√√</td></tr>
+<tr><td><strong>生态</strong></td><td>√√√√</td><td>√√√√√√</td><td>√√</td></tr>
+<tr><td><strong>工业界</strong></td><td>√√√</td><td>√√√√√</td><td>√√</td></tr>
+<tr><td><strong>学术界</strong></td><td>√√√√√</td><td>√√√</td><td>√√</td></tr>
+<tr><td><strong>上手难度</strong></td><td>√√√√√</td><td>√√</td><td>√√√√</td></tr>
+<tr><td><strong>易用性</strong></td><td>√√√√√</td><td>√</td><td>√√√√</td></tr>
+<tr><td><strong>兼容性</strong></td><td>√√√√</td><td>√</td><td>√</td></tr>
+<tr><td><strong>发展前景</strong></td><td>√√√√</td><td>0</td><td>√√√√</td></tr>
+</tbody>
 </table>
 
 <div class="img-container">
@@ -1134,10 +1169,14 @@
 <h3>6.4 补充概念：动态图 vs 静态图</h3>
 
 <table class="compare-table">
-    <tr><th style="width:20%;"></th><th>静态图（TensorFlow 1.x）</th><th>动态图（PyTorch）</th></tr>
-    <tr><td><strong>工作方式</strong></td><td>先"画好"整张计算图，再一次性运行</td><td>边写边算，代码执行到哪、图就建到哪</td></tr>
-    <tr><td><strong>优点</strong></td><td>运行效率高，便于部署优化</td><td>像普通 Python 一样自然，可随时 print、打断点调试</td></tr>
-    <tr><td><strong>缺点</strong></td><td>写法不直观，调试困难</td><td>部署时需要额外转换</td></tr>
+<thead>
+<tr><th style="width:20%;"></th><th>静态图（TensorFlow 1.x）</th><th>动态图（PyTorch）</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>工作方式</strong></td><td>先"画好"整张计算图，再一次性运行</td><td>边写边算，代码执行到哪、图就建到哪</td></tr>
+<tr><td><strong>优点</strong></td><td>运行效率高，便于部署优化</td><td>像普通 Python 一样自然，可随时 print、打断点调试</td></tr>
+<tr><td><strong>缺点</strong></td><td>写法不直观，调试困难</td><td>部署时需要额外转换</td></tr>
+</tbody>
 </table>
 
 <hr class="divider">
@@ -1148,25 +1187,33 @@
 <h3>7.1 两种配置方案</h3>
 
 <table class="compare-table">
-    <tr><th style="width:24%;"></th><th>方案一：纯手工搭配</th><th>方案二：Anaconda（我们的选择）</th></tr>
-    <tr><td><strong>包含内容</strong></td>
+<thead>
+<tr><th style="width:24%;"></th><th>方案一：纯手工搭配</th><th>方案二：Anaconda（我们的选择）</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>包含内容</strong></td>
         <td>Python + PyCharm + Jupyter Notebook + Numpy + pandas + scikit-learn + ……（每个软件单独下载安装）</td>
         <td><strong>Anaconda 一步到位</strong>：Python 本体 + Numpy / pandas / scikit-learn 等科学计算库 + Spyder / Jupyter Notebook，再单独装一个 PyCharm 作为主力 IDE</td>
     </tr>
-    <tr><td><strong>优劣</strong></td>
+<tr><td><strong>优劣</strong></td>
         <td>灵活但繁琐，新手容易在版本冲突上踩坑</td>
         <td>省心省力，包管理工具 conda 一键解决依赖问题</td>
     </tr>
+</tbody>
 </table>
 
 <h3>7.2 各软件安装指南</h3>
 
 <table class="compare-table">
-    <tr><th style="width:20%;">软件</th><th>安装方式</th></tr>
-    <tr><td><strong>Python</strong></td><td>官网下载：<a href="https://www.python.org/downloads/windows/" target="_blank" rel="noopener">Windows 版</a> / <a href="https://www.python.org/downloads/mac-osx/" target="_blank" rel="noopener">Mac 版</a></td></tr>
-    <tr><td><strong>Jupyter Notebook</strong></td><td>命令行执行 <code>pip install jupyter notebook</code></td></tr>
-    <tr><td><strong>PyCharm</strong></td><td><a href="https://www.jetbrains.com/pycharm/" target="_blank" rel="noopener">官网</a>下载，<strong>安装免费社区版（Community）即可</strong>；<a href="http://pedrokroger.net/getting-started-pycharm-python-ide/" target="_blank" rel="noopener">PyCharm 学习手册</a></td></tr>
-    <tr><td><strong>Anaconda</strong></td><td><a href="https://www.anaconda.com/" target="_blank" rel="noopener">官网</a>；<strong>国内镜像（下载快很多）</strong>：<a href="https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive/" target="_blank" rel="noopener">清华大学开源镜像站</a>（课件示例版本：Python 3.6 + Anaconda3-5.0.0，实际可选更新版本）</td></tr>
+<thead>
+<tr><th style="width:20%;">软件</th><th>安装方式</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>Python</strong></td><td>官网下载：<a href="https://www.python.org/downloads/windows/" target="_blank" rel="noopener">Windows 版</a> / <a href="https://www.python.org/downloads/mac-osx/" target="_blank" rel="noopener">Mac 版</a></td></tr>
+<tr><td><strong>Jupyter Notebook</strong></td><td>命令行执行 <code>pip install notebook</code>（安装 Anaconda 的同学已自带，无需单独安装）</td></tr>
+<tr><td><strong>PyCharm</strong></td><td><a href="https://www.jetbrains.com/pycharm/" target="_blank" rel="noopener">官网</a>下载，<strong>安装免费社区版（Community）即可</strong>；<a href="http://pedrokroger.net/getting-started-pycharm-python-ide/" target="_blank" rel="noopener">PyCharm 学习手册</a></td></tr>
+<tr><td><strong>Anaconda</strong></td><td><a href="https://www.anaconda.com/" target="_blank" rel="noopener">官网</a>；<strong>国内镜像（下载快很多）</strong>：<a href="https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive/" target="_blank" rel="noopener">清华大学开源镜像站</a>（课件示例版本：Python 3.6 + Anaconda3-5.0.0，实际可选更新版本）</td></tr>
+</tbody>
 </table>
 
 <div class="img-row">
@@ -1246,6 +1293,8 @@ conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/
 # 显示源地址（安装时能确认包来自哪个源）
 conda config --set show_channel_urls yes</div>
 
+<p style="font-size:15px; color:#64748B;">注：镜像频道列表可能随时间调整，若某个频道失效，以清华大学镜像站的实际页面为准。</p>
+
 <h3>8.2 安装 PyTorch</h3>
 
 <p>可以在 <a href="https://pytorch.org/get-started/previous-versions/#conda-3" target="_blank" rel="noopener">PyTorch 官网</a>查看适合自己系统的安装命令：</p>
@@ -1267,7 +1316,7 @@ conda install pytorch torchvision cudatoolkit=10.0
 pip install numpy matplotlib pillow pandas</div>
 
 <div class="alert-info">
-    <strong>💡 初学者答疑：</strong><code>torchvision</code> 是 PyTorch 的计算机视觉工具包（含常用数据集和预训练模型）；<code>cudatoolkit=10.0</code> 是 NVIDIA GPU 加速所需的组件，版本号需与显卡驱动匹配；<strong>没有 NVIDIA 显卡的电脑可以装 CPU 版本</strong>（官网命令中选择 CUDA = None），学习本课程完全够用。
+    <strong>💡 初学者答疑：</strong><code>torchvision</code> 是 PyTorch 的计算机视觉工具包（含常用数据集和预训练模型）；<code>cudatoolkit=10.0</code> 是 NVIDIA GPU 加速所需的组件，版本号需与显卡驱动匹配；<strong>没有 NVIDIA 显卡的电脑可以装 CPU 版本</strong>（官网命令中选择 CUDA = None），学习本课程完全够用。另外，conda 频道与 cudatoolkit 版本号会随时间更新，请以 PyTorch 官网当前给出的命令为准。
 </div>
 
 <h3>8.3 验证环境是否安装成功</h3>
@@ -1289,12 +1338,16 @@ t1 = time.time()
 print(a.device, t1 - t0, c.norm(2))  # 依次输出：计算设备、耗时(秒)、结果矩阵的L2范数</div>
 
 <table class="compare-table">
-    <tr><th style="width:40%;">输出</th><th>含义</th></tr>
-    <tr><td><code>torch.__version__</code> 正常显示（如 1.x.x）</td><td>PyTorch 安装成功</td></tr>
-    <tr><td><code>a.device</code> 显示 <code>cpu</code></td><td>当前用 CPU 计算（无独显或未装 CUDA 时的正常情况）</td></tr>
-    <tr><td><code>a.device</code> 显示 <code>cuda:0</code></td><td>已启用 GPU 加速</td></tr>
-    <tr><td><code>t1 - t0</code> 很小（零点几秒级）</td><td>矩阵运算正常，性能符合预期</td></tr>
-    <tr><td><code>c.norm(2)</code> 输出一个数值</td><td>计算结果有效</td></tr>
+<thead>
+<tr><th style="width:40%;">输出</th><th>含义</th></tr>
+</thead>
+<tbody>
+<tr><td><code>torch.__version__</code> 正常显示（如 1.x.x）</td><td>PyTorch 安装成功</td></tr>
+<tr><td><code>a.device</code> 显示 <code>cpu</code></td><td>正常情况：不指定 device 时张量默认在 CPU 上创建，本代码即如此</td></tr>
+<tr><td>想用 GPU 计算</td><td>需安装 GPU 版 PyTorch，并<strong>显式</strong>把张量移到显卡，如 <code>a = torch.randn(10000, 1000, device='cuda')</code>，此时 device 会显示 <code>cuda:0</code></td></tr>
+<tr><td><code>t1 - t0</code> 很小（零点几秒级）</td><td>矩阵运算正常，性能符合预期</td></tr>
+<tr><td><code>c.norm(2)</code> 输出一个数值</td><td>计算结果有效</td></tr>
+</tbody>
 </table>
 
 <div class="card">
