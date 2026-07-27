@@ -914,7 +914,6 @@
     </tr>
 </table>
 
-
 <div class="img-container">
     <img src="images/imagenet_banner.jpg" alt="ImageNet 大规模图像数据库" style="max-width:55%;">
     <div class="img-caption">图像分类：ImageNet 大规模图像数据库（image-net.org）。</div>
@@ -948,10 +947,10 @@
 
 <div class="img-container">
     <img src="images/face_synthesis.jpg" alt="人脸合成示例" style="max-width:70%;">
-    <div class="img-caption">人脸合成（Karras et al., ICLR 2018）：这些人脸全部由其神经网络凭空生成，现实中并不存在。</div>
+    <div class="img-caption">人脸合成（Karras et al., ICLR 2018）：这些人脸全部由神经网络凭空生成，现实中并不存在。</div>
 </div>
 
-<h3>5.2 自然语言处理（NLP）</h3><h3>5.2 自然语言处理（NLP）</h3>
+<h3>5.2 自然语言处理（NLP）</h3>
 
 <table class="compare-table">
     <tr><th style="width:22%;">应用</th><th>说明</th><th style="width:26%;">出处</th></tr>
@@ -977,19 +976,6 @@
     </tr>
 </table>
 
-<p><strong>词向量类比有多神奇？</strong>把词语映射成向量之后，词语之间的语义关系就变成了向量之间的算术关系：</p>
-
-<div class="formula">
-    \(\vec{\text{国王}} - \vec{\text{男人}} + \vec{\text{女人}} \approx \vec{\text{女王}}\)
-</div>
-
-<p>也就是说，"国王"减去"男人"再加上"女人"，得到的向量最接近的词竟然是"女王"——模型自己领悟了"性别"这个抽象概念。</p>
-<div class="img-container">
-    <img src="images/word2vec_analogy.jpg" alt="词向量类比关系示意图" style="max-width:70%;">
-    <div class="img-caption">词向量捕捉到的类比关系：男女（king→queen 与 man→woman 方向一致）、动词时态、国家与首都。（图：TensorFlow word2vec 教程）</div>
-</div>
-
-
 <div class="img-row">
     <div class="img-col">
         <img src="images/nmt_demo1.jpg" alt="神经机器翻译示例一" style="max-width:100%;">
@@ -999,6 +985,19 @@
         <img src="images/nmt_demo2.jpg" alt="神经机器翻译示例二" style="max-width:100%;">
         <div class="img-caption">谷歌将神经网络应用于语言翻译。</div>
     </div>
+</div>
+
+<p><strong>词向量类比有多神奇？</strong>把词语映射成向量之后，词语之间的语义关系就变成了向量之间的算术关系：</p>
+
+<div class="formula">
+    \(\vec{\text{国王}} - \vec{\text{男人}} + \vec{\text{女人}} \approx \vec{\text{女王}}\)
+</div>
+
+<p>也就是说，"国王"减去"男人"再加上"女人"，得到的向量最接近的词竟然是"女王"——模型自己领悟了"性别"这个抽象概念。</p>
+
+<div class="img-container">
+    <img src="images/word2vec_analogy.jpg" alt="词向量类比关系示意图" style="max-width:70%;">
+    <div class="img-caption">词向量捕捉到的类比关系：男女（king→queen 与 man→woman 方向一致）、动词时态、国家与首都。（图：TensorFlow word2vec 教程）</div>
 </div>
 
 <div class="img-container">
@@ -1011,15 +1010,15 @@
     <div class="img-caption">自然语言自动问答（Shi et al., 2018）：模型看图回答问题——问"她的胡子是什么做的？"，答"香蕉"。</div>
 </div>
 
-<h3>5.3 视觉 + 语言的交叉应用</h3><h3>5.3 视觉 + 语言的交叉应用</h3>
+<h3>5.3 视觉 + 语言的交叉应用</h3>
 
 <div class="card">
     <div class="card-title">🖼️ → 💬 图像描述（Image Captioning）</div>
-    <p style="margin-bottom:0;">输入一张图片，自动输出一句描述它的话（如"一个小孩在草地上踢球"）。这需要模型同时"看懂图"（计算机视觉）和"说人话"（自然语言生成），是两大领域交叉的典型代表。出处：Shallue et al., 2016，谷歌 <a href="https://ai.googleblog.com/2016/09/show-and-tell-image-captioning-open.html" target="_blank" rel="noopener">Show and Tell</a>。</p>
-</div>
-<div class="img-container">
-    <img src="images/image_captioning.jpg" alt="图像描述示例：训练集人工标注与模型自动生成" style="max-width:65%;">
-    <div class="img-caption">左：训练集中人工标注的描述；右：模型对一张新图自动生成的描述"A dog is sitting on the beach next to a dog"——用词颜色表示与训练语料的对应关系。</div>
+    <p>输入一张图片，自动输出一句描述它的话（如"一个小孩在草地上踢球"）。这需要模型同时"看懂图"（计算机视觉）和"说人话"（自然语言生成），是两大领域交叉的典型代表。出处：Shallue et al., 2016，谷歌 <a href="https://ai.googleblog.com/2016/09/show-and-tell-image-captioning-open.html" target="_blank" rel="noopener">Show and Tell</a>。</p>
+    <div class="img-container">
+        <img src="images/image_captioning.jpg" alt="图像描述示例：训练集人工标注与模型自动生成" style="max-width:65%;">
+        <div class="img-caption">左：训练集中人工标注的描述；右：模型对一张新图自动生成的描述"A dog is sitting on the beach next to a dog"——用词颜色表示与训练语料的对应关系。</div>
+    </div>
 </div>
 
 <hr class="divider">
@@ -1030,8 +1029,6 @@
 <div class="alert-info">
     <strong>🔑 什么是框架？</strong>如果把深度学习比作做菜，框架就是"厨房和厨具"——它把矩阵运算、自动求导、GPU 加速等底层工作都封装好，你只需专注于搭建网络本身，而不必从零造轮子。
 </div>
-
-<h3>6.1 五大框架速览</h3></div>
 
 <div class="img-container">
     <img src="images/framework_ecosystem.jpg" alt="深度学习框架生态：Google、Amazon、Microsoft、Facebook各自的框架" style="max-width:65%;">
@@ -1075,6 +1072,7 @@
 </table>
 
 <p style="font-size:15px; color:#64748B;">补充：本课程教材《动手学深度学习》早期版本正是基于 MXNet 的 Gluon 接口编写的。</p>
+
 <div class="img-row">
     <div class="img-col">
         <img src="images/caffe_prototxt.jpg" alt="Caffe 的 prototxt 网络配置" style="max-width:100%;">
@@ -1113,15 +1111,12 @@
     <tr><td><strong>发展前景</strong></td><td>√√√√</td><td>0</td><td>√√√√</td></tr>
 </table>
 
-
 <div class="img-container">
     <img src="images/pytorch_vs_tf.jpg" alt="PyTorch 与 TensorFlow 的对比如天平两端" style="max-width:40%;">
     <div class="img-caption">PyTorch vs TensorFlow：一个赢在易用与学术，一个赢在生态与工业，长期"五五开"。</div>
 </div>
 
 <div class="img-row">
-    <div class="img-col">
-        <img src="images/pytorch_papers.jpg"<div class="img-row">
     <div class="img-col">
         <img src="images/pytorch_papers.jpg" alt="PyTorch论文占比逐年上升" style="max-width:100%;">
         <div class="img-caption">各大顶会中 PyTorch 论文占比：2017 年几乎为 0，2019 年后反超 TensorFlow 并持续攀升——学术界已经"投票"给了 PyTorch。</div>
@@ -1174,7 +1169,6 @@
     <tr><td><strong>Anaconda</strong></td><td><a href="https://www.anaconda.com/" target="_blank" rel="noopener">官网</a>；<strong>国内镜像（下载快很多）</strong>：<a href="https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive/" target="_blank" rel="noopener">清华大学开源镜像站</a>（课件示例版本：Python 3.6 + Anaconda3-5.0.0，实际可选更新版本）</td></tr>
 </table>
 
-
 <div class="img-row">
     <div class="img-col">
         <img src="images/anaconda_website.jpg" alt="Anaconda 官网下载页面" style="max-width:100%;">
@@ -1187,7 +1181,6 @@
 </div>
 
 <div class="alert-warning">
-    <strong>⚠️ 初学者提示：</strong><div class="alert-warning">
     <strong>⚠️ 初学者提示：</strong>国内访问 Anaconda 官网下载较慢，强烈建议使用清华镜像。安装 Anaconda 时记得勾选 "Add to PATH / 添加环境变量"（若安装程序提供该选项），否则命令行会找不到 <code>conda</code> 命令。
 </div>
 
@@ -1211,8 +1204,6 @@
         <div class="step-content">点击 Create 创建工程，在工程中新建 <code>.py</code> 文件，就可以开始写代码了。</div>
     </li>
 </ol>
-
-<hr class="divider"></ol>
 
 <div class="img-row">
     <div class="img-col">
@@ -1257,7 +1248,7 @@ conda config --set show_channel_urls yes</div>
 
 <h3>8.2 安装 PyTorch</h3>
 
-<p>可以在 <a href="https://pytorch.org/get-started/previous-versions/#conda-3" target="_blank" rel="noopener">PyTorch 官网</a>查看适合自己系统的安装命令：</p>查看适合自己系统的安装命令：</p>
+<p>可以在 <a href="https://pytorch.org/get-started/previous-versions/#conda-3" target="_blank" rel="noopener">PyTorch 官网</a>查看适合自己系统的安装命令：</p>
 
 <div class="img-container">
     <img src="images/pytorch_getstarted.jpg" alt="PyTorch 官网安装命令生成器" style="max-width:55%;">
