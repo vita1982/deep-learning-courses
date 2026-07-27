@@ -598,6 +598,11 @@
     <tr><td><strong>教材</strong></td><td>《动手学深度学习》，在线阅读：<a href="http://zh.gluon.ai/" target="_blank" rel="noopener">zh.gluon.ai</a></td></tr>
     <tr><td><strong>考核方式</strong></td><td><span class="tag tag-blue">10% 出勤</span> <span class="tag tag-blue">40% 实验与课堂表现</span> <span class="tag tag-red">50% 课程综合设计</span></td></tr>
     <tr><td><strong>学习基础</strong></td><td>Python、线性代数等；最好学过<strong>机器学习</strong>（没学过也能跟上，但需要课后补一补）</td></tr>
+
+<div class="img-container">
+    <img src="images/textbook_d2l.jpg" alt="《动手学深度学习》教材封面" style="max-width:28%;">
+    <div class="img-caption">课程教材：《动手学深度学习》（Aston Zhang、李沐 等著），全书配套可运行的代码，在线免费阅读。</div>
+</div>
 </table>
 
 <div class="alert-info">
@@ -635,6 +640,10 @@
 <div class="card">
     <div class="card-title">📖 "花书"：《Deep Learning》</div>
     <p style="margin-bottom:0;">Ian Goodfellow 等著，深度学习领域的权威理论教材，因封面是一束花而被称作"花书"。理论较深，适合进阶阅读。本讲后面的多张插图就出自这本书。</p>
+</div>
+<div class="img-container">
+    <img src="images/book_deep_learning.jpg" alt="花书《深度学习》中文版" style="max-width:45%;">
+    <div class="img-caption">"花书"《Deep Learning》中文版《深度学习》——作者 Goodfellow、Bengio 等于 2018 年获图灵奖。</div>
 </div>
 
 <hr class="divider">
@@ -782,6 +791,16 @@
     <div class="card-title">1957 年 · Frank Rosenblatt · 第一代感知机（Mark I Perceptron）</div>
     <p style="margin-bottom:0;">第一个可以"学习"的神经网络模型，能够完成简单的分类任务，曾在全世界引起轰动——人们第一次看到了"机器自己学会做事"的可能。</p>
 </div>
+<div class="img-row">
+    <div class="img-col">
+        <img src="images/mark1_perceptron.jpg" alt="Mark I 感知机硬件" style="max-width:100%;">
+        <div class="img-caption">Mark I 感知机的硬件控制面板——当时的"神经网络"是一台真正的机器，权重靠电动机调节。</div>
+    </div>
+    <div class="img-col">
+        <img src="images/adaline_diagram.jpg" alt="Adaline 自适应线性元件原理图" style="max-width:100%;">
+        <div class="img-caption">Adaline 原理图：输入线加权求和（Σ），再经量化器输出 ±1——这已经是现代神经元的雏形。</div>
+    </div>
+</div>
 
 <div class="card">
     <div class="card-title">1960 年 · Widrow 和 Hoff · Adaline / Madaline</div>
@@ -799,13 +818,25 @@
 <div class="alert-info">
     <strong>🔑 反向传播为什么重要？</strong>它解决了"多层网络怎么训练"的核心难题：先<strong>正向</strong>算出预测结果，再把误差从输出层<strong>反向</strong>逐层传回，告诉每一层"你该往哪个方向调整、调整多少"。有了 BP，训练多层（深层）网络才成为可能。直到今天，它仍是训练所有深度学习模型的基础算法。
 </div>
+<div class="img-container">
+    <img src="images/backprop_chain.jpg" alt="反向传播中的链式法则" style="max-width:75%;">
+    <div class="img-caption">反向传播的数学本质：链式法则。误差 \(E_p\) 对权重 \(w_{ji}\) 的梯度，可以分解为"误差对输出" × "输出对权重"逐层相乘，从输出层一路传回输入层。</div>
+</div>
 
 <h3>3.3 第三次浪潮（2006 年至今）：深度学习时期</h3>
 
 <div class="card">
     <div class="card-title">2006 年 · Geoffrey Hinton 等人 · 深度信念网络</div>
     <p>提出名为"<strong>深度信念网络（Deep Belief Network）</strong>"的神经网络，可以使用一种称为"<strong>贪婪逐层预训练</strong>"的策略来有效训练——即先把每一层单独训练好，再整体微调。这一突破引发神经网络研究的<strong>第三次浪潮</strong>。</p>
+<div class="img-container">
+    <img src="images/dbn_pretraining.jpg" alt="深度信念网络的贪婪逐层预训练示意图" style="max-width:70%;">
+    <div class="img-caption">贪婪逐层预训练示意：先用受限玻尔兹曼机（RBM）把每一层单独预训练（左），堆叠成自编码器（中），最后用反向传播整体微调（右）。这让训练深层网络第一次变得可行。</div>
+</div>
     <p style="margin-bottom:0;"><strong>此次浪潮普及了"深度学习"这一术语</strong>——从此"神经网络"换上了"深度学习"的新名字，一直火热至今。Hinton 也因此被誉为"深度学习之父"，并于 2018 年获得图灵奖。</p>
+</div>
+<div class="img-container">
+    <img src="images/turing_award_2018.jpg" alt="2018年图灵奖得主：Hinton、Bengio、LeCun" style="max-width:75%;">
+    <div class="img-caption">2018 年图灵奖授予"深度学习三巨头"：Geoffrey Hinton、Yoshua Bengio、Yann LeCun——图灵奖是计算机领域最高荣誉。</div>
 </div>
 
 <div class="alert-success">
@@ -875,7 +906,45 @@
     </tr>
 </table>
 
-<h3>5.2 自然语言处理（NLP）</h3>
+
+<div class="img-row">
+    <div class="img-col">
+        <img src="images/imagenet_banner.jpg" alt="ImageNet 大规模图像数据库" style="max-width:100%;">
+        <div class="img-caption">图像分类：ImageNet 大规模图像数据库（image-net.org）。</div>
+    </div>
+    <div class="img-col">
+        <img src="images/imagenet_error_rates.jpg" alt="ImageNet竞赛历年错误率" style="max-width:100%;">
+        <div class="img-caption">ImageNet 竞赛错误率：2012 年深度学习（AlexNet）首次把错误率降到 25% 以下，此后每年大幅刷新，2017 年已有 29/38 支队伍错误率低于 5%。（图：Quartz）</div>
+    </div>
+</div>
+
+<div class="img-container">
+    <img src="images/mask_rcnn_demo.jpg" alt="Mask R-CNN 目标检测与分割示例" style="max-width:60%;">
+    <div class="img-caption">目标检测和分割（Mask R-CNN）：每个人和飞机都被框出并赋予类别与置信度，同时用彩色掩膜精确勾勒出轮廓。</div>
+</div>
+
+<div class="img-row">
+    <div class="img-col">
+        <img src="images/style_content.jpg" alt="风格迁移内容图：威尼斯风景" style="max-width:100%;">
+        <div class="img-caption">内容图：一张威尼斯风景照片。</div>
+    </div>
+    <div class="img-col">
+        <img src="images/style_painting.jpg" alt="风格图：Picabia 画作" style="max-width:100%;">
+        <div class="img-caption">风格图：Picabia 的绘画作品。</div>
+    </div>
+</div>
+
+<div class="img-container">
+    <img src="images/style_result.jpg" alt="风格迁移结果" style="max-width:45%;">
+    <div class="img-caption">图片风格变换结果：保留照片的内容，换上名画的笔触与色彩。</div>
+</div>
+
+<div class="img-container">
+    <img src="images/face_synthesis.jpg" alt="人脸合成示例" style="max-width:70%;">
+    <div class="img-caption">人脸合成（Karras et al., ICLR 2018）：这些人脸全部由其神经网络凭空生成，现实中并不存在。</div>
+</div>
+
+<h3>5.2 自然语言处理（NLP）</h3><h3>5.2 自然语言处理（NLP）</h3>
 
 <table class="compare-table">
     <tr><th style="width:22%;">应用</th><th>说明</th><th style="width:26%;">出处</th></tr>
@@ -908,12 +977,42 @@
 </div>
 
 <p>也就是说，"国王"减去"男人"再加上"女人"，得到的向量最接近的词竟然是"女王"——模型自己领悟了"性别"这个抽象概念。</p>
+<div class="img-container">
+    <img src="images/word2vec_analogy.jpg" alt="词向量类比关系示意图" style="max-width:70%;">
+    <div class="img-caption">词向量捕捉到的类比关系：男女（king→queen 与 man→woman 方向一致）、动词时态、国家与首都。（图：TensorFlow word2vec 教程）</div>
+</div>
 
-<h3>5.3 视觉 + 语言的交叉应用</h3>
+
+<div class="img-row">
+    <div class="img-col">
+        <img src="images/nmt_demo1.jpg" alt="神经机器翻译示例一" style="max-width:100%;">
+        <div class="img-caption">机器翻译：神经网络翻译模型示例。</div>
+    </div>
+    <div class="img-col">
+        <img src="images/nmt_demo2.jpg" alt="神经机器翻译示例二" style="max-width:100%;">
+        <div class="img-caption">谷歌将神经网络应用于语言翻译。</div>
+    </div>
+</div>
+
+<div class="img-container">
+    <img src="images/text_style_rnn.jpg" alt="文本风格迁移示例：RNN改写句子" style="max-width:70%;">
+    <div class="img-caption">自然语言文本合成（Li et al., NAACL 2018）：RNN 在保留内容的同时改变文本风格——"Two dogs play by a tree"被改写为"Two dogs <em>in love</em> play <em>happily</em> by a tree"。</div>
+</div>
+
+<div class="img-container">
+    <img src="images/visual_qa.jpg" alt="视觉问答示例" style="max-width:70%;">
+    <div class="img-caption">自然语言自动问答（Shi et al., 2018）：模型看图回答问题——问"她的胡子是什么做的？"，答"香蕉"。</div>
+</div>
+
+<h3>5.3 视觉 + 语言的交叉应用</h3><h3>5.3 视觉 + 语言的交叉应用</h3>
 
 <div class="card">
     <div class="card-title">🖼️ → 💬 图像描述（Image Captioning）</div>
     <p style="margin-bottom:0;">输入一张图片，自动输出一句描述它的话（如"一个小孩在草地上踢球"）。这需要模型同时"看懂图"（计算机视觉）和"说人话"（自然语言生成），是两大领域交叉的典型代表。出处：Shallue et al., 2016，谷歌 <a href="https://ai.googleblog.com/2016/09/show-and-tell-image-captioning-open.html" target="_blank" rel="noopener">Show and Tell</a>。</p>
+</div>
+<div class="img-container">
+    <img src="images/image_captioning.jpg" alt="图像描述示例：训练集人工标注与模型自动生成" style="max-width:65%;">
+    <div class="img-caption">左：训练集中人工标注的描述；右：模型对一张新图自动生成的描述"A dog is sitting on the beach next to a dog"——用词颜色表示与训练语料的对应关系。</div>
 </div>
 
 <hr class="divider">
@@ -923,6 +1022,13 @@
 
 <div class="alert-info">
     <strong>🔑 什么是框架？</strong>如果把深度学习比作做菜，框架就是"厨房和厨具"——它把矩阵运算、自动求导、GPU 加速等底层工作都封装好，你只需专注于搭建网络本身，而不必从零造轮子。
+</div>
+
+<h3>6.1 五大框架速览</h3></div>
+
+<div class="img-container">
+    <img src="images/framework_ecosystem.jpg" alt="深度学习框架生态：Google、Amazon、Microsoft、Facebook各自的框架" style="max-width:65%;">
+    <div class="img-caption">主流框架背后的"阵营"：Google（TensorFlow、Keras）、Amazon（MXNet、Gluon）、Microsoft（CNTK）、Facebook（Caffe2、PyTorch），以及学术界的 Theano、Chainer 等。</div>
 </div>
 
 <h3>6.1 五大框架速览</h3>
@@ -962,6 +1068,16 @@
 </table>
 
 <p style="font-size:15px; color:#64748B;">补充：本课程教材《动手学深度学习》早期版本正是基于 MXNet 的 Gluon 接口编写的。</p>
+<div class="img-row">
+    <div class="img-col">
+        <img src="images/caffe_prototxt.jpg" alt="Caffe 的 prototxt 网络配置" style="max-width:100%;">
+        <div class="img-caption">Caffe：网络结构写在 Protobuf 配置文件里（如 ResNet-101-deploy.prototxt）——改结构要改配置，开发不便。</div>
+    </div>
+    <div class="img-col">
+        <img src="images/pytorch_code.jpg" alt="PyTorch 定义网络的 Python 代码" style="max-width:100%;">
+        <div class="img-caption">PyTorch：网络就是普通的 Python 类（nn.Module），forward 里怎么写就怎么算——直观、易调试。</div>
+    </div>
+</div>
 
 <h3>6.2 框架流行度</h3>
 
@@ -990,7 +1106,15 @@
     <tr><td><strong>发展前景</strong></td><td>√√√√</td><td>0</td><td>√√√√</td></tr>
 </table>
 
+
+<div class="img-container">
+    <img src="images/pytorch_vs_tf.jpg" alt="PyTorch 与 TensorFlow 的对比如天平两端" style="max-width:40%;">
+    <div class="img-caption">PyTorch vs TensorFlow：一个赢在易用与学术，一个赢在生态与工业，长期"五五开"。</div>
+</div>
+
 <div class="img-row">
+    <div class="img-col">
+        <img src="images/pytorch_papers.jpg"<div class="img-row">
     <div class="img-col">
         <img src="images/pytorch_papers.jpg" alt="PyTorch论文占比逐年上升" style="max-width:100%;">
         <div class="img-caption">各大顶会中 PyTorch 论文占比：2017 年几乎为 0，2019 年后反超 TensorFlow 并持续攀升——学术界已经"投票"给了 PyTorch。</div>
@@ -1043,7 +1167,20 @@
     <tr><td><strong>Anaconda</strong></td><td><a href="https://www.anaconda.com/" target="_blank" rel="noopener">官网</a>；<strong>国内镜像（下载快很多）</strong>：<a href="https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive/" target="_blank" rel="noopener">清华大学开源镜像站</a>（课件示例版本：Python 3.6 + Anaconda3-5.0.0，实际可选更新版本）</td></tr>
 </table>
 
+
+<div class="img-row">
+    <div class="img-col">
+        <img src="images/anaconda_website.jpg" alt="Anaconda 官网下载页面" style="max-width:100%;">
+        <div class="img-caption">Anaconda 官网（anaconda.com）下载页面。</div>
+    </div>
+    <div class="img-col">
+        <img src="images/anaconda_mirror.jpg" alt="清华大学开源镜像站 Anaconda 页面" style="max-width:100%;">
+        <div class="img-caption">清华大学开源镜像站（mirrors.tuna.tsinghua.edu.cn）——国内下载推荐。</div>
+    </div>
+</div>
+
 <div class="alert-warning">
+    <strong>⚠️ 初学者提示：</strong><div class="alert-warning">
     <strong>⚠️ 初学者提示：</strong>国内访问 Anaconda 官网下载较慢，强烈建议使用清华镜像。安装 Anaconda 时记得勾选 "Add to PATH / 添加环境变量"（若安装程序提供该选项），否则命令行会找不到 <code>conda</code> 命令。
 </div>
 
@@ -1068,6 +1205,30 @@
     </li>
 </ol>
 
+<hr class="divider"></ol>
+
+<div class="img-row">
+    <div class="img-col">
+        <img src="images/pycharm_step1.jpg" alt="PyCharm 新建工程向导截图1" style="max-width:100%;">
+        <div class="img-caption">PyCharm 新建工程向导（课件第 42~43 页）。</div>
+    </div>
+    <div class="img-col">
+        <img src="images/pycharm_step2.jpg" alt="PyCharm 新建工程向导截图2" style="max-width:100%;">
+        <div class="img-caption">选择项目路径与解释器（课件第 44 页）。</div>
+    </div>
+</div>
+
+<div class="img-row">
+    <div class="img-col">
+        <img src="images/pycharm_step3.jpg" alt="PyCharm 新建工程向导截图3" style="max-width:100%;">
+        <div class="img-caption">配置 Python 解释器为 Anaconda 环境（课件第 45~46 页）。</div>
+    </div>
+    <div class="img-col">
+        <img src="images/pycharm_step4.jpg" alt="PyCharm 工程创建完成" style="max-width:100%;">
+        <div class="img-caption">工程创建完成，可以开始写代码（课件第 47 页）。</div>
+    </div>
+</div>
+
 <hr class="divider">
 
 <!-- ==================== 八、动手实操 ==================== -->
@@ -1089,7 +1250,17 @@ conda config --set show_channel_urls yes</div>
 
 <h3>8.2 安装 PyTorch</h3>
 
-<p>可以在 <a href="https://pytorch.org/get-started/previous-versions/#conda-3" target="_blank" rel="noopener">PyTorch 官网</a>查看适合自己系统的安装命令：</p>
+<p>可以在 <a href="https://pytorch.org/get-started/previous-versions/#conda-3" target="_blank" rel="noopener">PyTorch 官网</a>查看适合自己系统的安装命令：</p>查看适合自己系统的安装命令：</p>
+
+<div class="img-container">
+    <img src="images/pytorch_getstarted.jpg" alt="PyTorch 官网安装命令生成器" style="max-width:55%;">
+    <div class="img-caption">PyTorch 官网的安装命令生成器：按操作系统、包管理器、CUDA 版本点选后，自动生成对应的安装命令。</div>
+</div>
+
+<div class="img-container">
+    <img src="images/pytorch_versions.jpg" alt="PyTorch 官网历史版本安装命令" style="max-width:75%;">
+    <div class="img-caption">官网"Previous Versions"页面列出了各历史版本的 conda / pip 安装命令。</div>
+</div>
 
 <div class="code-block"># 安装 PyTorch —— 注意：要使用国内源，请去掉 -c pytorch 这个参数！！
 conda install pytorch torchvision cudatoolkit=10.0
