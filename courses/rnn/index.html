@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>
+(function () {
+    /* 深色模式：渲染前应用，避免闪烁 */
+    try { if (localStorage.getItem('dl_theme') === 'dark') document.documentElement.classList.add('dl-dark'); } catch (e) {}
+    /* 课程口令门（简单保护） */
+    try { if (localStorage.getItem('dl_gate_v1') === '1') return; } catch (e) {}
+    document.documentElement.classList.add('dl-gating');
+    document.addEventListener('DOMContentLoaded', function () {
+        var g = document.createElement('div');
+        g.id = 'dl-gate';
+        g.innerHTML = '<div class="dl-gate-card">'
+            + '<div style="font-size:34px;">🔒</div>'
+            + '<h2 style="margin:10px 0 6px;font-size:20px;color:#1E293B;">深度学习课程站</h2>'
+            + '<p style="margin:0 0 16px;font-size:14px;color:#64748B;">请输入课程口令（课程群内公布）</p>'
+            + '<input id="dl-gate-input" type="password" placeholder="请输入口令" style="width:100%;box-sizing:border-box;padding:10px 12px;font-size:15px;border:1px solid #CBD5E1;border-radius:8px;">'
+            + '<button id="dl-gate-btn" style="margin-top:12px;width:100%;padding:10px;background:#2563EB;color:#fff;border:none;border-radius:8px;font-size:15px;cursor:pointer;">进入课程</button>'
+            + '<p id="dl-gate-err" style="display:none;margin:10px 0 0;font-size:13px;color:#DC2626;">口令不正确，请重试</p>'
+            + '</div>';
+        document.body.appendChild(g);
+        var input = g.querySelector('#dl-gate-input');
+        input.focus();
+        function unlock(ok) {
+            if (!ok) { g.querySelector('#dl-gate-err').style.display = 'block'; input.select(); return; }
+            try { localStorage.setItem('dl_gate_v1', '1'); } catch (e) {}
+            document.documentElement.classList.remove('dl-gating');
+            g.remove();
+        }
+        function tryUnlock() {
+            if (!window.crypto || !crypto.subtle) {
+                var err = g.querySelector('#dl-gate-err');
+                err.textContent = '当前浏览器不支持安全校验，请换用 Chrome / Edge 访问';
+                err.style.display = 'block';
+                return;
+            }
+            crypto.subtle.digest('SHA-256', new TextEncoder().encode(input.value)).then(function (buf) {
+                var hex = Array.prototype.map.call(new Uint8Array(buf), function (b) { return ('0' + b.toString(16)).slice(-2); }).join('');
+                unlock(hex === '73634a650a686aed3b525c5cf4c80cbd01f2ea795763bd37541f17eb707c144b');
+            });
+        }
+        g.querySelector('#dl-gate-btn').addEventListener('click', tryUnlock);
+        input.addEventListener('keydown', function (e) { if (e.key === 'Enter') tryUnlock(); });
+    });
+})();
+</script>
+<style>
+    html.dl-gating body > *:not(#dl-gate) { display: none !important; }
+    #dl-gate { position: fixed; inset: 0; z-index: 99999; background: #F1F5F9; display: flex; align-items: center; justify-content: center; font-family: "Microsoft YaHei", sans-serif; }
+    #dl-gate .dl-gate-card { background: #fff; border-radius: 14px; padding: 32px 30px; width: 340px; max-width: 88vw; text-align: center; box-shadow: 0 10px 40px rgba(15,23,42,.15); }
+    /* 深色模式：整体反转，媒体与浮层再反转回来 */
+    html.dl-dark { filter: invert(1) hue-rotate(180deg); background: #0F172A; }
+    html.dl-dark img, html.dl-dark canvas, html.dl-dark #dl-tools, html.dl-dark .dl-modal-mask, html.dl-dark #dl-gate { filter: invert(1) hue-rotate(180deg); }
+</style>
+<script>
+/* 百度统计 */
+var _hmt = _hmt || [];
+(function () {
+    var hm = document.createElement('script');
+    hm.src = 'https://hm.baidu.com/hm.js?97388c2b7e8ffeae1e1b6135d3653f94';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+    <title>第05讲 循环神经网络（RNN） — 讲义文稿</title>
+    <!-- KaTeX for LaTeX rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+            background: #F0F4F8;
+            color: #1E293B;
+            line-height: 1.9;
+            display: flex;
+        }
+
+        /* ========== 左侧导航栏 ========== */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: #FFFFFF;
+            border-right: 1px solid #E2E8F0;
+            overflow-y: auto;
+            z-index: 100;
+            box-shadow: 2px 0 12px rgba(0,0,0,0.04);
+            padding: 24px 0 24px 0;
+            scrollbar-width: thin;
+            scrollbar-color: #CBD5E1 transparent;
+        }
+        .sidebar::-webkit-scrollbar {
+            width: 5px;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 3px;
+        }
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sidebar-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1E3A5F;
+            padding: 8px 24px 16px 24px;
+            border-bottom: 2px solid #2563EB;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .sidebar-nav li {
+            margin: 0;
+        }
+        .sidebar-nav a {
+            display: block;
+            padding: 10px 24px;
+            font-size: 15px;
+            color: #475569;
+            text-decoration: none;
+            border-left: 3px solid transparent;
+            transition: all 0.2s ease;
+            line-height: 1.5;
+        }
+        .sidebar-nav a:hover {
+            background: #F1F5F9;
+            color: #1E3A5F;
+            border-left-color: #94A3B8;
+        }
+        .sidebar-nav a.active {
+            background: #EFF6FF;
+            color: #2563EB;
+            font-weight: 600;
+            border-left-color: #2563EB;
+        }
+
+        /* 主内容区偏移 */
+        .main-wrapper {
+            margin-left: 260px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* 深蓝渐变头部 */
+        .header {
+            background: linear-gradient(135deg, #1E3A5F 0%, #1A5276 30%, #2563EB 70%, #3B82F6 100%);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 50%, rgba(255,255,255,0.05) 0%, transparent 50%);
+        }
+        .header h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            position: relative;
+            z-index: 1;
+        }
+        .header .subtitle {
+            font-size: 22px;
+            opacity: 0.85;
+            position: relative;
+            z-index: 1;
+        }
+        .header .meta {
+            font-size: 16px;
+            opacity: 0.65;
+            margin-top: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 主体容器 */
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 40px 32px;
+        }
+
+        /* 章节标题 */
+        h2 {
+            font-size: 32px;
+            color: #1E3A5F;
+            margin: 50px 0 24px 0;
+            padding-bottom: 12px;
+            border-bottom: 3px solid #2563EB;
+            position: relative;
+        }
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: #F59E0B;
+        }
+        h3 {
+            font-size: 24px;
+            color: #1A5276;
+            margin: 32px 0 16px 0;
+        }
+        h4 {
+            font-size: 20px;
+            color: #2563EB;
+            margin: 24px 0 12px 0;
+        }
+
+        p {
+            font-size: 17px;
+            margin-bottom: 16px;
+            text-align: justify;
+        }
+
+        /* 卡片布局 */
+        .card {
+            background: #FFFFFF;
+            border-radius: 12px;
+            border: 1px solid #E2E8F0;
+            padding: 28px 32px;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .card-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1E3A5F;
+            margin-bottom: 16px;
+            padding-left: 16px;
+            border-left: 4px solid #2563EB;
+        }
+
+        /* 代码块 */
+        .code-block {
+            background: #1E293B;
+            color: #E2E8F0;
+            border-radius: 8px;
+            padding: 20px 24px;
+            margin: 16px 0;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 15px;
+            line-height: 1.7;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+
+        /* 公式块 */
+        .formula {
+            background: #F8FAFC;
+            border: 1px solid #CBD5E1;
+            border-radius: 8px;
+            padding: 20px 24px;
+            margin: 16px 0;
+            text-align: center;
+            font-size: 20px;
+            color: #1E293B;
+            letter-spacing: 1px;
+        }
+
+        /* 对比表格 */
+        .compare-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 20px 0;
+            font-size: 16px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .compare-table thead th {
+            background: #1E3A5F;
+            color: white;
+            padding: 14px 18px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 15px;
+        }
+        .compare-table tbody td {
+            padding: 12px 18px;
+            border-bottom: 1px solid #E2E8F0;
+            background: #FFFFFF;
+        }
+        .compare-table tbody tr:nth-child(even) td {
+            background: #F8FAFC;
+        }
+        .compare-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* 黄色警告框 */
+        .alert-warning {
+            background: #FEF3C7;
+            border: 1px solid #FCD34D;
+            border-left: 5px solid #F59E0B;
+            border-radius: 8px;
+            padding: 18px 24px;
+            margin: 20px 0;
+            font-size: 16px;
+            color: #92400E;
+        }
+        .alert-warning::before {
+            content: '\26A0\FE0F ';
+            font-size: 18px;
+        }
+
+        /* 蓝色强调框 */
+        .alert-info {
+            background: #EFF6FF;
+            border: 1px solid #BFDBFE;
+            border-left: 5px solid #2563EB;
+            border-radius: 8px;
+            padding: 18px 24px;
+            margin: 20px 0;
+            font-size: 16px;
+            color: #1E40AF;
+        }
+        .alert-info::before {
+            content: '\1F4A1 ';
+            font-size: 18px;
+        }
+
+        /* 绿色成功框 */
+        .alert-success {
+            background: #ECFDF5;
+            border: 1px solid #A7F3D0;
+            border-left: 5px solid #10B981;
+            border-radius: 8px;
+            padding: 18px 24px;
+            margin: 20px 0;
+            font-size: 16px;
+            color: #065F46;
+        }
+
+        /* 步骤列表 */
+        .step-list {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+        .step-list li {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 14px;
+            padding: 12px 16px;
+            background: #FFFFFF;
+            border-radius: 8px;
+            border: 1px solid #E2E8F0;
+        }
+        .step-list .step-num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            min-width: 32px;
+            border-radius: 50%;
+            background: #2563EB;
+            color: white;
+            font-weight: 700;
+            font-size: 15px;
+            margin-right: 14px;
+        }
+        .step-list .step-content {
+            font-size: 16px;
+            padding-top: 4px;
+        }
+
+        /* 圆形编号自测题 */
+        .quiz-section {
+            margin: 30px 0;
+        }
+        .quiz-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 16px;
+            padding: 18px 22px;
+            background: #FFFFFF;
+            border-radius: 10px;
+            border: 1px solid #E2E8F0;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+        }
+        .quiz-num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            min-width: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2563EB, #3B82F6);
+            color: white;
+            font-weight: 700;
+            font-size: 17px;
+            margin-right: 16px;
+        }
+        .quiz-content {
+            font-size: 16px;
+            padding-top: 6px;
+            flex: 1;
+        }
+        .quiz-content .quiz-question {
+            font-weight: 600;
+            color: #1E293B;
+            margin-bottom: 4px;
+        }
+        .quiz-content .quiz-hint {
+            color: #64748B;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        /* 标签样式 */
+        .tag {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-right: 6px;
+        }
+        .tag-blue { background: #DBEAFE; color: #1E40AF; }
+        .tag-green { background: #D1FAE5; color: #065F46; }
+        .tag-yellow { background: #FEF3C7; color: #92400E; }
+        .tag-red { background: #FEE2E2; color: #991B1B; }
+
+        /* 分隔线 */
+        .divider {
+            border: none;
+            border-top: 1px solid #E2E8F0;
+            margin: 40px 0;
+        }
+
+        /* 图片样式 */
+        .img-container {
+            text-align: center;
+            margin: 24px 0;
+        }
+        .img-container img {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            border: 1px solid #E2E8F0;
+        }
+        .img-container .img-caption {
+            font-size: 14px;
+            color: #64748B;
+            margin-top: 8px;
+        }
+
+        /* 双图并排 */
+        .img-row {
+            display: flex;
+            gap: 20px;
+            margin: 24px 0;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        .img-row .img-col {
+            flex: 1;
+            text-align: center;
+        }
+        .img-row .img-col img {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            border: 1px solid #E2E8F0;
+        }
+        .img-row .img-col .img-caption {
+            font-size: 14px;
+            color: #64748B;
+            margin-top: 8px;
+        }
+
+        /* 页脚 */
+        .footer {
+            text-align: center;
+            padding: 40px 24px;
+            color: #94A3B8;
+            font-size: 14px;
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+                max-height: 250px;
+            }
+            .main-wrapper {
+                margin-left: 0;
+            }
+            .header h1 { font-size: 32px; }
+            .header { padding: 40px 20px; }
+            .container { padding: 20px 16px; }
+            h2 { font-size: 26px; }
+            .compare-table { font-size: 14px; }
+            .img-row { flex-direction: column; }
+        }
+
+        /* 列表样式 */
+        ul, ol {
+            margin: 12px 0 12px 24px;
+            font-size: 16px;
+        }
+        ul li, ol li {
+            margin-bottom: 8px;
+        }
+
+        strong {
+            color: #1E3A5F;
+        }
+
+        /* blockquote */
+        blockquote {
+            border-left: 4px solid #2563EB;
+            padding: 12px 20px;
+            margin: 16px 0;
+            background: #F8FAFC;
+            border-radius: 0 8px 8px 0;
+            font-size: 16px;
+            color: #475569;
+        }
+    
+        /* 课程导航栏 */
+        .course-top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background: rgba(255,255,255,0.97);
+            border-bottom: 1px solid #E2E8F0;
+            z-index: 300;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+        }
+        .course-nav-inner {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 100%;
+        }
+        .course-nav-back {
+            font-size: 14px;
+            color: #475569;
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        .course-nav-back:hover {
+            background: #F1F5F9;
+            color: #2563EB;
+        }
+        .course-nav-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1E3A5F;
+        }
+        .course-nav-toc {
+            font-size: 14px;
+            color: #475569;
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        .course-nav-toc:hover {
+            background: #F1F5F9;
+            color: #2563EB;
+        }
+        /* 调整主内容区，给顶部导航留出空间 */
+        .main-wrapper {
+            margin-top: 50px;
+        }
+        @media (max-width: 768px) {
+            .course-nav-title { display: none; }
+        }
+    
+    
+        /* ===== 侧栏位置修正与自动缩进 ===== */
+        @media (min-width: 769px) {
+            .sidebar { top: 50px; height: calc(100vh - 50px); transition: transform 0.3s ease; }
+            .main-wrapper { transition: margin-left 0.3s ease; }
+            body.sidebar-collapsed .sidebar { transform: translateX(-110%); }
+            body.sidebar-collapsed .main-wrapper { margin-left: 0; }
+        }
+        .sidebar-toggle {
+            position: fixed; top: 60px; left: 232px; z-index: 350;
+            width: 34px; height: 34px; border-radius: 8px;
+            border: 1px solid #E2E8F0; background: #FFFFFF; color: #1E3A5F;
+            font-size: 16px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+            display: flex; align-items: center; justify-content: center;
+            transition: left 0.3s ease;
+        }
+        .sidebar-toggle:hover { background: #EFF6FF; }
+        body.sidebar-collapsed .sidebar-toggle { left: 12px; }
+        @media (max-width: 768px) { .sidebar-toggle { display: none; } }
+
+        /* ===== 自测题点击展开答案 ===== */
+        .quiz-item { cursor: pointer; }
+        .quiz-hint { display: none; }
+        .quiz-item.open .quiz-hint { display: block; }
+        .quiz-question::after {
+            content: '👆 点击显示答案'; margin-left: 10px;
+            font-size: 12px; color: #94A3B8; font-weight: 400;
+        }
+        .quiz-item.open .quiz-question::after { content: '👆 点击收起答案'; }
+
+        /* ===== 输出尺寸计算器 ===== */
+        .conv-calc .calc-row { display: flex; align-items: center; gap: 14px; margin: 12px 0; }
+        .conv-calc label { width: 130px; min-width: 130px; font-size: 15px; color: #475569; }
+        .conv-calc input[type=range] { flex: 1; accent-color: #2563EB; }
+        .conv-calc .calc-val { width: 34px; text-align: right; font-weight: 700; color: #2563EB; font-size: 16px; }
+        .conv-calc .calc-result {
+            margin-top: 16px; padding: 14px; background: #EFF6FF; border-radius: 8px;
+            text-align: center; font-size: 17px; color: #1E40AF;
+        }
+        .conv-calc .calc-note { font-size: 13px; color: #64748B; margin-top: 6px; }
+
+        /* 移动端：固定顶栏下给侧栏让位 */
+        @media (max-width: 768px) { .sidebar { margin-top: 50px; } }
+
+/* 双排图片统一高度，避免宽高比不一导致参差 */
+.img-row .img-col img {
+    width: 100%;
+    height: 300px;
+    object-fit: contain;
+    background: #FFFFFF;
+}
+
+</style>
+</head>
+<body>
+<!-- 课程顶部导航 -->
+<nav class="course-top-nav">
+    <div class="course-nav-inner">
+        <a href="../../index.html" class="course-nav-back">← 返回课程首页</a>
+        <span class="course-nav-title">深度学习 · 第05讲 循环神经网络（RNN）</span>
+        <a href="#sec1" class="course-nav-toc">📑 目录</a>
+    </div>
+</nav>
+
+
+<!-- ========== 左侧导航栏 ========== -->
+<nav class="sidebar">
+    <div class="sidebar-title">📑 本讲目录</div>
+    <ul class="sidebar-nav">
+        <li><a href="#sec1">一、从序列数据到循环神经网络</a></li>
+        <li><a href="#sec2">二、语言模型与困惑度</a></li>
+        <li><a href="#sec3">三、实现 RNN 语言模型</a></li>
+        <li><a href="#sec4">四、通过时间反向传播（BPTT）</a></li>
+        <li><a href="#sec5">五、门控循环单元（GRU）</a></li>
+        <li><a href="#sec6">六、长短期记忆网络（LSTM）</a></li>
+        <li><a href="#sec7">七、双向与深度循环神经网络</a></li>
+        <li><a href="#sec8">八、本讲小结与自测</a></li>
+    </ul>
+</nav>
+
+<!-- ========== 主内容区 ========== -->
+<div class="main-wrapper">
+
+<div class="header">
+    <h1>第05讲 循环神经网络（RNN）</h1>
+    <div class="subtitle">Recurrent Neural Networks — 讲义文稿</div>
+    <div class="meta">基于《动手学深度学习》课程</div>
+</div>
+
+<div class="container">
+
+<!-- ==================== 第一章 ==================== -->
+<h2 id="sec1">一、从序列数据到循环神经网络</h2>
+
+<h3>1.1 什么是序列模型？</h3>
+
+<p>到目前为止，我们处理的数据都是"<strong>一个输入对应一个输出</strong>"：一张图片进、一个类别出。但现实中大量数据是<strong>前后相连的序列</strong>——后一个元素与前边的元素密切相关：</p>
+
+<table class="compare-table">
+<thead>
+<tr><th style="width:26%;">应用</th><th>序列数据</th></tr>
+</thead>
+<tbody>
+<tr><td>语音识别</td><td>一段声波 → 一串文字</td></tr>
+<tr><td>音乐生成</td><td>前面的音符 → 下一个音符</td></tr>
+<tr><td>情感分析</td><td>一句话 → 褒义/贬义</td></tr>
+<tr><td>DNA 序列分析</td><td>一段碱基序列 → 功能标注</td></tr>
+<tr><td>机器翻译</td><td>一种语言的句子 → 另一种语言的句子</td></tr>
+<tr><td>视频动作识别</td><td>一串帧 → 动作类别</td></tr>
+</tbody>
+</table>
+
+<!-- 序列数据应用示例图 -->
+<div class="img-container">
+    <img src="images/seq_examples.jpg" alt="序列数据的典型应用：语音、音乐、情感、DNA、翻译、视频" style="max-width:72%;">
+    <div class="img-caption">序列数据的典型应用：语音波形、乐谱、文本、DNA、视频帧——它们的共同点是一个样本内部有<strong>先后顺序</strong>，打乱顺序就失去意义。</div>
+</div>
+
+<p>这类任务有两个新特点：第一，输入（甚至输出）的<strong>长度不固定</strong>，全连接网络要求输入维度固定，无法直接套用；第二，当前时刻的判断需要<strong>参考历史信息</strong>——听懂一句话的最后一个词，需要记住前面的词。</p>
+
+<div class="alert-info">
+    <strong>🔑 初学者理解：</strong>处理序列的关键是"记忆"。网络需要一边读入新内容，一边把过去看到的东西压缩保存在某个地方——这个地方就是下面要讲的<strong>隐含状态</strong>。
+</div>
+
+<h3>1.2 隐变量模型：用隐含状态总结过去</h3>
+
+<p>要让模型拥有"记忆"，一个自然的想法是：引入一个<strong>隐含状态（hidden state）</strong> \(h_t\)，它在每个时刻把"目前为止看到的一切"总结成一个向量：</p>
+
+<div class="formula">
+    \(h_t = f(h_{t-1},\, x_{t-1})\)
+</div>
+
+<p>第 \(t\) 时刻的隐含状态由<strong>上一时刻的隐含状态</strong> \(h_{t-1}\) 和<strong>上一时刻的输入</strong> \(x_{t-1}\) 共同决定。这样，信息就像接力棒一样沿时间一棒一棒传下去——\(h_t\) 里压缩着 \(x_1, x_2, \ldots, x_{t-1}\) 的全部相关历史。</p>
+
+<!-- 隐含状态接力示意图 -->
+<div class="img-container">
+    <img src="images/hidden_state_flow.jpg" alt="隐含状态沿时间接力传递" style="max-width:78%;">
+    <div class="img-caption">隐含状态的"接力"：\(h_1\) 综合第一段输入，\(h_2\) 在 \(h_1\) 基础上综合第二段……信息沿时间向后传递，网络据此逐步"理解"并给出"回应"。</div>
+</div>
+
+<h3>1.3 循环神经网络的基本结构</h3>
+
+<p>把上面的想法加上可学习的参数，就是<strong>循环神经网络（Recurrent Neural Network，RNN）</strong>。每个时间步做两件事：</p>
+
+<div class="card">
+    <div class="card-title">RNN 的两个更新</div>
+    <p><strong>① 隐含状态更新</strong>（记忆）：</p>
+    <div class="formula">
+        \(h_t = \phi\big(W_{hh} h_{t-1} + W_{hx} x_{t-1} + b_h\big)\)
+    </div>
+    <p><strong>② 输出更新</strong>（观察）：</p>
+    <div class="formula">
+        \(o_t = W_{ho}\, h_t + b_o\)
+    </div>
+    <p>其中 \(\phi\) 是非线性激活函数（常用 tanh）。注意 \(W_{hh} h_{t-1}\) 这一项——它把上一时刻的记忆带了进来；<strong>去掉它，网络就退化成普通的 MLP</strong>。</p>
+    <p style="font-size:13px;color:#94A3B8;margin-top:4px;">
+        📊 <span id="busuanzi_container_site_pv">总访问量 <span id="busuanzi_value_site_pv">—</span> 次</span>
+        · <span id="busuanzi_container_site_uv">访客数 <span id="busuanzi_value_site_uv">—</span> 人</span>
+        · <span id="busuanzi_container_page_pv">本页阅读 <span id="busuanzi_value_page_pv">—</span> 次</span>
+    </p>
+    <p style="font-size:13px;color:#94A3B8;margin-top:2px;">💬 课程反馈与留言：<a href="mailto:dlcourses2026@sina.com" style="color:#2563EB;text-decoration:none;">dlcourses2026@sina.com</a></p>
+</div>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!-- RNN 结构图 -->
+<div class="img-container">
+    <img src="images/rnn_structure.jpg" alt="RNN 结构：输入、隐含状态、输出三层" style="max-width:70%;">
+    <div class="img-caption">RNN 的结构：输入 \(x\) 经嵌入后与上一时刻的隐含状态拼接，乘权重矩阵得到新的隐含状态 \(h_t\)，再向上得到输出。所有时间步<strong>共享同一组权重</strong>——这是 RNN 能处理任意长度序列的关键。</div>
+</div>
+
+<div class="alert-success">
+    <strong>✅ 一句话总结：</strong>RNN = MLP + 一条"自己连自己"的循环边。循环边让网络有了记忆，参数共享让它能处理任意长度。
+</div>
+
+<h3>1.4 RNN 的五种类型</h3>
+
+<p>输入和输出都可以是"一个"或"一串"，组合出五种典型结构：</p>
+
+<table class="compare-table">
+<thead>
+<tr><th>结构</th><th>名称</th><th>典型应用</th></tr>
+</thead>
+<tbody>
+<tr><td>one to one</td><td>一对一</td><td>图像分类（退化为普通网络）</td></tr>
+<tr><td>one to many</td><td>一对多</td><td>图像描述：一张图 → 一句话</td></tr>
+<tr><td>many to one</td><td>多对一</td><td>文本分类、情感分析：一句话 → 一个类别</td></tr>
+<tr><td>many to many（等长）</td><td>多对多（同步）</td><td>词性标注、实体识别：每个词 → 一个标签</td></tr>
+<tr><td>many to many（不等长）</td><td>多对多（异步）</td><td>机器翻译：先读完整个句子，再逐词生成译文</td></tr>
+</tbody>
+</table>
+
+<!-- RNN 类型图 -->
+<div class="img-container">
+    <img src="images/rnn_types.jpg" alt="RNN 的五种输入输出结构" style="max-width:85%;">
+    <div class="img-caption">RNN 的五种结构：从左到右依次是一对一、一对多（文本生成）、多对一（文本分类）、异步多对多（机器翻译）、同步多对多（序列标注）。绿色是输入，蓝色是隐含状态，紫色是输出。</div>
+</div>
+
+<hr class="divider">
+
+<!-- ==================== 第二章 ==================== -->
+<h2 id="sec2">二、语言模型与困惑度</h2>
+
+<h3>2.1 语言模型：给句子算概率</h3>
+
+<p><strong>语言模型（language model）</strong>是序列建模最经典的任务：给定前面的词，预测下一个词的概率：</p>
+
+<div class="formula">
+    \(P(x_t \mid x_1, \ldots, x_{t-1})\)
+</div>
+
+<p>例如读完"深度学习是人工智能的"，模型应给"分支""核心"等词较高概率，给"香蕉"极低概率。RNN 天然适合这个任务：每读入一个词就更新一次隐含状态，再用输出层给出下一个词的概率分布。</p>
+
+<div class="alert-info">
+    <strong>💡 为什么重要：</strong>语言模型看似只是"接龙"，但它是机器翻译、语音识别、文本生成的共同内核。今天的大语言模型（GPT 系列）本质上也是在超大规模上训练的"下一个词预测器"。
+</div>
+
+<h3>2.2 困惑度：语言模型的成绩单</h3>
+
+<p>如何衡量语言模型的好坏？用<strong>平均交叉熵</strong>：对一个长度为 \(n\) 的序列，计算模型给每个真实词分配的概率的负对数平均值。但直接比较交叉熵不直观，NLP 中习惯取它的指数，称为<strong>困惑度（perplexity）</strong>：</p>
+
+<div class="formula">
+    \(\mathrm{PPL} = \exp\!\Big(-\dfrac{1}{n} \displaystyle\sum_{t=1}^{n} \log P(x_t \mid x_{&lt;t})\Big)\)
+</div>
+
+<table class="compare-table">
+<thead>
+<tr><th style="width:24%;">困惑度取值</th><th>含义</th></tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>完美模型：每次都把概率 1 给了正确的词</td></tr>
+<tr><td>越小越好</td><td>可以理解为"模型平均每次在多少个词之间犹豫"</td></tr>
+<tr><td>无穷大</td><td>最差情况：给正确词的概率为 0</td></tr>
+</tbody>
+</table>
+
+<div class="alert-info">
+    <strong>🔑 初学者理解：</strong>困惑度 20 大致相当于"模型每预测一个词，都好像要在 20 个候选里猜一个"。它把交叉熵换算成了更人话的"平均有效选择数"。</div>
+
+<p>为什么要先取平均再取指数？因为不同长度的文本无法直接比较总对数似然——短文本的总损失天然更小。除以序列长度 \(n\) 做归一化后，长短文本的成绩才有可比性。</p>
+<hr class="divider">
+
+<!-- ==================== 第三章 ==================== -->
+<h2 id="sec3">三、实现 RNN 语言模型</h2>
+
+<h3>3.1 输入编码：one-hot 向量</h3>
+
+<p>计算机不能直接"读"文字，第一步要把每个词变成向量。最直接的做法是<strong>单热编码（one-hot）</strong>：词表有 \(V\) 个词，就用一个 \(V\) 维向量表示每个词——对应位置为 1，其余全为 0：</p>
+
+<!-- one-hot 编码图 -->
+<div class="img-container">
+    <img src="images/onehot.jpg" alt="one-hot 编码示例：Rome、Paris、Italy、France" style="max-width:52%;">
+    <div class="img-caption">one-hot 编码：每个词是一个"只有一位是 1"的长向量。Rome 和 Paris 的向量完全不同——one-hot 本身不包含任何语义信息。</div>
+</div>
+
+<p>选择编码颗粒度时要权衡：按<strong>词</strong>切分词表大但语义完整；按<strong>字符</strong>切分词表小（英文仅几十个字母）但单字符没有语义。中文还可以按字或按词（分词）处理。</p>
+
+<h3>3.2 词嵌入：把稀疏向量变稠密</h3>
+
+<p>one-hot 有两个硬伤：<strong>维度太高</strong>（词表动辄几万）且<strong>稀疏</strong>；更重要的是它<strong>不含语义</strong>——从向量上看不出"猫"和"狗"比"猫"和"卡车"更相似。解决办法是乘一个可学习的<strong>嵌入矩阵</strong> \(W_e\)（\(V \times d\)，\(d\) 通常几十到几百），把稀疏的 one-hot 压成稠密向量：</p>
+
+<div class="formula">
+    \(\text{embedding}(x) = W_e^\top \cdot \text{onehot}(x)\)
+</div>
+
+<div class="card">
+    <div class="card-title">预训练词向量：word2vec 与 GloVe</div>
+    <p>嵌入矩阵可以随任务一起训练，也可以直接加载在超大语料上<strong>预训练</strong>好的词向量（word2vec、GloVe）。训练好的词向量具有神奇的语义几何性质：语义相近的词在向量空间中也相近，甚至存在"国王 − 男人 + 女人 ≈ 女王"这样的类比关系。</p>
+</div>
+
+<!-- 词向量相似度示例 -->
+<div class="img-container">
+    <img src="images/word2vec.jpg" alt="词向量的近义词查询结果" style="max-width:56%;">
+    <div class="img-caption">预训练词向量的效果：查询某个词的最近邻，返回的都是语义相关的词——说明嵌入空间真的"学"到了语义。</div>
+</div>
+
+<h3>3.3 输出编码：softmax 概率分布</h3>
+
+<p>输出端是输入端的逆过程：隐含状态 \(h_t\) 先乘一个<strong>解码矩阵</strong> \(W'\)，得到词表大小的分数向量，再过 softmax 变成概率分布——概率最大的词就是模型的预测：</p>
+
+<div class="formula">
+    \(P(\text{下一个词} = w) \propto \exp\big(w'^{\top}_w h_t\big)\)
+</div>
+
+<p>训练时用交叉熵损失让"正确词"的概率越来越大；生成时可以从分布中采样，也可以每步取概率最大的词（贪心解码）。</p>
+
+<h3>3.4 一个时间步的完整计算</h3>
+
+<p>把三节串起来，RNN 语言模型在一个时间步的完整流水线是：</p>
+
+<ol class="step-list">
+    <li><span class="step-num">1</span><span class="step-content"><strong>查嵌入</strong>：当前词 → one-hot → 乘嵌入矩阵得到稠密向量 \(x_t\)；</span></li>
+    <li><span class="step-num">2</span><span class="step-content"><strong>更新记忆</strong>：\(h_t = \phi(W_{hh} h_{t-1} + W_{hx} x_t + b_h)\)；</span></li>
+    <li><span class="step-num">3</span><span class="step-content"><strong>预测</strong>：\(o_t = W_{ho} h_t + b_o\)，softmax 得到词表概率分布；</span></li>
+    <li><span class="step-num">4</span><span class="step-content"><strong>计损</strong>：与真实的下一个词算交叉熵，沿时间累加。</span></li>
+</ol>
+
+<hr class="divider">
+
+<!-- ==================== 第四章 ==================== -->
+<h2 id="sec4">四、通过时间反向传播（BPTT）</h2>
+
+<h3>4.1 沿时间展开的计算图</h3>
+
+<p>RNN 怎么训练？把它沿时间<strong>展开（unroll）</strong>：每个时间步都是一层，共享同一组参数，于是一个长度为 \(T\) 的序列就等价于一个 \(T\) 层的深网络，可以照常做反向传播——这就是<strong>通过时间反向传播（Backpropagation Through Time，BPTT）</strong>：</p>
+
+<!-- RNN 展开图 -->
+<div class="img-container">
+    <img src="images/rnn_unrolled.jpg" alt="RNN 沿时间展开" style="max-width:78%;">
+    <div class="img-caption">RNN 沿时间展开：每个绿色方块是同一个 RNN 单元（参数共享），输入 \(x_t\) 依次进入，输出 \(y_t\) 依次产生，隐含状态在方块之间水平传递。展开之后，训练就变成了我们熟悉的反向传播。</div>
+</div>
+
+<!-- RNN 计算图 -->
+<div class="img-container">
+    <img src="images/rnn_compgraph.jpg" alt="RNN 的计算图" style="max-width:60%;">
+    <div class="img-caption">RNN 的计算图：\(x_t\)、\(h_t\)、\(o_t\) 是变量节点，阴影块是共享参数。梯度要沿 \(h_t \to h_{t-1} \to \cdots\) 一路回传到序列开头。</div>
+</div>
+
+<h3>4.2 梯度链太长：消失与爆炸</h3>
+
+<p>问题在于：隐含状态的梯度是一条<strong>长度为 \(O(T)\) 的连乘链</strong>。对线性 RNN 可以严格推出，\(h_t\) 对远处 \(h_1\) 的梯度里含有 \(W_{hh}\) 的 \(T-t\) 次幂：</p>
+
+<div class="formula">
+    \(\dfrac{\partial h_T}{\partial h_t} = \big(W_{hh}^{\top}\big)^{T-t}\)
+</div>
+
+<p>矩阵连乘 \(T\) 次，数值上只有两种命运——特征值小于 1 时梯度<strong>指数级消失</strong>（远处的历史学不到）；大于 1 时<strong>指数级爆炸</strong>（梯度冲上天，训练发散）。同时长链还要在内存里缓存所有中间值，开销巨大：</p>
+
+<!-- 梯度链示意图 -->
+<div class="img-container">
+    <img src="images/grad_chain.jpg" alt="BPTT 梯度沿时间链回传" style="max-width:72%;">
+    <div class="img-caption">BPTT 的梯度链：损失对每个时刻的参数都有贡献，梯度沿"输出—解释—观测"三条链回传，越往早期传，连乘项越多，数值越不稳定。</div>
+</div>
+
+<div class="alert-warning">
+    <strong>⚠️ 注意：</strong>这就是第 03 讲"梯度消失/爆炸"在序列模型中的放大版。第 03 讲的对策（合适初始化、归一化）之外，RNN 还有两个专属武器：<strong>梯度剪裁</strong>和<strong>截断 BPTT</strong>。
+</div>
+
+<h3>4.3 梯度剪裁：给梯度套上缰绳</h3>
+
+<p>梯度爆炸的应急处理简单有效：<strong>梯度剪裁（gradient clipping）</strong>——设一个阈值 \(\theta\)，如果梯度向量的范数超过它，就整体缩小到 \(\theta\)：</p>
+
+<div class="formula">
+    \(\mathbf{g} \leftarrow \min\!\Big(1,\, \dfrac{\theta}{\lVert \mathbf{g} \rVert}\Big)\, \mathbf{g}\)
+</div>
+
+<!-- 梯度剪裁伪代码 -->
+<div class="img-container">
+    <img src="images/clipping_pseudo.jpg" alt="梯度剪裁伪代码" style="max-width:44%;">
+    <div class="img-caption">梯度剪裁伪代码：范数超阈值就等比缩小。方向不变、只缩长度，实现不过三行，PyTorch 中一行 <code>nn.utils.clip_grad_norm_</code> 即可。</div>
+</div>
+
+<!-- 剪裁效果图 -->
+<div class="img-container">
+    <img src="images/grad_clipping_surface.jpg" alt="梯度剪裁前后的误差面与训练轨迹" style="max-width:66%;">
+    <div class="img-caption">Pascanu 等人（2013）的经典插图：RNN 的误差面存在"悬崖"，未剪裁时一步大步长就可能被弹出谷底（左）；剪裁后轨迹贴着崖壁稳定下降（右）。</div>
+</div>
+
+<h3>4.4 截断 BPTT：只看最近的一段历史</h3>
+
+<p>梯度消失意味着"很久以前的历史"反正也学不到，那就干脆<strong>只回传最近 \(\tau\) 步</strong>的梯度，更早的直接丢弃——这就是<strong>截断 BPTT</strong>：</p>
+
+<ul>
+    <li>前向传播照常跑完整序列（隐含状态继续传递，<strong>记忆不截断</strong>）；</li>
+    <li>反向传播只算到截断边界（通常与小批量边界对齐，如 \(\tau = 35\) 或 64 步）；</li>
+    <li>代价是学不到超过 \(\tau\) 步的超长依赖，换来的是稳定与速度。</li>
+</ul>
+
+<div class="alert-info">
+    <strong>💡 实践细节：</strong>训练语言模型时通常按<strong>顺序</strong>切分小批量而不是随机抽样——这样相邻批量之间的隐含状态可以衔接上，记忆不会在批量边界处断裂。
+</div>
+<hr class="divider">
+
+<!-- ==================== 第五章 ==================== -->
+<h2 id="sec5">五、门控循环单元（GRU）</h2>
+
+<h3>5.1 动机：该记的记，该忘的忘</h3>
+
+<p>基本 RNN 对每个词都"一视同仁"地更新记忆，但直觉告诉我们：<strong>序列中并非所有元素都同等重要</strong>。读"中国的首都是北京"时，"中国""首都"值得记住，"的"可以忽略；遇到句号时，又应该清空上一句的记忆重新开始。我们希望网络自己学会两种机制：</p>
+
+<ul>
+    <li><strong>更新的机制</strong>（更新门）：多大程度上用新内容替换旧记忆；</li>
+    <li><strong>遗忘/重置的机制</strong>（重置门）：多大程度上忘掉过去、只看当前。</li>
+</ul>
+
+<p><strong>门控循环单元（Gated Recurrent Unit，GRU）</strong>由 Cho 等人 2014 年提出，用两个可学习的"门"实现了这两个机制。门是一个 0~1 之间的向量：接近 1 表示"放行"，接近 0 表示"关断"。</p>
+
+<h3>5.2 重置门与更新门</h3>
+
+<p>两个门的计算方式与普通 RNN 单元相同，只是激活函数换成 sigmoid（把输出压到 0~1）：</p>
+
+<div class="formula">
+    \(R_t = \sigma\big(W_{xr} x_t + W_{hr} h_{t-1} + b_r\big)\)
+</div>
+<div class="formula">
+    \(Z_t = \sigma\big(W_{xz} x_t + W_{hz} h_{t-1} + b_z\big)\)
+</div>
+
+<p>其中 \(R_t\) 是<strong>重置门（reset gate）</strong>，\(Z_t\) 是<strong>更新门（update gate）</strong>。它们的输入都是"当前词 + 上一时刻记忆"，但各有一套独立的权重，因此能学会不同的开关策略。</p>
+
+<!-- GRU 结构图 -->
+<div class="img-container">
+    <img src="images/gru_gates.jpg" alt="GRU 的重置门与更新门" style="max-width:56%;">
+    <div class="img-caption">GRU 单元内部：输入 \(X_t\) 与上一时刻隐含状态 \(H_{t-1}\) 分别经两个全连接层 + sigmoid，得到重置门 \(R_t\) 和更新门 \(Z_t\)（图中"复制/连结"表示向量拼接与逐元素运算）。</div>
+</div>
+
+<h3>5.3 候选隐含状态与状态更新</h3>
+
+<p>两个门各司其职——<strong>重置门</strong>参与计算"候选"记忆：</p>
+
+<div class="formula">
+    \(\tilde{h}_t = \tanh\big(W_{xh} x_t + (R_t \odot h_{t-1})\, W_{hh} + b_h\big)\)
+</div>
+
+<p>\(\odot\) 是逐元素乘法。当 \(R_t \to 0\) 时，上一时刻的记忆被"重置"掉，\(\tilde{h}_t\) 几乎只看当前输入（相当于从头开始记）；当 \(R_t \to 1\) 时，就是普通 RNN 的算法。</p>
+
+<p><strong>更新门</strong>负责在新旧记忆之间做"加权平均"：</p>
+
+<div class="formula">
+    \(h_t = Z_t \odot h_{t-1} + (1 - Z_t) \odot \tilde{h}_t\)
+</div>
+
+<p>当 \(Z_t \to 1\)：完全保留旧记忆，当前输入被忽略（"这里不重要，跳过去"）；当 \(Z_t \to 0\)：完全采用新的候选状态。正是这种"按元素插值"的设计，让 GRU 能把某些重要信息<strong>原封不动地保存很多步</strong>，缓解了梯度消失。</p>
+
+<!-- GRU 完整计算图 -->
+<div class="img-container">
+    <img src="images/gru_full.jpg" alt="GRU 完整计算流程" style="max-width:56%;">
+    <div class="img-caption">GRU 的完整计算：重置门控制候选状态对旧记忆的依赖，更新门在新旧状态之间插值得到 \(H_t\)。两个门的开关策略全部从数据中学出。</div>
+</div>
+
+<p><strong>动手试一试：更新门的作用</strong>——拖动滑块改变更新门 \(Z\) 的大小，看隐含状态如何在"保留过去"与"采用现在"之间切换：</p>
+
+<div class="card gru-demo">
+    <div class="gd-row"><label>旧记忆 h(t−1)</label><input type="range" min="-5" max="5" step="0.1" value="4" id="gd-hold"><span class="gd-val" id="gd-hold-v">4.0</span></div>
+    <div class="gd-row"><label>新候选 h̃(t)</label><input type="range" min="-5" max="5" step="0.1" value="-2" id="gd-hnew"><span class="gd-val" id="gd-hnew-v">-2.0</span></div>
+    <div class="gd-row"><label>更新门 Z</label><input type="range" min="0" max="1" step="0.01" value="0.5" id="gd-z"><span class="gd-val" id="gd-z-v">0.50</span></div>
+    <canvas id="gd-canvas" width="520" height="180" style="display:block;margin:8px auto;border:1px solid #E2E8F0;border-radius:8px;background:#fff;max-width:100%;"></canvas>
+    <div class="gd-result" id="gd-note"></div>
+</div>
+<style>
+    .gru-demo .gd-row { display: flex; align-items: center; gap: 14px; margin: 8px 0; }
+    .gru-demo label { width: 120px; min-width: 120px; font-size: 15px; color: #475569; }
+    .gru-demo input[type=range] { flex: 1; accent-color: #2563EB; }
+    .gru-demo .gd-val { width: 46px; text-align: right; font-weight: 700; color: #2563EB; font-size: 15px; }
+    .gru-demo .gd-result { margin-top: 10px; padding: 12px; background: #EFF6FF; border-radius: 8px; text-align: center; font-size: 15px; color: #1E40AF; }
+</style>
+<script>
+(function() {
+    var cv = document.getElementById('gd-canvas'), ctx = cv.getContext('2d');
+    function v(id) { return +document.getElementById(id).value; }
+    function fmt(n) { return Math.round(n * 100) / 100; }
+    function draw() {
+        var ho = v('gd-hold'), hn = v('gd-hnew'), z = v('gd-z');
+        document.getElementById('gd-hold-v').textContent = ho.toFixed(1);
+        document.getElementById('gd-hnew-v').textContent = hn.toFixed(1);
+        document.getElementById('gd-z-v').textContent = z.toFixed(2);
+        var h = z * ho + (1 - z) * hn;
+        ctx.clearRect(0, 0, cv.width, cv.height);
+        var bars = [['旧记忆 h(t−1)', ho, '#94A3B8'], ['新候选 h̃(t)', hn, '#F59E0B'], ['输出 h(t)', h, '#059669']];
+        var bw = 90, gap = (cv.width - 3 * bw) / 4, mid = cv.height / 2, S = 22;
+        ctx.strokeStyle = '#CBD5E1';
+        ctx.beginPath(); ctx.moveTo(0, mid); ctx.lineTo(cv.width, mid); ctx.stroke();
+        for (var i = 0; i < 3; i++) {
+            var x = gap + i * (bw + gap), val = bars[i][1], bh = val * S;
+            ctx.fillStyle = bars[i][2];
+            ctx.fillRect(x, bh > 0 ? mid - bh : mid, bw, Math.abs(bh));
+            ctx.fillStyle = '#1E293B'; ctx.font = 'bold 14px sans-serif'; ctx.textAlign = 'center';
+            ctx.fillText(fmt(val), x + bw / 2, bh > 0 ? mid - bh - 6 : mid - bh + 16);
+            ctx.font = '13px sans-serif';
+            ctx.fillText(bars[i][0], x + bw / 2, cv.height - 12);
+        }
+        var note;
+        if (z > 0.9) note = 'Z ≈ 1：输出几乎等于旧记忆——当前输入被忽略，信息原样保留（长距离记忆的关键）。';
+        else if (z < 0.1) note = 'Z ≈ 0：输出几乎等于新候选——旧记忆被抛弃，从头开始记。';
+        else note = 'h(t) = Z·h(t−1) + (1−Z)·h̃(t) = ' + z.toFixed(2) + '×' + fmt(ho) + ' + ' + (1 - z).toFixed(2) + '×(' + fmt(hn) + ') = ' + fmt(h) + '。';
+        document.getElementById('gd-note').textContent = note;
+    }
+    ['gd-hold', 'gd-hnew', 'gd-z'].forEach(function(id) {
+        document.getElementById(id).addEventListener('input', draw);
+    });
+    draw();
+})();
+</script>
+
+<hr class="divider">
+
+<!-- ==================== 第六章 ==================== -->
+<h2 id="sec6">六、长短期记忆网络（LSTM）</h2>
+
+<h3>6.1 三个门</h3>
+
+<p><strong>长短期记忆网络（Long Short-Term Memory，LSTM）</strong>比 GRU 出现得更早（1997 年 Hochreiter &amp; Schmidhuber），设计也更精细：它有<strong>三个门</strong>，并且把"记忆"拆成两条线——<strong>记忆细胞</strong> \(C_t\)（长期记忆的主干道）和<strong>隐含状态</strong> \(h_t\)（对外输出）：</p>
+
+<table class="compare-table">
+<thead>
+<tr><th style="width:20%;">门</th><th>职责</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>遗忘门</strong> \(F_t\)</td><td>控制上一时刻的记忆细胞保留多少（值收缩向 0 = 遗忘）</td></tr>
+<tr><td><strong>输入门</strong> \(I_t\)</td><td>控制当前输入有多少写入记忆细胞（接近 0 = 忽略输入）</td></tr>
+<tr><td><strong>输出门</strong> \(O_t\)</td><td>控制记忆细胞有多少暴露给隐含状态输出</td></tr>
+</tbody>
+</table>
+
+<p>三个门的计算方式与 GRU 相同（输入 \(x_t\) 与 \(h_{t-1}\)，sigmoid 激活），各有一套独立权重：</p>
+
+<div class="formula">
+    \(F_t, I_t, O_t = \sigma\big(W_{xf} x_t + W_{hf} h_{t-1} + b_f\big)\ \cdots\)（三套参数同理）
+</div>
+
+<!-- LSTM 三门结构图 -->
+<div class="img-container">
+    <img src="images/lstm_gates.jpg" alt="LSTM 的遗忘门、输入门、输出门" style="max-width:58%;">
+    <div class="img-caption">LSTM 的三个门：遗忘门、输入门、输出门并排计算，都由当前输入 \(X_t\) 与上一时刻隐含状态 \(H_{t-1}\) 驱动，sigmoid 输出 0~1 的开关。</div>
+</div>
+
+<h3>6.2 记忆细胞与隐含状态</h3>
+
+<p>与 GRU 的候选状态类似，LSTM 先算<strong>候选记忆细胞</strong>：</p>
+
+<div class="formula">
+    \(\tilde{C}_t = \tanh\big(W_{xc} x_t + W_{hc} h_{t-1} + b_c\big)\)
+</div>
+
+<p>然后记忆细胞做"选择性遗忘 + 选择性写入"：</p>
+
+<div class="formula">
+    \(C_t = F_t \odot C_{t-1} + I_t \odot \tilde{C}_t\)
+</div>
+
+<p>这又是一个按元素插值：遗忘门决定旧记忆留多少，输入门决定新内容写多少。只要遗忘门保持接近 1，早期信息就能沿记忆细胞<strong>几乎无损地传很远</strong>——这条"高速公路"是 LSTM 抗梯度消失的核心设计。</p>
+
+<!-- LSTM 记忆细胞图 -->
+<div class="img-container">
+    <img src="images/lstm_cell.jpg" alt="LSTM 记忆细胞的更新" style="max-width:58%;">
+    <div class="img-caption">记忆细胞的更新：\(C_{t-1}\) 经遗忘门衰减，候选记忆 \(\tilde{C}_t\) 经输入门筛选，两者相加得到新的记忆细胞 \(C_t\)。</div>
+</div>
+
+<p>最后，输出门决定把记忆的哪部分"公布"为隐含状态：</p>
+
+<div class="formula">
+    \(h_t = O_t \odot \tanh(C_t)\)
+</div>
+
+<!-- LSTM 完整结构图 -->
+<div class="img-container">
+    <img src="images/lstm_summary.jpg" alt="LSTM 完整结构" style="max-width:58%;">
+    <div class="img-caption">LSTM 的完整结构：三个门、候选记忆、记忆细胞更新、输出四步依次完成。记忆细胞 \(C_t\) 与隐含状态 \(H_t\) 一起传向下一时刻。</div>
+</div>
+
+<h3>6.3 LSTM vs GRU</h3>
+
+<table class="compare-table">
+<thead>
+<tr><th style="width:22%;"></th><th>GRU</th><th>LSTM</th></tr>
+</thead>
+<tbody>
+<tr><td>门数量</td><td>2 个（重置、更新）</td><td>3 个（遗忘、输入、输出）</td></tr>
+<tr><td>状态</td><td>只有隐含状态 \(h_t\)</td><td>记忆细胞 \(C_t\) + 隐含状态 \(h_t\)</td></tr>
+<tr><td>参数量</td><td>较少，训练更快</td><td>较多，表达更细</td></tr>
+<tr><td>提出时间</td><td>2014 年（Cho 等）</td><td>1997 年（Hochreiter &amp; Schmidhuber）</td></tr>
+<tr><td>实际选择</td><td colspan="2">性能通常相近；数据少/算力紧时先试 GRU，追求极致效果时试 LSTM</td></tr>
+</tbody>
+</table>
+
+<div class="alert-success">
+    <strong>✅ 核心结论：</strong>GRU 和 LSTM 的本质相同——用 sigmoid 门做"按元素的软开关"，让重要信息可以跨很多步无损传递，从而缓解基本 RNN 的梯度消失。二者共同统治了 2014–2017 年的序列建模，直到 Transformer 出现。
+</div>
+<hr class="divider">
+
+<!-- ==================== 第七章 ==================== -->
+<h2 id="sec7">七、双向与深度循环神经网络</h2>
+
+<h3>7.1 "未来"的重要性</h3>
+
+<p>看这三道填空题：</p>
+
+<div class="card">
+    <p style="font-size:17px;line-height:2;">
+        我 _____ 。<br>
+        我 _____ 非常饿。<br>
+        我 _____ 非常饿，我可以吃下一只猪。
+    </p>
+</div>
+
+<p>合适的填词可能是"饿""不饿/不是很饿""非常"。同一个空，<strong>答案完全取决于后文</strong>——可是到目前为止的 RNN 只能看到"上文"，读到空位时后文还没出现。很多任务（词性标注、实体识别、语音识别）都需要同时利用两个方向的上下文，这就是<strong>双向循环神经网络（Bidirectional RNN）</strong>的动机。</p>
+
+<h3>7.2 双向 RNN</h3>
+
+<p>做法很直接：<strong>两个 RNN 背靠背</strong>——一个从前往后读，一个从后往前读，每个时刻把两个方向的隐含状态拼起来再生成输出：</p>
+
+<!-- 双向 RNN 结构图 -->
+<div class="img-container">
+    <img src="images/birnn.jpg" alt="双向 RNN 结构" style="max-width:64%;">
+    <div class="img-caption">双向 RNN：前向层 \(H_t\) 沿时间正向传播，反向层沿时间反向传播，输出 \(O_t\) 同时拼接两个方向的信息。每个位置都能看到"整句话"。</div>
+</div>
+
+<div class="alert-warning">
+    <strong>⚠️ 注意：</strong>双向 RNN 需要<strong>先拿到完整序列</strong>才能两个方向都跑完，因此不适合"边读边生成"的任务（如语言模型的实时预测）。它常用于理解类任务（分类、标注），而非生成类任务。
+</div>
+
+<h3>7.3 深度 RNN</h3>
+
+<p>RNN 也可以像 MLP 一样<strong>往深里堆</strong>：第一个 RNN 层的输出序列作为第二个 RNN 层的输入，依此类推。每层学到的特征抽象程度不同——底层捕捉局部模式（词组），高层捕捉更长程的结构（句法、语义）：</p>
+
+<!-- 深度 RNN 结构图 -->
+<div class="img-container">
+    <img src="images/deep_rnn.jpg" alt="深度 RNN 结构" style="max-width:80%;">
+    <div class="img-caption">深度 RNN：\(H_t^{(1)}\)、\(H_t^{(2)}\) … 多层隐含状态沿"时间"和"深度"两个维度传播。注意它与 BPTT 的"深"不同——那是同一层沿时间展开的深，这是真正堆叠多层的深。</div>
+</div>
+
+<hr class="divider">
+
+<!-- ==================== 第八章 ==================== -->
+<h2 id="sec8">八、本讲小结与自测</h2>
+
+<h3>8.1 知识要点回顾</h3>
+
+<table class="compare-table">
+<thead>
+<tr><th style="width:22%;">主题</th><th>必须掌握的内容</th></tr>
+</thead>
+<tbody>
+<tr><td>RNN 结构</td><td>隐含状态 \(h_t\) 是记忆的载体；更新公式；去掉循环项退化为 MLP；参数共享</td></tr>
+<tr><td>RNN 类型</td><td>一对一/一对多/多对一/两种多对多的应用场景</td></tr>
+<tr><td>困惑度</td><td>平均交叉熵的指数；1 最好；理解为"平均犹豫的候选数"</td></tr>
+<tr><td>语言模型实现</td><td>one-hot → 嵌入矩阵 → RNN → softmax；word2vec/GloVe 预训练</td></tr>
+<tr><td>BPTT</td><td>沿时间展开；梯度连乘导致消失/爆炸；梯度剪裁公式；截断 BPTT 只截梯度不截记忆</td></tr>
+<tr><td>GRU</td><td>重置门、更新门的作用；\(h_t = Z_t \odot h_{t-1} + (1-Z_t)\odot\tilde{h}_t\)</td></tr>
+<tr><td>LSTM</td><td>三门分工；记忆细胞 \(C_t = F_t \odot C_{t-1} + I_t \odot \tilde{C}_t\) 是"长期记忆高速公路"</td></tr>
+<tr><td>双向/深度</td><td>双向 RNN 适合理解类任务、不适合实时生成；深度 RNN 沿时间+深度两维传播</td></tr>
+</tbody>
+</table>
+
+<h3>8.2 课堂自测</h3>
+
+<div class="quiz-section">
+    <div class="quiz-item">
+        <div class="quiz-num">Q1</div>
+        <div class="quiz-content">
+            <div class="quiz-question">RNN 为什么能处理任意长度的序列？全连接网络为什么不行？</div>
+            <div class="quiz-hint">✅ 答案：RNN 在每个时间步<strong>共享同一组权重</strong>，序列多长就复用多少次，参数量与序列长度无关；且隐含状态把历史压缩成固定维度向量。全连接网络输入维度固定，序列变长就要改输入层结构。常见误区：以为 RNN 为每个时间步学一套独立参数——那样既无法泛化到更长序列，参数量也会爆炸。</div>
+        </div>
+    </div>
+    <div class="quiz-item">
+        <div class="quiz-num">Q2</div>
+        <div class="quiz-content">
+            <div class="quiz-question">梯度剪裁和截断 BPTT 分别解决什么问题？截断 BPTT 会把 RNN 的"记忆"也截断吗？</div>
+            <div class="quiz-hint">✅ 答案：梯度剪裁解决梯度<strong>爆炸</strong>（范数超阈值就等比缩小）；截断 BPTT 缓解长链带来的不稳定与显存开销（只回传最近 τ 步）。不会截断记忆——前向传播仍跑完整序列，隐含状态照常传递，只是<strong>梯度</strong>不再流向更早的时间步。</div>
+        </div>
+    </div>
+    <div class="quiz-item">
+        <div class="quiz-num">Q3</div>
+        <div class="quiz-content">
+            <div class="quiz-question">GRU 中，如果更新门 \(Z_t\) 在所有时刻都接近 1，网络的行为相当于什么？这对长距离记忆意味着什么？</div>
+            <div class="quiz-hint">✅ 答案：\(h_t = Z_t \odot h_{t-1} + (1-Z_t)\odot\tilde{h}_t \approx h_{t-1}\)，隐含状态几乎不变，当前输入被忽略——相当于把某条信息"冻结保存"。这正是长距离记忆的机制：重要信息可以让门保持接近 1 而跨很多步无损保留，梯度也因此有了一条不被衰减的回传通路，缓解梯度消失。</div>
+        </div>
+    </div>
+</div>
+
+<h3>8.3 下讲预告</h3>
+
+<div class="alert-success">
+    <strong>📖 第 06 讲：注意力机制与 Transformer</strong>（理论 2 学时）——RNN 必须按顺序逐词处理，长距离依赖仍显吃力。能不能让网络"一眼扫过全句、自动聚焦相关位置"？注意力机制、自注意力、Transformer 架构与 BERT，将把我们带到大语言模型的门口。
+</div>
+
+</div><!-- /container -->
+
+<div class="footer">
+    <p>深度学习课程站 · 第05讲 循环神经网络（RNN） · 基于《动手学深度学习》课程</p>
+</div>
+
+<!-- KaTeX auto-render -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+            delimiters: [
+                {left: "$$", right: "$$", display: true},
+                {left: "$", right: "$", display: false},
+                {left: "\\[", right: "\\]", display: true},
+                {left: "\\(", right: "\\)", display: false}
+            ],
+            throwOnError: false
+        });
+    });
+</script>
+
+<!-- 滚动监听：高亮当前章节 -->
+<script>
+(function() {
+    var navLinks = document.querySelectorAll('.sidebar-nav a');
+    var sections = [];
+    navLinks.forEach(function(link) {
+        var id = link.getAttribute('href').substring(1);
+        var el = document.getElementById(id);
+        if (el) sections.push({ el: el, link: link });
+    });
+
+    function onScroll() {
+        var scrollY = window.scrollY + 100;
+        var current = null;
+        sections.forEach(function(sec) {
+            if (sec.el.offsetTop <= scrollY) {
+                current = sec.link;
+            }
+        });
+        navLinks.forEach(function(l) { l.classList.remove('active'); });
+        if (current) current.classList.add('active');
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+})();
+</script>
+</div><!-- /main-wrapper -->
+
+<script>
+(function() {
+    var btn = document.createElement('button');
+    btn.className = 'sidebar-toggle';
+    btn.type = 'button';
+    btn.title = '收起 / 展开目录';
+    btn.setAttribute('aria-label', '收起或展开目录');
+    btn.textContent = '☰';
+    document.body.appendChild(btn);
+    btn.addEventListener('click', function() {
+        document.body.classList.toggle('sidebar-collapsed');
+    });
+    if (window.innerWidth < 1280 && window.innerWidth > 768) {
+        document.body.classList.add('sidebar-collapsed');
+    }
+    document.querySelectorAll('.quiz-item').forEach(function(item) {
+        item.addEventListener('click', function() { item.classList.toggle('open'); });
+    });
+})();
+</script>
+<script src="../../assets/search-index.js"></script>
+<script src="../../assets/site-tools.js"></script>
+</body>
+</html>
