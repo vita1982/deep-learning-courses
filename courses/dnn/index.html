@@ -552,6 +552,35 @@
             object-fit: contain;
             background: #FFFFFF;
         }
+
+        /* ===== 侧栏位置修正与自动缩进 ===== */
+        @media (min-width: 769px) {
+            .sidebar { top: 50px; height: calc(100vh - 50px); transition: transform 0.3s ease; }
+            .main-wrapper { transition: margin-left 0.3s ease; }
+            body.sidebar-collapsed .sidebar { transform: translateX(-110%); }
+            body.sidebar-collapsed .main-wrapper { margin-left: 0; }
+        }
+        .sidebar-toggle {
+            position: fixed; top: 60px; left: 232px; z-index: 350;
+            width: 34px; height: 34px; border-radius: 8px;
+            border: 1px solid #E2E8F0; background: #FFFFFF; color: #1E3A5F;
+            font-size: 16px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+            display: flex; align-items: center; justify-content: center;
+            transition: left 0.3s ease;
+        }
+        .sidebar-toggle:hover { background: #EFF6FF; }
+        body.sidebar-collapsed .sidebar-toggle { left: 12px; }
+        @media (max-width: 768px) { .sidebar-toggle { display: none; } }
+
+        /* ===== 自测题点击展开答案 ===== */
+        .quiz-item { cursor: pointer; }
+        .quiz-hint { display: none; }
+        .quiz-item.open .quiz-hint { display: block; }
+        .quiz-question::after {
+            content: '👆 点击显示答案'; margin-left: 10px;
+            font-size: 12px; color: #94A3B8; font-weight: 400;
+        }
+        .quiz-item.open .quiz-question::after { content: '👆 点击收起答案'; }
 </style>
 </head>
 <body>
@@ -1389,5 +1418,25 @@ z = \mathbf{w}^\top \mathbf{x} + b, \qquad
 </script>
 </div><!-- /main-wrapper -->
 
+<script>
+(function() {
+    var btn = document.createElement('button');
+    btn.className = 'sidebar-toggle';
+    btn.type = 'button';
+    btn.title = '收起 / 展开目录';
+    btn.setAttribute('aria-label', '收起或展开目录');
+    btn.textContent = '☰';
+    document.body.appendChild(btn);
+    btn.addEventListener('click', function() {
+        document.body.classList.toggle('sidebar-collapsed');
+    });
+    if (window.innerWidth < 1280 && window.innerWidth > 768) {
+        document.body.classList.add('sidebar-collapsed');
+    }
+    document.querySelectorAll('.quiz-item').forEach(function(item) {
+        item.addEventListener('click', function() { item.classList.toggle('open'); });
+    });
+})();
+</script>
 </body>
 </html>
