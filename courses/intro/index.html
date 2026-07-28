@@ -581,6 +581,9 @@
             font-size: 12px; color: #94A3B8; font-weight: 400;
         }
         .quiz-item.open .quiz-question::after { content: '👆 点击收起答案'; }
+
+        /* 移动端：固定顶栏下给侧栏让位 */
+        @media (max-width: 768px) { .sidebar { margin-top: 50px; } }
 </style>
 </head>
 <body>

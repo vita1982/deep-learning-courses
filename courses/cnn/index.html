@@ -584,6 +584,9 @@
             text-align: center; font-size: 17px; color: #1E40AF;
         }
         .conv-calc .calc-note { font-size: 13px; color: #64748B; margin-top: 6px; }
+
+        /* 移动端：固定顶栏下给侧栏让位 */
+        @media (max-width: 768px) { .sidebar { margin-top: 50px; } }
 </style>
 </head>
 <body>
@@ -1188,7 +1191,7 @@
 
 <ul>
     <li>同一物体的照片，可能因为拍摄角度、光照、位置变化而不同</li>
-    <li>卷积核检测垂直边缘时，1 像素的移位可能使输出从 0 变为非 0</li>
+    <li>卷积核检测垂直边缘时，1 像素的移位可能使输出从非 0 变为 0（或反之）——输出对位置非常敏感</li>
 </ul>
 
 <div class="alert-warning">
@@ -1276,7 +1279,7 @@
 
 <table class="compare-table">
     <thead>
-        <tr><th>网络类型</th><th>参数量（32×32×3 图像 + 100 神经元为例）</th></tr>
+        <tr><th>网络类型</th><th>参数量（32×32×3 图像输入，示意对比）</th></tr>
     </thead>
     <tbody>
         <tr><td>全连接网络</td><td style="color:#EF4444; font-weight:700;">3,072 × 100 = 307,200</td></tr>
@@ -1314,7 +1317,7 @@
 <blockquote>"猫在图像的左上角和右下角，同一个卷积核都能检测到'猫耳'特征。"</blockquote>
 
 <div class="alert-info">
-    <strong>🔑 初学者理解：</strong>"等变"和"不变"只差一个字，意思却相反：卷积负责<strong>等变</strong>（猫动了，特征图跟着动，但特征不会丢）；池化负责<strong>不变</strong>（小幅移动后， pooling 结果几乎一样）。两者配合，网络就获得了鲁棒的位置鲁棒性。
+    <strong>🔑 初学者理解：</strong>"等变"和"不变"只差一个字，意思却相反：卷积负责<strong>等变</strong>（猫动了，特征图跟着动，但特征不会丢）；池化负责<strong>不变</strong>（小幅移动后，池化结果几乎一样）。两者配合，网络对目标位置变化就具备了鲁棒性。
 </div>
 
 <h3>9.4 层次特征学习</h3>
