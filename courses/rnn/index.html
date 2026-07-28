@@ -762,14 +762,9 @@ var _hmt = _hmt || [];
         \(o_t = W_{ho}\, h_t + b_o\)
     </div>
     <p>其中 \(\phi\) 是非线性激活函数（常用 tanh）。注意 \(W_{hh} h_{t-1}\) 这一项——它把上一时刻的记忆带了进来；<strong>去掉它，网络就退化成普通的 MLP</strong>。</p>
-    <p style="font-size:13px;color:#94A3B8;margin-top:4px;">
-        📊 <span id="busuanzi_container_site_pv">总访问量 <span id="busuanzi_value_site_pv">—</span> 次</span>
-        · <span id="busuanzi_container_site_uv">访客数 <span id="busuanzi_value_site_uv">—</span> 人</span>
-        · <span id="busuanzi_container_page_pv">本页阅读 <span id="busuanzi_value_page_pv">—</span> 次</span>
-    </p>
-    <p style="font-size:13px;color:#94A3B8;margin-top:2px;">💬 课程反馈与留言：<a href="mailto:dlcourses2026@sina.com" style="color:#2563EB;text-decoration:none;">dlcourses2026@sina.com</a></p>
 </div>
-<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<p style="font-size:13px;color:#64748B;">注：本节沿用"用 \(t-1\) 时刻输入更新 \(t\) 时刻状态"的下标约定；第三章起与多数教材一致，把当前输入记为 \(x_t\)。两者仅下标平移，含义相同。</p>
 
 <!-- RNN 结构图 -->
 <div class="img-container">
@@ -987,7 +982,7 @@ var _hmt = _hmt || [];
 <p>基本 RNN 对每个词都"一视同仁"地更新记忆，但直觉告诉我们：<strong>序列中并非所有元素都同等重要</strong>。读"中国的首都是北京"时，"中国""首都"值得记住，"的"可以忽略；遇到句号时，又应该清空上一句的记忆重新开始。我们希望网络自己学会两种机制：</p>
 
 <ul>
-    <li><strong>更新的机制</strong>（更新门）：多大程度上用新内容替换旧记忆；</li>
+    <li><strong>更新的机制</strong>（更新门）：多大程度上保留旧记忆（门接近 1 时当前输入被忽略）；</li>
     <li><strong>遗忘/重置的机制</strong>（重置门）：多大程度上忘掉过去、只看当前。</li>
 </ul>
 
@@ -1065,7 +1060,7 @@ var _hmt = _hmt || [];
         var h = z * ho + (1 - z) * hn;
         ctx.clearRect(0, 0, cv.width, cv.height);
         var bars = [['旧记忆 h(t−1)', ho, '#94A3B8'], ['新候选 h̃(t)', hn, '#F59E0B'], ['输出 h(t)', h, '#059669']];
-        var bw = 90, gap = (cv.width - 3 * bw) / 4, mid = cv.height / 2, S = 22;
+        var bw = 90, gap = (cv.width - 3 * bw) / 4, mid = cv.height / 2, S = 16;
         ctx.strokeStyle = '#CBD5E1';
         ctx.beginPath(); ctx.moveTo(0, mid); ctx.lineTo(cv.width, mid); ctx.stroke();
         for (var i = 0; i < 3; i++) {
@@ -1130,6 +1125,12 @@ var _hmt = _hmt || [];
     \(\tilde{C}_t = \tanh\big(W_{xc} x_t + W_{hc} h_{t-1} + b_c\big)\)
 </div>
 
+<!-- LSTM 候选记忆细胞图 -->
+<div class="img-container">
+    <img src="images/lstm_candidate.jpg" alt="LSTM 候选记忆细胞的计算" style="max-width:58%;">
+    <div class="img-caption">候选记忆细胞：由当前输入 \(X_t\) 与上一时刻隐含状态 \(H_{t-1}\) 经 tanh 算出——它是"想写入记忆的新内容"，真正写入多少由输入门决定。</div>
+</div>
+
 <p>然后记忆细胞做"选择性遗忘 + 选择性写入"：</p>
 
 <div class="formula">
@@ -1148,6 +1149,12 @@ var _hmt = _hmt || [];
 
 <div class="formula">
     \(h_t = O_t \odot \tanh(C_t)\)
+</div>
+
+<!-- LSTM 隐含状态计算图 -->
+<div class="img-container">
+    <img src="images/lstm_hidden.jpg" alt="LSTM 隐含状态的计算" style="max-width:58%;">
+    <div class="img-caption">隐含状态的计算：记忆细胞先过 tanh 压到 (−1, 1)，再经输出门 \(O_t\) 筛选后公布为 \(H_t\)——记忆细胞是"内部账本"，隐含状态是"对外简报"。</div>
 </div>
 
 <!-- LSTM 完整结构图 -->
@@ -1276,7 +1283,14 @@ var _hmt = _hmt || [];
 
 <div class="footer">
     <p>深度学习课程站 · 第05讲 循环神经网络（RNN） · 基于《动手学深度学习》课程</p>
+    <p style="font-size:13px;color:#94A3B8;margin-top:4px;">
+        📊 <span id="busuanzi_container_site_pv">总访问量 <span id="busuanzi_value_site_pv">—</span> 次</span>
+        · <span id="busuanzi_container_site_uv">访客数 <span id="busuanzi_value_site_uv">—</span> 人</span>
+        · <span id="busuanzi_container_page_pv">本页阅读 <span id="busuanzi_value_page_pv">—</span> 次</span>
+    </p>
+    <p style="font-size:13px;color:#94A3B8;margin-top:2px;">💬 课程反馈与留言：<a href="mailto:dlcourses2026@sina.com" style="color:#2563EB;text-decoration:none;">dlcourses2026@sina.com</a></p>
 </div>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
 <!-- KaTeX auto-render -->
 <script>

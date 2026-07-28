@@ -733,14 +733,7 @@ var _hmt = _hmt || [];
         <li><strong>值（value）</strong>：每个输入真正的内容。</li>
     </ul>
     <p>注意力计算 = 用 query 逐个与 key 比对相似度 → 得到一组权重 → 对 value 做加权平均。相似度高的输入获得更多关注，这就是<strong>注意力池化（attention pooling）</strong>。</p>
-    <p style="font-size:13px;color:#94A3B8;margin-top:4px;">
-        📊 <span id="busuanzi_container_site_pv">总访问量 <span id="busuanzi_value_site_pv">—</span> 次</span>
-        · <span id="busuanzi_container_site_uv">访客数 <span id="busuanzi_value_site_uv">—</span> 人</span>
-        · <span id="busuanzi_container_page_pv">本页阅读 <span id="busuanzi_value_page_pv">—</span> 次</span>
-    </p>
-    <p style="font-size:13px;color:#94A3B8;margin-top:2px;">💬 课程反馈与留言：<a href="mailto:dlcourses2026@sina.com" style="color:#2563EB;text-decoration:none;">dlcourses2026@sina.com</a></p>
 </div>
-<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
 <!-- 注意力池化框架图 -->
 <div class="img-container">
@@ -813,7 +806,7 @@ var _hmt = _hmt || [];
 
 <h3>3.1 动机：翻译时该"看"哪里？</h3>
 
-<p>第 05 讲的编码器—解码器（seq2seq）模型做机器翻译时，编码器把整句源语压缩成<strong>一个固定向量</strong>，解码器只凭这一个向量逐词生成译文。问题在于：生成每个目标词时，真正相关的往往只是源句中的<strong>某几个词</strong>——翻"hello world → bonjour le monde"时，生成"bonjour"主要该看"hello"：</p>
+<p>编码器—解码器（seq2seq）模型做机器翻译时，编码器把整句源语压缩成<strong>一个固定向量</strong>，解码器只凭这一个向量逐词生成译文。问题在于：生成每个目标词时，真正相关的往往只是源句中的<strong>某几个词</strong>——翻"hello world → bonjour le monde"时，生成"bonjour"主要该看"hello"：</p>
 
 <!-- seq2seq 翻译图 -->
 <div class="img-container">
@@ -1120,7 +1113,14 @@ var _hmt = _hmt || [];
 
 <div class="footer">
     <p>深度学习课程站 · 第06讲 注意力机制与 Transformer · 基于《动手学深度学习》课程</p>
+    <p style="font-size:13px;color:#94A3B8;margin-top:4px;">
+        📊 <span id="busuanzi_container_site_pv">总访问量 <span id="busuanzi_value_site_pv">—</span> 次</span>
+        · <span id="busuanzi_container_site_uv">访客数 <span id="busuanzi_value_site_uv">—</span> 人</span>
+        · <span id="busuanzi_container_page_pv">本页阅读 <span id="busuanzi_value_page_pv">—</span> 次</span>
+    </p>
+    <p style="font-size:13px;color:#94A3B8;margin-top:2px;">💬 课程反馈与留言：<a href="mailto:dlcourses2026@sina.com" style="color:#2563EB;text-decoration:none;">dlcourses2026@sina.com</a></p>
 </div>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
 <!-- KaTeX auto-render -->
 <script>
