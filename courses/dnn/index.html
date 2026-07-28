@@ -835,9 +835,10 @@
             if (step >= path.length) {
                 stop();
                 var wend = path[path.length - 1], st;
-                if (Math.abs(wend) > 100) st = '❌ 发散！η = ' + eta.toFixed(2) + ' 太大，|w| 越滚越大（η ≥ 1 时 w 不再收敛）。';
+                if (eta > 1) st = '❌ 发散！η > 1 时 |1−2η| > 1，|w| 每步放大约 ' + (2 * eta - 1).toFixed(2) + ' 倍，离最优点越来越远。';
+                else if (Math.abs(eta - 1) < 1e-9) st = '⚠️ 等幅震荡：η = 1 时 w 在 ±' + Math.abs(wend).toFixed(2) + ' 之间来回跳动，永不收敛。';
                 else if (Math.abs(wend) < 0.05) st = '✅ 收敛！20 步后 w ≈ ' + wend.toFixed(4) + '，这个学习率很合适。';
-                else if (eta >= 1) st = '⚠️ 在原地来回跳动（η = 1 时 w 在 ± 之间震荡，永不收敛）。';
+                else if (Math.abs(1 - 2 * eta) >= 0.8) st = '🌀 接近临界：|1−2η| ≈ ' + Math.abs(1 - 2 * eta).toFixed(2) + '，每步只缩小一点点且在正负两侧交替，收敛非常缓慢——这个 η 并不算小。';
                 else st = '🐢 还在半路上：w ≈ ' + wend.toFixed(3) + '——学习率偏小，收敛太慢，需要更多步数。';
                 document.getElementById('lr-status').textContent = st;
             }

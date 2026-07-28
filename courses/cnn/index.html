@@ -951,6 +951,7 @@
             })(i, j);
         }
     }
+    function fmt(n) { return Math.round(n * 1000) / 1000; }
     function outVal(i, j) {
         var s = 0;
         for (var a = 0; a < 3; a++) for (var b = 0; b < 3; b++) s += X[i + a][j + b] * K[a][b];
@@ -958,16 +959,17 @@
     }
     function renderOut() {
         var Y = [[outVal(0,0), outVal(0,1)], [outVal(1,0), outVal(1,1)]];
-        build('xc-y', Y, false);
+        var Yd = Y.map(function(r) { return r.map(fmt); });
+        build('xc-y', Yd, false);
         if (sel) {
             var cells = document.getElementById('xc-y').children;
             for (var t = 0; t < cells.length; t++) cells[t].classList.remove('sel');
             cells[sel[0] * 2 + sel[1]].classList.add('sel');
             var terms = [];
             for (var a = 0; a < 3; a++) for (var b = 0; b < 3; b++)
-                terms.push(X[sel[0] + a][sel[1] + b] + '×' + K[a][b]);
+                terms.push(fmt(X[sel[0] + a][sel[1] + b]) + '×' + fmt(K[a][b]));
             document.getElementById('xc-detail').textContent =
-                '位置 (' + sel[0] + ',' + sel[1] + ')：' + terms.join(' + ') + ' = ' + Y[sel[0]][sel[1]];
+                '位置 (' + sel[0] + ',' + sel[1] + ')：' + terms.join(' + ') + ' = ' + fmt(Y[sel[0]][sel[1]]);
         }
         // 高亮窗口
         var xcells = document.getElementById('xc-x').children;
