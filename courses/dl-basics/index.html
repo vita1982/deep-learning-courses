@@ -696,6 +696,87 @@ c\,\mathbf{x} = \begin{bmatrix} c\,x_1 \\ c\,x_2 \\ \vdots \\ c\,x_n \end{bmatri
     <strong>✅ 本讲核心线索：</strong>线性模型 \(\hat{y} = \langle \mathbf{w}, \mathbf{x} \rangle + b\) 就是一次点积加一个偏置。看懂了点积，就看懂了神经网络的"半个身子"。
 </div>
 
+<p><strong>动手试一试：点积的几何直觉</strong>——拖动滑块改变两个向量的长度和方向，观察点积、夹角如何变化；当夹角为 90° 时点积恰好为 0（正交）：</p>
+
+<div class="card dot-demo">
+    <div class="dd-row"><label>向量 a 长度</label><input type="range" min="0.5" max="3" step="0.1" value="2" id="dd-ma"><span class="dd-val" id="dd-ma-v">2.0</span></div>
+    <div class="dd-row"><label>向量 a 角度</label><input type="range" min="0" max="360" step="5" value="30" id="dd-aa"><span class="dd-val" id="dd-aa-v">30°</span></div>
+    <div class="dd-row"><label>向量 b 长度</label><input type="range" min="0.5" max="3" step="0.1" value="1.5" id="dd-mb"><span class="dd-val" id="dd-mb-v">1.5</span></div>
+    <div class="dd-row"><label>向量 b 角度</label><input type="range" min="0" max="360" step="5" value="100" id="dd-ab"><span class="dd-val" id="dd-ab-v">100°</span></div>
+    <canvas id="dd-canvas" width="360" height="280" style="display:block;margin:10px auto;border:1px solid #E2E8F0;border-radius:8px;background:#fff;max-width:100%;"></canvas>
+    <div class="dd-result">
+        a·b = <strong id="dd-dot">—</strong>　|　夹角 θ = <strong id="dd-theta">—</strong>　|　cos θ = <strong id="dd-cos">—</strong>
+        <div class="dd-note" id="dd-note"></div>
+    </div>
+</div>
+<style>
+    .dot-demo .dd-row { display: flex; align-items: center; gap: 14px; margin: 8px 0; }
+    .dot-demo label { width: 100px; min-width: 100px; font-size: 15px; color: #475569; }
+    .dot-demo input[type=range] { flex: 1; accent-color: #2563EB; }
+    .dot-demo .dd-val { width: 46px; text-align: right; font-weight: 700; color: #2563EB; font-size: 15px; }
+    .dot-demo .dd-result { margin-top: 10px; padding: 12px; background: #EFF6FF; border-radius: 8px; text-align: center; font-size: 16px; color: #1E40AF; }
+    .dot-demo .dd-note { font-size: 13px; color: #64748B; margin-top: 5px; }
+</style>
+<script>
+(function() {
+    var cv = document.getElementById('dd-canvas'), ctx = cv.getContext('2d');
+    function v(id) { return +document.getElementById(id).value; }
+    function draw() {
+        var ma = v('dd-ma'), aa = v('dd-aa') * Math.PI / 180, mb = v('dd-mb'), ab = v('dd-ab') * Math.PI / 180;
+        document.getElementById('dd-ma-v').textContent = ma.toFixed(1);
+        document.getElementById('dd-aa-v').textContent = v('dd-aa') + '°';
+        document.getElementById('dd-mb-v').textContent = mb.toFixed(1);
+        document.getElementById('dd-ab-v').textContent = v('dd-ab') + '°';
+        var ax = ma * Math.cos(aa), ay = ma * Math.sin(aa), bx = mb * Math.cos(ab), by = mb * Math.sin(ab);
+        var dot = ax * bx + ay * by;
+        var cos = dot / (ma * mb);
+        var theta = Math.acos(Math.max(-1, Math.min(1, cos))) * 180 / Math.PI;
+        document.getElementById('dd-dot').textContent = dot.toFixed(2);
+        document.getElementById('dd-theta').textContent = theta.toFixed(1) + '°';
+        document.getElementById('dd-cos').textContent = cos.toFixed(3);
+        var note;
+        if (Math.abs(dot) < 0.05) note = '≈ 90°：点积为 0，两个向量正交（互相垂直）——互不"干扰"。';
+        else if (cos > 0.7) note = '方向接近：点积大且为正——两个向量"志同道合"。';
+        else if (cos < -0.7) note = '方向相反：点积为负——两个向量"背道而驰"。';
+        else note = '点积 = |a||b|cosθ：既有长度因素，也有方向因素。';
+        document.getElementById('dd-note').textContent = note;
+        // 画图
+        ctx.clearRect(0, 0, cv.width, cv.height);
+        var cx = cv.width / 2, cy = cv.height / 2, S = 40;
+        ctx.strokeStyle = '#E2E8F0';
+        for (var g = -3; g <= 3; g++) {
+            ctx.beginPath(); ctx.moveTo(cx + g * S, 0); ctx.lineTo(cx + g * S, cv.height); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(0, cy + g * S); ctx.lineTo(cv.width, cy + g * S); ctx.stroke();
+        }
+        ctx.strokeStyle = '#94A3B8'; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(cv.width, cy); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(cx, 0); ctx.lineTo(cx, cv.height); ctx.stroke();
+        function arrow(x, y, color, label) {
+            var ex = cx + x * S, ey = cy - y * S;
+            var ang = Math.atan2(ey - cy, ex - cx);
+            ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 2.5;
+            ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(ex, ey); ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(ex, ey);
+            ctx.lineTo(ex - 10 * Math.cos(ang - 0.4), ey - 10 * Math.sin(ang - 0.4));
+            ctx.lineTo(ex - 10 * Math.cos(ang + 0.4), ey - 10 * Math.sin(ang + 0.4));
+            ctx.closePath(); ctx.fill();
+            ctx.font = 'bold 14px sans-serif';
+            ctx.fillText(label, ex + 8, ey - 6);
+        }
+        arrow(ax, ay, '#2563EB', 'a');
+        arrow(bx, by, '#DC2626', 'b');
+        // 夹角弧线
+        ctx.strokeStyle = '#F59E0B'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(cx, cy, 26, -aa, -ab, ab < aa); ctx.stroke();
+    }
+    ['dd-ma', 'dd-aa', 'dd-mb', 'dd-ab'].forEach(function(id) {
+        document.getElementById(id).addEventListener('input', draw);
+    });
+    draw();
+})();
+</script>
+
 <hr class="divider">
 
 <!-- ==================== 二、矩阵及其运算 ==================== -->
@@ -1075,6 +1156,13 @@ loss.backward()                   # 一键反向传播，计算所有梯度</div
 <div class="img-container">
     <img src="images/comp_graph_backprop.png" alt="前向传播数值与反向传播梯度示例" style="max-width:82%;">
     <div class="img-caption">前向（绿色）：a = 0.5×1 + 0.5×2 = 1.5，b = 1.5 − 1 = 0.5，z = 0.25。反向（红色）：从 ∂z/∂z = 1 出发，逐步乘以各节点的局部导数——∂z/∂b = 2b = 1.0，∂z/∂a = ∂z/∂b × ∂b/∂a = 1.0，∂z/∂w = ∂z/∂a × ∂a/∂w = 1.0 × x = (1, 2)。</div>
+</div>
+
+<p>再看一个更小的例子 \(f = (a+b)\times c\)（取 a=2, b=3, c=4），下面这张动图把<strong>前向求值</strong>和<strong>梯度逆流</strong>的完整过程连起来演示：</p>
+
+<div class="img-container">
+    <img src="images/comp_graph.gif" alt="计算图前向传播与反向传播动图" style="max-width:78%;">
+    <div class="img-caption">计算图动画：前向阶段（橙色）逐节点算出 d = 5、f = 20；反向阶段（红色）从 ∂f/∂f = 1 出发，每个节点把上游梯度乘以自己的局部导数传下去——乘法节点的局部导数是"另一个输入"，加法节点则原样分发给两个输入。</div>
 </div>
 
 <p>把反向传播写成通用步骤：</p>

@@ -715,6 +715,59 @@
     <strong>🔑 初学者理解：</strong>一个神经元就像一个"迷你函数"——吃进去一个数，吐出来一个数。所谓"学习"，就是自动调整这个函数的参数，让预测越来越准。
 </div>
 
+<p><strong>动手试一试：单神经元计算器</strong>——拖动滑块改变输入 \(x_1, x_2\)、权重 \(w_1, w_2\) 和偏差 \(b\)，再切换激活函数，观察输出如何变化：</p>
+
+<div class="card neuron-calc">
+    <div class="nc-row"><label>输入 x₁</label><input type="range" min="0" max="10" step="0.5" value="3" id="nc-x1"><span class="nc-val" id="nc-x1-v">3</span></div>
+    <div class="nc-row"><label>输入 x₂</label><input type="range" min="0" max="10" step="0.5" value="5" id="nc-x2"><span class="nc-val" id="nc-x2-v">5</span></div>
+    <div class="nc-row"><label>权重 w₁</label><input type="range" min="-2" max="2" step="0.1" value="0.8" id="nc-w1"><span class="nc-val" id="nc-w1-v">0.8</span></div>
+    <div class="nc-row"><label>权重 w₂</label><input type="range" min="-2" max="2" step="0.1" value="0.5" id="nc-w2"><span class="nc-val" id="nc-w2-v">0.5</span></div>
+    <div class="nc-row"><label>偏差 b</label><input type="range" min="-5" max="5" step="0.1" value="-1" id="nc-b"><span class="nc-val" id="nc-b-v">-1.0</span></div>
+    <div class="nc-row"><label>激活函数</label>
+        <select id="nc-act" style="flex:1;padding:6px;border:1px solid #CBD5E1;border-radius:6px;font-size:15px;">
+            <option value="identity">恒等（不用激活）</option>
+            <option value="sigmoid" selected>sigmoid</option>
+            <option value="relu">ReLU</option>
+            <option value="step">阶跃（感知机）</option>
+        </select>
+    </div>
+    <div class="nc-result">
+        z = w₁x₁ + w₂x₂ + b = <strong id="nc-z">3.9</strong>　⇒　y = f(z) = <strong id="nc-y">0.980</strong>
+        <div class="nc-note" id="nc-note">sigmoid 把任意实数压到 (0, 1)，可理解为"概率/强度"。</div>
+    </div>
+</div>
+<style>
+    .neuron-calc .nc-row { display: flex; align-items: center; gap: 14px; margin: 10px 0; }
+    .neuron-calc label { width: 90px; min-width: 90px; font-size: 15px; color: #475569; }
+    .neuron-calc input[type=range] { flex: 1; accent-color: #2563EB; }
+    .neuron-calc .nc-val { width: 46px; text-align: right; font-weight: 700; color: #2563EB; font-size: 15px; }
+    .neuron-calc .nc-result { margin-top: 14px; padding: 14px; background: #EFF6FF; border-radius: 8px; text-align: center; font-size: 17px; color: #1E40AF; }
+    .neuron-calc .nc-note { font-size: 13px; color: #64748B; margin-top: 6px; }
+</style>
+<script>
+(function() {
+    var ids = ['nc-x1', 'nc-x2', 'nc-w1', 'nc-w2', 'nc-b'];
+    function v(id) { return +document.getElementById(id).value; }
+    function calc() {
+        ids.forEach(function(id) {
+            document.getElementById(id + '-v').textContent = (+document.getElementById(id).value).toFixed(1).replace(/\.0$/, '');
+        });
+        var z = v('nc-w1') * v('nc-x1') + v('nc-w2') * v('nc-x2') + v('nc-b');
+        var act = document.getElementById('nc-act').value, y, note;
+        if (act === 'sigmoid') { y = 1 / (1 + Math.exp(-z)); note = 'sigmoid 把任意实数压到 (0, 1)，可理解为"概率/强度"。'; }
+        else if (act === 'relu') { y = Math.max(0, z); note = 'ReLU：z &gt; 0 时原样通过，否则输出 0——深度网络最常用的激活。'; }
+        else if (act === 'step') { y = z >= 0 ? 1 : 0; note = '阶跃：z ≥ 0 输出 1，否则输出 0——最早感知机的"点火"方式。'; }
+        else { y = z; note = '恒等：不加非线性——多个这样的神经元叠起来仍等价于一个线性变换。'; }
+        document.getElementById('nc-z').textContent = z.toFixed(2);
+        document.getElementById('nc-y').textContent = y.toFixed(3);
+        document.getElementById('nc-note').innerHTML = note;
+    }
+    ids.forEach(function(id) { document.getElementById(id).addEventListener('input', calc); });
+    document.getElementById('nc-act').addEventListener('change', calc);
+    calc();
+})();
+</script>
+
 <p><strong>第二步：考虑更多因素。</strong>现实中房价不只由面积决定。把更多特征加进来，一个神经元就不够用了，需要<strong>多个神经元协同工作</strong>——这就是"神经网络"：</p>
 
 <table class="compare-table">
@@ -743,6 +796,13 @@
 <div class="img-container">
     <img src="images/nn_layers.png" alt="神经网络三层结构：4个输入、3个隐含层、2个输出" style="max-width:60%;">
     <div class="img-caption">一个"深"网络：4 个输入（\(x_1 \sim x_4\)）、3 个隐含层（分别有 5、3、2 个神经元）、2 个输出（\(o_1\)、\(o_2\)）。隐含层一层叠一层，网络就"深"了。</div>
+</div>
+
+<p>数据在网络中是怎样"流动"的？下面这张动图演示了一次完整的<strong>前向传播</strong>：信号从输入层出发，逐层计算，直到输出层给出预测：</p>
+
+<div class="img-container">
+    <img src="images/forward_pass.gif" alt="前向传播动图：信号从输入层经隐含层流向输出层" style="max-width:72%;">
+    <div class="img-caption">前向传播动画：每个神经元先做加权和 \(z = \sum_i w_i x_i + b\)，再经激活函数 \(a = f(z)\)，把结果传给下一层。</div>
 </div>
 
 <h3>2.3 "深度"到底指什么？</h3>

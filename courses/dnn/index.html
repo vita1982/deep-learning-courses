@@ -737,6 +737,13 @@
 </tbody>
 </table>
 
+<p>用最简单的函数 \(f(w) = w^2\) 看梯度下降如何一步步逼近最优点（学习率 \(\eta = 0.2\)）：</p>
+
+<div class="img-container">
+    <img src="images/gd_descent.gif" alt="梯度下降动图：沿负梯度方向逐步逼近最小值" style="max-width:70%;">
+    <div class="img-caption">梯度下降动画：每一步在当前位置计算梯度 \(2w\)，沿<strong>负梯度</strong>方向走 \(\eta \cdot 2w\) 的一步——越接近谷底梯度越小，步子也自动变小，这就是它能"刚好停住"的原因。</div>
+</div>
+
 <h3>2.2 选择学习率：不要太小，也不要太大</h3>
 
 <table class="compare-table">
@@ -753,6 +760,105 @@
 <div class="alert-info">
     <strong>💡 提示：</strong>学习率没有万能取值，常用经验是从 \(10^{-3}\) 附近开始尝试，观察训练损失曲线再调整。学习率是深度学习中<strong>最需要调的超参数之一</strong>。
 </div>
+
+<p><strong>动手试一试：学习率实验器</strong>——还是在 \(f(w) = w^2\) 上做梯度下降。调大学习率直到发散，亲身体验"太小""合适""太大"三种情形（对 \(w^2\) 来说，\(\eta = 1\) 是临界值）：</p>
+
+<div class="card lr-lab">
+    <div class="lr-row"><label>学习率 η</label><input type="range" min="0.02" max="1.2" step="0.02" value="0.2" id="lr-eta"><span class="lr-val" id="lr-eta-v">0.20</span></div>
+    <div class="lr-row"><label>起点 w₀</label><input type="range" min="-3" max="3" step="0.2" value="2.6" id="lr-w0"><span class="lr-val" id="lr-w0-v">2.6</span></div>
+    <div style="text-align:center;margin:8px 0;">
+        <button id="lr-run" style="padding:7px 22px;background:#2563EB;color:#fff;border:none;border-radius:6px;font-size:15px;cursor:pointer;">▶ 运行 20 步</button>
+        <button id="lr-reset" style="padding:7px 18px;background:#fff;color:#2563EB;border:1px solid #2563EB;border-radius:6px;font-size:15px;cursor:pointer;margin-left:8px;">重置</button>
+    </div>
+    <canvas id="lr-canvas" width="560" height="300" style="display:block;margin:6px auto;border:1px solid #E2E8F0;border-radius:8px;background:#fff;max-width:100%;"></canvas>
+    <div class="lr-result" id="lr-status">点击"运行"开始梯度下降。</div>
+</div>
+<style>
+    .lr-lab .lr-row { display: flex; align-items: center; gap: 14px; margin: 8px 0; }
+    .lr-lab label { width: 90px; min-width: 90px; font-size: 15px; color: #475569; }
+    .lr-lab input[type=range] { flex: 1; accent-color: #2563EB; }
+    .lr-lab .lr-val { width: 46px; text-align: right; font-weight: 700; color: #2563EB; font-size: 15px; }
+    .lr-lab .lr-result { margin-top: 10px; padding: 12px; background: #EFF6FF; border-radius: 8px; text-align: center; font-size: 15px; color: #1E40AF; }
+</style>
+<script>
+(function() {
+    var cv = document.getElementById('lr-canvas'), ctx = cv.getContext('2d');
+    var timer = null, path = [];
+    function v(id) { return +document.getElementById(id).value; }
+    function toPx(w, f) {
+        var x = cv.width / 2 + w * (cv.width / 2 - 30) / 3.2;
+        var y = cv.height - 24 - f * (cv.height - 50) / 11;
+        return [x, y];
+    }
+    function drawBase() {
+        ctx.clearRect(0, 0, cv.width, cv.height);
+        ctx.strokeStyle = '#2563EB'; ctx.lineWidth = 2;
+        ctx.beginPath();
+        for (var w = -3.2; w <= 3.2; w += 0.05) {
+            var p = toPx(w, w * w);
+            if (w === -3.2) ctx.moveTo(p[0], p[1]); else ctx.lineTo(p[0], p[1]);
+        }
+        ctx.stroke();
+        ctx.strokeStyle = '#CBD5E1'; ctx.lineWidth = 1;
+        var o = toPx(0, 0);
+        ctx.beginPath(); ctx.moveTo(0, o[1]); ctx.lineTo(cv.width, o[1]); ctx.stroke();
+        ctx.font = '13px sans-serif'; ctx.fillStyle = '#64748B';
+        ctx.fillText('f(w) = w²', 12, 20);
+    }
+    function drawPath(upto) {
+        drawBase();
+        for (var i = 0; i < upto && i < path.length; i++) {
+            var w = path[i];
+            if (Math.abs(w) > 3.4) { var s = toPx(Math.sign(w) * 3.4, 12); }
+            else s = toPx(w, w * w);
+            ctx.fillStyle = i === upto - 1 ? '#DC2626' : '#F59E0B';
+            ctx.beginPath(); ctx.arc(s[0], s[1], i === upto - 1 ? 6 : 4, 0, 7); ctx.fill();
+            if (i > 0) {
+                var w0 = path[i - 1], p0 = Math.abs(w0) > 3.4 ? toPx(Math.sign(w0) * 3.4, 12) : toPx(w0, w0 * w0);
+                ctx.strokeStyle = '#F59E0B'; ctx.lineWidth = 1.5;
+                ctx.beginPath(); ctx.moveTo(p0[0], p0[1]); ctx.lineTo(s[0], s[1]); ctx.stroke();
+            }
+        }
+    }
+    function stop() { if (timer) { clearInterval(timer); timer = null; } }
+    function run() {
+        stop();
+        var eta = v('lr-eta'), w = v('lr-w0');
+        document.getElementById('lr-eta-v').textContent = eta.toFixed(2);
+        document.getElementById('lr-w0-v').textContent = w.toFixed(1);
+        path = [w];
+        for (var i = 0; i < 20; i++) { w = w - eta * 2 * w; path.push(w); if (Math.abs(w) > 1e6) break; }
+        var step = 0;
+        timer = setInterval(function() {
+            step++;
+            drawPath(step);
+            if (step >= path.length) {
+                stop();
+                var wend = path[path.length - 1], st;
+                if (Math.abs(wend) > 100) st = '❌ 发散！η = ' + eta.toFixed(2) + ' 太大，|w| 越滚越大（η ≥ 1 时 w 不再收敛）。';
+                else if (Math.abs(wend) < 0.05) st = '✅ 收敛！20 步后 w ≈ ' + wend.toFixed(4) + '，这个学习率很合适。';
+                else if (eta >= 1) st = '⚠️ 在原地来回跳动（η = 1 时 w 在 ± 之间震荡，永不收敛）。';
+                else st = '🐢 还在半路上：w ≈ ' + wend.toFixed(3) + '——学习率偏小，收敛太慢，需要更多步数。';
+                document.getElementById('lr-status').textContent = st;
+            }
+        }, 220);
+    }
+    document.getElementById('lr-run').addEventListener('click', run);
+    document.getElementById('lr-reset').addEventListener('click', function() {
+        stop(); path = [];
+        document.getElementById('lr-eta-v').textContent = v('lr-eta').toFixed(2);
+        document.getElementById('lr-w0-v').textContent = v('lr-w0').toFixed(1);
+        drawBase();
+        document.getElementById('lr-status').textContent = '点击"运行"开始梯度下降。';
+    });
+    ['lr-eta', 'lr-w0'].forEach(function(id) {
+        document.getElementById(id).addEventListener('input', function() {
+            document.getElementById(id + '-v').textContent = id === 'lr-eta' ? v(id).toFixed(2) : v(id).toFixed(1);
+        });
+    });
+    drawBase();
+})();
+</script>
 
 <h3>2.3 小批量随机梯度下降（SGD）</h3>
 
@@ -847,6 +953,62 @@ o_3 &= x_1 w_{13} + x_2 w_{23} + x_3 w_{33} + x_4 w_{43} + b_3
 </div>
 
 <p>例：\([1, -1, 2]\) 的 softmax 结果为 \([0.26, 0.04, 0.70]\)——模型认为图像属于第 3 类的概率最高，为 70%。</p>
+
+<p><strong>动手试一试：softmax 演示器</strong>——拖动三个类别的原始分数，观察概率如何"此消彼长"；再调温度系数 \(T\)，看分布如何变"尖锐"或变"平缓"：</p>
+
+<div class="card sm-demo">
+    <div class="sm-row"><label>分数 o₁（猫）</label><input type="range" min="-5" max="5" step="0.1" value="1" id="sm-o1"><span class="sm-val" id="sm-o1-v">1.0</span></div>
+    <div class="sm-row"><label>分数 o₂（狗）</label><input type="range" min="-5" max="5" step="0.1" value="-1" id="sm-o2"><span class="sm-val" id="sm-o2-v">-1.0</span></div>
+    <div class="sm-row"><label>分数 o₃（兔子）</label><input type="range" min="-5" max="5" step="0.1" value="2" id="sm-o3"><span class="sm-val" id="sm-o3-v">2.0</span></div>
+    <div class="sm-row"><label>温度 T</label><input type="range" min="0.2" max="5" step="0.1" value="1" id="sm-t"><span class="sm-val" id="sm-t-v">1.0</span></div>
+    <canvas id="sm-canvas" width="560" height="200" style="display:block;margin:8px auto;border:1px solid #E2E8F0;border-radius:8px;background:#fff;max-width:100%;"></canvas>
+    <div class="sm-result" id="sm-note">概率之和恒等于 1——一个类别升高，其余必然被"挤下去"。</div>
+</div>
+<style>
+    .sm-demo .sm-row { display: flex; align-items: center; gap: 14px; margin: 8px 0; }
+    .sm-demo label { width: 120px; min-width: 120px; font-size: 15px; color: #475569; }
+    .sm-demo input[type=range] { flex: 1; accent-color: #2563EB; }
+    .sm-demo .sm-val { width: 46px; text-align: right; font-weight: 700; color: #2563EB; font-size: 15px; }
+    .sm-demo .sm-result { margin-top: 10px; padding: 12px; background: #EFF6FF; border-radius: 8px; text-align: center; font-size: 15px; color: #1E40AF; }
+</style>
+<script>
+(function() {
+    var cv = document.getElementById('sm-canvas'), ctx = cv.getContext('2d');
+    var names = ['猫', '狗', '兔子'], colors = ['#2563EB', '#F59E0B', '#059669'];
+    function v(id) { return +document.getElementById(id).value; }
+    function draw() {
+        var o = [v('sm-o1'), v('sm-o2'), v('sm-o3')], T = v('sm-t');
+        ['sm-o1', 'sm-o2', 'sm-o3', 'sm-t'].forEach(function(id) {
+            document.getElementById(id + '-v').textContent = v(id).toFixed(1);
+        });
+        var ex = o.map(function(x) { return Math.exp(x / T); });
+        var s = ex[0] + ex[1] + ex[2];
+        var p = ex.map(function(x) { return x / s; });
+        ctx.clearRect(0, 0, cv.width, cv.height);
+        var bw = 90, gap = (cv.width - 3 * bw) / 4, base = cv.height - 34, hmax = cv.height - 70;
+        for (var i = 0; i < 3; i++) {
+            var h = Math.max(2, p[i] * hmax), x = gap + i * (bw + gap);
+            ctx.fillStyle = colors[i];
+            ctx.fillRect(x, base - h, bw, h);
+            ctx.fillStyle = '#1E293B'; ctx.font = 'bold 15px sans-serif'; ctx.textAlign = 'center';
+            ctx.fillText((p[i] * 100).toFixed(1) + '%', x + bw / 2, base - h - 8);
+            ctx.fillText(names[i], x + bw / 2, base + 20);
+        }
+        var note;
+        if (T < 0.6) note = 'T 很小：分布非常尖锐——赢家通吃，最高分几乎拿走全部概率。';
+        else if (T > 2.5) note = 'T 很大：分布趋于平缓——三个类别概率接近 1/3，模型变"没主见"。';
+        else {
+            var mx = Math.max(p[0], p[1], p[2]);
+            note = mx > 0.8 ? '某一类概率超过 80%：模型相当"自信"。' : '概率之和恒等于 1——一个类别升高，其余必然被"挤下去"。';
+        }
+        document.getElementById('sm-note').textContent = note;
+    }
+    ['sm-o1', 'sm-o2', 'sm-o3', 'sm-t'].forEach(function(id) {
+        document.getElementById(id).addEventListener('input', draw);
+    });
+    draw();
+})();
+</script>
 
 <h3>3.4 为什么不用平方损失？交叉熵登场</h3>
 
@@ -1020,6 +1182,86 @@ z = \mathbf{w}^\top \mathbf{x} + b, \qquad
     <img src="images/relu.jpg" alt="ReLU 激活函数曲线" style="max-width:52%;">
     <div class="img-caption">ReLU（线性修正单元）：\(\operatorname{ReLU}(x) = \max(x, 0)\)，正区间导数恒为 1，计算极简且缓解梯度消失，是当今默认选择。</div>
 </div>
+
+<p><strong>动手试一试：激活函数浏览器</strong>——切换激活函数、拖动输入 \(x\)，同时观察函数值 \(f(x)\) 和导数 \(f'(x)\)（导数决定反向传播时梯度能"传回来多少"）：</p>
+
+<div class="card act-demo">
+    <div class="ad-row"><label>激活函数</label>
+        <select id="ad-fn" style="flex:1;padding:6px;border:1px solid #CBD5E1;border-radius:6px;font-size:15px;">
+            <option value="sigmoid">sigmoid</option>
+            <option value="tanh">tanh</option>
+            <option value="relu" selected>ReLU</option>
+            <option value="leaky">Leaky ReLU (α=0.1)</option>
+        </select>
+    </div>
+    <div class="ad-row"><label>输入 x</label><input type="range" min="-5" max="5" step="0.1" value="1.5" id="ad-x"><span class="ad-val" id="ad-x-v">1.5</span></div>
+    <canvas id="ad-canvas" width="560" height="280" style="display:block;margin:8px auto;border:1px solid #E2E8F0;border-radius:8px;background:#fff;max-width:100%;"></canvas>
+    <div class="ad-result" id="ad-note"></div>
+</div>
+<style>
+    .act-demo .ad-row { display: flex; align-items: center; gap: 14px; margin: 8px 0; }
+    .act-demo label { width: 90px; min-width: 90px; font-size: 15px; color: #475569; }
+    .act-demo input[type=range] { flex: 1; accent-color: #2563EB; }
+    .act-demo .ad-val { width: 46px; text-align: right; font-weight: 700; color: #2563EB; font-size: 15px; }
+    .act-demo .ad-result { margin-top: 10px; padding: 12px; background: #EFF6FF; border-radius: 8px; text-align: center; font-size: 15px; color: #1E40AF; }
+</style>
+<script>
+(function() {
+    var cv = document.getElementById('ad-canvas'), ctx = cv.getContext('2d');
+    var F = {
+        sigmoid: { f: function(x) { return 1 / (1 + Math.exp(-x)); }, d: function(x) { var s = 1 / (1 + Math.exp(-x)); return s * (1 - s); }, rng: [0, 1], note: 'sigmoid：|x| 大时导数趋近 0（橙线贴地）——这就是深层网络梯度消失的根源之一。' },
+        tanh: { f: function(x) { return Math.tanh(x); }, d: function(x) { var t = Math.tanh(x); return 1 - t * t; }, rng: [-1, 1], note: 'tanh：输出以 0 为中心，比 sigmoid 友好；但两端导数同样趋近 0。' },
+        relu: { f: function(x) { return Math.max(0, x); }, d: function(x) { return x > 0 ? 1 : 0; }, rng: [0, 5], note: 'ReLU：x>0 时导数恒为 1，梯度无损回传；x<0 时导数为 0（神经元"死亡"风险）。' },
+        leaky: { f: function(x) { return x > 0 ? x : 0.1 * x; }, d: function(x) { return x > 0 ? 1 : 0.1; }, rng: [-0.5, 5], note: 'Leaky ReLU：负区间留 0.1 的小坡度，缓解 ReLU 的"死亡"问题。' }
+    };
+    function v(id) { return +document.getElementById(id).value; }
+    function toPx(x, y, ymin, ymax) {
+        return [30 + (x + 5.5) / 11 * (cv.width - 60),
+                cv.height - 24 - (y - ymin) / (ymax - ymin) * (cv.height - 48)];
+    }
+    function draw() {
+        var name = document.getElementById('ad-fn').value, fn = F[name];
+        var x0 = v('ad-x');
+        document.getElementById('ad-x-v').textContent = x0.toFixed(1);
+        var ymin = Math.min(-1.2, fn.rng[0] - 0.2), ymax = Math.max(1.2, fn.rng[1] + 0.4);
+        ctx.clearRect(0, 0, cv.width, cv.height);
+        // 坐标轴
+        ctx.strokeStyle = '#94A3B8'; ctx.lineWidth = 1;
+        var ox = toPx(-5.5, 0, ymin, ymax), ox2 = toPx(5.5, 0, ymin, ymax);
+        ctx.beginPath(); ctx.moveTo(ox[0], ox[1]); ctx.lineTo(ox2[0], ox2[1]); ctx.stroke();
+        var oy = toPx(0, ymin, ymin, ymax), oy2 = toPx(0, ymax, ymin, ymax);
+        ctx.beginPath(); ctx.moveTo(oy[0], oy[1]); ctx.lineTo(oy2[0], oy2[1]); ctx.stroke();
+        // 函数曲线（蓝）与导数曲线（橙）
+        [['#2563EB', fn.f, 2.5], ['#F59E0B', fn.d, 1.8]].forEach(function(cfg) {
+            ctx.strokeStyle = cfg[0]; ctx.lineWidth = cfg[2];
+            ctx.beginPath();
+            var pen = false;
+            for (var x = -5.5; x <= 5.5; x += 0.05) {
+                var p = toPx(x, cfg[1](x), ymin, ymax);
+                if (!pen) { ctx.moveTo(p[0], p[1]); pen = true; } else ctx.lineTo(p[0], p[1]);
+            }
+            ctx.stroke();
+        });
+        ctx.font = 'bold 13px sans-serif';
+        ctx.fillStyle = '#2563EB'; ctx.fillText('f(x)', 38, 20);
+        ctx.fillStyle = '#F59E0B'; ctx.fillText("f'(x) 导数", 84, 20);
+        // 当前点
+        var y0 = fn.f(x0), d0 = fn.d(x0);
+        var p = toPx(x0, y0, ymin, ymax);
+        ctx.fillStyle = '#DC2626';
+        ctx.beginPath(); ctx.arc(p[0], p[1], 6, 0, 7); ctx.fill();
+        ctx.setLineDash([4, 4]); ctx.strokeStyle = '#DC2626'; ctx.lineWidth = 1;
+        var pb = toPx(x0, 0, ymin, ymax);
+        ctx.beginPath(); ctx.moveTo(p[0], p[1]); ctx.lineTo(pb[0], pb[1]); ctx.stroke();
+        ctx.setLineDash([]);
+        document.getElementById('ad-note').innerHTML =
+            'x = ' + x0.toFixed(1) + '　⇒　f(x) = <strong>' + y0.toFixed(3) + '</strong>，f\'(x) = <strong>' + d0.toFixed(3) + '</strong>　|　' + fn.note;
+    }
+    document.getElementById('ad-fn').addEventListener('change', draw);
+    document.getElementById('ad-x').addEventListener('input', draw);
+    draw();
+})();
+</script>
 
 <h3>4.7 多类别与多隐藏层</h3>
 

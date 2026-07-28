@@ -892,6 +892,95 @@
     即对于 \(n_h \times n_w\) 的输入和 \(k_h \times k_w\) 的核，输出为 \((n_h - k_h + 1) \times (n_w - k_w + 1)\)。
 </div>
 
+<p><strong>动手试一试：卷积随手算</strong>——下面的 4×4 输入和 3×3 核都可以<strong>直接点击修改</strong>，输出实时重算；再点击任意输出格，可以看到它是哪 9 个数算出来的：</p>
+
+<div class="card xcorr-lab">
+    <div class="xc-wrap">
+        <div class="xc-block">
+            <div class="xc-title">输入 X（4×4，可编辑）</div>
+            <div class="xc-grid" id="xc-x" style="grid-template-columns:repeat(4,44px);"></div>
+        </div>
+        <div class="xc-block">
+            <div class="xc-title">核 K（3×3，可编辑）</div>
+            <div class="xc-grid" id="xc-k" style="grid-template-columns:repeat(3,44px);"></div>
+        </div>
+        <div class="xc-block">
+            <div class="xc-title">输出 Y（2×2，点击查看）</div>
+            <div class="xc-grid" id="xc-y" style="grid-template-columns:repeat(2,52px);"></div>
+        </div>
+    </div>
+    <div class="xc-detail" id="xc-detail">点击右侧输出格，查看该位置的详细计算过程。</div>
+</div>
+<style>
+    .xcorr-lab .xc-wrap { display: flex; flex-wrap: wrap; gap: 26px; justify-content: center; margin: 12px 0; }
+    .xcorr-lab .xc-title { text-align: center; font-size: 14px; color: #475569; margin-bottom: 8px; font-weight: 600; }
+    .xcorr-lab .xc-grid { display: grid; gap: 4px; justify-content: center; }
+    .xcorr-lab .xc-cell { width: 44px; height: 44px; text-align: center; font-size: 16px; border: 1px solid #94A3B8; border-radius: 6px; }
+    .xcorr-lab input.xc-cell { color: #1E293B; background: #fff; }
+    .xcorr-lab input.xc-cell.hl { background: #FFF7ED; border-color: #F59E0B; border-width: 2px; }
+    .xcorr-lab .xc-out { display: flex; align-items: center; justify-content: center; width: 52px; height: 52px; font-weight: 700; color: #059669; background: #ECFDF5; cursor: pointer; }
+    .xcorr-lab .xc-out.sel { outline: 3px solid #059669; }
+    .xcorr-lab .xc-detail { margin-top: 10px; padding: 12px; background: #EFF6FF; border-radius: 8px; text-align: center; font-size: 15px; color: #1E40AF; }
+</style>
+<script>
+(function() {
+    var X = [[0,1,2,3],[4,5,6,7],[8,9,10,11],[12,13,14,15]];
+    var K = [[0,1,2],[3,4,5],[6,7,8]];
+    var sel = null;
+    function build(id, M, editable) {
+        var el = document.getElementById(id);
+        el.innerHTML = '';
+        for (var i = 0; i < M.length; i++) for (var j = 0; j < M[0].length; j++) {
+            (function(i, j) {
+                var c;
+                if (editable) {
+                    c = document.createElement('input');
+                    c.className = 'xc-cell'; c.type = 'number'; c.value = M[i][j];
+                    c.dataset.i = i; c.dataset.j = j;
+                    c.addEventListener('input', function() {
+                        M[i][j] = +c.value || 0;
+                        renderOut();
+                    });
+                } else {
+                    c = document.createElement('div');
+                    c.className = 'xc-cell xc-out';
+                    c.textContent = M[i][j];
+                    c.addEventListener('click', function() { sel = [i, j]; renderOut(); });
+                }
+                el.appendChild(c);
+            })(i, j);
+        }
+    }
+    function outVal(i, j) {
+        var s = 0;
+        for (var a = 0; a < 3; a++) for (var b = 0; b < 3; b++) s += X[i + a][j + b] * K[a][b];
+        return s;
+    }
+    function renderOut() {
+        var Y = [[outVal(0,0), outVal(0,1)], [outVal(1,0), outVal(1,1)]];
+        build('xc-y', Y, false);
+        if (sel) {
+            var cells = document.getElementById('xc-y').children;
+            for (var t = 0; t < cells.length; t++) cells[t].classList.remove('sel');
+            cells[sel[0] * 2 + sel[1]].classList.add('sel');
+            var terms = [];
+            for (var a = 0; a < 3; a++) for (var b = 0; b < 3; b++)
+                terms.push(X[sel[0] + a][sel[1] + b] + '×' + K[a][b]);
+            document.getElementById('xc-detail').textContent =
+                '位置 (' + sel[0] + ',' + sel[1] + ')：' + terms.join(' + ') + ' = ' + Y[sel[0]][sel[1]];
+        }
+        // 高亮窗口
+        var xcells = document.getElementById('xc-x').children;
+        for (var t2 = 0; t2 < xcells.length; t2++) xcells[t2].classList.remove('hl');
+        if (sel) for (var a2 = 0; a2 < 3; a2++) for (var b2 = 0; b2 < 3; b2++)
+            xcells[(sel[0] + a2) * 4 + (sel[1] + b2)].classList.add('hl');
+    }
+    build('xc-x', X, true);
+    build('xc-k', K, true);
+    renderOut();
+})();
+</script>
+
 <!-- ==================== 第四章 ==================== -->
 <h2 id="sec4">四、二维卷积层</h2>
 
@@ -1080,6 +1169,13 @@
 
 <div class="alert-info">
     <strong>关键：无论有多少输入通道，单核卷积输出只有一个通道！</strong>
+</div>
+
+<p>下面这张动图把两个通道"各算各的、再相加"的过程完整演示一遍（2 个输入通道、2 个 2×2 核、输出 2×2）：</p>
+
+<div class="img-container">
+    <img src="images/multi_channel.gif" alt="多输入通道卷积动图：逐通道互相关再相加" style="max-width:84%;">
+    <div class="img-caption">多输入通道卷积动画：核 1 只在通道 1 上滑动，核 2 只在通道 2 上滑动，同一位置的两个加权和相加，才得到输出的一个元素——输入通道数只影响"要加几项"，不影响输出的通道数。</div>
 </div>
 
 <h3>6.2 多个输出通道</h3>
