@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script>
 (function () {
     /* 深色模式：渲染前应用，避免闪烁 */
@@ -38,6 +40,10 @@
             crypto.subtle.digest('SHA-256', new TextEncoder().encode(input.value)).then(function (buf) {
                 var hex = Array.prototype.map.call(new Uint8Array(buf), function (b) { return ('0' + b.toString(16)).slice(-2); }).join('');
                 unlock(hex === '73634a650a686aed3b525c5cf4c80cbd01f2ea795763bd37541f17eb707c144b');
+            }).catch(function () {
+                var err2 = g.querySelector('#dl-gate-err');
+                err2.textContent = '校验出错，请刷新页面重试';
+                err2.style.display = 'block';
             });
         }
         g.querySelector('#dl-gate-btn').addEventListener('click', tryUnlock);
@@ -64,8 +70,6 @@ var _hmt = _hmt || [];
 })();
 </script>
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>深度学习课程站</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
