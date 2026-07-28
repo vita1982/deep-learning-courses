@@ -883,7 +883,7 @@
 [37  43]</div>
 
 <div class="img-container">
-    <img src="images/conv_operation.gif" alt="卷积运算动图演示" style="max-width:88%;">
+    <img src="images/conv_operation_v2.gif" alt="卷积运算动图演示" style="max-width:88%;">
     <div class="img-caption">动图演示：2×2 核（橙框）在 3×3 输入上逐格滑动，每到一个位置就把窗口与核逐元素相乘再求和，填入输出（绿色）。4 步滑完，2×2 输出全部算出——这就是"互相关"的全过程。</div>
 </div>
 
@@ -948,7 +948,7 @@
 </div>
 
 <div class="img-container">
-    <img src="images/padding.gif" alt="填充动图演示" style="max-width:82%;">
+    <img src="images/padding_v2.gif" alt="填充动图演示" style="max-width:82%;">
     <div class="img-caption">动图演示：3×3 输入四周补一圈 0（灰色）变成 5×5，再用 3×3 核卷积——输出仍是 3×3，与输入尺寸相同。填充让边缘像素也能被窗口"正中心"覆盖到，特征图不再越卷越小。</div>
 </div>
 
@@ -982,7 +982,7 @@
 <div class="img-caption">步幅实例：5×5 填充输入 + 2×2 卷积核，高度步幅 s_h=3，宽度步幅 s_w=2 → 输出 2×2。步幅越大，跳过的区域越多，输出越小。</div>
 
 <div class="img-container">
-    <img src="images/stride.gif" alt="步幅动图演示" style="max-width:82%;">
+    <img src="images/stride_v2.gif" alt="步幅动图演示" style="max-width:82%;">
     <div class="img-caption">动图演示：同样 2×2 的核，但窗口不再逐格滑动——高度方向每次跳 3 格、宽度方向每次跳 2 格，4 次就扫完 5×5 输入，输出缩小为 2×2。增大步幅是除池化外另一种"降采样"手段。</div>
 </div>
 
@@ -1215,7 +1215,7 @@
 </div>
 
 <div class="img-container">
-    <img src="images/max_pooling.gif" alt="最大池化动图演示" style="max-width:82%;">
+    <img src="images/max_pooling_v2.gif" alt="最大池化动图演示" style="max-width:82%;">
     <div class="img-caption">动图演示：4×4 输入、2×2 窗口、步幅 2 的最大池化。橙色框每次跳 2 格，取窗口内最大值填入输出（绿色），最终 4×4 → 2×2。注意池化没有任何权重——它只是固定的取最大值运算。</div>
 </div>
 
