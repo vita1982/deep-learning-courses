@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>第02讲 深度学习基础 - 深度学习课程站</title>
+    <title>第02讲 深度学习基础 讲义文稿</title>
     <!-- KaTeX for LaTeX rendering -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
@@ -545,7 +545,7 @@
         }
     
     
-        /* ===== 第01讲自定义：双排图片统一高度，避免宽高比不一导致参差 ===== */
+        /* ===== 页面自定义样式：双排图片统一高度，避免宽高比不一导致参差 ===== */
         .img-row .img-col img {
             width: 100%;
             height: 300px;
@@ -640,7 +640,7 @@ c\,\mathbf{x} = \begin{bmatrix} c\,x_1 \\ c\,x_2 \\ \vdots \\ c\,x_n \end{bmatri
 </table>
 
 <div class="alert-info">
-    <strong>💡 提示：</strong>不把 \(\|\mathbf{x}\|_2^2\) 开根号，直接平方后求导更干净（导数是 \(2\mathbf{x}\)），所以损失函数里经常出现"平方 \(L^2\) 范数"。
+    <strong>💡 提示：</strong>直接使用平方 \(L^2\) 范数 \(\|\mathbf{x}\|_2^2\)（不开根号）求导更干净——导数是 \(2\mathbf{x}\)，没有根号带来的繁琐项，所以损失函数里经常出现"平方 \(L^2\) 范数"。
 </div>
 
 <h3>1.4 点积与正交性</h3>
@@ -820,7 +820,7 @@ z = np.dot(w, x) + b</div>
 </table>
 
 <div class="alert-info">
-    <strong>💡 提示：</strong>"批量维度"几乎总是张量的第 0 维。看到形状 <code>(32, 3, 224, 224)</code>，要立刻读出：32 张图片，每张 3 通道、224×224 像素。
+    <strong>💡 提示：</strong>"批量维度"几乎总是张量的第 0 维。注意 PyTorch 的图像张量采用 <strong>NCHW</strong> 顺序（批量 × 通道 × 高 × 宽）：看到形状 <code>(32, 3, 224, 224)</code>，要立刻读出：32 张图片，每张 3 通道、224×224 像素。上表按"高 × 宽 × 通道"（NHWC，TensorFlow 惯例）书写是为了便于从图像直觉理解，两种顺序只是通道维摆放位置不同。
 </div>
 
 <h3>4.2 PyTorch 中的张量类型</h3>

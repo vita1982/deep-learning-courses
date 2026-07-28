@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>第03讲 深度神经网络 - 深度学习课程站</title>
+    <title>第03讲 深度神经网络 讲义文稿</title>
     <!-- KaTeX for LaTeX rendering -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
@@ -545,22 +545,13 @@
         }
     
     
-        /* ===== 第01讲自定义：双排图片统一高度，避免宽高比不一导致参差 ===== */
+        /* ===== 页面自定义样式：双排图片统一高度，避免宽高比不一导致参差 ===== */
         .img-row .img-col img {
             width: 100%;
             height: 300px;
             object-fit: contain;
             background: #FFFFFF;
         }
-
-/* 双排图片统一高度，避免宽高比不一导致参差 */
-.img-row .img-col img {
-    width: 100%;
-    height: 300px;
-    object-fit: contain;
-    background: #FFFFFF;
-}
-
 </style>
 </head>
 <body>
@@ -678,7 +669,7 @@
 
 <div class="formula">
 \[
-\nabla_{\mathbf{w}}\, \ell(\mathbf{w}) = \frac{1}{m}(\mathbf{y} - \mathbf{X}\mathbf{w})^\top \mathbf{X} = 0
+\nabla_{\mathbf{w}}\, \ell(\mathbf{w}) = \frac{1}{m}(\mathbf{X}\mathbf{w} - \mathbf{y})^\top \mathbf{X} = 0
 \quad\Longleftrightarrow\quad
 \mathbf{w}^* = (\mathbf{X}^\top \mathbf{X})^{-1} \mathbf{X}^\top \mathbf{y}
 \]
@@ -785,7 +776,7 @@
     </div>
 </div>
 
-<p>分类任务在真实世界中无处不在。竞赛平台 Kaggle 上的典型题目包括：把人类蛋白质显微镜图像分为 28 类、把恶意软件分为 9 个家族、把维基百科上的恶意评论分为 7 种类型——它们本质上都是"输入一段数据，输出一个类别"。</p>
+<p>分类任务在真实世界中无处不在。竞赛平台 Kaggle 上的典型题目包括：把人类蛋白质显微镜图像分为 28 类、把恶意软件分为 9 个家族、把维基百科上的恶意评论按 toxic、obscene、insult 等多种类型打标签——它们本质上都是"输入一段数据，输出一个类别"。</p>
 
 <h3>3.2 从单个输出到多个输出</h3>
 
@@ -835,11 +826,11 @@ o_3 &= x_1 w_{13} + x_2 w_{23} + x_3 w_{33} + x_4 w_{43} + b_3
 </thead>
 <tbody>
 <tr><td>[0.3, 0, 0.7]</td><td>0.18</td><td>预测还不错</td></tr>
-<tr><td>[0.17, 0.17, 0.66]</td><td>0.173</td><td>预测明显更差，损失却几乎没变</td></tr>
+<tr><td>[0.17, 0.17, 0.66]</td><td>0.173</td><td>预测明显更差，损失却反而更低</td></tr>
 </tbody>
 </table>
 
-<p>问题在于：平方损失只关心"数值接近"，对概率分布之间的差异不敏感，梯度信号也弱。<strong>交叉熵（cross-entropy）</strong>才是衡量两个概率分布差异的标准工具：</p>
+<p>问题在于：第二个预测把 34% 的概率分散到了错误类别上，明显更差，平方损失却给出了<strong>更低</strong>的分数（0.173 &lt; 0.18）——平方损失只关心"数值接近"，无法可靠地区分概率预测的好坏，梯度信号也弱。<strong>交叉熵（cross-entropy）</strong>才是衡量两个概率分布差异的标准工具：</p>
 
 <div class="formula">
 \[
@@ -862,7 +853,7 @@ H(\mathbf{y}, \hat{\mathbf{y}}) = -\log \hat{y}_i
 <tr><th style="width:20%;"></th><th style="width:40%;">线性回归（回归问题）</th><th>softmax 回归（分类问题）</th></tr>
 </thead>
 <tbody>
-<tr><td>模型</td><td>\(\hat{y} = \langle \mathbf{w}, \mathbf{x} \rangle + b\)</td><td>\(\hat{\mathbf{y}} = \operatorname{softmax}(\mathbf{W}\mathbf{x} + \mathbf{b})\)</td></tr>
+<tr><td>模型</td><td>\(\hat{y} = \langle \mathbf{w}, \mathbf{x} \rangle + b\)</td><td>\(\hat{\mathbf{y}} = \operatorname{softmax}(\mathbf{W}^\top \mathbf{x} + \mathbf{b})\)</td></tr>
 <tr><td>参数</td><td>\(\mathbf{w} \in \mathbb{R}^{n}\)，\(b \in \mathbb{R}\)</td><td>\(\mathbf{W} \in \mathbb{R}^{n \times q}\)，\(\mathbf{b} \in \mathbb{R}^{q}\)</td></tr>
 <tr><td>输出</td><td>单个连续值</td><td>各类别的概率分布</td></tr>
 <tr><td>损失</td><td>平方损失</td><td>交叉熵损失</td></tr>
@@ -897,7 +888,7 @@ z = \mathbf{w}^\top \mathbf{x} + b, \qquad
 
 <div class="img-container">
     <img src="images/mark1_perceptron.jpg" alt="Mark I 感知机硬件" style="max-width:42%;">
-    <div class="img-caption">Mark I 感知机（1960）： weights 由电动机驱动的电位器实现，是感知机算法的硬件版本。</div>
+    <div class="img-caption">Mark I 感知机（1960）：权重由电动机驱动的电位器实现，是感知机算法的硬件版本。</div>
 </div>
 
 <p>给定输入 \(\mathbf{x}\)、权重 \(\mathbf{w}\) 和偏差 \(b\)，感知机输出二分类结果：</p>
@@ -921,7 +912,7 @@ z = \mathbf{w}^\top \mathbf{x} + b, \qquad
 
 <h3>4.2 XOR 问题：感知机的阿喀琉斯之踵</h3>
 
-<p>1969 年，Minsky 与 Papert 在《Perceptrons》一书中指出：<strong>感知机无法学习 XOR（异或）问题</strong>。原因很根本——单个感知机只能画出一条<strong>直线</strong>（线性分离器）来分割两类样本，而 XOR 的四类点根本不存在这样的直线。</p>
+<p>1969 年，Minsky 与 Papert 在《Perceptrons》一书中指出：<strong>感知机无法学习 XOR（异或）问题</strong>。原因很根本——单个感知机只能画出一条<strong>直线</strong>（线性分离器）来分割两类样本，而 XOR 的四个样本点（分属两类）根本不存在这样的直线。</p>
 
 <table class="compare-table">
 <thead>
@@ -941,7 +932,7 @@ z = \mathbf{w}^\top \mathbf{x} + b, \qquad
 
 <h3>4.3 多层感知机：加一层就能学 XOR</h3>
 
-<p>XOR 可以分解为简单逻辑运算的组合：\(y = (x_1\ \text{AND}\ \text{NOR}\ x_2)\ \text{OR}\ (\text{NAND}\ x_1\ \text{AND}\ x_2)\)。每个 AND / OR / NAND / NOR 都可以由一个感知机实现——把几个感知机<strong>分层连接</strong>，让第一层的输出作为第二层的输入，XOR 就迎刃而解。这就是<strong>多层感知机（MLP, Multi-Layer Perceptron）</strong>的思想来源。</p>
+<p>XOR 可以分解为简单逻辑运算的组合：\(y = (x_1\ \text{AND}\ (\text{NOT}\ x_2))\ \text{OR}\ ((\text{NOT}\ x_1)\ \text{AND}\ x_2)\)。每个 NOT / AND / OR 都可以由一个感知机实现——把几个感知机<strong>分层连接</strong>，让第一层的输出作为第二层的输入，XOR 就迎刃而解。这就是<strong>多层感知机（MLP, Multi-Layer Perceptron）</strong>的思想来源。</p>
 
 <h3>4.4 单隐藏层网络</h3>
 
@@ -1032,7 +1023,7 @@ z = \mathbf{w}^\top \mathbf{x} + b, \qquad
 
 <div class="card">
     <div class="card-title">用"刷真题"类比</div>
-    <p>用历年考试真题备考：真题全对（训练误差低）不代表 future 考试能考好（泛化误差低）。学生 A 靠死记硬背让真题零错误；学生 B 真正理解知识、能解释答案。<strong>谁更可能在未来的考试中胜出？</strong>机器学习也一样——我们追求的不是记住训练集，而是泛化到新数据。</p>
+    <p>用历年考试真题备考：真题全对（训练误差低）不代表未来的考试能考好（泛化误差低）。学生 A 靠死记硬背让真题零错误；学生 B 真正理解知识、能解释答案。<strong>谁更可能在未来的考试中胜出？</strong>机器学习也一样——我们追求的不是记住训练集，而是泛化到新数据。</p>
 </div>
 
 <h3>5.2 验证集与测试集：分工明确</h3>
@@ -1061,6 +1052,8 @@ z = \mathbf{w}^\top \mathbf{x} + b, \qquad
 
 <h3>5.4 欠拟合与过拟合</h3>
 
+<p>同一批数据点，用三种不同复杂度的模型去拟合，效果天差地别：</p>
+
 <div class="img-container">
     <img src="images/underfit_overfit.jpg" alt="欠拟合、正常与过拟合示意" style="max-width:66%;">
     <div class="img-caption">左：欠拟合——模型太简单（一条水平线），连训练数据都拟合不了；中：正常——恰好的复杂度，平滑地穿过数据；右：过拟合——模型过于复杂，把每个噪声点都"记住"了，曲线七拐八弯，对新数据的预测反而很差。</div>
@@ -1083,6 +1076,8 @@ z = \mathbf{w}^\top \mathbf{x} + b, \qquad
 </div>
 
 <h3>5.5 偏差与方差、模型复杂度的估计</h3>
+
+<p>欠拟合与过拟合还有一对更专业的名字——<strong>高偏差（high bias）</strong>与<strong>高方差（high variance）</strong>。用分类问题的决策边界来看最直观：</p>
 
 <div class="img-container">
     <img src="images/bias_variance.jpg" alt="高偏差、适中与高方差示意" style="max-width:80%;">
@@ -1333,7 +1328,7 @@ z = \mathbf{w}^\top \mathbf{x} + b, \qquad
         <div class="quiz-num">Q4</div>
         <div class="quiz-content">
             <div class="quiz-question">训练一个 50 层的 sigmoid 网络，发现靠近输入层的参数几乎不更新。最可能的原因是什么？给出至少两种改进方案。</div>
-            <div class="quiz-hint">✅ 答案：梯度消失——sigmoid 导数最大仅 0.25，50 层连乘后梯度小到浮点数无法表示。改进：① 换用 ReLU 激活（正区间导数恒为 1）；② 使用 Xavier/He 初始化；③ 加入批量归一化；④ 使用 ResNet 式残差连接，把乘法路径改为加法路径。</div>
+            <div class="quiz-hint">✅ 答案：梯度消失——sigmoid 导数最大仅 0.25，50 层连乘后梯度小到浮点数无法有效表示（16 位浮点下即视为 0）。改进：① 换用 ReLU 激活（正区间导数恒为 1）；② 使用 Xavier/He 初始化；③ 加入批量归一化；④ 使用 ResNet 式残差连接，把乘法路径改为加法路径。</div>
         </div>
     </div>
 </div>
