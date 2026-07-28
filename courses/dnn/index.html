@@ -1,6 +1,69 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
+<script>
+(function () {
+    /* 深色模式：渲染前应用，避免闪烁 */
+    try { if (localStorage.getItem('dl_theme') === 'dark') document.documentElement.classList.add('dl-dark'); } catch (e) {}
+    /* 课程口令门（简单保护） */
+    try { if (localStorage.getItem('dl_gate_v1') === '1') return; } catch (e) {}
+    document.documentElement.classList.add('dl-gating');
+    document.addEventListener('DOMContentLoaded', function () {
+        var g = document.createElement('div');
+        g.id = 'dl-gate';
+        g.innerHTML = '<div class="dl-gate-card">'
+            + '<div style="font-size:34px;">🔒</div>'
+            + '<h2 style="margin:10px 0 6px;font-size:20px;color:#1E293B;">深度学习课程站</h2>'
+            + '<p style="margin:0 0 16px;font-size:14px;color:#64748B;">请输入课程口令（课程群内公布）</p>'
+            + '<input id="dl-gate-input" type="password" placeholder="请输入口令" style="width:100%;box-sizing:border-box;padding:10px 12px;font-size:15px;border:1px solid #CBD5E1;border-radius:8px;">'
+            + '<button id="dl-gate-btn" style="margin-top:12px;width:100%;padding:10px;background:#2563EB;color:#fff;border:none;border-radius:8px;font-size:15px;cursor:pointer;">进入课程</button>'
+            + '<p id="dl-gate-err" style="display:none;margin:10px 0 0;font-size:13px;color:#DC2626;">口令不正确，请重试</p>'
+            + '</div>';
+        document.body.appendChild(g);
+        var input = g.querySelector('#dl-gate-input');
+        input.focus();
+        function unlock(ok) {
+            if (!ok) { g.querySelector('#dl-gate-err').style.display = 'block'; input.select(); return; }
+            try { localStorage.setItem('dl_gate_v1', '1'); } catch (e) {}
+            document.documentElement.classList.remove('dl-gating');
+            g.remove();
+        }
+        function tryUnlock() {
+            if (!window.crypto || !crypto.subtle) {
+                var err = g.querySelector('#dl-gate-err');
+                err.textContent = '当前浏览器不支持安全校验，请换用 Chrome / Edge 访问';
+                err.style.display = 'block';
+                return;
+            }
+            crypto.subtle.digest('SHA-256', new TextEncoder().encode(input.value)).then(function (buf) {
+                var hex = Array.prototype.map.call(new Uint8Array(buf), function (b) { return ('0' + b.toString(16)).slice(-2); }).join('');
+                unlock(hex === '73634a650a686aed3b525c5cf4c80cbd01f2ea795763bd37541f17eb707c144b');
+            });
+        }
+        g.querySelector('#dl-gate-btn').addEventListener('click', tryUnlock);
+        input.addEventListener('keydown', function (e) { if (e.key === 'Enter') tryUnlock(); });
+    });
+})();
+</script>
+<style>
+    html.dl-gating body > *:not(#dl-gate) { display: none !important; }
+    #dl-gate { position: fixed; inset: 0; z-index: 99999; background: #F1F5F9; display: flex; align-items: center; justify-content: center; font-family: "Microsoft YaHei", sans-serif; }
+    #dl-gate .dl-gate-card { background: #fff; border-radius: 14px; padding: 32px 30px; width: 340px; max-width: 88vw; text-align: center; box-shadow: 0 10px 40px rgba(15,23,42,.15); }
+    /* 深色模式：整体反转，媒体与浮层再反转回来 */
+    html.dl-dark { filter: invert(1) hue-rotate(180deg); background: #0F172A; }
+    html.dl-dark img, html.dl-dark canvas, html.dl-dark #dl-tools, html.dl-dark .dl-modal-mask, html.dl-dark #dl-gate { filter: invert(1) hue-rotate(180deg); }
+</style>
+<script>
+/* 百度统计 */
+var _hmt = _hmt || [];
+(function () {
+    var hm = document.createElement('script');
+    hm.src = 'https://hm.baidu.com/hm.js?97388c2b7e8ffeae1e1b6135d3653f94';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>第03讲 深度神经网络 讲义文稿</title>
@@ -1623,6 +1686,7 @@ z = \mathbf{w}^\top \mathbf{x} + b, \qquad
         · <span id="busuanzi_container_site_uv">访客数 <span id="busuanzi_value_site_uv">—</span> 人</span>
         · <span id="busuanzi_container_page_pv">本页阅读 <span id="busuanzi_value_page_pv">—</span> 次</span>
     </p>
+        <p style="font-size:13px;color:#94A3B8;margin-top:2px;">💬 课程反馈与留言：<a href="mailto:dlcourses2026@sina.com" style="color:#2563EB;text-decoration:none;">dlcourses2026@sina.com</a></p>
 </div>
 <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
@@ -1690,5 +1754,7 @@ z = \mathbf{w}^\top \mathbf{x} + b, \qquad
     });
 })();
 </script>
+<script src="../../assets/search-index.js"></script>
+<script src="../../assets/site-tools.js"></script>
 </body>
 </html>
