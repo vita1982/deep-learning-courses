@@ -1161,7 +1161,7 @@ loss.backward()                   # 一键反向传播，计算所有梯度</div
 <p>再看一个更小的例子 \(f = (a+b)\times c\)（取 a=2, b=3, c=4），下面这张动图把<strong>前向求值</strong>和<strong>梯度逆流</strong>的完整过程连起来演示：</p>
 
 <div class="img-container">
-    <img src="images/comp_graph.gif" alt="计算图前向传播与反向传播动图" style="max-width:78%;">
+    <img src="images/comp_graph_v2.gif" alt="计算图前向传播与反向传播动图" style="max-width:78%;">
     <div class="img-caption">计算图动画：前向阶段（橙色）逐节点算出 d = 5、f = 20；反向阶段（红色）从 ∂f/∂f = 1 出发，每个节点把上游梯度乘以自己的局部导数传下去——乘法节点的局部导数是"另一个输入"，加法节点则原样分发给两个输入。</div>
 </div>
 
