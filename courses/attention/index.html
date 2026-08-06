@@ -949,25 +949,48 @@ var _hmt = _hmt || [];
 <!-- ==================== 第五章 ==================== -->
 <h2 id="sec5">五、Transformer：完全建立在注意力上的架构</h2>
 
-<h3>5.1 总体架构</h3>
+<p>2017 年，Google 的论文《Attention Is All You Need》提出 <strong>Transformer（变换器）</strong>——干脆<strong>彻底抛弃循环与卷积</strong>，只用注意力搭建整个模型。本节按讲义顺序，从自注意力的两个特性出发，逐块拆解 Transformer 的架构。</p>
 
-<p>2017 年，Google 的论文《Attention Is All You Need》提出 <strong>Transformer</strong>——干脆<strong>彻底抛弃循环与卷积</strong>，只用注意力搭建编码器—解码器。与 seq2seq+注意力相比，注意力在 Transformer 中出现在三个地方：</p>
+<h3>5.1 自注意力机制：并行，但丢失顺序</h3>
+
+<p>上一章已经看到，自注意力要用 \(n\) 个输入生成 \(n\) 个输出，做法是<strong>把每个输入同时复制为键（key）、值（value）和查询（query）</strong>。这种结构带来两个直接影响：</p>
+
+<ul>
+    <li><strong>不保留顺序信息</strong>：每个位置的输出只跟随词本身，与它在序列中的位置无关（置换不变性）；</li>
+    <li><strong>可以并行计算</strong>：\(n\) 个输出之间没有先后依赖，不像 RNN 必须逐个时间步串行展开。</li>
+</ul>
+
+<!-- 自注意力框图（讲义 p16） -->
+<div class="img-container">
+    <img src="images/self_attn_block.jpg" alt="自注意力：每个输入同时作为键、值、查询" style="max-width:56%;">
+    <div class="img-caption">自注意力机制：每个位置 \(t-1,\ t,\ t+1\) 的输入被同时复制为 keys、values、queries，一次性并行算出所有输出——但框图里没有出现任何"第几个位置"的信息。</div>
+</div>
+
+<h3>5.2 Transformer 模型架构</h3>
+
+<p>Transformer 仍然是一个<strong>编码器—解码器架构</strong>，但循环层被整个换掉。与"seq2seq + 注意力"相比，<strong>注意力集中在 3 个地方</strong>：</p>
 
 <ul>
     <li><strong>编码器自注意力</strong>：源句内部互相关注，理解上下文；</li>
     <li><strong>解码器自注意力</strong>：已生成的目标词互相关注（带掩码，不能偷看未来）；</li>
-    <li><strong>编码器—解码器注意力</strong>：解码器拿 query 去查询编码器的输出（对齐源句）。 </li>
+    <li><strong>编码器—解码器注意力</strong>：解码器拿 query 去查询编码器的输出（对齐源句），编码器状态传递到解码器的每一块。</li>
 </ul>
 
-<!-- Transformer 架构图 -->
+<!-- Transformer 架构对比图（讲义 p17） -->
 <div class="img-container">
-    <img src="images/transformer_arch.jpg" alt="Transformer 完整架构" style="max-width:72%;">
-    <div class="img-caption">Transformer 架构：左侧编码器、右侧解码器，各堆叠 n 个相同的块。每个块内是"多头注意力 → Add &amp; Norm → 位置前馈网络 → Add &amp; Norm"；底部嵌入层外加了<strong>位置编码</strong>来补充顺序信息。</div>
+    <img src="images/transformer_arch.jpg" alt="seq2seq+注意力 与 Transformer 架构对比" style="max-width:88%;">
+    <div class="img-caption">左：上一章的 seq2seq+注意力（循环层 + 注意力）。右：Transformer 的<strong>变换器块</strong>——编码器、解码器各堆叠 \(n\) 个相同的块，块内是"多头注意力 → Add &amp; Norm → 位置前馈网络 → Add &amp; Norm"；编码器状态（State）传入解码器每个块；底部嵌入层之外加入<strong>位置编码</strong>来补充顺序信息。</div>
 </div>
 
-<h3>5.2 多头注意力</h3>
+<h3>5.3 多头注意力机制（Multi-head Attention）</h3>
 
-<p>一次注意力只能在一个表示空间里找相似。<strong>多头注意力（multi-head attention）</strong>把 query、key、value 用 \(h\) 组不同的线性投影变换到 \(h\) 个子空间，各自独立做注意力，再把结果拼接投影：</p>
+<p>一次注意力只能在一个表示空间里找相似。<strong>多头注意力</strong>把 query、key、value 用 \(h\) 组不同的线性投影（Dense）变换到 \(h\) 个子空间，各自独立做注意力，再把结果拼接（Concat）后做一次投影：</p>
+
+<!-- 多头注意力结构图（讲义 p18） -->
+<div class="img-container">
+    <img src="images/multihead.jpg" alt="多头注意力：多组 Dense 投影加注意力后拼接" style="max-width:60%;">
+    <div class="img-caption">多头注意力结构：Queries / Keys / Values 分别经过 \(h\) 组独立的 Dense 投影，各自做 Attention，输出经 Concat 拼接后再过一次 Dense。</div>
+</div>
 
 <div class="formula">
     \(\mathbf{o}^{(i)} = \mathrm{attention}\big(W_q^{(i)} \mathbf{q},\ W_k^{(i)} \mathbf{k},\ W_v^{(i)} \mathbf{v}\big),\quad i = 1, \ldots, h\)
@@ -980,29 +1003,59 @@ var _hmt = _hmt || [];
     <strong>🔑 初学者理解：</strong>一个头可能关注"语法搭配"，另一个头关注"指代关系"，还有头关注"位置远近"——多头让模型同时从多个角度审视序列，类似 CNN 用多个卷积核提取多种模式。
 </div>
 
-<h3>5.3 位置前馈网络</h3>
+<h3>5.4 位置前馈网络（Position-wise FFN）</h3>
 
-<p>每个注意力块里还有一个<strong>位置前馈网络（Position-wise FFN）</strong>：对每个位置独立地过同一个两层 MLP（等价于两个 \(1 \times 1\) 卷积）。注意力负责"混合"位置间的信息，FFN 负责在每个位置上做非线性变换——两者分工明确。</p>
+<p>每个变换器块里还有一个<strong>位置前馈网络</strong>，它对每个位置独立地过同一个两层 MLP。按讲义里的等价视角来看它的计算：</p>
 
-<h3>5.4 残差连接与层归一化（Add &amp; Norm）</h3>
+<ul>
+    <li>将输入（批量大小，序列长度，特征集大小）<strong>重新整形</strong>为（批量 × 序列长度，特征集大小）；</li>
+    <li>用<strong>两层 MLP</strong> 变换；</li>
+    <li>再<strong>转换回 3-D 形态</strong>；</li>
+    <li>这<strong>等价于应用两个 \(1 \times 1\) 卷积层</strong>。</li>
+</ul>
 
-<p>每个子层外面都包着"Add &amp; Norm"：<strong>残差连接</strong>（输出 = 子层输出 + 原始输入，保证深层堆叠时梯度畅通）加<strong>层归一化（LayerNorm）</strong>：</p>
-
-<!-- Add & Norm 图 -->
+<!-- 高亮 FFN 的架构图（讲义 p19） -->
 <div class="img-container">
-    <img src="images/layernorm.jpg" alt="Add & Norm：残差连接加层归一化" style="max-width:40%;">
-    <div class="img-caption">Add &amp; Norm：子层输出与输入相加后再做层归一化。与 BatchNorm 沿批量维（axis=0）归一不同，LayerNorm 沿特征维（axis=-1）对每个样本独立归一——序列长度和批量大小变化时都稳定。</div>
+    <img src="images/ffn_highlight.jpg" alt="变换器块中的位置前馈网络（高亮）" style="max-width:36%;">
+    <div class="img-caption">橙色高亮即 Position-wise FFN：注意力负责"混合"位置间的信息，FFN 负责在每个位置上独立做非线性变换——两者分工明确。</div>
 </div>
 
-<h3>5.5 位置编码：把顺序"注入"模型</h3>
+<h3>5.5 添加与归一化（Add &amp; Norm）</h3>
 
-<p>自注意力有个先天缺陷：<strong>它本身不含任何顺序信息</strong>——把句子打乱，每个位置的输出只是跟着词走，模型分不清谁先谁后（数学上称为置换不变性）。解决办法是给每个位置手工构造一个"位置签名"加到嵌入上：</p>
+<p>每个子层外面都包着"Add &amp; Norm"：<strong>残差连接</strong>（输出 = 子层输出 + 原始输入，保证深层堆叠时梯度畅通）加<strong>层归一化（Layer Norm）</strong>。层规范类似于批量规范（Batch Norm），区别在于：</p>
+
+<ul>
+    <li>平均值和方差是<strong>沿最后一个维度</strong>计算的：<code>X.mean(axis=-1)</code>；</li>
+    <li>而批量归一化是沿第一个批次维度计算的：<code>X.mean(axis=0)</code>。</li>
+</ul>
+
+<!-- Add & Norm 结构图（讲义 p20） -->
+<div class="img-container">
+    <img src="images/layernorm.jpg" alt="Add & Norm：残差连接加层归一化" style="max-width:30%;">
+    <div class="img-caption">Add &amp; Norm：Block（子层）输出与输入相加（⊕）后再做 Layer norm。对每个样本沿特征维独立归一，序列长度和批量大小变化时都稳定。</div>
+</div>
+
+<!-- 高亮 Add&Norm 的架构图（讲义 p20） -->
+<div class="img-container">
+    <img src="images/addnorm_highlight.jpg" alt="变换器块中的 Add & Norm（高亮）" style="max-width:36%;">
+    <div class="img-caption">橙色高亮即各处的 Add &amp; Norm：编码器和解码器的每个注意力子层、每个 FFN 子层外面都包着一个。</div>
+</div>
+
+<h3>5.6 位置编码：把顺序"注入"模型</h3>
+
+<p>5.1 说过自注意力本身不含顺序信息，解决办法是手工构造"位置签名"加到嵌入上。假设嵌入 \(X \in \mathbb{R}^{l \times d}\)（形状为：序列长度，嵌入维度），创建同样形状的位置编码矩阵 \(P \in \mathbb{R}^{l \times d}\)：</p>
 
 <div class="formula">
     \(P_{i,\,2j} = \sin\!\big(i / 10000^{2j/d}\big), \qquad P_{i,\,2j+1} = \cos\!\big(i / 10000^{2j/d}\big)\)
 </div>
 
-<p>第 \(i\) 个位置、第 \(2j\) 维是 sin、第 \(2j+1\) 维是 cos，不同维度频率不同：低维变化快（区分邻近位置），高维变化慢（标记长距离）。输出 = 词嵌入 \(X\) + 位置编码 \(P\)，顺序信息就这样"混进"了表示。</p>
+<p>第 \(i\) 个位置、第 \(2j\) 维是 sin、第 \(2j+1\) 维是 cos，不同维度频率不同：低维变化快（区分邻近位置），高维变化慢（标记长距离）。<strong>输出 = \(X + P\)</strong>，顺序信息就这样"混进"了表示。</p>
+
+<!-- 高亮位置编码的架构图（讲义 p21） -->
+<div class="img-container">
+    <img src="images/posenc_highlight.jpg" alt="架构中的位置编码（高亮）" style="max-width:36%;">
+    <div class="img-caption">橙色高亮即 Positional Encoding：编码器和解码器都在嵌入（Embedding）之上叠加位置编码，把顺序信息注入模型。</div>
+</div>
 
 <!-- 位置编码热力图 -->
 <div class="img-container">
@@ -1010,11 +1063,17 @@ var _hmt = _hmt || [];
     <div class="img-caption">位置编码热力图（50 个位置 × 128 维）：横轴是序列位置，纵轴是嵌入维度。低维（底部）波纹细密、高维（顶部）平缓——每个位置因此拥有独一无二的"指纹"。</div>
 </div>
 
-<h3>5.6 预测时的掩码</h3>
+<h3>5.7 预测：带掩码的自注意力</h3>
 
-<p>训练解码器时有个陷阱：如果自注意力能看到整个目标序列，第 \(t\) 个位置就能"偷看"答案 \(x_t\) 本身——模型学会抄答案而非预测。解决办法是<strong>掩码（mask）</strong>：时刻 \(t\) 的 query 只允许关注 \(1 \sim t\) 的 key/value，未来位置的注意力分数被置为 \(-\infty\)（softmax 后权重为 0）。</p>
+<p>在时刻 \(t\) 预测时有个陷阱：如果自注意力能看到整个目标序列，第 \(t\) 个位置就能"偷看"答案本身——模型学会抄答案而非预测。解决办法是<strong>掩码（mask）</strong>：</p>
 
-<!-- 掩码注意力图 -->
+<ul>
+    <li>用<strong>之前输入的键和值</strong>（位置 \(1 \sim t-1\)）；</li>
+    <li>时刻 \(t\) 的输入作为<strong>查询（以及键和值）</strong>，来预测输出；</li>
+    <li>未来位置的注意力分数被置为 \(-\infty\)，softmax 后权重为 0。</li>
+</ul>
+
+<!-- 掩码注意力图（讲义 p22） -->
 <div class="img-container">
     <img src="images/masked_attention.jpg" alt="带掩码的自注意力预测" style="max-width:56%;">
     <div class="img-caption">带掩码的自注意力：预测时刻 \(t\) 的输出时，只能使用 \(t\) 及之前的键和值。这就是 GPT 类生成模型的"因果掩码"。</div>
