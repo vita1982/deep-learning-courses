@@ -130,6 +130,15 @@
         toc.addEventListener('click', function (e) {
             if (e.target.closest('a') && !isWide()) root.classList.remove('dl-toc-open');
         });
+
+        /* 目录收起后，左边缘的就近展开把手 */
+        var tab = document.createElement('button');
+        tab.id = 'dl-toc-tab';
+        tab.type = 'button';
+        tab.title = '展开目录';
+        tab.textContent = '目录 »';
+        tab.addEventListener('click', tocToggle);
+        document.body.appendChild(tab);
         try {
             if (localStorage.getItem('dl_toc_collapsed') === '1') root.classList.add('dl-toc-collapsed');
         } catch (e) {}

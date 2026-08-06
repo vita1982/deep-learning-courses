@@ -297,12 +297,29 @@ section.chapter, h3 { scroll-margin-top: 58px; }
 
 #dl-toc-mask { display: none; position: fixed; inset: 0; z-index: 55; background: rgba(15,23,42,.35); }
 
-/* 宽屏：常驻侧栏；可整体收起（记住状态） */
+/* 目录收起后左边缘的就近展开把手 */
+#dl-toc-tab {
+    display: none; position: fixed; z-index: 60; top: 90px; left: 0;
+    writing-mode: vertical-rl; letter-spacing: 3px;
+    padding: 16px 7px; border: 1px solid var(--line); border-left: none;
+    border-radius: 0 9px 9px 0; background: var(--paper); color: var(--ink-2);
+    cursor: pointer; font-size: 13px; font-family: inherit;
+    box-shadow: 2px 3px 10px rgba(15,23,42,.12);
+}
+#dl-toc-tab:hover { color: var(--brand); border-color: var(--brand); }
+
+/* 正文与顶栏随目录开合平滑移动 */
+.page, .topbar-inner { transition: margin-left .25s ease; }
+
+/* 宽屏：常驻侧栏；正文在目录右侧的剩余空间内居中；收起时可从左边把手直接展开 */
 @media (min-width: 1340px) {
     #dl-toc { display: block; }
     html.dl-toc-collapsed #dl-toc { display: none; }
+    html:not(.dl-toc-collapsed) .page,
+    html:not(.dl-toc-collapsed) .topbar-inner { margin-left: calc(75% - 654px); margin-right: auto; }
+    html.dl-toc-collapsed #dl-toc-tab { display: block; }
 }
-/* 窄屏 / 移动端：抽屉式目录 */
+/* 窄屏 / 移动端：抽屉式目录；关闭时左边缘留展开把手 */
 @media (max-width: 1339.5px) {
     #dl-toc {
         top: 0; bottom: 0; left: 0; width: 280px; max-width: 84vw;
@@ -311,6 +328,8 @@ section.chapter, h3 { scroll-margin-top: 58px; }
     #dl-toc .dl-toc-head { border-radius: 0; }
     html.dl-toc-open #dl-toc { display: block; }
     html.dl-toc-open #dl-toc-mask { display: block; }
+    #dl-toc-tab { display: block; top: 64px; padding: 12px 6px; }
+    html.dl-toc-open #dl-toc-tab { display: none; }
 }
 
 /* ---------- 右下浮动工具组 ---------- */
@@ -374,6 +393,8 @@ html.dl-dark #dl-toc a.active { background: #172554; color: #93C5FD; border-left
 html.dl-dark #dl-toc .dl-toc-arrow { color: #64748B; }
 html.dl-dark #dl-toc .dl-toc-arrow:hover, html.dl-dark #dl-toc .dl-toc-head button:hover { background: #1E293B; }
 html.dl-dark #dl-toc-mask { background: rgba(0,0,0,.55); }
+html.dl-dark #dl-toc-tab { background: #1E293B; border-color: #334155; color: #CBD5E1; box-shadow: 2px 3px 10px rgba(0,0,0,.5); }
+html.dl-dark #dl-toc-tab:hover { color: #93C5FD; border-color: #60A5FA; }
 html.dl-dark #dl-tools button { background: #1E293B; border-color: #334155; color: #CBD5E1; box-shadow: 0 3px 12px rgba(0,0,0,.5); }
 html.dl-dark #dl-tools button:hover { color: #93C5FD; border-color: #60A5FA; }
 html.dl-dark #dl-theme-menu { background: #0F172A; border-color: #334155; }
