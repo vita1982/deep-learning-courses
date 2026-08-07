@@ -211,14 +211,14 @@
     <p>要计算线性模型 \(\hat{y} = \mathbf{w}^\top\mathbf{x} + b\)（\(\mathbf{w}\) 和 \(\mathbf{x}\) 都是 \(n\) 维列向量），有两种写法：</p>
     <div class="codecard">
         <div class="code-label">非向量化：for 循环逐元素累加</div>
-        <pre>z = 0
-for i in range(n):
-    z += w[i] * x[i]
-z += b</pre>
+        <pre>z = 0               # 累加器清零，准备累加各分量的乘积
+for i in range(n):  # 逐个访问全部 n 个分量（Python 解释器逐行执行，慢）
+    z += w[i] * x[i]  # 取第 i 对分量相乘，累加进 z
+z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
     </div>
     <div class="codecard">
         <div class="code-label">向量化：一条 np.dot 语句完成</div>
-        <pre>z = np.dot(w, x) + b</pre>
+        <pre>z = np.dot(w, x) + b  # np.dot 一次性算完整个点积（底层 C 库并行），再加偏置 b——结果相同，快几十到上百倍</pre>
     </div>
     <div class="callout key">
         <span class="co-tag">🔍 逐行讲解</span>
@@ -381,16 +381,16 @@ z += b</pre>
         <div class="code-label">PyTorch 动态图示例</div>
         <pre>import torch
 
-W_h = torch.randn(20, 20, requires_grad=True) # 声明需要追踪梯度
-W_x = torch.randn(20, 10, requires_grad=True)
-x = torch.randn(1, 10)
-prev_h = torch.randn(1, 20)
+W_h = torch.randn(20, 20, requires_grad=True) # 隐状态权重；声明需要追踪梯度
+W_x = torch.randn(20, 10, requires_grad=True) # 输入权重；同样需要追踪梯度
+x = torch.randn(1, 10)                        # 输入向量（1×10）
+prev_h = torch.randn(1, 20)                   # 上一时刻的隐状态（1×20）
 
-h2h = torch.mm(W_h, prev_h.t()) # 矩阵乘：20x20 @ 20x1
-i2h = torch.mm(W_x, x.t()) # 矩阵乘：20x10 @ 10x1
-next_h = h2h + i2h
-next_h = next_h.tanh() # 激活函数
-loss = next_h.sum()
+h2h = torch.mm(W_h, prev_h.t()) # 矩阵乘：20x20 @ 20x1 → 隐状态带来的贡献
+i2h = torch.mm(W_x, x.t()) # 矩阵乘：20x10 @ 10x1 → 当前输入带来的贡献
+next_h = h2h + i2h            # 两路贡献相加，得到未激活的隐状态
+next_h = next_h.tanh() # 激活函数：压到 (-1, 1)，引入非线性
+loss = next_h.sum()           # 演示用的标量损失：所有元素求和
 
 loss.backward() # 一键反向传播，计算所有梯度</pre>
     </div>

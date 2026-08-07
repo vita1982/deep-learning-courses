@@ -706,10 +706,11 @@ conda config --set show_channel_urls yes</pre>
     </figure>
     <div class="codecard">
         <div class="code-label">Anaconda Prompt</div>
-        <pre># 安装 PyTorch —— 注意：要使用国内源，请去掉 -c pytorch 这个参数！！
+        <pre># 安装 PyTorch 三件套：本体 + torchvision 视觉工具包 + cudatoolkit GPU 组件
+# 注意：要使用国内源，请去掉官网命令里的 -c pytorch 这个参数！！
 conda install pytorch torchvision cudatoolkit=10.0
 
-# 安装常用库
+# 安装常用科学计算库：数组计算 / 绘图 / 图像处理 / 表格分析
 pip install numpy matplotlib pillow pandas</pre>
     </div>
     <div class="callout key">
@@ -722,16 +723,16 @@ pip install numpy matplotlib pillow pandas</pre>
     <div class="codecard">
         <div class="code-label">verify_env.py</div>
         <pre>import torch
-import time
+import time                     # 计时用
 
 print(torch.__version__) # 打印 PyTorch 版本号，能打印说明安装成功
 
 a = torch.randn(10000, 1000) # 生成 10000×1000 的随机矩阵
 b = torch.randn(1000, 200) # 生成 1000×200 的随机矩阵
 
-t0 = time.time()
+t0 = time.time()               # 记录开始时刻
 c = torch.matmul(a, b) # 矩阵乘法：深度学习中最核心的运算
-t1 = time.time()
+t1 = time.time()               # 记录结束时刻
 
 print(a.device, t1 - t0, c.norm(2)) # 依次输出：计算设备、耗时(秒)、结果矩阵的L2范数</pre>
     </div>

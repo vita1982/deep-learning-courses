@@ -6,7 +6,7 @@
     html.dl-dark { background: #0F172A; }
     html.dl-dark body { background: #0F172A; }
     html.dl-dark .page, html.dl-dark .topbar { filter: invert(1) hue-rotate(180deg); }
-    html.dl-dark .page img, html.dl-dark .page canvas { filter: invert(1) hue-rotate(180deg); }
+    html.dl-dark .page img, html.dl-dark .page canvas, html.dl-dark .page .codecard { filter: invert(1) hue-rotate(180deg); }
 
 /* ============================================================
    深度学习课程站 · 互动讲义公共样式
@@ -105,18 +105,34 @@ th, td { padding: 10px 14px; border: 1px solid var(--line); text-align: left; }
 th { background: var(--wash); font-weight: 600; }
 tr:nth-child(even) td { background: #FAFBFC; }
 
-/* 代码块 */
-.codecard { margin: 22px 0; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+/* 代码块：深色卡片 + 语法高对比配色 */
+.codecard {
+    margin: 22px 0; border: 1px solid #1E2A4A; border-radius: 12px; overflow: hidden;
+    background: #0D1226; box-shadow: 0 4px 16px rgba(11,18,38,.22);
+}
 .codecard .code-label {
-    font-size: 12.5px; font-weight: 600; color: var(--ink-2);
-    background: var(--wash); border-bottom: 1px solid var(--line);
-    padding: 8px 14px; font-family: Consolas, monospace;
+    display: flex; align-items: center;
+    font-size: 12.5px; font-weight: 600; color: #8B9CC7;
+    background: #131B34; border-bottom: 1px solid #1E2A4A;
+    padding: 9px 16px; font-family: Consolas, monospace; letter-spacing: .3px;
+}
+.codecard .code-label::before {
+    content: ''; flex-shrink: 0;
+    width: 10px; height: 10px; border-radius: 50%; background: #FF5F57;
+    box-shadow: 16px 0 0 #FEBC2E, 32px 0 0 #28C840;
+    margin-right: 46px;
 }
 .codecard pre {
     padding: 16px 18px; overflow-x: auto;
-    font-family: "Cascadia Code", Consolas, monospace; font-size: 13.5px; line-height: 1.7;
-    background: #FBFCFD; color: #1F2937;
+    font-family: "Cascadia Code", Consolas, monospace; font-size: 13.5px; line-height: 1.8;
+    background: transparent; color: #DDE3F0;
 }
+.codecard pre .tk-c { color: #7EC87E; font-style: italic; }  /* 注释：绿 */
+.codecard pre .tk-k { color: #C792EA; }                       /* 关键字：紫 */
+.codecard pre .tk-f { color: #82AAFF; }                       /* 函数调用：蓝 */
+.codecard pre .tk-n { color: #F78C6C; }                       /* 数字：橙 */
+.codecard pre .tk-s { color: #C3E88D; }                       /* 字符串：浅绿 */
+.codecard pre .tk-o { color: #89DDFF; }                       /* 命令行选项/内置名：青 */
 
 /* ---------- 提示框（Key idea / Common confusion 等） ---------- */
 .callout {

@@ -347,5 +347,45 @@
                 closeSearch();
             }
         });
+
+        /* ==================== 5. 代码块语法高亮 ==================== */
+        /* 轻量 Python/Shell 着色器：注释绿 / 关键字紫 / 函数蓝 / 数字橙 / 字符串浅绿 / 选项青 */
+        var KW = ('import from as for in while if elif else return def class with try except finally ' +
+                  'raise pass break continue and or not is lambda yield global nonlocal assert del ' +
+                  'self None True False').split(' ');
+        var BUILTIN = ('print range len int str float bool list dict set tuple type sum min max abs ' +
+                       'enumerate zip open input isinstance super object getattr setattr').split(' ');
+        var TOKEN_RE = /(#[^\n]*)|('(?:[^'\\\n]|\\.)*'|"(?:[^"\\\n]|\\.)*")|(--[\w-]+)|(https?:\/\/\S+)|(\b\d+(?:\.\d+)?\b)|([A-Za-z_]\w*)|(\n|.)/g;
+
+        function highlightCode(pre) {
+            var code = pre.textContent;
+            var frag = document.createDocumentFragment();
+            var m;
+            TOKEN_RE.lastIndex = 0;
+            while ((m = TOKEN_RE.exec(code)) !== null) {
+                var cls = null, txt = m[0];
+                if (m[1]) cls = 'tk-c';                       // 注释
+                else if (m[2]) cls = 'tk-s';                  // 字符串
+                else if (m[3]) cls = 'tk-o';                  // --选项
+                else if (m[4]) cls = 'tk-s';                  // URL
+                else if (m[5]) cls = 'tk-n';                  // 数字
+                else if (m[6]) {                              // 标识符
+                    if (KW.indexOf(txt) !== -1) cls = 'tk-k';
+                    else if (BUILTIN.indexOf(txt) !== -1) cls = 'tk-o';
+                    else if (code.charAt(m.index + txt.length) === '(') cls = 'tk-f';
+                }
+                if (cls) {
+                    var sp = document.createElement('span');
+                    sp.className = cls;
+                    sp.textContent = txt;
+                    frag.appendChild(sp);
+                } else {
+                    frag.appendChild(document.createTextNode(txt));
+                }
+            }
+            pre.textContent = '';
+            pre.appendChild(frag);
+        }
+        Array.prototype.forEach.call(page.querySelectorAll('.codecard pre'), highlightCode);
     });
 })();
