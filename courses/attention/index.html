@@ -85,7 +85,7 @@
     <h3><span class="sec-no">1.1</span>随意线索与不随意线索</h3>
     <p>心理学研究表明，生物的视觉系统并不是对视野中的一切平均用力，而是有选择地聚焦。注意力来自两类线索：</p>
     <ul>
-        <li><strong>不随意线索</strong>：物体本身的突出性吸引你——桌上红色杯子在一堆灰书里格外显眼，目光不自觉地被它抓走；</li>
+        <li><strong>不随意线索</strong>：物体本身的突出性吸引你——桌上红色杯子在一堆灰书里格外显眼，你的目光不自觉地被它抓走；</li>
         <li><strong>随意线索</strong>：任务目标主动引导你——你想读一本书，于是注意力有意识地落在书上，对周围视而不见。</li>
     </ul>
     <figure>
@@ -126,7 +126,7 @@
     <h3><span class="sec-no">2.1</span>非参数方案：Nadaraya-Watson 核回归</h3>
     <p>给定数据 \((x_i, y_i)\)，要对查询 \(x\) 做预测：平均池化直接取 \(\frac{1}{n}\sum y_i\) 太粗糙。60 年代提出的 Nadaraya-Watson 核回归按"距离越近权重越大"加权：</p>
     $$f(x) = \sum_{i=1}^{n} \mathrm{softmax}\!\Big(-\tfrac{1}{2}(x - x_i)^2\Big)\, y_i$$
-    <p>其中 \(-\frac{1}{2}(x-x_i)^2\) 来自高斯核。把式子拆开看：\(x\) 是 query，\(x_i\) 是 key，\(y_i\) 是 value——<strong>核回归就是最早的注意力池化</strong>：离查询越近的样本，其值被采纳得越多。</p>
+    <p>其中 \(-\frac{1}{2}(x-x_i)^2\) 来自高斯核 \(K(u)=\frac{1}{\sqrt{2\pi}}\exp(-\frac{u^2}{2})\)。把式子拆开看：\(x\) 是 query，\(x_i\) 是 key，\(y_i\) 是 value——<strong>核回归就是最早的注意力池化</strong>：离查询越近的样本，其值被采纳得越多。</p>
     <figure>
         <img src="images/nw_regression.jpg" alt="Nadaraya-Watson 核回归公式" loading="lazy">
         <figcaption>Nadaraya-Watson 核回归：高斯核给出"按距离衰减"的权重，softmax 保证权重和为 1。它没有可学习参数，属于非参数方法。</figcaption>
@@ -154,7 +154,7 @@
     </figure>
     <div class="callout warn">
         <span class="co-tag">⚠️ 常见误区</span>
-        <p>为什么除以 \(\sqrt{d_k}\)？维度 \(d_k\) 越大，点积的量级越大，softmax 会被推到接近 0/1 的饱和区，梯度趋近 0。除以 \(\sqrt{d_k}\) 把分数的方差拉回 1 附近，训练才稳定。这不是经验技巧——独立随机向量的点积方差正比于 \(d_k\)，有明确的方差分析依据。</p>
+        <p>为什么除以 \(\sqrt{d_k}\)？维度 \(d_k\) 越大，点积的量级越大，softmax 会被推到接近 0/1 的饱和区，梯度趋近 0。除以 \(\sqrt{d_k}\) 把分数的方差拉回 1 附近，训练才稳定。这个小细节是 Transformer 能训练起来的关键之一。</p>
     </div>
 
     <div class="lab" id="lab-softmax">
@@ -190,7 +190,7 @@
     <p class="chapter-lede">生成每个目标词时，真正相关的往往只是源句中的某几个词——注意力让解码器每一步都能"回头看"并自动对焦。</p>
 
     <h3><span class="sec-no">3.1</span>动机：翻译时该"看"哪里？</h3>
-    <p>编码器—解码器（seq2seq）模型做机器翻译时，编码器把整句源语压缩成一个固定向量，解码器只凭这一个向量逐词生成译文。问题在于：一个向量装不下长句的全部细节，也无法表达"当前该对齐源句哪个位置"。翻"hello world → bonjour le monde"时，生成 "bonjour" 主要该看 "hello"。</p>
+    <p>编码器—解码器（seq2seq）模型做机器翻译时，编码器把整句源语压缩成一个固定向量，解码器只凭这一个向量逐词生成译文。问题在于：一个向量装不下长句的全部细节，也无法表达"当前该对齐源句哪个位置"。注意力机制正好补上这一课。翻"hello world → bonjour le monde"时，生成 "bonjour" 主要该看 "hello"。</p>
     <figure>
         <img src="images/seq2seq.jpg" alt="seq2seq 机器翻译示例" loading="lazy">
         <figcaption>seq2seq 翻译：编码器逐词读入，解码器逐词生成。没有注意力时，解码器每一步只能依赖同一个固定向量，长句信息被严重压缩。</figcaption>
@@ -295,7 +295,7 @@
     </div>
     <p class="chapter-lede">2017 年《Attention Is All You Need》干脆彻底抛弃循环与卷积，只用注意力搭建整个模型。逐块拆解这座大厦。</p>
 
-    <h3><span class="sec-no">5.1</span>自注意力的两个特性：并行，但丢失顺序</h3>
+    <h3><span class="sec-no">5.1</span>自注意力机制：并行，但丢失顺序</h3>
     <p>自注意力要用 \(n\) 个输入生成 \(n\) 个输出，做法是把每个输入同时复制为键、值和查询。这带来两个直接影响：</p>
     <ul>
         <li><strong>不保留顺序信息</strong>：每个位置的输出只跟随词本身，与它在序列中的位置无关（置换不变性）；</li>
@@ -306,7 +306,7 @@
         <figcaption>自注意力机制：每个位置的输入被同时复制为 keys、values、queries，一次性并行算出所有输出——但框图里没有出现任何"第几个位置"的信息。</figcaption>
     </figure>
 
-    <h3><span class="sec-no">5.2</span>模型架构总览</h3>
+    <h3><span class="sec-no">5.2</span>Transformer 模型架构</h3>
     <p>Transformer 仍然是编码器—解码器架构，但循环层被整个换掉。注意力集中在 <strong>3 个地方</strong>：</p>
     <ul>
         <li><strong>编码器自注意力</strong>：源句内部互相关注，理解上下文；</li>
@@ -342,17 +342,23 @@
     </div>
 
     <h3><span class="sec-no">5.4</span>位置前馈网络（Position-wise FFN）</h3>
-    <p>每个变换器块里还有一个位置前馈网络，它对每个位置<strong>独立地</strong>过同一个两层 MLP。按讲义里的等价视角：将输入（批量，序列长度，特征数）重新整形为（批量 × 序列长度，特征数），用两层 MLP 变换，再转回 3-D——<strong>这等价于应用两个 \(1 \times 1\) 卷积层</strong>。</p>
+    <p>每个变换器块里还有一个<strong>位置前馈网络</strong>，它对每个位置独立地过同一个两层 MLP。按讲义里的等价视角来看它的计算：</p>
+    <ul>
+        <li>将输入（批量大小，序列长度，特征集大小）<strong>重新整形</strong>为（批量 × 序列长度，特征集大小）；</li>
+        <li>用<strong>两层 MLP</strong> 变换；</li>
+        <li>再<strong>转换回 3-D 形态</strong>；</li>
+        <li>这<strong>等价于应用两个 \(1 \times 1\) 卷积层</strong>。</li>
+    </ul>
     <figure>
         <img src="images/ffn_highlight.jpg" alt="变换器块中的位置前馈网络（高亮）" loading="lazy">
         <figcaption>橙色高亮即 Position-wise FFN：注意力负责"混合"位置间的信息，FFN 负责在每个位置上独立做非线性变换——两者分工明确。</figcaption>
     </figure>
 
     <h3><span class="sec-no">5.5</span>添加与归一化（Add &amp; Norm）</h3>
-    <p>每个子层外面都包着"Add &amp; Norm"：<strong>残差连接</strong>（输出 = 子层输出 + 原始输入，保证深层堆叠时梯度畅通）加<strong>层归一化</strong>（Layer Norm）。与批量归一化的区别在于：</p>
+    <p>每个子层外面都包着"Add &amp; Norm"：<strong>残差连接</strong>（输出 = 子层输出 + 原始输入，保证深层堆叠时梯度畅通）加<strong>层归一化（Layer Norm）</strong>。层规范类似于批量规范（Batch Norm），区别在于：</p>
     <ul>
-        <li>层归一化的均值和方差沿<strong>最后一个维度</strong>计算：<code>X.mean(axis=-1)</code>；</li>
-        <li>批量归一化沿<strong>批次维度</strong>计算：<code>X.mean(axis=0)</code>。</li>
+        <li>平均值和方差是<strong>沿最后一个维度</strong>计算的：<code>X.mean(axis=-1)</code>；</li>
+        <li>而批量归一化是沿第一个批次维度计算的：<code>X.mean(axis=0)</code>。</li>
     </ul>
     <figure>
         <img src="images/layernorm.jpg" alt="Add & Norm：残差连接加层归一化" loading="lazy">
@@ -370,6 +376,10 @@
     <figure>
         <img src="images/posenc_highlight.jpg" alt="架构中的位置编码（高亮）" loading="lazy">
         <figcaption>橙色高亮即 Positional Encoding：编码器和解码器都在嵌入（Embedding）之上叠加位置编码，把顺序信息注入模型。</figcaption>
+    </figure>
+    <figure>
+        <img src="images/positional_encoding.png" alt="正余弦位置编码热力图" loading="lazy">
+        <figcaption>位置编码热力图（50 个位置 × 128 维）：横轴是序列位置，纵轴是嵌入维度。低维（底部）波纹细密、高维（顶部）平缓——每个位置因此拥有独一无二的"指纹"。</figcaption>
     </figure>
 
     <div class="lab" id="lab-posenc">
@@ -394,7 +404,8 @@
     <h3><span class="sec-no">5.7</span>预测：带掩码的自注意力</h3>
     <p>在时刻 \(t\) 预测时有个陷阱：如果自注意力能看到整个目标序列，第 \(t\) 个位置就能"偷看"答案本身——模型学会抄答案而非预测。解决办法是<strong>掩码</strong>（mask）：</p>
     <ul>
-        <li>只允许使用位置 \(1 \sim t\) 的键和值；</li>
+        <li>用<strong>之前输入的键和值</strong>（位置 \(1 \sim t-1\)）；</li>
+        <li>时刻 \(t\) 的输入作为<strong>查询（以及键和值）</strong>，来预测输出；</li>
         <li>未来位置的注意力分数被置为 \(-\infty\)，softmax 后权重为 0。</li>
     </ul>
     <figure>
@@ -499,7 +510,7 @@
     </div>
     <div class="quiz">
         <div class="q">Q3 · 与 RNN 相比，自注意力在长距离依赖和并行计算上各有什么优劣？序列非常长时它的瓶颈是什么？</div>
-        <div class="a">✅ 优势——任意两位置信息一步直达（最长路径 \(O(1)\)，RNN 是 \(O(n)\)），且所有位置可并行计算（RNN 必须串行）。瓶颈——计算复杂度 \(O(n^2 \cdot d)\) 且注意力矩阵占 \(O(n^2)\) 显存，序列上万时难以承受（改进方向：稀疏注意力、线性注意力等）。</div>
+        <div class="a">✅ 优势——任意两位置信息一步直达（最长路径 \(O(1)\)，RNN 是 \(O(n)\)），且所有位置可并行计算（RNN 必须串行）。瓶颈——计算复杂度 \(O(n^2 \cdot d)\) 且注意力矩阵占 \(O(n^2)\) 显存，序列上万时难以承受（后续工作的改进方向：稀疏注意力、线性注意力等）。</div>
     </div>
 
     <h3><span class="sec-no">7.3</span>课程后续</h3>
