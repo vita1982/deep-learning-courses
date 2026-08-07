@@ -6,7 +6,7 @@
 <script>
 (function () {
     /* 深色模式：渲染前应用，避免闪烁 */
-    try { if (localStorage.getItem('dl_theme') === 'dark') document.documentElement.classList.add('dl-dark'); } catch (e) {}
+    try { var _t = localStorage.getItem('dl_theme'); if (_t === 'dark') document.documentElement.classList.add('dl-dark'); else if (_t === 'sepia') document.documentElement.classList.add('dl-sepia'); } catch (e) {}
     /* 课程口令门（简单保护） */
     try { if (localStorage.getItem('dl_gate_v1') === '1') return; } catch (e) {}
     document.documentElement.classList.add('dl-gating');
@@ -54,6 +54,7 @@
     <title>第05讲 循环神经网络（RNN）· 互动讲义版</title>
     <link rel="stylesheet" href="../../assets/katex/katex.min.css">
     <link rel="stylesheet" href="../../assets/course.css">
+    <script src="../../assets/course.js" defer></script>
 </head>
 <body>
 
@@ -71,7 +72,7 @@
     <div class="kicker">深度学习 · 第05讲</div>
     <h1>循环神经网络（RNN）</h1>
     <p class="sub">Recurrent Neural Networks —— 互动讲义</p>
-    <p class="meta">基于《动手学深度学习》课程 · 互动讲义版 · 版式与互动设计参考 ai.richardxu.com/ml</p>
+    <p class="meta">基于《动手学深度学习》课程 · 互动讲义版</p>
 </header>
 <!-- ==================== 第一章 ==================== -->
 <section class="chapter" id="ch1">
@@ -535,7 +536,7 @@
 
 <div class="footer">
     深度学习课程站 · 第05讲 循环神经网络（RNN）· 互动讲义版 · 基于《动手学深度学习》课程<br>
-    版式与互动设计参考 <a href="https://ai.richardxu.com/ml/#/m/transformer" target="_blank" rel="noopener">ai.richardxu.com/ml</a> · 课程反馈：dlcourses2026@sina.com
+    课程反馈：dlcourses2026@sina.com
 </div>
 
 <script>

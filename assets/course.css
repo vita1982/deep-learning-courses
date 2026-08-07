@@ -2,11 +2,14 @@
     html.dl-gating body > *:not(#dl-gate) { display: none !important; }
     #dl-gate { position: fixed; inset: 0; z-index: 99999; background: #F1F5F9; display: flex; align-items: center; justify-content: center; font-family: "Microsoft YaHei", sans-serif; }
     #dl-gate .dl-gate-card { background: #fff; border-radius: 14px; padding: 32px 30px; width: 340px; max-width: 88vw; box-sizing: border-box; text-align: center; box-shadow: 0 10px 40px rgba(15,23,42,.15); }
-    html.dl-dark { filter: invert(1) hue-rotate(180deg); background: #0F172A; }
-    html.dl-dark img, html.dl-dark canvas, html.dl-dark #dl-gate { filter: invert(1) hue-rotate(180deg); }
+    /* 深色模式：只对内容区做反转，避免 filter 挂在 html 上使 position:fixed 失效 */
+    html.dl-dark { background: #0F172A; }
+    html.dl-dark body { background: #0F172A; }
+    html.dl-dark .page, html.dl-dark .topbar { filter: invert(1) hue-rotate(180deg); }
+    html.dl-dark .page img, html.dl-dark .page canvas { filter: invert(1) hue-rotate(180deg); }
 
 /* ============================================================
-   深度学习课程站 · 互动讲义公共样式（参考 ai.richardxu.com/ml 风格）
+   深度学习课程站 · 互动讲义公共样式
    设计要点：居中窄栏阅读流 / 章节叙事 / 提示框 / 互动实验卡片
    ============================================================ */
 :root {
@@ -115,7 +118,7 @@ tr:nth-child(even) td { background: #FAFBFC; }
     background: #FBFCFD; color: #1F2937;
 }
 
-/* ---------- 提示框（参考站的 Key idea / Common confusion 等） ---------- */
+/* ---------- 提示框（Key idea / Common confusion 等） ---------- */
 .callout {
     margin: 24px 0; padding: 16px 18px 16px 20px;
     border-radius: 10px; border: 1px solid var(--line);
@@ -235,4 +238,177 @@ canvas.plot { max-width: 100%; border: 1px solid var(--line); border-radius: 10p
     .ctl input[type=range] { width: 120px; }
     .mg-cell { width: 34px; height: 30px; }
     .bar-row .lbl { width: 62px; }
+}
+
+/* ============================================================
+   公共功能：左侧目录 / 浮动工具 / 配色主题 / 页内查找
+   ============================================================ */
+
+/* 锚点跳转时为吸顶导航留出空间 */
+section.chapter, h3 { scroll-margin-top: 58px; }
+
+/* ---------- 左侧可折叠目录 ---------- */
+#dl-toc {
+    position: fixed; z-index: 60; top: 70px;
+    left: max(10px, calc(50% - 672px));
+    width: 224px; max-height: calc(100vh - 110px); overflow-y: auto;
+    background: var(--paper); border: 1px solid var(--line); border-radius: 12px;
+    box-shadow: 0 4px 18px rgba(15,23,42,.08);
+    font-size: 13.5px; line-height: 1.5;
+    display: none;
+}
+#dl-toc .dl-toc-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 12px; border-bottom: 1px solid var(--line);
+    font-weight: 700; color: var(--ink-2); letter-spacing: 1px; font-size: 13px;
+    position: sticky; top: 0; background: var(--paper); border-radius: 12px 12px 0 0;
+}
+#dl-toc .dl-toc-head button {
+    border: none; background: none; cursor: pointer; color: var(--ink-3);
+    font-size: 15px; padding: 2px 7px; border-radius: 6px;
+}
+#dl-toc .dl-toc-head button:hover { background: var(--wash); color: var(--ink); }
+#dl-toc .dl-toc-body { padding: 8px 8px 14px; }
+#dl-toc .dl-toc-ch { margin-bottom: 2px; }
+#dl-toc .dl-toc-ch-row { display: flex; align-items: center; gap: 2px; }
+#dl-toc a { text-decoration: none; overflow-wrap: break-word; }
+#dl-toc .dl-toc-ch-link {
+    flex: 1; display: block; padding: 5px 6px; border-radius: 7px;
+    color: var(--ink); font-weight: 600;
+    border-left: 3px solid transparent;
+}
+#dl-toc .dl-toc-ch-link .n { color: var(--brand); font-weight: 800; opacity: .5; margin-right: 6px; font-variant-numeric: tabular-nums; }
+#dl-toc .dl-toc-ch-link:hover { background: var(--wash); color: var(--brand); }
+#dl-toc .dl-toc-arrow {
+    border: none; background: none; cursor: pointer; color: var(--ink-3);
+    width: 22px; height: 22px; border-radius: 5px; font-size: 11px; flex-shrink: 0;
+    transition: transform .15s ease;
+}
+#dl-toc .dl-toc-arrow:hover { background: var(--wash); }
+#dl-toc .dl-toc-ch.closed .dl-toc-arrow { transform: rotate(-90deg); }
+#dl-toc .dl-toc-ch.closed .dl-toc-subs { display: none; }
+#dl-toc .dl-toc-subs { margin: 2px 0 6px; }
+#dl-toc .dl-toc-subs a {
+    display: block; padding: 3.5px 6px 3.5px 26px; border-radius: 6px;
+    color: var(--ink-2); border-left: 3px solid transparent;
+}
+#dl-toc .dl-toc-subs a:hover { background: var(--wash); color: var(--brand); }
+#dl-toc a.active { color: var(--brand); background: var(--brand-soft); border-left-color: var(--brand); }
+
+#dl-toc-mask { display: none; position: fixed; inset: 0; z-index: 55; background: rgba(15,23,42,.35); }
+
+/* 宽屏：常驻侧栏；可整体收起（记住状态） */
+@media (min-width: 1340px) {
+    #dl-toc { display: block; }
+    html.dl-toc-collapsed #dl-toc { display: none; }
+}
+/* 窄屏 / 移动端：抽屉式目录 */
+@media (max-width: 1339.5px) {
+    #dl-toc {
+        top: 0; bottom: 0; left: 0; width: 280px; max-width: 84vw;
+        max-height: none; border-radius: 0; overflow-y: auto;
+    }
+    #dl-toc .dl-toc-head { border-radius: 0; }
+    html.dl-toc-open #dl-toc { display: block; }
+    html.dl-toc-open #dl-toc-mask { display: block; }
+}
+
+/* ---------- 右下浮动工具组 ---------- */
+#dl-tools {
+    position: fixed; right: 16px; bottom: 20px; z-index: 70;
+    display: flex; flex-direction: column; gap: 9px;
+}
+#dl-tools button {
+    width: 42px; height: 42px; border-radius: 50%;
+    border: 1px solid var(--line); background: var(--paper);
+    box-shadow: 0 3px 12px rgba(15,23,42,.13);
+    cursor: pointer; font-size: 17px; color: var(--ink-2);
+    display: flex; align-items: center; justify-content: center;
+    transition: transform .15s ease, color .15s ease, border-color .15s ease;
+}
+#dl-tools button:hover { color: var(--brand); border-color: var(--brand); transform: translateY(-1px); }
+#dl-tool-top { display: none; }
+html.dl-scrolled #dl-tool-top { display: flex; }
+
+/* ---------- 配色菜单 ---------- */
+#dl-theme-menu {
+    position: fixed; z-index: 71; min-width: 112px;
+    background: var(--paper); border: 1px solid var(--line); border-radius: 10px;
+    box-shadow: 0 6px 24px rgba(15,23,42,.16); padding: 6px;
+    display: none;
+}
+#dl-theme-menu.open { display: block; }
+#dl-theme-menu button {
+    display: flex; align-items: center; gap: 9px; width: 100%;
+    border: none; background: none; padding: 8px 10px;
+    font-size: 13.5px; color: var(--ink); cursor: pointer; border-radius: 7px; text-align: left;
+}
+#dl-theme-menu button:hover { background: var(--wash); }
+#dl-theme-menu button.sel { color: var(--brand); font-weight: 700; }
+#dl-theme-menu .dot { width: 14px; height: 14px; border-radius: 50%; border: 1px solid var(--line); flex-shrink: 0; }
+
+/* 护眼（米色）主题：只换调色板，不动版式 */
+html.dl-sepia {
+    --paper: #F8F1E4; --wash: #F0E7D3;
+    --ink: #453A2B; --ink-2: #6F6050; --ink-3: #A08F78;
+    --line: #E2D6BE; --brand: #1D5FBF; --brand-soft: #EFE5CE;
+    background: #F8F1E4;
+}
+html.dl-sepia body { background: var(--paper); }
+html.dl-sepia .topbar { background: rgba(248,241,228,.92); }
+html.dl-sepia .quiz, html.dl-sepia canvas.plot, html.dl-sepia .mg-cell,
+html.dl-sepia .btn.ghost, html.dl-sepia #dl-tools button, html.dl-sepia #dl-search button { background: #FFFBF1; }
+html.dl-sepia .codecard pre { background: #FBF5E6; color: #453A2B; }
+html.dl-sepia .lab-note { background: #F4ECDA; }
+html.dl-sepia tr:nth-child(even) td { background: #F4ECDA; }
+html.dl-sepia .mg-cell.off { background: repeating-linear-gradient(45deg, #EFE7D2, #EFE7D2 4px, #E7DCC2 4px, #E7DCC2 8px); }
+
+/* 深色模式下功能控件的配色（内容区由反转滤镜处理） */
+html.dl-dark #dl-toc { background: #0F172A; border-color: #334155; box-shadow: 0 4px 18px rgba(0,0,0,.5); }
+html.dl-dark #dl-toc .dl-toc-head { background: #0F172A; border-color: #334155; color: #CBD5E1; }
+html.dl-dark #dl-toc .dl-toc-head button { color: #64748B; }
+html.dl-dark #dl-toc .dl-toc-ch-link { color: #E2E8F0; }
+html.dl-dark #dl-toc .dl-toc-subs a { color: #94A3B8; }
+html.dl-dark #dl-toc a:hover { background: #1E293B; color: #93C5FD; }
+html.dl-dark #dl-toc a.active { background: #172554; color: #93C5FD; border-left-color: #60A5FA; }
+html.dl-dark #dl-toc .dl-toc-arrow { color: #64748B; }
+html.dl-dark #dl-toc .dl-toc-arrow:hover, html.dl-dark #dl-toc .dl-toc-head button:hover { background: #1E293B; }
+html.dl-dark #dl-toc-mask { background: rgba(0,0,0,.55); }
+html.dl-dark #dl-tools button { background: #1E293B; border-color: #334155; color: #CBD5E1; box-shadow: 0 3px 12px rgba(0,0,0,.5); }
+html.dl-dark #dl-tools button:hover { color: #93C5FD; border-color: #60A5FA; }
+html.dl-dark #dl-theme-menu { background: #0F172A; border-color: #334155; }
+html.dl-dark #dl-theme-menu button { color: #E2E8F0; }
+html.dl-dark #dl-theme-menu button:hover { background: #1E293B; }
+html.dl-dark #dl-search { background: #0F172A; border-color: #334155; }
+html.dl-dark #dl-search input { background: #1E293B; border-color: #334155; color: #E2E8F0; }
+html.dl-dark #dl-search button { background: #1E293B; border-color: #334155; color: #CBD5E1; }
+
+/* ---------- 页内查找 ---------- */
+#dl-search {
+    position: fixed; top: 58px; right: 14px; z-index: 72;
+    display: none; align-items: center; gap: 6px;
+    background: var(--paper); border: 1px solid var(--line); border-radius: 10px;
+    box-shadow: 0 6px 24px rgba(15,23,42,.16); padding: 8px 10px;
+}
+#dl-search.open { display: flex; }
+#dl-search input {
+    border: 1px solid var(--line); border-radius: 7px; padding: 6px 10px;
+    font-size: 14px; width: min(200px, 42vw); outline: none;
+    background: var(--paper); color: var(--ink); font-family: inherit;
+}
+#dl-search input:focus { border-color: var(--brand); }
+#dl-search .cnt { font-size: 12.5px; color: var(--ink-3); min-width: 46px; text-align: center; font-variant-numeric: tabular-nums; }
+#dl-search button {
+    border: 1px solid var(--line); background: var(--paper); color: var(--ink-2);
+    width: 28px; height: 28px; border-radius: 6px; cursor: pointer; font-size: 13px;
+}
+#dl-search button:hover { color: var(--brand); border-color: var(--brand); }
+mark.dl-hit { background: #FDE68A; color: inherit; border-radius: 3px; padding: 0 1px; }
+mark.dl-hit.cur { background: #F59E0B; color: #fff; outline: 2px solid #F59E0B; }
+
+@media (max-width: 768px) {
+    #dl-tools { right: 12px; bottom: 14px; }
+    #dl-tools button { width: 40px; height: 40px; }
+    #dl-search { top: 54px; right: 10px; left: 10px; }
+    #dl-search input { flex: 1; width: auto; }
 }
