@@ -51,1814 +51,1101 @@
     });
 })();
 </script>
-<style>
-    html.dl-gating body > *:not(#dl-gate) { display: none !important; }
-    #dl-gate { position: fixed; inset: 0; z-index: 99999; background: #F1F5F9; display: flex; align-items: center; justify-content: center; font-family: "Microsoft YaHei", sans-serif; }
-    #dl-gate .dl-gate-card { background: #fff; border-radius: 14px; padding: 32px 30px; width: 340px; max-width: 88vw; box-sizing: border-box; text-align: center; box-shadow: 0 10px 40px rgba(15,23,42,.15); }
-    /* 深色模式：整体反转，媒体与浮层再反转回来 */
-    html.dl-dark { filter: invert(1) hue-rotate(180deg); background: #0F172A; }
-    html.dl-dark img, html.dl-dark canvas, html.dl-dark #dl-tools, html.dl-dark .dl-modal-mask, html.dl-dark #dl-gate { filter: invert(1) hue-rotate(180deg); }
-</style>
-<script>
-/* 百度统计 */
-var _hmt = _hmt || [];
-(function () {
-    var hm = document.createElement('script');
-    hm.src = 'https://hm.baidu.com/hm.js?97388c2b7e8ffeae1e1b6135d3653f94';
-    var s = document.getElementsByTagName('script')[0];
-    s.parentNode.insertBefore(hm, s);
-})();
-</script>
-
-    <title>第04讲 卷积神经网络（CNN）讲义文稿</title>
-    <!-- KaTeX for LaTeX rendering -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        /* 移动端：超长公式在容器内横向滚动，避免撑宽页面 */
-        .katex-display { overflow-x: auto; overflow-y: hidden; padding: 2px 0; }
-
-        body {
-            font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
-            background: #F0F4F8;
-            color: #1E293B;
-            line-height: 1.9;
-            display: flex;
-        }
-
-        /* ========== 左侧导航栏 ========== */
-        .sidebar {
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 260px;
-            height: 100vh;
-            background: #FFFFFF;
-            border-right: 1px solid #E2E8F0;
-            overflow-y: auto;
-            z-index: 100;
-            box-shadow: 2px 0 12px rgba(0,0,0,0.04);
-            padding: 24px 0 24px 0;
-            scrollbar-width: thin;
-            scrollbar-color: #CBD5E1 transparent;
-        }
-        .sidebar::-webkit-scrollbar {
-            width: 5px;
-        }
-        .sidebar::-webkit-scrollbar-thumb {
-            background: #CBD5E1;
-            border-radius: 3px;
-        }
-        .sidebar::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .sidebar-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: #1E3A5F;
-            padding: 8px 24px 16px 24px;
-            border-bottom: 2px solid #2563EB;
-            margin-bottom: 8px;
-            letter-spacing: 1px;
-        }
-
-        .sidebar-nav {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .sidebar-nav li {
-            margin: 0;
-        }
-        .sidebar-nav a {
-            display: block;
-            padding: 10px 24px;
-            font-size: 15px;
-            color: #475569;
-            text-decoration: none;
-            border-left: 3px solid transparent;
-            transition: all 0.2s ease;
-            line-height: 1.5;
-        }
-        .sidebar-nav a:hover {
-            background: #F1F5F9;
-            color: #1E3A5F;
-            border-left-color: #94A3B8;
-        }
-        .sidebar-nav a.active {
-            background: #EFF6FF;
-            color: #2563EB;
-            font-weight: 600;
-            border-left-color: #2563EB;
-        }
-
-        /* 主内容区偏移 */
-        .main-wrapper {
-            margin-left: 260px;
-            flex: 1;
-            min-width: 0;
-        }
-
-        /* 深蓝渐变头部 */
-        .header {
-            background: linear-gradient(135deg, #1E3A5F 0%, #1A5276 30%, #2563EB 70%, #3B82F6 100%);
-            color: white;
-            padding: 60px 40px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-        .header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle at 30% 50%, rgba(255,255,255,0.05) 0%, transparent 50%);
-        }
-        .header h1 {
-            font-size: 48px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            position: relative;
-            z-index: 1;
-        }
-        .header .subtitle {
-            font-size: 22px;
-            opacity: 0.85;
-            position: relative;
-            z-index: 1;
-        }
-        .header .meta {
-            font-size: 16px;
-            opacity: 0.65;
-            margin-top: 8px;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* 主体容器 */
-        .container {
-            max-width: 960px;
-            margin: 0 auto;
-            padding: 40px 32px;
-        }
-
-        /* 章节标题 */
-        h2 {
-            font-size: 32px;
-            color: #1E3A5F;
-            margin: 50px 0 24px 0;
-            padding-bottom: 12px;
-            border-bottom: 3px solid #2563EB;
-            position: relative;
-        }
-        h2::after {
-            content: '';
-            position: absolute;
-            bottom: -3px;
-            left: 0;
-            width: 60px;
-            height: 3px;
-            background: #F59E0B;
-        }
-        h3 {
-            font-size: 24px;
-            color: #1A5276;
-            margin: 32px 0 16px 0;
-        }
-        h4 {
-            font-size: 20px;
-            color: #2563EB;
-            margin: 24px 0 12px 0;
-        }
-
-        p {
-            font-size: 17px;
-            margin-bottom: 16px;
-            text-align: justify;
-        }
-
-        /* 卡片布局 */
-        .card {
-            background: #FFFFFF;
-            border-radius: 12px;
-            border: 1px solid #E2E8F0;
-            padding: 28px 32px;
-            margin: 20px 0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-        }
-        .card-title {
-            font-size: 22px;
-            font-weight: 700;
-            color: #1E3A5F;
-            margin-bottom: 16px;
-            padding-left: 16px;
-            border-left: 4px solid #2563EB;
-        }
-
-        /* 代码块 */
-        .code-block {
-            background: #1E293B;
-            color: #E2E8F0;
-            border-radius: 8px;
-            padding: 20px 24px;
-            margin: 16px 0;
-            font-family: Consolas, "Courier New", monospace;
-            font-size: 15px;
-            line-height: 1.7;
-            overflow-x: auto;
-            white-space: pre-wrap;
-        }
-
-        /* 公式块 */
-        .formula {
-            background: #F8FAFC;
-            border: 1px solid #CBD5E1;
-            border-radius: 8px;
-            padding: 20px 24px;
-            margin: 16px 0;
-            text-align: center;
-            font-size: 20px;
-            color: #1E293B;
-            letter-spacing: 1px;
-        }
-
-        /* 对比表格 */
-        .compare-table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            margin: 20px 0;
-            font-size: 16px;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-        }
-        .compare-table thead th {
-            background: #1E3A5F;
-            color: white;
-            padding: 14px 18px;
-            text-align: center;
-            font-weight: 600;
-            font-size: 15px;
-        }
-        .compare-table tbody td {
-            padding: 12px 18px;
-            border-bottom: 1px solid #E2E8F0;
-            background: #FFFFFF;
-        }
-        .compare-table tbody tr:nth-child(even) td {
-            background: #F8FAFC;
-        }
-        .compare-table tbody tr:last-child td {
-            border-bottom: none;
-        }
-
-        /* 黄色警告框 */
-        .alert-warning {
-            background: #FEF3C7;
-            border: 1px solid #FCD34D;
-            border-left: 5px solid #F59E0B;
-            border-radius: 8px;
-            padding: 18px 24px;
-            margin: 20px 0;
-            font-size: 16px;
-            color: #92400E;
-        }
-        .alert-warning::before {
-            content: '\26A0\FE0F ';
-            font-size: 18px;
-        }
-
-        /* 蓝色强调框 */
-        .alert-info {
-            background: #EFF6FF;
-            border: 1px solid #BFDBFE;
-            border-left: 5px solid #2563EB;
-            border-radius: 8px;
-            padding: 18px 24px;
-            margin: 20px 0;
-            font-size: 16px;
-            color: #1E40AF;
-        }
-        .alert-info::before {
-            content: '\1F4A1 ';
-            font-size: 18px;
-        }
-
-        /* 绿色成功框 */
-        .alert-success {
-            background: #ECFDF5;
-            border: 1px solid #A7F3D0;
-            border-left: 5px solid #10B981;
-            border-radius: 8px;
-            padding: 18px 24px;
-            margin: 20px 0;
-            font-size: 16px;
-            color: #065F46;
-        }
-
-        /* 步骤列表 */
-        .step-list {
-            list-style: none;
-            padding: 0;
-            margin: 20px 0;
-        }
-        .step-list li {
-            display: flex;
-            align-items: flex-start;
-            margin-bottom: 14px;
-            padding: 12px 16px;
-            background: #FFFFFF;
-            border-radius: 8px;
-            border: 1px solid #E2E8F0;
-        }
-        .step-list .step-num {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 32px;
-            height: 32px;
-            min-width: 32px;
-            border-radius: 50%;
-            background: #2563EB;
-            color: white;
-            font-weight: 700;
-            font-size: 15px;
-            margin-right: 14px;
-        }
-        .step-list .step-content {
-            font-size: 16px;
-            padding-top: 4px;
-        }
-
-        /* 圆形编号自测题 */
-        .quiz-section {
-            margin: 30px 0;
-        }
-        .quiz-item {
-            display: flex;
-            align-items: flex-start;
-            margin-bottom: 16px;
-            padding: 18px 22px;
-            background: #FFFFFF;
-            border-radius: 10px;
-            border: 1px solid #E2E8F0;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.03);
-        }
-        .quiz-num {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 36px;
-            height: 36px;
-            min-width: 36px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #2563EB, #3B82F6);
-            color: white;
-            font-weight: 700;
-            font-size: 17px;
-            margin-right: 16px;
-        }
-        .quiz-content {
-            font-size: 16px;
-            padding-top: 6px;
-            flex: 1;
-        }
-        .quiz-content .quiz-question {
-            font-weight: 600;
-            color: #1E293B;
-            margin-bottom: 4px;
-        }
-        .quiz-content .quiz-hint {
-            color: #64748B;
-            font-size: 14px;
-            margin-top: 4px;
-        }
-
-        /* 标签样式 */
-        .tag {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 4px;
-            font-size: 13px;
-            font-weight: 600;
-            margin-right: 6px;
-        }
-        .tag-blue { background: #DBEAFE; color: #1E40AF; }
-        .tag-green { background: #D1FAE5; color: #065F46; }
-        .tag-yellow { background: #FEF3C7; color: #92400E; }
-        .tag-red { background: #FEE2E2; color: #991B1B; }
-
-        /* 分隔线 */
-        .divider {
-            border: none;
-            border-top: 1px solid #E2E8F0;
-            margin: 40px 0;
-        }
-
-        /* 图片样式 */
-        .img-container {
-            text-align: center;
-            margin: 24px 0;
-        }
-        .img-container img {
-            max-width: 100%;
-            border-radius: 10px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-            border: 1px solid #E2E8F0;
-        }
-        .img-container .img-caption {
-            font-size: 14px;
-            color: #64748B;
-            margin-top: 8px;
-        }
-
-        /* 双图并排 */
-        .img-row {
-            display: flex;
-            gap: 20px;
-            margin: 24px 0;
-            justify-content: center;
-            align-items: flex-start;
-        }
-        .img-row .img-col {
-            flex: 1;
-            text-align: center;
-        }
-        .img-row .img-col img {
-            max-width: 100%;
-            border-radius: 10px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-            border: 1px solid #E2E8F0;
-        }
-        .img-row .img-col .img-caption {
-            font-size: 14px;
-            color: #64748B;
-            margin-top: 8px;
-        }
-
-        /* 页脚 */
-        .footer {
-            text-align: center;
-            padding: 40px 24px;
-            color: #94A3B8;
-            font-size: 14px;
-        }
-
-        /* 响应式 */
-        @media (max-width: 768px) {
-            body { flex-direction: column; }
-            /* 移动端防溢出：宽表格/长公式在容器内横向滚动 */
-            .compare-table { display: block; overflow-x: auto; }
-            .formula { overflow-x: auto; }
-            .katex { display: inline-block; max-width: 100%; overflow-x: auto; overflow-y: hidden; vertical-align: middle; }
-            .sidebar {
-                position: relative;
-                width: 100%;
-                height: auto;
-                max-height: 250px;
-            }
-            .main-wrapper {
-                margin-left: 0;
-            }
-            .header h1 { font-size: 32px; }
-            .header { padding: 40px 20px; }
-            .container { padding: 20px 16px; }
-            h2 { font-size: 26px; }
-            .compare-table { font-size: 14px; }
-            .img-row { flex-direction: column; }
-        }
-
-        /* 列表样式 */
-        ul, ol {
-            margin: 12px 0 12px 24px;
-            font-size: 16px;
-        }
-        ul li, ol li {
-            margin-bottom: 8px;
-        }
-
-        strong {
-            color: #1E3A5F;
-        }
-
-        /* blockquote */
-        blockquote {
-            border-left: 4px solid #2563EB;
-            padding: 12px 20px;
-            margin: 16px 0;
-            background: #F8FAFC;
-            border-radius: 0 8px 8px 0;
-            font-size: 16px;
-            color: #475569;
-        }
-    
-        /* 课程导航栏 */
-        .course-top-nav {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 50px;
-            background: rgba(255,255,255,0.97);
-            border-bottom: 1px solid #E2E8F0;
-            z-index: 300;
-            backdrop-filter: blur(8px);
-            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
-        }
-        .course-nav-inner {
-            max-width: 960px;
-            margin: 0 auto;
-            padding: 0 24px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            height: 100%;
-        }
-        .course-nav-back {
-            font-size: 14px;
-            color: #475569;
-            text-decoration: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            transition: all 0.2s;
-        }
-        .course-nav-back:hover {
-            background: #F1F5F9;
-            color: #2563EB;
-        }
-        .course-nav-title {
-            font-size: 15px;
-            font-weight: 600;
-            color: #1E3A5F;
-        }
-        .course-nav-toc {
-            font-size: 14px;
-            color: #475569;
-            text-decoration: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            transition: all 0.2s;
-        }
-        .course-nav-toc:hover {
-            background: #F1F5F9;
-            color: #2563EB;
-        }
-        /* 调整主内容区，给顶部导航留出空间 */
-        .main-wrapper {
-            margin-top: 50px;
-        }
-        @media (max-width: 768px) {
-            .course-nav-title { display: none; }
-        }
-    
-    
-        /* ===== 侧栏位置修正与自动缩进 ===== */
-        @media (min-width: 769px) {
-            .sidebar { top: 50px; height: calc(100vh - 50px); transition: transform 0.3s ease; }
-            .main-wrapper { transition: margin-left 0.3s ease; }
-            body.sidebar-collapsed .sidebar { transform: translateX(-110%); }
-            body.sidebar-collapsed .main-wrapper { margin-left: 0; }
-        }
-        .sidebar-toggle {
-            position: fixed; top: 60px; left: 232px; z-index: 350;
-            width: 34px; height: 34px; border-radius: 8px;
-            border: 1px solid #E2E8F0; background: #FFFFFF; color: #1E3A5F;
-            font-size: 16px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.10);
-            display: flex; align-items: center; justify-content: center;
-            transition: left 0.3s ease;
-        }
-        .sidebar-toggle:hover { background: #EFF6FF; }
-        body.sidebar-collapsed .sidebar-toggle { left: 12px; }
-        @media (max-width: 768px) { .sidebar-toggle { display: none; } }
-
-        /* ===== 自测题点击展开答案 ===== */
-        .quiz-item { cursor: pointer; }
-        .quiz-hint { display: none; }
-        .quiz-item.open .quiz-hint { display: block; }
-        .quiz-question::after {
-            content: '👆 点击显示答案'; margin-left: 10px;
-            font-size: 12px; color: #94A3B8; font-weight: 400;
-        }
-        .quiz-item.open .quiz-question::after { content: '👆 点击收起答案'; }
-
-        /* ===== 输出尺寸计算器 ===== */
-        .conv-calc .calc-row { display: flex; align-items: center; gap: 14px; margin: 12px 0; }
-        .conv-calc label { width: 130px; min-width: 130px; font-size: 15px; color: #475569; }
-        .conv-calc input[type=range] { flex: 1; accent-color: #2563EB; }
-        .conv-calc .calc-val { width: 34px; text-align: right; font-weight: 700; color: #2563EB; font-size: 16px; }
-        .conv-calc .calc-result {
-            margin-top: 16px; padding: 14px; background: #EFF6FF; border-radius: 8px;
-            text-align: center; font-size: 17px; color: #1E40AF;
-        }
-        .conv-calc .calc-note { font-size: 13px; color: #64748B; margin-top: 6px; }
-
-        /* 移动端：固定顶栏下给侧栏让位 */
-        @media (max-width: 768px) { .sidebar { margin-top: 50px; } }
-</style>
+    <title>第04讲 卷积神经网络（CNN）· 互动讲义版</title>
+    <link rel="stylesheet" href="../../assets/katex/katex.min.css">
+    <link rel="stylesheet" href="../../assets/course.css">
 </head>
 <body>
-<!-- 课程顶部导航 -->
-<nav class="course-top-nav">
-    <div class="course-nav-inner">
-        <a href="../../index.html" class="course-nav-back">← 返回课程首页</a>
-        <span class="course-nav-title">深度学习 · 第04讲 卷积神经网络（CNN）</span>
-        <a href="#sec1" class="course-nav-toc">📑 目录</a>
+
+<nav class="topbar">
+    <div class="topbar-inner">
+        <a href="../../index.html">← 课程首页</a>
+        <span class="spacer"></span>
+        <span class="pill">互动讲义</span>
     </div>
 </nav>
 
+<div class="page">
 
-<!-- ========== 左侧导航栏 ========== -->
-<nav class="sidebar">
-    <div class="sidebar-title">📑 本讲目录</div>
-    <ul class="sidebar-nav">
-        <li><a href="#sec1">一、回顾：单隐含层网络</a></li>
-        <li><a href="#sec2">二、卷积神经网络概述</a></li>
-        <li><a href="#sec3">三、卷积运算基础</a></li>
-        <li><a href="#sec4">四、二维卷积层</a></li>
-        <li><a href="#sec5">五、填充与步幅</a></li>
-        <li><a href="#sec6">六、多输入输出通道</a></li>
-        <li><a href="#sec7">七、1×1 卷积层</a></li>
-        <li><a href="#sec8">八、池化层</a></li>
-        <li><a href="#sec9">九、Why CNN？</a></li>
-        <li><a href="#sec10">十、代表性卷积神经网络</a></li>
-        <li><a href="#sec11">十一、核心公式速查</a></li>
-        <li><a href="#sec12">十二、总结与思考</a></li>
-    </ul>
-</nav>
-
-<!-- ========== 主内容区 ========== -->
-<div class="main-wrapper">
-
-<div class="header">
-    <h1>第04讲 卷积神经网络（CNN）</h1>
-    <div class="subtitle">Convolutional Neural Networks — 讲义文稿</div>
-    <div class="meta">基于《动手学深度学习》课程</div>
-</div>
-
-<div class="container">
-
+<header class="hero">
+    <div class="kicker">深度学习 · 第04讲</div>
+    <h1>卷积神经网络（CNN）</h1>
+    <p class="sub">Convolutional Neural Networks —— 互动讲义</p>
+    <p class="meta">基于《动手学深度学习》课程 · 互动讲义版 · 版式与互动设计参考 ai.richardxu.com/ml</p>
+</header>
 <!-- ==================== 第一章 ==================== -->
-<h2 id="sec1">一、回顾：单隐含层网络</h2>
+<section class="chapter" id="ch1">
+    <div class="chapter-head">
+        <span class="chapter-num">1</span>
+        <h2>回顾：单隐含层网络</h2>
+    </div>
+    <p class="chapter-lede">在介绍卷积神经网络之前，先回顾前馈神经网络中的单隐含层网络，看看它直接处理图像时会遇到什么麻烦。</p>
 
-<h3>1.1 单隐含层网络的结构</h3>
-<p>在介绍卷积神经网络之前，我们先回顾一下前馈神经网络中的<strong>单隐含层网络</strong>。</p>
-
-<div class="img-container">
-    <img src="images/typora_single_layer.png" alt="单隐含层网络结构" style="max-width:50%;">
-</div>
-
-<p>它的数学表达为：</p>
-<div class="formula">
-    \(\mathbf{h} = \sigma(\mathbf{W}\mathbf{x} + \mathbf{b})\)
-</div>
-<p>其中：</p>
-<ul>
-    <li>\(\mathbf{x}\) 是输入向量</li>
-    <li>\(\mathbf{W}\) 是权重矩阵</li>
-    <li>\(\mathbf{b}\) 是偏差向量</li>
-    <li>\(\sigma\) 是激活函数（如 ReLU、Sigmoid 等）</li>
-    <li>\(\mathbf{h}\) 是隐含层的输出</li>
-</ul>
-
-<h3>1.2 图像输入带来的参数爆炸</h3>
-<p>当我们将图像作为输入时，问题就出现了。以 CIFAR-10 数据集中的图像为例：</p>
-
-<div class="img-container">
-    <img src="images/typora_params_explosion.png" alt="图像输入参数爆炸" style="max-width:50%;">
-</div>
-
-<div class="card">
+    <h3><span class="sec-no">1.1</span>单隐含层网络的结构</h3>
+    <p>在介绍卷积神经网络之前，我们先回顾一下前馈神经网络中的单隐含层网络。</p>
+    <figure>
+        <img src="images/typora_single_layer.png" alt="单隐含层网络结构" loading="lazy">
+        <figcaption>单隐含层网络结构</figcaption>
+    </figure>
+    <p>它的数学表达为：</p>
+    <p>\(\mathbf{h} = \sigma(\mathbf{W}\mathbf{x} + \mathbf{b})\)</p>
+    <p>其中：</p>
     <ul>
-        <li>图像尺寸：<strong>32 × 32</strong> 像素</li>
-        <li>颜色通道：<strong>3</strong>（RGB）</li>
-        <li><span class="tag tag-red">输入节点数</span> = 32 × 32 × 3 = <strong>3,072</strong></li>
+        <li>\(\mathbf{x}\) 是输入向量</li>
+        <li>\(\mathbf{W}\) 是权重矩阵</li>
+        <li>\(\mathbf{b}\) 是偏差向量</li>
+        <li>\(\sigma\) 是激活函数（如 ReLU、Sigmoid 等）</li>
+        <li>\(\mathbf{h}\) 是隐含层的输出</li>
     </ul>
-    <p style="margin-top:12px;">如果隐含层有 <strong>100 个神经元</strong>，那么：</p>
-    <p style="text-align:center; font-size:20px; color:#EF4444; font-weight:700;">
-        权重参数数量 = 3,072 × 100 = 307,200 个
-    </p>
-</div>
 
-<p>这还只是一个隐含层！如果网络更深、图像更大，参数量会呈指数级增长。</p>
+    <h3><span class="sec-no">1.2</span>图像输入带来的参数爆炸</h3>
+    <p>当我们将图像作为输入时，问题就出现了。以 CIFAR-10 数据集中的图像为例：</p>
+    <figure>
+        <img src="images/typora_params_explosion.png" alt="图像输入参数爆炸" loading="lazy">
+        <figcaption>图像输入参数爆炸</figcaption>
+    </figure>
+    <ul>
+        <li>图像尺寸：32 × 32 像素</li>
+        <li>颜色通道：3（RGB）</li>
+        <li>输入节点数 = 32 × 32 × 3 = 3,072</li>
+    </ul>
+    <p>如果隐含层有 100 个神经元，那么：</p>
+    <ul>
+        <li>权重参数数量 = 3,072 × 100 = 307,200 个</li>
+    </ul>
+    <p>这还只是一个隐含层！如果网络更深、图像更大，参数量会呈指数级增长。</p>
+    <div class="callout warn">
+        <span class="co-tag">⚠️ 核心问题</span>
+        <p>参数量随输入维度爆炸式增长，导致计算开销巨大、容易过拟合。</p>
+    </div>
 
-<div class="alert-warning">
-    <strong>核心问题：</strong>参数量随输入维度爆炸式增长，导致计算开销巨大、容易过拟合。
-</div>
-
-<h3>1.3 全连接网络的三个缺陷</h3>
-<p>将全连接网络直接用于图像处理存在三大问题：</p>
-
-<table class="compare-table">
-    <thead>
-        <tr>
-            <th style="width:22%;">问题</th>
-            <th style="width:38%;">描述</th>
-            <th style="width:40%;">CNN 的解决方案</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td><strong>参数量巨大</strong></td>
-            <td>每个像素与每个神经元全连接</td>
-            <td>局部连接 + 权值共享</td>
-        </tr>
-        <tr>
-            <td><strong>空间信息丢失</strong></td>
-            <td>将二维图像展平为一维向量，破坏空间结构</td>
-            <td>保留二维结构进行卷积</td>
-        </tr>
-        <tr>
-            <td><strong>平移变化敏感</strong></td>
-            <td>物体位置稍有变化，网络就难以识别</td>
-            <td>平移不变性（卷积+池化）</td>
-        </tr>
-    </tbody>
-</table>
-
-<p>这三个问题直接催生了<strong>卷积神经网络（CNN）</strong>的诞生。</p>
+    <h3><span class="sec-no">1.3</span>全连接网络的三个缺陷</h3>
+    <p>将全连接网络直接用于图像处理存在三大问题：</p>
+    <div class="tbl-wrap">
+        <table>
+            <tr><th>问题</th><th>描述</th><th>CNN 的解决方案</th></tr>
+            <tr><td>参数量巨大</td><td>每个像素与每个神经元全连接</td><td>局部连接 + 权值共享</td></tr>
+            <tr><td>空间信息丢失</td><td>将二维图像展平为一维向量，破坏空间结构</td><td>保留二维结构进行卷积</td></tr>
+            <tr><td>平移变化敏感</td><td>物体位置稍有变化，网络就难以识别</td><td>平移不变性（卷积+池化）</td></tr>
+        </table>
+    </div>
+    <p>这三个问题直接催生了卷积神经网络（CNN）的诞生。</p>
+</section>
 
 <!-- ==================== 第二章 ==================== -->
-<h2 id="sec2">二、卷积神经网络概述</h2>
-
-<h3>2.1 什么是 CNN？</h3>
-<p><strong>卷积神经网络（Convolutional Neural Networks，CNN）</strong>是一类专门为处理网格化数据（如图像）而设计的深度神经网络。其核心思想是使用<strong>卷积运算</strong>替代全连接层中的矩阵乘法。</p>
-
-<!-- CNN 概览图 -->
-<div class="img-row">
-    <div class="img-col">
-        <img src="images/p4_cnn_overview.jpeg" alt="CNN概览1">
+<section class="chapter" id="ch2">
+    <div class="chapter-head">
+        <span class="chapter-num">2</span>
+        <h2>卷积神经网络概述</h2>
     </div>
-    <div class="img-col">
-        <img src="images/p5_cnn_structure.jpeg" alt="CNN结构">
+    <p class="chapter-lede">CNN 用卷积运算替代全连接层中的矩阵乘法，专门为图像这样的网格化数据而设计。</p>
+
+    <h3><span class="sec-no">2.1</span>什么是 CNN？</h3>
+    <p>卷积神经网络（Convolutional Neural Networks，CNN）是一类专门为处理网格化数据（如图像）而设计的深度神经网络。其核心思想是使用卷积运算替代全连接层中的矩阵乘法。</p>
+    <figure>
+        <img src="images/p4_cnn_overview.jpeg" alt="CNN概览1" loading="lazy">
+        <figcaption>CNN 概览</figcaption>
+    </figure>
+    <figure>
+        <img src="images/p5_cnn_structure.jpeg" alt="CNN结构" loading="lazy">
+        <figcaption>CNN 结构</figcaption>
+    </figure>
+
+    <h3><span class="sec-no">2.2</span>CNN 的基本架构</h3>
+    <p>典型的 CNN 架构包含以下层次结构：</p>
+    <p class="muted">输入图像 → 卷积层(特征提取) → 池化层(下采样) → ... → 全连接层(分类) → 输出</p>
+    <ul>
+        <li><strong>卷积层</strong>：提取局部特征（边缘、纹理、形状等）</li>
+        <li><strong>池化层</strong>：降低空间分辨率，提供平移不变性</li>
+        <li><strong>全连接层</strong>：综合特征进行最终分类</li>
+    </ul>
+    <div class="callout key">
+        <span class="co-tag">🔑 核心洞察</span>
+        <p>浅层网络检测边缘和纹理等低级特征，深层网络检测物体部件和语义概念等高级特征。</p>
     </div>
-</div>
 
-<h3>2.2 CNN 的基本架构</h3>
-<p>典型的 CNN 架构包含以下层次结构：</p>
-<div class="code-block">输入图像 → 卷积层(特征提取) → 池化层(下采样) → ... → 全连接层(分类) → 输出</div>
-<ul>
-    <li><strong>卷积层</strong>：提取局部特征（边缘、纹理、形状等）</li>
-    <li><strong>池化层</strong>：降低空间分辨率，提供平移不变性</li>
-    <li><strong>全连接层</strong>：综合特征进行最终分类</li>
-</ul>
-
-<div class="alert-info">
-    <strong>核心洞察：</strong>浅层网络检测边缘和纹理等低级特征，深层网络检测物体部件和语义概念等高级特征。
-</div>
-
-<h3>2.3 CNN 之父——Yann LeCun（杨立昆）</h3>
-
-<div class="card">
-    <p>Yann LeCun 是深度学习领域的奠基人之一，被誉为<strong>"卷积神经网络之父"</strong>。他与 Geoffrey Hinton、Yoshua Bengio 并称"深度学习三巨头"，于 2018 年共同获得<strong>图灵奖</strong>。</p>
-</div>
-
-<p><strong>LeCun 的关键贡献：</strong></p>
-
-<table class="compare-table">
-    <thead>
-        <tr><th>年份</th><th>贡献</th><th>意义</th></tr>
-    </thead>
-    <tbody>
-        <tr><td>1989</td><td>将反向传播应用于卷积神经网络</td><td>首次证明 CNN 可以通过梯度下降训练</td></tr>
-        <tr><td>1998</td><td><strong>LeNet-5</strong></td><td>最早的实用 CNN 架构，成功应用于银行支票手写数字识别，奠定了现代 CNN 的基础</td></tr>
-        <tr><td>2013</td><td>Facebook AI Research（FAIR）主任</td><td>领导大规模 AI 研究，推动 CNN 在工业界的广泛应用</td></tr>
-    </tbody>
-</table>
-
-<div class="alert-info">
-    <strong>启示：</strong>CNN 不是一蹴而就的——LeNet-5 在 1998 年就已提出，但由于数据和算力不足，直到 2012 年 AlexNet 出现才真正引爆了 CNN 革命。技术积累需要时间，但基础理论始终是关键的。
-</div>
+    <h3><span class="sec-no">2.3</span>CNN 之父——Yann LeCun（杨立昆）</h3>
+    <div class="callout hist">
+        <span class="co-tag">📜 人物</span>
+        <p>Yann LeCun 是深度学习领域的奠基人之一，被誉为"卷积神经网络之父"。他与 Geoffrey Hinton、Yoshua Bengio 并称"深度学习三巨头"，于 2018 年共同获得图灵奖。</p>
+    </div>
+    <p>LeCun 的关键贡献：</p>
+    <div class="tbl-wrap">
+        <table>
+            <tr><th>年份</th><th>贡献</th><th>意义</th></tr>
+            <tr><td>1989</td><td>将反向传播应用于卷积神经网络</td><td>首次证明 CNN 可以通过梯度下降训练</td></tr>
+            <tr><td>1998</td><td>LeNet-5</td><td>最早的实用 CNN 架构，成功应用于银行支票手写数字识别，奠定了现代 CNN 的基础</td></tr>
+            <tr><td>2013</td><td>Facebook AI Research（FAIR）主任</td><td>领导大规模 AI 研究，推动 CNN 在工业界的广泛应用</td></tr>
+        </table>
+    </div>
+    <div class="callout try">
+        <span class="co-tag">💡 启示</span>
+        <p>CNN 不是一蹴而就的——LeNet-5 在 1998 年就已提出，但由于数据和算力不足，直到 2012 年 AlexNet 出现才真正引爆了 CNN 革命。技术积累需要时间，但基础理论始终是关键的。</p>
+    </div>
+</section>
 
 <!-- ==================== 第三章 ==================== -->
-<h2 id="sec3">三、卷积运算基础</h2>
+<section class="chapter" id="ch3">
+    <div class="chapter-head">
+        <span class="chapter-num">3</span>
+        <h2>卷积运算基础</h2>
+    </div>
+    <p class="chapter-lede">卷积核在图像上逐行逐列滑动，每次只看一个小区域——这就是 CNN 提取局部特征的方式。</p>
 
-<h3>3.1 什么是卷积？</h3>
-<p><strong>直观理解：</strong>卷积就像用一个"放大镜"（卷积核）在图像上逐行逐列滑动，每次只看一个小区域，提取该区域的局部特征。</p>
-
-<!-- 卷积演示图 -->
-<div class="img-container">
-    <img src="images/p6_conv_demo.jpeg" alt="卷积演示" style="max-width:55%;">
-</div>
-
-<div class="card">
+    <h3><span class="sec-no">3.1</span>什么是卷积？</h3>
+    <p><strong>直观理解</strong>：卷积就像用一个"放大镜"（卷积核）在图像上逐行逐列滑动，每次只看一个小区域，提取该区域的局部特征。</p>
+    <figure>
+        <img src="images/p6_conv_demo.jpeg" alt="卷积演示" loading="lazy">
+        <figcaption>卷积演示</figcaption>
+    </figure>
     <ul>
         <li><strong>卷积核（Kernel / Filter）</strong>：一个小的权重矩阵，相当于"特征探测器"</li>
         <li><strong>输出（特征图）</strong>：每个位置记录核与输入局部区域的匹配程度</li>
         <li><strong>不同核 → 不同特征图</strong>：边缘检测核、模糊核、锐化核等</li>
     </ul>
-</div>
 
-<h3>3.2 互相关与卷积</h3>
-<p>在数学上，有两个密切相关的概念需要区分：</p>
-
-<div class="card">
-    <div class="card-title">2-D 互相关（Cross-Correlation）— 深度学习实际使用</div>
-    <div class="formula">
-        \(h(i,j) = \sum_{a}\sum_{b} X(i+a,\ j+b) \cdot K(a,b)\)
+    <h3><span class="sec-no">3.2</span>互相关与卷积</h3>
+    <p>在数学上，有两个密切相关的概念需要区分：</p>
+    <p><strong>2-D 互相关（Cross-Correlation）— 深度学习实际使用</strong></p>
+    <p>\(h(i,j) = \sum_{a}\sum_{b} X(i+a,\ j+b) \cdot K(a,b)\)</p>
+    <p>核不做翻转，直接滑动计算。</p>
+    <p><strong>2-D 卷积（Convolution）— 严格数学定义</strong></p>
+    <p>\(h(i,j) = \sum_{a}\sum_{b} X(i-a,\ j-b) \cdot K(a,b)\)</p>
+    <p>核翻转180°后滑动计算。</p>
+    <figure>
+        <img src="images/conv_cross_corr_autocorr.png" alt="卷积 vs 互相关 vs 自相关对比" loading="lazy">
+        <figcaption>卷积（Convolution）vs 互相关（Cross-correlation）vs 自相关（Autocorrelation）对比</figcaption>
+    </figure>
+    <div class="callout key">
+        <span class="co-tag">🔑 深度学习中的约定</span>
+        <p>实际使用的是"互相关"运算，但习惯上仍称其为"卷积"。因为翻转操作不改变特征提取能力，省去翻转可以节省计算开销。</p>
     </div>
-    <p>核<strong>不做翻转</strong>，直接滑动计算。</p>
-</div>
-
-<div class="card">
-    <div class="card-title">2-D 卷积（Convolution）— 严格数学定义</div>
-    <div class="formula">
-        \(h(i,j) = \sum_{a}\sum_{b} X(i-a,\ j-b) \cdot K(a,b)\)
+    <p><strong>深入理解：互相关 vs 卷积 vs 自相关</strong>——这三种运算密切相关但各有不同用途。根据上图中的对比：</p>
+    <div class="tbl-wrap">
+        <table>
+            <tr><th>运算</th><th>核心操作</th><th>直观理解</th></tr>
+            <tr>
+                <td>互相关<br>Cross-Correlation</td>
+                <td>核不做翻转，直接滑动计算</td>
+                <td>用模板匹配：问"这张图中哪里长得像我手上的模板？"。把模板（核）放在图上滑动，匹配度越高，输出值越大。CNN 实际使用的就是这个。</td>
+            </tr>
+            <tr>
+                <td>卷积<br>Convolution</td>
+                <td>核翻转 180° 后再滑动计算</td>
+                <td>用系统中的冲激响应来想：输入信号经过一个线性系统，输出是输入与系统冲激响应的卷积。翻转保证了交换律：\(f * g = g * f\)（互相关不满足交换律）。数学上更优雅，但 CNN 中翻转与否不影响学习效果。</td>
+            </tr>
+            <tr>
+                <td>自相关<br>Autocorrelation</td>
+                <td>信号与自身做互相关</td>
+                <td>检测信号内部的重复模式/周期性：把信号在时间轴上平移后与原信号比较。峰值出现在位移量等于周期的地方。常用于信号处理、基因序列分析等领域。</td>
+            </tr>
+        </table>
     </div>
-    <p>核<strong>翻转180°</strong>后滑动计算。</p>
-</div>
-
-<!-- 卷积、互相关、自相关对比图 -->
-<div class="img-container">
-    <img src="images/conv_cross_corr_autocorr.png" alt="卷积 vs 互相关 vs 自相关对比" style="max-width:60%;">
-    <div class="img-caption">卷积（Convolution）vs 互相关（Cross-correlation）vs 自相关（Autocorrelation）对比</div>
-</div>
-
-<div class="alert-info">
-    <strong>深度学习中的约定：</strong>实际使用的是"互相关"运算，但习惯上仍称其为"卷积"。因为翻转操作不改变特征提取能力，省去翻转可以节省计算开销。
-</div>
-
-<div class="card">
-    <div class="card-title">深入理解：互相关 vs 卷积 vs 自相关</div>
-    <p>这三种运算密切相关但各有不同用途。根据上图中的对比：</p>
-</div>
-
-<table class="compare-table">
-    <thead>
-        <tr><th style="width:20%;">运算</th><th style="width:25%;">核心操作</th><th style="width:55%;">直观理解</th></tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td><strong>互相关</strong><br>Cross-Correlation</td>
-            <td>核不做翻转，直接滑动计算</td>
-            <td>用<strong>模板匹配</strong>：问"这张图中哪里长得像我手上的模板？"。把模板（核）放在图上滑动，匹配度越高，输出值越大。<strong>CNN 实际使用的就是这个。</strong></td>
-        </tr>
-        <tr>
-            <td><strong>卷积</strong><br>Convolution</td>
-            <td>核翻转 180° 后再滑动计算</td>
-            <td>用<strong>系统中的冲激响应</strong>来想：输入信号经过一个线性系统，输出是输入与系统冲激响应的卷积。翻转保证了<strong>交换律</strong>：\(f * g = g * f\)（互相关不满足交换律）。数学上更优雅，但 CNN 中翻转与否不影响学习效果。</td>
-        </tr>
-        <tr>
-            <td><strong>自相关</strong><br>Autocorrelation</td>
-            <td>信号与<strong>自身</strong>做互相关</td>
-            <td>检测信号内部的<strong>重复模式/周期性</strong>：把信号在时间轴上平移后与原信号比较。峰值出现在位移量等于周期的地方。常用于信号处理、基因序列分析等领域。</td>
-        </tr>
-    </tbody>
-</table>
-
-<div class="alert-warning">
-    <strong>记忆要点：</strong>在 CNN 教材中看到"卷积"两个字，脑子里要自动翻译成"互相关（核不翻转）"。在深度学习领域，这一术语已被广泛接受，但需理解其运算本质为互相关。
-</div>
-
-<h3>3.3 二维交叉相关计算实例</h3>
-<p>输入为 3×3 矩阵，核为 2×2 矩阵。</p>
-
-<!-- 互相关计算图 -->
-<div class="img-row">
-    <div class="img-col">
-        <img src="images/p9_cross_correlation.jpeg" alt="交叉相关1">
+    <div class="callout key">
+        <span class="co-tag">🧠 记忆要点</span>
+        <p>在 CNN 教材中看到"卷积"两个字，脑子里要自动翻译成"互相关（核不翻转）"。在深度学习领域，这一术语已被广泛接受，但需理解其运算本质为互相关。</p>
     </div>
-    <div class="img-col">
-        <img src="images/p9_cross_correlation2.jpeg" alt="交叉相关2">
+
+    <h3><span class="sec-no">3.3</span>二维交叉相关计算实例</h3>
+    <p>输入为 3×3 矩阵，核为 2×2 矩阵。</p>
+    <figure>
+        <img src="images/p9_cross_correlation.jpeg" alt="交叉相关1" loading="lazy">
+        <figcaption>交叉相关示例（1）</figcaption>
+    </figure>
+    <figure>
+        <img src="images/p9_cross_correlation2.jpeg" alt="交叉相关2" loading="lazy">
+        <figcaption>交叉相关示例（2）</figcaption>
+    </figure>
+    <p>输入矩阵 X：</p>
+    <p class="muted">[0 1 2]<br>[3 4 5]<br>[6 7 8]</p>
+    <p>核矩阵 K：</p>
+    <p class="muted">[0 1]<br>[2 3]</p>
+    <p>计算过程（核在输入上滑动，每个位置逐元素相乘再求和）：</p>
+    <div class="tbl-wrap">
+        <table>
+            <tr><th>位置</th><th>计算过程</th><th>结果</th></tr>
+            <tr><td>(0,0)</td><td>0×0 + 1×1 + 3×2 + 4×3</td><td>19</td></tr>
+            <tr><td>(0,1)</td><td>1×0 + 2×1 + 4×2 + 5×3</td><td>25</td></tr>
+            <tr><td>(1,0)</td><td>3×0 + 4×1 + 6×2 + 7×3</td><td>37</td></tr>
+            <tr><td>(1,1)</td><td>4×0 + 5×1 + 7×2 + 8×3</td><td>43</td></tr>
+        </table>
     </div>
-</div>
+    <p>输出矩阵 Y：</p>
+    <p class="muted">[19 25]<br>[37 43]</p>
+    <figure>
+        <img src="images/conv_operation_v2.gif" alt="卷积运算动图演示" loading="lazy">
+        <figcaption>动图演示：2×2 核（橙框）在 3×3 输入上逐格滑动，每到一个位置就把窗口与核逐元素相乘再求和，填入输出（绿色）。4 步滑完，2×2 输出全部算出——这就是"互相关"的全过程。</figcaption>
+    </figure>
+    <div class="callout key">
+        <span class="co-tag">📐 输出尺寸公式</span>
+        <p>输出尺寸 = 输入尺寸 − 核尺寸 + 1，即对于 \(n_h \times n_w\) 的输入和 \(k_h \times k_w\) 的核，输出为 \((n_h - k_h + 1) \times (n_w - k_w + 1)\)。</p>
+    </div>
 
-<div class="card">
-    <p><strong>输入矩阵 X：</strong></p>
-    <div class="code-block">[0  1  2]
-[3  4  5]
-[6  7  8]</div>
-    <p><strong>核矩阵 K：</strong></p>
-    <div class="code-block">[0  1]
-[2  3]</div>
-</div>
-
-<p>计算过程（核在输入上滑动，每个位置逐元素相乘再求和）：</p>
-
-<table class="compare-table">
-    <thead>
-        <tr><th>位置</th><th>计算过程</th><th>结果</th></tr>
-    </thead>
-    <tbody>
-        <tr><td>(0,0)</td><td>0×0 + 1×1 + 3×2 + 4×3</td><td><strong>19</strong></td></tr>
-        <tr><td>(0,1)</td><td>1×0 + 2×1 + 4×2 + 5×3</td><td><strong>25</strong></td></tr>
-        <tr><td>(1,0)</td><td>3×0 + 4×1 + 6×2 + 7×3</td><td><strong>37</strong></td></tr>
-        <tr><td>(1,1)</td><td>4×0 + 5×1 + 7×2 + 8×3</td><td><strong>43</strong></td></tr>
-    </tbody>
-</table>
-
-<p><strong>输出矩阵 Y：</strong></p>
-<div class="code-block">[19  25]
-[37  43]</div>
-
-<div class="img-container">
-    <img src="images/conv_operation_v2.gif" alt="卷积运算动图演示" style="max-width:88%;">
-    <div class="img-caption">动图演示：2×2 核（橙框）在 3×3 输入上逐格滑动，每到一个位置就把窗口与核逐元素相乘再求和，填入输出（绿色）。4 步滑完，2×2 输出全部算出——这就是"互相关"的全过程。</div>
-</div>
-
-<div class="alert-info">
-    <strong>输出尺寸公式：</strong>输出尺寸 = 输入尺寸 - 核尺寸 + 1<br>
-    即对于 \(n_h \times n_w\) 的输入和 \(k_h \times k_w\) 的核，输出为 \((n_h - k_h + 1) \times (n_w - k_w + 1)\)。
-</div>
-
-<p><strong>动手试一试：卷积随手算</strong>——下面的 4×4 输入和 3×3 核都可以<strong>直接点击修改</strong>，输出实时重算；再点击任意输出格，可以看到它是哪 9 个数算出来的：</p>
-
-<div class="card xcorr-lab">
-    <div class="xc-wrap">
-        <div class="xc-block">
-            <div class="xc-title">输入 X（4×4，可编辑）</div>
-            <div class="xc-grid" id="xc-x" style="grid-template-columns:repeat(4,44px);"></div>
+    <div class="lab">
+        <div class="lab-head">
+            <span class="lab-badge">互动实验</span>
+            <div class="lab-title">卷积随手算</div>
+            <div class="lab-sub">可编辑的互相关计算器：改输入、改核，输出实时重算</div>
+            <div class="lab-hint">直接修改左侧 4×4 输入和中间 3×3 核里的数字；点击右侧输出格，查看该位置的详细计算过程</div>
         </div>
-        <div class="xc-block">
-            <div class="xc-title">核 K（3×3，可编辑）</div>
-            <div class="xc-grid" id="xc-k" style="grid-template-columns:repeat(3,44px);"></div>
+        <div class="lab-body">
+            <div id="conv-lab" style="display:flex;flex-wrap:wrap;gap:26px;align-items:flex-start;">
+                <div>
+                    <div style="font-size:13.5px;color:var(--ink-2);margin-bottom:8px;">输入 X（4×4，可编辑）</div>
+                    <div id="conv-x"></div>
+                </div>
+                <div>
+                    <div style="font-size:13.5px;color:var(--ink-2);margin-bottom:8px;">核 K（3×3，可编辑）</div>
+                    <div id="conv-k"></div>
+                </div>
+                <div>
+                    <div style="font-size:13.5px;color:var(--ink-2);margin-bottom:8px;">输出 Y（2×2，点击查看）</div>
+                    <div id="conv-y"></div>
+                </div>
+            </div>
+            <div id="conv-detail" class="muted" style="margin-top:16px;font-size:14px;">点击右侧输出格，查看该位置的详细计算过程。</div>
         </div>
-        <div class="xc-block">
-            <div class="xc-title">输出 Y（2×2，点击查看）</div>
-            <div class="xc-grid" id="xc-y" style="grid-template-columns:repeat(2,52px);"></div>
-        </div>
+        <div class="lab-note">试着把核改成 <b>[1, 0, −1] 一列重复三行</b>（垂直边缘检测核），观察输出对输入左右差异的敏感性。</div>
     </div>
-    <div class="xc-detail" id="xc-detail">点击右侧输出格，查看该位置的详细计算过程。</div>
-</div>
-<style>
-    .xcorr-lab .xc-wrap { display: flex; flex-wrap: wrap; gap: 26px; justify-content: center; margin: 12px 0; }
-    .xcorr-lab .xc-title { text-align: center; font-size: 14px; color: #475569; margin-bottom: 8px; font-weight: 600; }
-    .xcorr-lab .xc-grid { display: grid; gap: 4px; justify-content: center; }
-    .xcorr-lab .xc-cell { width: 44px; height: 44px; text-align: center; font-size: 16px; border: 1px solid #94A3B8; border-radius: 6px; }
-    .xcorr-lab input.xc-cell { color: #1E293B; background: #fff; }
-    .xcorr-lab input.xc-cell.hl { background: #FFF7ED; border-color: #F59E0B; border-width: 2px; }
-    .xcorr-lab .xc-out { display: flex; align-items: center; justify-content: center; width: 52px; height: 52px; font-weight: 700; color: #059669; background: #ECFDF5; cursor: pointer; }
-    .xcorr-lab .xc-out.sel { outline: 3px solid #059669; }
-    .xcorr-lab .xc-detail { margin-top: 10px; padding: 12px; background: #EFF6FF; border-radius: 8px; text-align: center; font-size: 15px; color: #1E40AF; }
-</style>
-<script>
-(function() {
-    var X = [[0,1,2,3],[4,5,6,7],[8,9,10,11],[12,13,14,15]];
-    var K = [[0,1,2],[3,4,5],[6,7,8]];
-    var sel = null;
-    function build(id, M, editable) {
-        var el = document.getElementById(id);
-        el.innerHTML = '';
-        for (var i = 0; i < M.length; i++) for (var j = 0; j < M[0].length; j++) {
-            (function(i, j) {
-                var c;
-                if (editable) {
-                    c = document.createElement('input');
-                    c.className = 'xc-cell'; c.type = 'number'; c.value = M[i][j];
-                    c.dataset.i = i; c.dataset.j = j;
-                    c.addEventListener('input', function() {
-                        M[i][j] = +c.value || 0;
-                        renderOut();
-                    });
-                } else {
-                    c = document.createElement('div');
-                    c.className = 'xc-cell xc-out';
-                    c.textContent = M[i][j];
-                    c.addEventListener('click', function() { sel = [i, j]; renderOut(); });
-                }
-                el.appendChild(c);
-            })(i, j);
-        }
-    }
-    function fmt(n) { return Math.round(n * 1000) / 1000; }
-    function outVal(i, j) {
-        var s = 0;
-        for (var a = 0; a < 3; a++) for (var b = 0; b < 3; b++) s += X[i + a][j + b] * K[a][b];
-        return s;
-    }
-    function renderOut() {
-        var Y = [[outVal(0,0), outVal(0,1)], [outVal(1,0), outVal(1,1)]];
-        var Yd = Y.map(function(r) { return r.map(fmt); });
-        build('xc-y', Yd, false);
-        if (sel) {
-            var cells = document.getElementById('xc-y').children;
-            for (var t = 0; t < cells.length; t++) cells[t].classList.remove('sel');
-            cells[sel[0] * 2 + sel[1]].classList.add('sel');
-            var terms = [];
-            for (var a = 0; a < 3; a++) for (var b = 0; b < 3; b++)
-                terms.push(fmt(X[sel[0] + a][sel[1] + b]) + '×' + fmt(K[a][b]));
-            document.getElementById('xc-detail').textContent =
-                '位置 (' + sel[0] + ',' + sel[1] + ')：' + terms.join(' + ') + ' = ' + fmt(Y[sel[0]][sel[1]]);
-        }
-        // 高亮窗口
-        var xcells = document.getElementById('xc-x').children;
-        for (var t2 = 0; t2 < xcells.length; t2++) xcells[t2].classList.remove('hl');
-        if (sel) for (var a2 = 0; a2 < 3; a2++) for (var b2 = 0; b2 < 3; b2++)
-            xcells[(sel[0] + a2) * 4 + (sel[1] + b2)].classList.add('hl');
-    }
-    build('xc-x', X, true);
-    build('xc-k', K, true);
-    renderOut();
-})();
-</script>
+</section>
 
 <!-- ==================== 第四章 ==================== -->
-<h2 id="sec4">四、二维卷积层</h2>
+<section class="chapter" id="ch4">
+    <div class="chapter-head">
+        <span class="chapter-num">4</span>
+        <h2>二维卷积层</h2>
+    </div>
 
-<h3>4.1 卷积层的数学定义</h3>
-<p>二维卷积层的核心运算：</p>
-<div class="formula">
-    \(\mathbf{Y} = \mathbf{X} \star \mathbf{W} + b\)
-</div>
-<p>其中：</p>
-<ul>
-    <li>\(\mathbf{X}\)：\(n_h \times n_w\) 输入矩阵</li>
-    <li>\(\mathbf{W}\)：\(k_h \times k_w\) 核矩阵（<span class="tag tag-green">可学习参数</span>）</li>
-    <li>\(b\)：偏差标量（<span class="tag tag-green">可学习参数</span>）</li>
-    <li>\(\mathbf{Y}\)：\((n_h - k_h + 1) \times (n_w - k_w + 1)\) 输出矩阵</li>
-</ul>
+    <h3><span class="sec-no">4.1</span>卷积层的数学定义</h3>
+    <p>二维卷积层的核心运算：</p>
+    <p>\(\mathbf{Y} = \mathbf{X} \star \mathbf{W} + b\)</p>
+    <p>其中：</p>
+    <ul>
+        <li>\(\mathbf{X}\)：\(n_h \times n_w\) 输入矩阵</li>
+        <li>\(\mathbf{W}\)：\(k_h \times k_w\) 核矩阵（可学习参数）</li>
+        <li>\(b\)：偏差标量（可学习参数）</li>
+        <li>\(\mathbf{Y}\)：\((n_h - k_h + 1) \times (n_w - k_w + 1)\) 输出矩阵</li>
+    </ul>
+    <div class="callout key">
+        <span class="co-tag">🔑 关键点</span>
+        <p>\(\mathbf{W}\) 和 \(b\) 是可学习的参数，通过反向传播算法优化。</p>
+    </div>
 
-<div class="alert-info">
-    <strong>关键点：</strong>\(\mathbf{W}\) 和 \(b\) 是可学习的参数，通过反向传播算法优化。
-</div>
-
-<h3>4.2 卷积层与全连接层的对比</h3>
-
-<table class="compare-table">
-    <thead>
-        <tr><th>特性</th><th>全连接层</th><th>卷积层</th></tr>
-    </thead>
-    <tbody>
-        <tr><td><strong>连接方式</strong></td><td>每个输入与每个输出相连</td><td>局部连接（只与核窗口内的输入相连）</td></tr>
-        <tr><td><strong>参数量</strong></td><td>输入维度 × 输出维度</td><td>\(k_h \times k_w\)（与输入大小无关）</td></tr>
-        <tr><td><strong>空间结构</strong></td><td>丢失（展平为一维）</td><td>保留（二维滑动）</td></tr>
-        <tr><td><strong>权值共享</strong></td><td>无</td><td>同一核在整个输入上共享</td></tr>
-    </tbody>
-</table>
+    <h3><span class="sec-no">4.2</span>卷积层与全连接层的对比</h3>
+    <div class="tbl-wrap">
+        <table>
+            <tr><th>特性</th><th>全连接层</th><th>卷积层</th></tr>
+            <tr><td>连接方式</td><td>每个输入与每个输出相连</td><td>局部连接（只与核窗口内的输入相连）</td></tr>
+            <tr><td>参数量</td><td>输入维度 × 输出维度</td><td>\(k_h \times k_w\)（与输入大小无关）</td></tr>
+            <tr><td>空间结构</td><td>丢失（展平为一维）</td><td>保留（二维滑动）</td></tr>
+            <tr><td>权值共享</td><td>无</td><td>同一核在整个输入上共享</td></tr>
+        </table>
+    </div>
+</section>
 
 <!-- ==================== 第五章 ==================== -->
-<h2 id="sec5">五、填充与步幅</h2>
-
-<h3>5.1 填充（Padding）</h3>
-<p><strong>为什么需要填充？</strong></p>
-<p>卷积运算会使输出尺寸变小。例如，3×3 输入用 2×2 核卷积得到 2×2 输出。经过多层卷积后，特征图会不断缩小，最终可能"消失"。</p>
-
-<div class="alert-success">
-    <strong>解决方案：</strong>在输入周围添加额外的行/列（通常填充 0）。
-</div>
-
-<!-- 填充示意图 -->
-<div class="img-row">
-    <div class="img-col">
-        <img src="images/p13_12.jpeg" alt="填充示意图1" style="max-width:50%;">
+<section class="chapter" id="ch5">
+    <div class="chapter-head">
+        <span class="chapter-num">5</span>
+        <h2>填充与步幅</h2>
     </div>
-    <div class="img-col">
-        <img src="images/p13_13.jpeg" alt="填充示意图2">
-    </div>
-</div>
+    <p class="chapter-lede">卷积会让特征图越卷越小——填充和步幅就是控制输出尺寸的两个旋钮。</p>
 
-<div class="img-container">
-    <img src="images/padding_v2.gif" alt="填充动图演示" style="max-width:82%;">
-    <div class="img-caption">动图演示：3×3 输入四周补一圈 0（灰色）变成 5×5，再用 3×3 核卷积——输出仍是 3×3，与输入尺寸相同。填充让边缘像素也能被窗口"正中心"覆盖到，特征图不再越卷越小。</div>
-</div>
-
-<p><strong>填充后的输出尺寸：</strong></p>
-<div class="formula">
-    \((n_h - k_h + p_h + 1) \times (n_w - k_w + p_w + 1)\)
-</div>
-<p>其中 \(p_h\) 和 \(p_w\) 分别是在高度和宽度方向的总填充量。</p>
-
-<div class="card">
-    <div class="card-title">常用设置</div>
+    <h3><span class="sec-no">5.1</span>填充（Padding）</h3>
+    <p><strong>为什么需要填充？</strong>卷积运算会使输出尺寸变小。例如，3×3 输入用 2×2 核卷积得到 2×2 输出。经过多层卷积后，特征图会不断缩小，最终可能"消失"。</p>
+    <p><strong>解决方案</strong>：在输入周围添加额外的行/列（通常填充 0）。</p>
+    <figure>
+        <img src="images/p13_12.jpeg" alt="填充示意图1" loading="lazy">
+        <figcaption>填充示意图（1）</figcaption>
+    </figure>
+    <figure>
+        <img src="images/p13_13.jpeg" alt="填充示意图2" loading="lazy">
+        <figcaption>填充示意图（2）</figcaption>
+    </figure>
+    <figure>
+        <img src="images/padding_v2.gif" alt="填充动图演示" loading="lazy">
+        <figcaption>动图演示：3×3 输入四周补一圈 0（灰色）变成 5×5，再用 3×3 核卷积——输出仍是 3×3，与输入尺寸相同。填充让边缘像素也能被窗口"正中心"覆盖到，特征图不再越卷越小。</figcaption>
+    </figure>
+    <p>填充后的输出尺寸：</p>
+    <p>\((n_h - k_h + p_h + 1) \times (n_w - k_w + p_w + 1)\)</p>
+    <p>其中 \(p_h\) 和 \(p_w\) 分别是在高度和宽度方向的总填充量。</p>
+    <p><strong>常用设置</strong></p>
     <ul>
-        <li>通常取 <strong>\(p_h = k_h - 1\)</strong>，<strong>\(p_w = k_w - 1\)</strong>（使输出与输入尺寸相同）</li>
-        <li>当 \(k_h\) 为<strong>奇数</strong>时：上下各填充 \(p_h / 2\)</li>
-        <li>当 \(k_h\) 为<strong>偶数</strong>时：上侧填充 \(\lceil p_h/2 \rceil\)，下侧填充 \(\lfloor p_h/2 \rfloor\)</li>
+        <li>通常取 \(p_h = k_h - 1\)，\(p_w = k_w - 1\)（使输出与输入尺寸相同）</li>
+        <li>当 \(k_h\) 为奇数时：上下各填充 \(p_h / 2\)</li>
+        <li>当 \(k_h\) 为偶数时：上侧填充 \(\lceil p_h/2 \rceil\)，下侧填充 \(\lfloor p_h/2 \rfloor\)</li>
     </ul>
-</div>
 
-<h3>5.2 步幅（Stride）</h3>
-<p><strong>步幅</strong>是卷积核在输入上滑动时的步长。默认步幅为 1（每次移动 1 个像素）。</p>
+    <h3><span class="sec-no">5.2</span>步幅（Stride）</h3>
+    <p>步幅是卷积核在输入上滑动时的步长。默认步幅为 1（每次移动 1 个像素）。</p>
+    <figure>
+        <img src="images/p16_14.jpeg" alt="步幅示意" loading="lazy">
+        <figcaption>步幅示意</figcaption>
+    </figure>
+    <figure>
+        <img src="images/stride_example.png" alt="步幅实例：高度步幅3，宽度步幅2" loading="lazy">
+        <figcaption>步幅实例：5×5 填充输入 + 2×2 卷积核，高度步幅 s_h=3，宽度步幅 s_w=2 → 输出 2×2。步幅越大，跳过的区域越多，输出越小。</figcaption>
+    </figure>
+    <figure>
+        <img src="images/stride_v2.gif" alt="步幅动图演示" loading="lazy">
+        <figcaption>动图演示：同样 2×2 的核，但窗口不再逐格滑动——高度方向每次跳 3 格、宽度方向每次跳 2 格，4 次就扫完 5×5 输入，输出缩小为 2×2。增大步幅是除池化外另一种"降采样"手段。</figcaption>
+    </figure>
+    <p>步幅后的输出尺寸：</p>
+    <p>\(\left\lfloor \frac{n_h - k_h + p_h + s_h}{s_h} \right\rfloor \times \left\lfloor \frac{n_w - k_w + p_w + s_w}{s_w} \right\rfloor\)</p>
+    <p>其中 \(s_h\) 和 \(s_w\) 分别是高度和宽度的步幅。</p>
 
-<!-- 步幅示意图 -->
-<div class="img-row">
-    <div class="img-col">
-        <img src="images/p16_14.jpeg" alt="步幅示意" style="max-width:50%;">
+    <h3><span class="sec-no">5.3</span>交互演示：输出尺寸计算器</h3>
+    <div class="lab">
+        <div class="lab-head">
+            <span class="lab-badge">互动实验</span>
+            <div class="lab-title">输出尺寸计算器</div>
+            <div class="lab-sub">公式不必死记——拖动滑块，实时观察输出尺寸如何变化</div>
+            <div class="lab-hint">改变输入尺寸 n、核大小 k、总填充量 p 与步幅 s，看输出尺寸和比例示意图</div>
+        </div>
+        <div class="lab-body">
+            <div class="ctl-row">
+                <label class="ctl">输入尺寸 n<input type="range" id="sz-n" min="3" max="15" step="1" value="7"><span class="val" id="sz-n-v">7</span></label>
+                <label class="ctl">核大小 k<input type="range" id="sz-k" min="1" max="7" step="1" value="3"><span class="val" id="sz-k-v">3</span></label>
+            </div>
+            <div class="ctl-row">
+                <label class="ctl">总填充量 p<input type="range" id="sz-p" min="0" max="6" step="1" value="0"><span class="val" id="sz-p-v">0</span></label>
+                <label class="ctl">步幅 s<input type="range" id="sz-s" min="1" max="4" step="1" value="1"><span class="val" id="sz-s-v">1</span></label>
+            </div>
+            <p id="sz-out" style="font-size:16px;margin:14px 0;">输出尺寸 = ⌊(n − k + p) / s⌋ + 1 = <strong style="color:var(--brand);">5 × 5</strong></p>
+            <canvas id="sz-canvas" class="plot" width="640" height="220"></canvas>
+        </div>
+        <div class="lab-note">经典组合：<b>k=3、p=2、s=1</b> 时输出与输入同尺寸（"same" 卷积）；把 s 调到 2，输出约减半——这就是降采样。</div>
     </div>
-    <div class="img-col">
-        <img src="images/stride_example.png" alt="步幅实例：高度步幅3，宽度步幅2" style="max-width:75%;">
-    </div>
-</div>
-<div class="img-caption">步幅实例：5×5 填充输入 + 2×2 卷积核，高度步幅 s_h=3，宽度步幅 s_w=2 → 输出 2×2。步幅越大，跳过的区域越多，输出越小。</div>
-
-<div class="img-container">
-    <img src="images/stride_v2.gif" alt="步幅动图演示" style="max-width:82%;">
-    <div class="img-caption">动图演示：同样 2×2 的核，但窗口不再逐格滑动——高度方向每次跳 3 格、宽度方向每次跳 2 格，4 次就扫完 5×5 输入，输出缩小为 2×2。增大步幅是除池化外另一种"降采样"手段。</div>
-</div>
-
-<p><strong>步幅后的输出尺寸：</strong></p>
-<div class="formula">
-    \(\left\lfloor \frac{n_h - k_h + p_h + s_h}{s_h} \right\rfloor \times \left\lfloor \frac{n_w - k_w + p_w + s_w}{s_w} \right\rfloor\)
-</div>
-<p>其中 \(s_h\) 和 \(s_w\) 分别是高度和宽度的步幅。</p>
-
-<h3>5.3 交互演示：输出尺寸计算器</h3>
-<p>公式不必死记——拖动滑块改变输入尺寸 \(n\)、核大小 \(k\)、总填充量 \(p\) 与步幅 \(s\)，实时观察输出尺寸如何变化：</p>
-
-<div class="card conv-calc">
-    <div class="calc-row"><label>输入尺寸 n</label><input type="range" min="3" max="32" value="7" id="cc-n"><span class="calc-val" id="cc-n-v">7</span></div>
-    <div class="calc-row"><label>核大小 k</label><input type="range" min="1" max="7" value="3" id="cc-k"><span class="calc-val" id="cc-k-v">3</span></div>
-    <div class="calc-row"><label>总填充量 p</label><input type="range" min="0" max="6" value="0" id="cc-p"><span class="calc-val" id="cc-p-v">0</span></div>
-    <div class="calc-row"><label>步幅 s</label><input type="range" min="1" max="4" value="1" id="cc-s"><span class="calc-val" id="cc-s-v">1</span></div>
-    <div class="calc-result">输出尺寸 = ⌊(n − k + p) / s⌋ + 1 = <strong id="cc-out">5 × 5</strong>
-        <div class="calc-note" id="cc-note"></div>
-    </div>
-</div>
-<script>
-(function() {
-    var ids = ['cc-n', 'cc-k', 'cc-p', 'cc-s'];
-    function calc() {
-        var n = +document.getElementById('cc-n').value,
-            k = +document.getElementById('cc-k').value,
-            p = +document.getElementById('cc-p').value,
-            s = +document.getElementById('cc-s').value;
-        ids.forEach(function(id) {
-            document.getElementById(id + '-v').textContent = document.getElementById(id).value;
-        });
-        var out = document.getElementById('cc-out'), note = document.getElementById('cc-note');
-        if (k > n + p) {
-            out.textContent = '—';
-            note.textContent = '⚠️ 核比填充后的输入还大，无法完成一次卷积，请减小 k 或增大 n / p。';
-            return;
-        }
-        var o = Math.floor((n - k + p) / s) + 1;
-        out.textContent = o + ' × ' + o;
-        var msgs = [];
-        if (p === k - 1) msgs.push('当前填充使输出与输入同尺寸（same padding）');
-        if ((n - k + p) % s !== 0) msgs.push('不能整除：边缘有窗口装不下的位置，已向下取整丢弃');
-        if (s > 1) msgs.push('步幅大于 1：相当于边卷积边降采样');
-        note.textContent = msgs.join('；');
-    }
-    ids.forEach(function(id) { document.getElementById(id).addEventListener('input', calc); });
-    calc();
-})();
-</script>
+</section>
 
 <!-- ==================== 第六章 ==================== -->
-<h2 id="sec6">六、多输入输出通道</h2>
+<section class="chapter" id="ch6">
+    <div class="chapter-head">
+        <span class="chapter-num">6</span>
+        <h2>多输入输出通道</h2>
+    </div>
+    <p class="chapter-lede">彩色图像有 RGB 三个通道——卷积层需要能"吃进"多通道、也能"吐出"多通道。</p>
 
-<h3>6.1 多个输入通道</h3>
-<p>彩色图像有 RGB 三个通道，转灰度会丢失颜色信息。因此卷积层需要处理多通道输入。</p>
-
-<!-- RGB三通道示意 -->
-<div class="img-container">
-    <img src="images/rgb_channels.jpg" alt="RGB三通道：彩色图像由红(R)、绿(G)、蓝(B)三个通道叠加组成" style="max-width:36%;">
-    <div class="img-caption">彩色图像的 RGB 三个通道：R（红色通道）、G（绿色通道）、B（蓝色通道）分别记录不同颜色分量，三个通道叠加后得到完整彩色图像。</div>
-</div>
-
-<!-- 多输入通道图 -->
-<div class="img-container">
-    <img src="images/p19_17.jpeg" alt="多输入通道" style="max-width:36%;">
-</div>
-
-<div class="card">
+    <h3><span class="sec-no">6.1</span>多个输入通道</h3>
+    <p>彩色图像有 RGB 三个通道，转灰度会丢失颜色信息。因此卷积层需要处理多通道输入。</p>
+    <figure>
+        <img src="images/rgb_channels.jpg" alt="RGB三通道：彩色图像由红(R)、绿(G)、蓝(B)三个通道叠加组成" loading="lazy">
+        <figcaption>彩色图像的 RGB 三个通道：R（红色通道）、G（绿色通道）、B（蓝色通道）分别记录不同颜色分量，三个通道叠加后得到完整彩色图像。</figcaption>
+    </figure>
+    <figure>
+        <img src="images/p19_17.jpeg" alt="多输入通道" loading="lazy">
+        <figcaption>多输入通道卷积示意</figcaption>
+    </figure>
     <ul>
-        <li><strong>输入 \(\mathbf{X}\)</strong>：\(c_i \times n_h \times n_w\)（\(c_i\) 个输入通道）</li>
-        <li><strong>卷积核 \(\mathbf{W}\)</strong>：\(c_i \times k_h \times k_w\)（每个输入通道对应一个核）</li>
-        <li><strong>输出 \(\mathbf{Y}\)</strong>：\(n_h \times n_w\)（所有通道卷积结果求和）</li>
+        <li>输入 \(\mathbf{X}\)：\(c_i \times n_h \times n_w\)（\(c_i\) 个输入通道）</li>
+        <li>卷积核 \(\mathbf{W}\)：\(c_i \times k_h \times k_w\)（每个输入通道对应一个核）</li>
+        <li>输出 \(\mathbf{Y}\)：\(n_h \times n_w\)（所有通道卷积结果求和）</li>
     </ul>
-</div>
+    <p>多输入通道卷积公式：</p>
+    <p>\(\mathbf{Y} = \sum_{c=0}^{c_i-1} \mathbf{X}(c,:,:) \star \mathbf{W}(c,:,:)\)</p>
+    <p>计算实例：</p>
+    <figure>
+        <img src="images/multi_channel_conv.png" alt="多输入通道卷积计算实例：每个通道都有一个卷积核，结果是所有通道卷积结果的和" loading="lazy">
+        <figcaption>多输入通道卷积计算实例：每个通道都有一个卷积核（共 c_i 个），结果是所有通道卷积结果的和，输出只有一个通道。</figcaption>
+    </figure>
+    <ul>
+        <li>通道1卷积：1×1 + 2×2 + 4×3 + 5×4 = 35</li>
+        <li>通道2卷积：0×0 + 1×1 + 3×2 + 4×3 = 21</li>
+        <li>总和 = 35 + 21 = 56</li>
+    </ul>
+    <div class="callout key">
+        <span class="co-tag">🔑 关键</span>
+        <p>无论有多少输入通道，单核卷积输出只有一个通道！</p>
+    </div>
+    <p>下面这张动图把两个通道"各算各的、再相加"的过程完整演示一遍（2 个输入通道、2 个 2×2 核、输出 2×2）：</p>
+    <figure>
+        <img src="images/multi_channel.gif" alt="多输入通道卷积动图：逐通道互相关再相加" loading="lazy">
+        <figcaption>多输入通道卷积动画：核 1 只在通道 1 上滑动，核 2 只在通道 2 上滑动，同一位置的两个加权和相加，才得到输出的一个元素——输入通道数只影响"要加几项"，不影响输出的通道数。</figcaption>
+    </figure>
 
-<p><strong>多输入通道卷积公式：</strong></p>
-<div class="formula">
-    \(\mathbf{Y} = \sum_{c=0}^{c_i-1} \mathbf{X}(c,:,:) \star \mathbf{W}(c,:,:)\)
-</div>
-
-<p><strong>计算实例：</strong></p>
-
-<!-- 多输入通道卷积计算实例图 -->
-<div class="img-container">
-    <img src="images/multi_channel_conv.png" alt="多输入通道卷积计算实例：每个通道都有一个卷积核，结果是所有通道卷积结果的和" style="max-width:55%;">
-    <div class="img-caption">多输入通道卷积计算实例：每个通道都有一个卷积核（共 c_i 个），结果是所有通道卷积结果的和，输出只有一个通道。</div>
-</div>
-
-<ul>
-    <li>通道1卷积：1×1 + 2×2 + 4×3 + 5×4 = <strong>35</strong></li>
-    <li>通道2卷积：0×0 + 1×1 + 3×2 + 4×3 = <strong>21</strong></li>
-    <li><strong>总和</strong> = 35 + 21 = <strong style="color:#2563EB;">56</strong></li>
-</ul>
-
-<div class="alert-info">
-    <strong>关键：无论有多少输入通道，单核卷积输出只有一个通道！</strong>
-</div>
-
-<p>下面这张动图把两个通道"各算各的、再相加"的过程完整演示一遍（2 个输入通道、2 个 2×2 核、输出 2×2）：</p>
-
-<div class="img-container">
-    <img src="images/multi_channel.gif" alt="多输入通道卷积动图：逐通道互相关再相加" style="max-width:84%;">
-    <div class="img-caption">多输入通道卷积动画：核 1 只在通道 1 上滑动，核 2 只在通道 2 上滑动，同一位置的两个加权和相加，才得到输出的一个元素——输入通道数只影响"要加几项"，不影响输出的通道数。</div>
-</div>
-
-<h3>6.2 多个输出通道</h3>
-<p>要获得多个输出通道，需要使用多个三维卷积核。</p>
-
-<!-- 多输出通道图 -->
-<div class="img-container">
-    <img src="images/p25_20.jpeg" alt="多输出通道" style="max-width:50%;">
-</div>
-
-<ul>
-    <li><strong>卷积核 \(\mathbf{W}\)</strong>：\(c_o \times c_i \times k_h \times k_w\)（\(c_o\) 个输出通道）</li>
-    <li>每个输出通道 \(\mathbf{O}_i = \mathbf{X} \star \mathbf{W}(i,:,:,:)\)</li>
-</ul>
-
-<p><strong>每个输出通道可以识别一种特定的模式</strong>，例如：</p>
-<ul>
-    <li>通道1：检测水平边缘</li>
-    <li>通道2：检测垂直边缘</li>
-    <li>通道3：检测45°对角线</li>
-    <li>通道4：检测特定纹理</li>
-</ul>
-
-<!-- 多输出通道特征图示例 -->
-<div class="img-container">
-    <img src="images/cat_feature_maps.png" alt="猫图像与不同卷积核的特征响应图：左侧为原始猫图像，右侧为不同卷积核学到的特征响应" style="max-width:50%;">
-    <div class="img-caption">多输出通道特征响应：每个输出通道的卷积核学习不同的特征——有的检测颜色中心、有的检测对角边缘、有的检测垂直条纹。这正是"每个输出通道识别一种特定模式"的直观体现。</div>
-</div>
-
-
-
-
-
+    <h3><span class="sec-no">6.2</span>多个输出通道</h3>
+    <p>要获得多个输出通道，需要使用多个三维卷积核。</p>
+    <figure>
+        <img src="images/p25_20.jpeg" alt="多输出通道" loading="lazy">
+        <figcaption>多输出通道卷积示意</figcaption>
+    </figure>
+    <ul>
+        <li>卷积核 \(\mathbf{W}\)：\(c_o \times c_i \times k_h \times k_w\)（\(c_o\) 个输出通道）</li>
+        <li>每个输出通道 \(\mathbf{O}_i = \mathbf{X} \star \mathbf{W}(i,:,:,:)\)</li>
+    </ul>
+    <p>每个输出通道可以识别一种特定的模式，例如：</p>
+    <ul>
+        <li>通道1：检测水平边缘</li>
+        <li>通道2：检测垂直边缘</li>
+        <li>通道3：检测45°对角线</li>
+        <li>通道4：检测特定纹理</li>
+    </ul>
+    <figure>
+        <img src="images/cat_feature_maps.png" alt="猫图像与不同卷积核的特征响应图：左侧为原始猫图像，右侧为不同卷积核学到的特征响应" loading="lazy">
+        <figcaption>多输出通道特征响应：每个输出通道的卷积核学习不同的特征——有的检测颜色中心、有的检测对角边缘、有的检测垂直条纹。这正是"每个输出通道识别一种特定模式"的直观体现。</figcaption>
+    </figure>
+</section>
 
 <!-- ==================== 第七章 ==================== -->
-<hr class="divider">
-<h2 id="sec7">七、1×1 卷积层</h2>
+<section class="chapter" id="ch7">
+    <div class="chapter-head">
+        <span class="chapter-num">7</span>
+        <h2>1×1 卷积层</h2>
+    </div>
 
-<h3>7.1 什么是 1×1 卷积？</h3>
-<p>当 \(k_h = k_w = 1\) 时，卷积核退化为 1×1 大小。它<strong>不涉及空间邻域信息</strong>——每个位置只看同一像素的不同通道。</p>
+    <h3><span class="sec-no">7.1</span>什么是 1×1 卷积？</h3>
+    <p>当 \(k_h = k_w = 1\) 时，卷积核退化为 1×1 大小。它不涉及空间邻域信息——每个位置只看同一像素的不同通道。</p>
+    <figure>
+        <img src="images/p27_22.jpeg" alt="1x1卷积" loading="lazy">
+        <figcaption>1×1 卷积：窗口只覆盖单个像素，但该像素的所有输入通道仍通过核做加权组合。</figcaption>
+    </figure>
 
-<!-- 1x1卷积图 -->
-<div class="img-container">
-    <img src="images/p27_22.jpeg" alt="1x1卷积" style="max-width:50%;">
-    <div class="img-caption">1×1 卷积：窗口只覆盖单个像素，但该像素的所有输入通道仍通过核做加权组合。</div>
-</div>
+    <h3><span class="sec-no">7.2</span>1×1 卷积的本质</h3>
+    <p>1×1 卷积等价于在每个像素位置施加一个从 \(c_i\) 到 \(c_o\) 的全连接层：</p>
+    <ul>
+        <li>输入：该像素位置的 \(c_i\) 个通道值</li>
+        <li>权重：\(c_o \times c_i\) 矩阵（所有像素共享）</li>
+        <li>输出：该像素位置的 \(c_o\) 个通道值</li>
+    </ul>
 
-<h3>7.2 1×1 卷积的本质</h3>
-<p>1×1 卷积等价于在<strong>每个像素位置</strong>施加一个从 \(c_i\) 到 \(c_o\) 的全连接层：</p>
-<ul>
-    <li><strong>输入</strong>：该像素位置的 \(c_i\) 个通道值</li>
-    <li><strong>权重</strong>：\(c_o \times c_i\) 矩阵（所有像素共享）</li>
-    <li><strong>输出</strong>：该像素位置的 \(c_o\) 个通道值</li>
-</ul>
-
-<h3>7.3 主要用途</h3>
-<table class="compare-table">
-    <thead>
-        <tr><th>用途</th><th>说明</th></tr>
-    </thead>
-    <tbody>
-        <tr><td><strong>通道数变换</strong></td><td>升维（增加通道数）或降维（减少通道数）</td></tr>
-        <tr><td><strong>跨通道信息融合</strong></td><td>在不改变空间尺寸的前提下融合通道信息</td></tr>
-        <tr><td><strong>增加非线性</strong></td><td>配合激活函数，增加网络的表达能力</td></tr>
-    </tbody>
-</table>
-
-<div class="card">
-    <div class="card-title">深入理解：1×1 卷积的关键洞察</div>
-    <p>1×1 卷积的核心优势在于：<strong>不改变空间尺寸，只做通道间的线性变换。</strong>可以把它理解为"给每个像素点单独做了一次矩阵乘法"。</p>
-</div>
-
-<p><strong>与 3×3 卷积的本质区别：</strong></p>
-
-<table class="compare-table">
-    <thead>
-        <tr><th style="width:15%;">维度</th><th style="width:42%;">3×3 卷积</th><th style="width:43%;">1×1 卷积</th></tr>
-    </thead>
-    <tbody>
-        <tr><td><strong>空间感受野</strong></td><td>看当前像素 + 周围 8 个邻居（空间特征提取）</td><td>只看当前像素自己（不做空间特征提取）</td></tr>
-        <tr><td><strong>通道操作</strong></td><td>跨通道融合（如果 \(c_i > 1\)）</td><td><strong>只做通道间线性组合</strong>（混合不同通道信息）</td></tr>
-        <tr><td><strong>参数数目</strong></td><td>\(c_o \times c_i \times 3 \times 3\)（较多）</td><td>\(c_o \times c_i\)（很少，少了一个 \(k_h \times k_w\) 因子）</td></tr>
-        <tr><td><strong>典型场景</strong></td><td>空间特征提取（边缘、纹理等）</td><td>通道数变换、跨通道信息融合</td></tr>
-    </tbody>
-</table>
-
-<div class="alert-info">
-    <strong>💡 提示：</strong>1×1 卷积虽简单，但功能强大，被广泛应用于 ResNet、Inception 等现代网络架构中——ResNet 用它升降维以控制计算量，Inception 用它融合不同尺度的特征。
-</div>
-
+    <h3><span class="sec-no">7.3</span>主要用途</h3>
+    <div class="tbl-wrap">
+        <table>
+            <tr><th>用途</th><th>说明</th></tr>
+            <tr><td>通道数变换</td><td>升维（增加通道数）或降维（减少通道数）</td></tr>
+            <tr><td>跨通道信息融合</td><td>在不改变空间尺寸的前提下融合通道信息</td></tr>
+            <tr><td>增加非线性</td><td>配合激活函数，增加网络的表达能力</td></tr>
+        </table>
+    </div>
+    <div class="callout key">
+        <span class="co-tag">💡 深入理解：1×1 卷积的关键洞察</span>
+        <p>1×1 卷积的核心优势在于：不改变空间尺寸，只做通道间的线性变换。可以把它理解为"给每个像素点单独做了一次矩阵乘法"。</p>
+    </div>
+    <p>与 3×3 卷积的本质区别：</p>
+    <div class="tbl-wrap">
+        <table>
+            <tr><th>维度</th><th>3×3 卷积</th><th>1×1 卷积</th></tr>
+            <tr><td>空间感受野</td><td>看当前像素 + 周围 8 个邻居（空间特征提取）</td><td>只看当前像素自己（不做空间特征提取）</td></tr>
+            <tr><td>通道操作</td><td>跨通道融合（如果 \(c_i &gt; 1\)）</td><td>只做通道间线性组合（混合不同通道信息）</td></tr>
+            <tr><td>参数数目</td><td>\(c_o \times c_i \times 3 \times 3\)（较多）</td><td>\(c_o \times c_i\)（很少，少了一个 \(k_h \times k_w\) 因子）</td></tr>
+            <tr><td>典型场景</td><td>空间特征提取（边缘、纹理等）</td><td>通道数变换、跨通道信息融合</td></tr>
+        </table>
+    </div>
+    <div class="callout try">
+        <span class="co-tag">💡 提示</span>
+        <p>1×1 卷积虽简单，但功能强大，被广泛应用于 ResNet、Inception 等现代网络架构中——ResNet 用它升降维以控制计算量，Inception 用它融合不同尺度的特征。</p>
+    </div>
+</section>
 <!-- ==================== 第八章 ==================== -->
-<hr class="divider">
-<h2 id="sec8">八、池化层</h2>
-
-<h3>8.1 为什么需要池化层？</h3>
-<p>卷积层对位置是敏感的——输入图像的微小偏移可能导致输出显著变化。</p>
-
-<!-- 池化动机图 -->
-<div class="img-row">
-    <div class="img-col">
-        <img src="images/p29_24.jpeg" alt="池化动机-X">
-        <div class="img-caption">X（原图检测）：竖线在窗口内，输出非零</div>
+<section class="chapter" id="ch8">
+    <div class="chapter-head">
+        <span class="chapter-num">8</span>
+        <h2>池化层</h2>
     </div>
-    <div class="img-col">
-        <img src="images/p29_25.jpeg" alt="池化动机-Y">
-        <div class="img-caption">Y（1 像素移位后）：同一根竖线移出窗口，输出变成 0</div>
+    <p class="chapter-lede">卷积对位置太敏感——池化层用"取窗口之最"的方式，换来平移不变性。</p>
+
+    <h3><span class="sec-no">8.1</span>为什么需要池化层？</h3>
+    <p>卷积层对位置是敏感的——输入图像的微小偏移可能导致输出显著变化。</p>
+    <figure>
+        <img src="images/p29_24.jpeg" alt="池化动机-X" loading="lazy">
+        <figcaption>X（原图检测）：竖线在窗口内，输出非零</figcaption>
+    </figure>
+    <figure>
+        <img src="images/p29_25.jpeg" alt="池化动机-Y" loading="lazy">
+        <figcaption>Y（1 像素移位后）：同一根竖线移出窗口，输出变成 0</figcaption>
+    </figure>
+    <ul>
+        <li>同一物体的照片，可能因为拍摄角度、光照、位置变化而不同</li>
+        <li>卷积核检测垂直边缘时，1 像素的移位可能使输出从非 0 变为 0（或反之）——输出对位置非常敏感</li>
+    </ul>
+    <div class="callout warn">
+        <span class="co-tag">⚠️ 核心需求</span>
+        <p>需要一定程度的平移不变性——让网络对小幅度的位置变化不敏感。<strong>解决方案：池化层（Pooling Layer）。</strong></p>
     </div>
-</div>
 
-<ul>
-    <li>同一物体的照片，可能因为拍摄角度、光照、位置变化而不同</li>
-    <li>卷积核检测垂直边缘时，1 像素的移位可能使输出从非 0 变为 0（或反之）——输出对位置非常敏感</li>
-</ul>
-
-<div class="alert-warning">
-    <strong>⚠️ 核心需求：</strong>需要一定程度的<strong>平移不变性</strong>——让网络对小幅度的位置变化不敏感。<br>
-    <strong>解决方案：池化层（Pooling Layer）。</strong>
-</div>
-
-<h3>8.2 2-D 最大池化（Max Pooling）</h3>
-<p>最大池化返回滑动窗口中的最大值：</p>
-
-<!-- 最大池化图 -->
-<div class="img-container">
-    <img src="images/p30_26.jpeg" alt="2D最大池化" style="max-width:50%;">
-</div>
-
-<div class="card">
+    <h3><span class="sec-no">8.2</span>2-D 最大池化（Max Pooling）</h3>
+    <p>最大池化返回滑动窗口中的最大值：</p>
+    <figure>
+        <img src="images/p30_26.jpeg" alt="2D最大池化" loading="lazy">
+        <figcaption>2-D 最大池化</figcaption>
+    </figure>
     <ul>
         <li>例：2×2 窗口，步幅为 2 → 输出空间尺寸减半</li>
-        <li>窗口内计算：<strong>max(0, 1, 3, 4) = 4</strong></li>
+        <li>窗口内计算：max(0, 1, 3, 4) = 4</li>
     </ul>
-</div>
+    <figure>
+        <img src="images/max_pooling_v2.gif" alt="最大池化动图演示" loading="lazy">
+        <figcaption>动图演示：4×4 输入、2×2 窗口、步幅 2 的最大池化。橙色框每次跳 2 格，取窗口内最大值填入输出（绿色），最终 4×4 → 2×2。注意池化没有任何权重——它只是固定的取最大值运算。</figcaption>
+    </figure>
+    <p>特点：</p>
+    <ul>
+        <li>没有可学习的参数</li>
+        <li>池化后可容忍 1 像素的位置偏移</li>
+        <li>保留了窗口中最显著的特征信号</li>
+    </ul>
 
-<div class="img-container">
-    <img src="images/max_pooling_v2.gif" alt="最大池化动图演示" style="max-width:82%;">
-    <div class="img-caption">动图演示：4×4 输入、2×2 窗口、步幅 2 的最大池化。橙色框每次跳 2 格，取窗口内最大值填入输出（绿色），最终 4×4 → 2×2。注意池化没有任何权重——它只是固定的取最大值运算。</div>
-</div>
+    <div class="lab">
+        <div class="lab-head">
+            <span class="lab-badge">互动实验</span>
+            <div class="lab-title">池化演示：最大 vs 平均</div>
+            <div class="lab-sub">4×4 输入、2×2 窗口、步幅 2——亲手比较两种池化的差异</div>
+            <div class="lab-hint">切换"最大池化 / 平均池化"，点击输出格查看对应窗口；高亮色即当前窗口</div>
+        </div>
+        <div class="lab-body">
+            <div class="ctl-row">
+                <label class="switch"><input type="checkbox" id="pool-mode"> 平均池化（不勾选为最大池化）</label>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:26px;align-items:flex-start;">
+                <div>
+                    <div style="font-size:13.5px;color:var(--ink-2);margin-bottom:8px;">输入（4×4）</div>
+                    <div id="pool-x"></div>
+                </div>
+                <div>
+                    <div style="font-size:13.5px;color:var(--ink-2);margin-bottom:8px;">输出（2×2，点击查看窗口）</div>
+                    <div id="pool-y"></div>
+                </div>
+            </div>
+            <div id="pool-detail" class="muted" style="margin-top:16px;font-size:14px;">点击输出格，查看该位置的窗口与计算过程。</div>
+        </div>
+        <div class="lab-note">注意：无论最大还是平均，<b>池化没有任何可学习参数</b>；平均池化的结果可以是小数，最大池化一定是窗口里的某个原值。</div>
+    </div>
 
-<p><strong>特点：</strong></p>
-<ul>
-    <li><span class="tag tag-red">没有可学习的参数</span></li>
-    <li>池化后可容忍 1 像素的位置偏移</li>
-    <li>保留了窗口中最显著的特征信号</li>
-</ul>
+    <h3><span class="sec-no">8.3</span>池化层的填充、步幅和通道</h3>
+    <figure>
+        <img src="images/p32_28.jpeg" alt="池化层特性" loading="lazy">
+        <figcaption>池化层特性</figcaption>
+    </figure>
+    <div class="tbl-wrap">
+        <table>
+            <tr><th>特性</th><th>说明</th></tr>
+            <tr><td>填充和步幅</td><td>与卷积层相同的设置方式</td></tr>
+            <tr><td>可学习参数</td><td>无（纯粹的函数运算）</td></tr>
+            <tr><td>通道处理</td><td>在每个输入通道上独立应用</td></tr>
+            <tr><td>输出通道数</td><td>等于输入通道数（这一点与卷积层不同！）</td></tr>
+        </table>
+    </div>
+    <div class="callout key">
+        <span class="co-tag">🔑 初学者理解</span>
+        <p>卷积层把多通道"融合"成新通道（通道数由核个数决定）；池化层则"各管各的"，通道数不变、只压缩空间尺寸。改变通道数靠卷积（或 1×1 卷积），缩小特征图靠池化或步幅卷积——分工明确。</p>
+    </div>
 
-<h3>8.3 池化层的填充、步幅和通道</h3>
-
-<!-- 池化层特性图 -->
-<div class="img-container">
-    <img src="images/p32_28.jpeg" alt="池化层特性" style="max-width:55%;">
-</div>
-
-<table class="compare-table">
-    <thead>
-        <tr><th>特性</th><th>说明</th></tr>
-    </thead>
-    <tbody>
-        <tr><td><strong>填充和步幅</strong></td><td>与卷积层相同的设置方式</td></tr>
-        <tr><td><strong>可学习参数</strong></td><td>无（纯粹的函数运算）</td></tr>
-        <tr><td><strong>通道处理</strong></td><td>在每个输入通道上<strong>独立</strong>应用</td></tr>
-        <tr><td><strong>输出通道数</strong></td><td><strong>等于</strong>输入通道数（这一点与卷积层不同！）</td></tr>
-    </tbody>
-</table>
-
-<div class="alert-info">
-    <strong>🔑 初学者理解：</strong>卷积层把多通道"融合"成新通道（通道数由核个数决定）；池化层则"各管各的"，通道数不变、只压缩空间尺寸。改变通道数靠卷积（或 1×1 卷积），缩小特征图靠池化或步幅卷积——分工明确。
-</div>
-
-<h3>8.4 平均池化（Average Pooling）</h3>
-
-<table class="compare-table">
-    <thead>
-        <tr><th>池化类型</th><th>操作</th><th>特点</th></tr>
-    </thead>
-    <tbody>
-        <tr><td><strong>最大池化</strong></td><td>取窗口最大值</td><td>保留最强模式信号，更常用</td></tr>
-        <tr><td><strong>平均池化</strong></td><td>取窗口平均值</td><td>更平滑，保留整体分布信息</td></tr>
-    </tbody>
-</table>
+    <h3><span class="sec-no">8.4</span>平均池化（Average Pooling）</h3>
+    <div class="tbl-wrap">
+        <table>
+            <tr><th>池化类型</th><th>操作</th><th>特点</th></tr>
+            <tr><td>最大池化</td><td>取窗口最大值</td><td>保留最强模式信号，更常用</td></tr>
+            <tr><td>平均池化</td><td>取窗口平均值</td><td>更平滑，保留整体分布信息</td></tr>
+        </table>
+    </div>
+</section>
 
 <!-- ==================== 第九章 ==================== -->
-<hr class="divider">
-<h2 id="sec9">九、Why CNN？—— 卷积神经网络的核心优势</h2>
+<section class="chapter" id="ch9">
+    <div class="chapter-head">
+        <span class="chapter-num">9</span>
+        <h2>Why CNN？—— 卷积神经网络的核心优势</h2>
+    </div>
+    <p class="chapter-lede">权值共享、局部性、平移不变性、层次特征——四根支柱撑起 CNN 的高效与强大。</p>
 
-<h3>9.1 权值共享</h3>
-<p>卷积核可以看作一种"模板"，同一个模板在图像的各个位置滑动检测。</p>
+    <h3><span class="sec-no">9.1</span>权值共享</h3>
+    <p>卷积核可以看作一种"模板"，同一个模板在图像的各个位置滑动检测。</p>
+    <figure>
+        <img src="images/p34_29.jpeg" alt="权值共享" loading="lazy">
+        <figcaption>权值共享示意</figcaption>
+    </figure>
+    <p>参数量 = \(c_o \times c_i \times k_h \times k_w\)（与输入图像大小无关！）</p>
+    <div class="tbl-wrap">
+        <table>
+            <tr><th>网络类型</th><th>参数量（32×32×3 图像输入，示意对比）</th></tr>
+            <tr><td>全连接网络</td><td>3,072 × 100 = 307,200</td></tr>
+            <tr><td>CNN（3×3 核，64 通道）</td><td>64 × 3 × 3 × 3 = 1,728</td></tr>
+        </table>
+    </div>
+    <div class="callout try">
+        <span class="co-tag">✅ 结论</span>
+        <p>参数量减少了约 178 倍！这就是 CNN 能在普通 GPU 上训练、而同等全连接网络根本放不下的原因。</p>
+    </div>
 
-<!-- 权值共享图 -->
-<div class="img-container">
-    <img src="images/p34_29.jpeg" alt="权值共享" style="max-width:50%;">
-</div>
+    <h3><span class="sec-no">9.2</span>局部性</h3>
+    <figure>
+        <img src="images/locality.jpg" alt="局部连接网络：每个神经元只连接输入图像的局部区域" loading="lazy">
+        <figcaption>局部连接：每个神经元只看输入的一个局部窗口（如 10×10），参数量从 10¹² 降到 10⁸ 量级。</figcaption>
+    </figure>
+    <ul>
+        <li>图像的特征是局部的：边缘、角点、纹理都在小区域内出现</li>
+        <li>卷积核只需关注 \(k_h \times k_w\) 的局部窗口</li>
+        <li>不需要每个像素与所有像素建立连接</li>
+    </ul>
+    <div class="callout key">
+        <span class="co-tag">💡 核心组合</span>
+        <p>局部性 + 权值共享 = 高效的特征提取</p>
+    </div>
 
-<div class="formula" style="font-size:18px;">
-    <strong>参数量 = \(c_o \times c_i \times k_h \times k_w\)</strong>（与输入图像大小无关！）
-</div>
+    <h3><span class="sec-no">9.3</span>平移不变性</h3>
+    <figure>
+        <img src="images/p36_31.jpeg" alt="平移不变性" loading="lazy">
+        <figcaption>平移不变性示意</figcaption>
+    </figure>
+    <ul>
+        <li><strong>平移等变性（Equivariance）</strong>：卷积核的权值共享使输出随输入平移而同步平移</li>
+        <li><strong>平移不变性（Invariance）</strong>：池化层使输出对小幅位移不敏感</li>
+    </ul>
+    <p>"猫在图像的左上角和右下角，同一个卷积核都能检测到'猫耳'特征。"</p>
+    <div class="callout key">
+        <span class="co-tag">🔑 初学者理解</span>
+        <p>"等变"和"不变"只差一个字，意思却相反：卷积负责等变（猫动了，特征图跟着动，但特征不会丢）；池化负责不变（小幅移动后，池化结果几乎一样）。两者配合，网络对目标位置变化就具备了鲁棒性。</p>
+    </div>
 
-<table class="compare-table">
-    <thead>
-        <tr><th>网络类型</th><th>参数量（32×32×3 图像输入，示意对比）</th></tr>
-    </thead>
-    <tbody>
-        <tr><td>全连接网络</td><td style="color:#EF4444; font-weight:700;">3,072 × 100 = 307,200</td></tr>
-        <tr><td>CNN（3×3 核，64 通道）</td><td style="color:#10B981; font-weight:700;">64 × 3 × 3 × 3 = 1,728</td></tr>
-    </tbody>
-</table>
-
-<div class="alert-success">
-    <strong>✅ 参数量减少了约 178 倍！</strong>这就是 CNN 能在普通 GPU 上训练、而同等全连接网络根本放不下的原因。
-</div>
-
-<h3>9.2 局部性</h3>
-<!-- 局部性图 -->
-<div class="img-container">
-    <img src="images/locality.jpg" alt="局部连接网络：每个神经元只连接输入图像的局部区域" style="max-width:42%;">
-    <div class="img-caption">局部连接：每个神经元只看输入的一个局部窗口（如 10×10），参数量从 10¹² 降到 10⁸ 量级。</div>
-</div>
-<ul>
-    <li>图像的特征是<strong>局部的</strong>：边缘、角点、纹理都在小区域内出现</li>
-    <li>卷积核只需关注 \(k_h \times k_w\) 的局部窗口</li>
-    <li>不需要每个像素与所有像素建立连接</li>
-</ul>
-<div class="alert-info">
-    <strong>💡 局部性 + 权值共享 = 高效的特征提取</strong>
-</div>
-
-<h3>9.3 平移不变性</h3>
-<!-- 平移不变性图 -->
-<div class="img-container">
-    <img src="images/p36_31.jpeg" alt="平移不变性" style="max-width:50%;">
-</div>
-<ul>
-    <li><strong>平移等变性（Equivariance）</strong>：卷积核的权值共享使输出随输入平移而同步平移</li>
-    <li><strong>平移不变性（Invariance）</strong>：池化层使输出对小幅位移不敏感</li>
-</ul>
-<blockquote>"猫在图像的左上角和右下角，同一个卷积核都能检测到'猫耳'特征。"</blockquote>
-
-<div class="alert-info">
-    <strong>🔑 初学者理解：</strong>"等变"和"不变"只差一个字，意思却相反：卷积负责<strong>等变</strong>（猫动了，特征图跟着动，但特征不会丢）；池化负责<strong>不变</strong>（小幅移动后，池化结果几乎一样）。两者配合，网络对目标位置变化就具备了鲁棒性。
-</div>
-
-<h3>9.4 层次特征学习</h3>
-<!-- 层次特征图 -->
-<div class="img-container">
-    <img src="images/p35_30.jpeg" alt="CNN层次特征学习：低层边缘纹理、中层部件、高层语义特征可视化" style="max-width:72%;">
-    <div class="img-caption">特征可视化（Zeiler &amp; Fergus 2013，来自 Yann LeCun 讲义）：低层学到颜色与边缘，中层学到纹理与部件，高层学到整体语义。</div>
-</div>
-<p>CNN 通过多层结构实现从低级到高级的特征抽象：</p>
-<div class="code-block">浅层 → 边缘、颜色、纹理
-  ↓
-中层 → 角点、部件、简单形状
-  ↓
-深层 → 物体、场景、语义概念</div>
-<p>整个过程是<strong>端到端学习</strong>的，无需人工设计特征！</p>
+    <h3><span class="sec-no">9.4</span>层次特征学习</h3>
+    <figure>
+        <img src="images/p35_30.jpeg" alt="CNN层次特征学习：低层边缘纹理、中层部件、高层语义特征可视化" loading="lazy">
+        <figcaption>特征可视化（Zeiler &amp; Fergus 2013，来自 Yann LeCun 讲义）：低层学到颜色与边缘，中层学到纹理与部件，高层学到整体语义。</figcaption>
+    </figure>
+    <p>CNN 通过多层结构实现从低级到高级的特征抽象：</p>
+    <p class="muted">浅层 → 边缘、颜色、纹理<br>↓<br>中层 → 角点、部件、简单形状<br>↓<br>深层 → 物体、场景、语义概念</p>
+    <p>整个过程是端到端学习的，无需人工设计特征！</p>
+</section>
 
 <!-- ==================== 第十章 ==================== -->
-<hr class="divider">
-<h2 id="sec10">十、代表性卷积神经网络</h2>
+<section class="chapter" id="ch10">
+    <div class="chapter-head">
+        <span class="chapter-num">10</span>
+        <h2>代表性卷积神经网络</h2>
+    </div>
+    <p class="chapter-lede">掌握了 CNN 的基本组件之后，讲义按演化脉络介绍了五个里程碑式的经典网络：LeNet（第一个实用的卷积神经网络）、AlexNet（升级版的 LeNet：ReLU 激活、丢弃法、数据增强）、VGG（升华版的 AlexNet：用重复的"块"做深）、ResNet（残差连接驯服超深网络）和 NiN（网络中的网络：1×1 卷积 + 全局平均池化）。</p>
 
-<p>掌握了 CNN 的基本组件之后，讲义按演化脉络介绍了五个里程碑式的经典网络：<strong>LeNet</strong>（第一个实用的卷积神经网络）、<strong>AlexNet</strong>（升级版的 LeNet：ReLU 激活、丢弃法、数据增强）、<strong>VGG</strong>（升华版的 AlexNet：用重复的"块"做深）、<strong>ResNet</strong>（残差连接驯服超深网络）和 <strong>NiN</strong>（网络中的网络：1×1 卷积 + 全局平均池化）。</p>
+    <h3><span class="sec-no">10.1</span>CNN 的演化脉络</h3>
+    <figure>
+        <img src="images/cnn_evolution.jpg" alt="卷积神经网络的演化脉络图" loading="lazy">
+        <figcaption>从 Hubel &amp; Wiesel 的早期尝试、Neocognitron、LeCun1989 到 LeNet；2012 年 AlexNet 实现历史突破。</figcaption>
+    </figure>
+    <p>AlexNet 之后，CNN 沿四条主线发展：</p>
+    <ul>
+        <li><strong>网络加深</strong>：VGG16 → VGG19 → MSRANet，并与增强模块路线集成为 ResNet；</li>
+        <li><strong>增强卷积模块功能</strong>：NIN → GoogLeNet → Inception V3/V4；</li>
+        <li><strong>从分类任务到检测任务</strong>：SPP-Net / R-CNN → Fast R-CNN → Faster R-CNN；</li>
+        <li><strong>增加新的功能单元</strong>：Inception V2（BN）、FCN、STNet、CNN+RNN/LSTM。</li>
+    </ul>
 
-<h3>10.1 CNN 的演化脉络</h3>
+    <h3><span class="sec-no">10.2</span>LeNet（1998）：第一个实用的 CNN</h3>
+    <p>LeNet 由 Yann LeCun 等人于 1998 年提出（LeCun, Bottou, Bengio, Haffner：Gradient-based learning applied to document recognition），最早成功应用于手写数字识别——邮政编码和银行支票金额的自动读取。它使用的 MNIST 数据集包含居中缩放后的 28×28 灰度图像：60,000 个训练样本、10,000 个测试样本、共 10 类。</p>
+    <figure>
+        <img src="images/lenet_arch.jpg" alt="LeNet 架构：卷积-池化-卷积-池化-全连接" loading="lazy">
+        <figcaption>LeNet 架构：32×32 输入 → C1 卷积（6@28×28）→ S2 池化（6@14×14）→ C3 卷积（16@10×10）→ S4 池化（16@5×5）→ 全连接（120 → 84）→ 输出（10）。</figcaption>
+    </figure>
+    <p>每一层的输入尺寸、卷积/池化配置、输出尺寸和训练参数都可以手工核算——这正是本章前面所有公式的一次完整实战：</p>
+    <figure>
+        <img src="images/lenet_layers.jpg" alt="LeNet 各层配置与参数量计算表" loading="lazy">
+        <figcaption>LeNet 逐层核算表：例如卷积层 1 用 6 个 5×5 卷积核、步长 1，输出 6×28×28，训练参数 1×(5×5)×6+6=156。</figcaption>
+    </figure>
+    <figure>
+        <img src="images/lenet_demo.jpg" alt="AT&T LeNet-5 手写数字实时识别演示" loading="lazy">
+        <figcaption>AT&amp;T 实验室的 LeNet-5 实时识别演示：左侧为各层特征图，网络对手写数字 "0" 给出正确答案。</figcaption>
+    </figure>
 
-<div class="img-container">
-    <img src="images/cnn_evolution.jpg" alt="卷积神经网络的演化脉络图" style="max-width:80%;">
-    <div class="img-caption">从 Hubel &amp; Wiesel 的早期尝试、Neocognitron、LeCun1989 到 LeNet；2012 年 AlexNet 实现历史突破。</div>
-</div>
+    <h3><span class="sec-no">10.3</span>AlexNet（2012）：引爆深度学习革命</h3>
+    <p>2012 年，AlexNet 以巨大优势赢得 ImageNet 竞赛，让全世界重新认识了深度学习。它面对的 ImageNet 数据集（2010）比 MNIST 大了好几个数量级：</p>
+    <figure>
+        <img src="images/imagenet_vs_mnist.jpg" alt="ImageNet 与 MNIST 数据集对比" loading="lazy">
+        <figcaption>ImageNet：自然物体的彩色图像（469×387）、1200 万样本、1000 类；MNIST：手写数字灰度图（28×28）、6 万样本、10 类。</figcaption>
+    </figure>
+    <p>AlexNet 本质上是"更深更大的 LeNet"，主要修改包括：</p>
+    <ul>
+        <li><strong>结构更大</strong>：更大的卷积核（11×11、步幅 4）与更大的池化窗口，池化改为最大池化；增加 3 个额外的卷积层，输出通道更多；隐含层大小从 120 增加到 4096；输出从 10 类变为 1000 类；</li>
+        <li><strong>ReLU 激活</strong>：替代 sigmoid，缓解梯度消失，训练更快；</li>
+        <li><strong>丢弃法（Dropout）</strong>：在两个隐含层之后应用，正则化效果更好、训练更稳定；</li>
+        <li><strong>数据增强</strong>：扩充训练数据，提升泛化。</li>
+    </ul>
+    <figure>
+        <img src="images/alexnet_vs_lenet.jpg" alt="AlexNet 与 LeNet 首层结构对比" loading="lazy">
+        <figcaption>输入从 32×32 灰度图变为 3×224×224 彩色图；首层从 5×5 Conv(6) 变为 11×11 Conv(96) stride 4，池化从 2×2 平均池化变为 3×3 最大池化。</figcaption>
+    </figure>
+    <p>代价是计算量与参数量的飙升——这也解释了为什么 AlexNet 必须依靠 GPU 训练：</p>
+    <figure>
+        <img src="images/alexnet_complexity.jpg" alt="AlexNet 与 LeNet 参数量和计算量对比" loading="lazy">
+        <figcaption>复杂度对比：AlexNet 总参数量 46M（LeNet 为 0.6M），浮点计算量约 1G FLOP（LeNet 为 4M，约 250 倍）。</figcaption>
+    </figure>
 
-<p>AlexNet 之后，CNN 沿四条主线发展：</p>
+    <h3><span class="sec-no">10.4</span>VGG（2014）：用重复的"块"做深网络</h3>
+    <p>AlexNet 已经比 LeNet 更深更大，下一步怎么走？两个选项：更多全连接层（开销太大，不可取）或更多卷积层。VGG 选择了后者，并给出两条关键设计经验：</p>
+    <ul>
+        <li><strong>卷积层分组成"块"</strong>：像搭积木一样重复堆叠，便于构建不同深度的网络；</li>
+        <li><strong>用小核替代大核</strong>：5×5 卷积换成多个 3×3 卷积——更深、更窄的网络效果更好。</li>
+    </ul>
+    <figure>
+        <img src="images/vgg_block.jpg" alt="VGG 块与 AlexNet 片段对比" loading="lazy">
+        <figcaption>VGG 块 = n 层 3×3 卷积（填充=1，m 个通道）+ 2×2 最大池化（步幅=2）。</figcaption>
+    </figure>
+    <p>完整的 VGG 网络由多个 VGG 块后接稠密层构成；改变块的重复次数，就得到 VGG-16、VGG-19 等不同架构：</p>
+    <figure>
+        <img src="images/vgg_structure.jpg" alt="VGG 与 AlexNet 网络结构对比" loading="lazy">
+        <figcaption>VGG（左）用规整的块式结构取代了 AlexNet（右）逐层手工设计的卷积配置。</figcaption>
+    </figure>
 
-<ul>
-    <li><strong>网络加深</strong>：VGG16 → VGG19 → MSRANet，并与增强模块路线集成为 ResNet；</li>
-    <li><strong>增强卷积模块功能</strong>：NIN → GoogLeNet → Inception V3/V4；</li>
-    <li><strong>从分类任务到检测任务</strong>：SPP-Net / R-CNN → Fast R-CNN → Faster R-CNN；</li>
-    <li><strong>增加新的功能单元</strong>：Inception V2（BN）、FCN、STNet、CNN+RNN/LSTM。</li>
-</ul>
+    <h3><span class="sec-no">10.5</span>ResNet（2015）：残差连接驯服超深网络</h3>
+    <p>网络继续加深会遇到两个障碍：梯度爆炸/消失，以及网络退化（degradation）——层数增加，训练误差不降反升。ResNet 的核心组件是跳跃连接（Skip / shortcut connection）：</p>
+    <ul>
+        <li><strong>普通网络（Plain net）</strong>：直接拟合目标映射 \(H(x)\)；</li>
+        <li><strong>残差网络（Residual net）</strong>：改为拟合残差映射 \(F(x)\)，令 \(H(x) = F(x) + x\)——学"变化量"比学"完整映射"容易得多，恒等映射只需让 \(F(x)\) 趋近 0。</li>
+    </ul>
+    <figure>
+        <img src="images/resnet_block.jpg" alt="普通块与残差块对比：H(x)=F(x)+x" loading="lazy">
+        <figcaption>残差块：输入 \(x\) 经跳跃连接与 \(F(x)\) 相加，\(H(x)=F(x)+x\)。</figcaption>
+    </figure>
+    <p>更深的 ResNet 用 Bottleneck（瓶颈）结构优化残差映射：原始两层 3×3×256×256 卷积，改为 1×1×256×64 → 3×3×64×64 → 1×1×64×256——先用 1×1 卷积降维、再升维，计算量相近但深度大增（用于 ResNet-50/101/152）：</p>
+    <figure>
+        <img src="images/resnet_bottleneck.jpg" alt="all-3x3 与 bottleneck 残差块对比" loading="lazy">
+        <figcaption>左：普通残差块（all-3x3）；右：瓶颈块（bottleneck），1×1 卷积负责降维/升维。</figcaption>
+    </figure>
+    <p>残差连接让网络深度从十几层跃升到上百层。讲义给出的典型 CNN 对比一览：</p>
+    <figure>
+        <img src="images/cnn_comparison.jpg" alt="典型CNN对比表：AlexNet、VGG、GoogLeNet、ResNet" loading="lazy">
+        <figcaption>AlexNet（2012，8 层，Top-5 错误率 16.4%）→ VGG（2014，19 层，7.3%）→ GoogLeNet v1（2014，22 层，6.7%）→ ResNet（2015，152 层，3.57%）。</figcaption>
+    </figure>
 
-<h3>10.2 LeNet（1998）：第一个实用的 CNN</h3>
-
-<p>LeNet 由 Yann LeCun 等人于 1998 年提出（LeCun, Bottou, Bengio, Haffner：<em>Gradient-based learning applied to document recognition</em>），最早成功应用于<strong>手写数字识别</strong>——邮政编码和银行支票金额的自动读取。它使用的 <strong>MNIST</strong> 数据集包含居中缩放后的 28×28 灰度图像：60,000 个训练样本、10,000 个测试样本、共 10 类。</p>
-
-<div class="img-container">
-    <img src="images/lenet_arch.jpg" alt="LeNet 架构：卷积-池化-卷积-池化-全连接" style="max-width:88%;">
-    <div class="img-caption">LeNet 架构：32×32 输入 → C1 卷积（6@28×28）→ S2 池化（6@14×14）→ C3 卷积（16@10×10）→ S4 池化（16@5×5）→ 全连接（120 → 84）→ 输出（10）。</div>
-</div>
-
-<p>每一层的输入尺寸、卷积/池化配置、输出尺寸和训练参数都可以手工核算——这正是本章前面所有公式的一次完整实战：</p>
-
-<div class="img-container">
-    <img src="images/lenet_layers.jpg" alt="LeNet 各层配置与参数量计算表" style="max-width:88%;">
-    <div class="img-caption">LeNet 逐层核算表：例如卷积层 1 用 6 个 5×5 卷积核、步长 1，输出 6×28×28，训练参数 1×(5×5)×6+6=156。</div>
-</div>
-
-<div class="img-container">
-    <img src="images/lenet_demo.jpg" alt="AT&amp;T LeNet-5 手写数字实时识别演示" style="max-width:80%;">
-    <div class="img-caption">AT&amp;T 实验室的 LeNet-5 实时识别演示：左侧为各层特征图，网络对手写数字 "0" 给出正确答案。</div>
-</div>
-
-<h3>10.3 AlexNet（2012）：引爆深度学习革命</h3>
-
-<p>2012 年，AlexNet 以巨大优势赢得 ImageNet 竞赛，让全世界重新认识了深度学习。它面对的 <strong>ImageNet 数据集（2010）</strong>比 MNIST 大了好几个数量级：</p>
-
-<div class="img-container">
-    <img src="images/imagenet_vs_mnist.jpg" alt="ImageNet 与 MNIST 数据集对比" style="max-width:80%;">
-    <div class="img-caption">ImageNet：自然物体的彩色图像（469×387）、1200 万样本、1000 类；MNIST：手写数字灰度图（28×28）、6 万样本、10 类。</div>
-</div>
-
-<p><strong>AlexNet 本质上是"更深更大的 LeNet"</strong>，主要修改包括：</p>
-
-<ul>
-    <li><strong>结构更大</strong>：更大的卷积核（11×11、步幅 4）与更大的池化窗口，池化改为<strong>最大池化</strong>；增加 3 个额外的卷积层，输出通道更多；隐含层大小从 120 增加到 4096；输出从 10 类变为 1000 类；</li>
-    <li><strong>ReLU 激活</strong>：替代 sigmoid，缓解梯度消失，训练更快；</li>
-    <li><strong>丢弃法（Dropout）</strong>：在两个隐含层之后应用，正则化效果更好、训练更稳定；</li>
-    <li><strong>数据增强</strong>：扩充训练数据，提升泛化。</li>
-</ul>
-
-<div class="img-container">
-    <img src="images/alexnet_vs_lenet.jpg" alt="AlexNet 与 LeNet 首层结构对比" style="max-width:55%;">
-    <div class="img-caption">输入从 32×32 灰度图变为 3×224×224 彩色图；首层从 5×5 Conv(6) 变为 11×11 Conv(96) stride 4，池化从 2×2 平均池化变为 3×3 最大池化。</div>
-</div>
-
-<p>代价是计算量与参数量的飙升——这也解释了为什么 AlexNet 必须依靠 GPU 训练：</p>
-
-<div class="img-container">
-    <img src="images/alexnet_complexity.jpg" alt="AlexNet 与 LeNet 参数量和计算量对比" style="max-width:88%;">
-    <div class="img-caption">复杂度对比：AlexNet 总参数量 46M（LeNet 为 0.6M），浮点计算量约 1G FLOP（LeNet 为 4M，约 250 倍）。</div>
-</div>
-
-<h3>10.4 VGG（2014）：用重复的"块"做深网络</h3>
-
-<p>AlexNet 已经比 LeNet 更深更大，下一步怎么走？两个选项：<em>更多全连接层</em>（开销太大，不可取）或<em>更多卷积层</em>。VGG 选择了后者，并给出两条关键设计经验：</p>
-
-<ul>
-    <li><strong>卷积层分组成"块"</strong>：像搭积木一样重复堆叠，便于构建不同深度的网络；</li>
-    <li><strong>用小核替代大核</strong>：5×5 卷积换成多个 3×3 卷积——<strong>更深、更窄</strong>的网络效果更好。</li>
-</ul>
-
-<div class="img-container">
-    <img src="images/vgg_block.jpg" alt="VGG 块与 AlexNet 片段对比" style="max-width:55%;">
-    <div class="img-caption">VGG 块 = n 层 3×3 卷积（填充=1，m 个通道）+ 2×2 最大池化（步幅=2）。</div>
-</div>
-
-<p>完整的 VGG 网络由<strong>多个 VGG 块后接稠密层</strong>构成；改变块的重复次数，就得到 VGG-16、VGG-19 等不同架构：</p>
-
-<div class="img-container">
-    <img src="images/vgg_structure.jpg" alt="VGG 与 AlexNet 网络结构对比" style="max-width:48%;">
-    <div class="img-caption">VGG（左）用规整的块式结构取代了 AlexNet（右）逐层手工设计的卷积配置。</div>
-</div>
-
-<h3>10.5 ResNet（2015）：残差连接驯服超深网络</h3>
-
-<p>网络继续加深会遇到两个障碍：<strong>梯度爆炸/消失</strong>，以及<strong>网络退化</strong>（degradation）——层数增加，训练误差不降反升。ResNet 的核心组件是<strong>跳跃连接（Skip / shortcut connection）</strong>：</p>
-
-<ul>
-    <li>普通网络（Plain net）：直接拟合目标映射 \(H(x)\)；</li>
-    <li>残差网络（Residual net）：改为拟合残差映射 \(F(x)\)，令 \(H(x) = F(x) + x\)——学"变化量"比学"完整映射"容易得多，恒等映射只需让 \(F(x)\) 趋近 0。</li>
-</ul>
-
-<div class="img-container">
-    <img src="images/resnet_block.jpg" alt="普通块与残差块对比：H(x)=F(x)+x" style="max-width:55%;">
-    <div class="img-caption">残差块：输入 \(x\) 经跳跃连接与 \(F(x)\) 相加，\(H(x)=F(x)+x\)。</div>
-</div>
-
-<p>更深的 ResNet 用 <strong>Bottleneck（瓶颈）</strong>结构优化残差映射：原始两层 3×3×256×256 卷积，改为 1×1×256×64 → 3×3×64×64 → 1×1×64×256——先用 1×1 卷积降维、再升维，计算量相近但深度大增（用于 ResNet-50/101/152）：</p>
-
-<div class="img-container">
-    <img src="images/resnet_bottleneck.jpg" alt="all-3x3 与 bottleneck 残差块对比" style="max-width:58%;">
-    <div class="img-caption">左：普通残差块（all-3x3）；右：瓶颈块（bottleneck），1×1 卷积负责降维/升维。</div>
-</div>
-
-<p>残差连接让网络深度从十几层跃升到上百层。讲义给出的典型 CNN 对比一览：</p>
-
-<div class="img-container">
-    <img src="images/cnn_comparison.jpg" alt="典型CNN对比表：AlexNet、VGG、GoogLeNet、ResNet" style="max-width:75%;">
-    <div class="img-caption">AlexNet（2012，8 层，Top-5 错误率 16.4%）→ VGG（2014，19 层，7.3%）→ GoogLeNet v1（2014，22 层，6.7%）→ ResNet（2015，152 层，3.57%）。</div>
-</div>
-
-<h3>10.6 NiN：网络中的网络</h3>
-
-<p>前面所有网络都有一个通病——<strong>"最后一层的诅咒"</strong>：卷积层参数其实很少，但末尾的稠密层参数巨大（LeNet 末层 16×5×5×120=48K，AlexNet 更是 256×5×5×4096≈26M）。NiN（Network in Network）的思路是<strong>打破最后一层诅咒</strong>：</p>
-
-<ul>
-    <li><strong>关键理念</strong>：丢弃末尾的一个或几个稠密层；卷积和池化逐步降低分辨率（如步幅 2 降 4 倍），同时增加通道数量；</li>
-    <li><strong>为什么用 1×1 卷积</strong>：具有 n 个通道的极端情况相当于"1×1 图像"——在每个像素位置上施加一个 MLP，正好充当稠密层；推理时池化还能增强平移稳定性。</li>
-</ul>
-
-<div class="img-container">
-    <img src="images/nin_block.jpg" alt="NiN 块：卷积层加两个 1x1 卷积层" style="max-width:32%;">
-    <div class="img-caption">NiN 块：1 个普通卷积层（核大小、步幅、填充为超参数）+ 2 个 1×1 卷积层（步幅 1、无填充、输出通道与第一层相同，充当稠密层）。</div>
-</div>
-
-<p>完整的 <strong>NiN 网络</strong>用 NiN 块替换了 AlexNet 的稠密层，最后用<strong>全局平均池化层</strong>直接输出每个类别的分数——彻底告别庞大的全连接层：</p>
-
-<div class="img-container">
-    <img src="images/nin_network.jpg" alt="NiN 网络与 VGG 网络结构对比" style="max-width:85%;">
-    <div class="img-caption">NiN（右）与 VGG（左）对比：VGG 末尾是三层 Dense，NiN 末尾是全局平均池化（Global Average Pool）。</div>
-</div>
-
-<div class="alert-success">
-    <strong>✅ 一句话总结：</strong>LeNet 证明了 CNN 可用，AlexNet 证明了 CNN 强大，VGG 给出了"块式"设计范式，ResNet 用残差连接突破深度极限，NiN 用 1×1 卷积和全局平均池化消灭了稠密层——今天的所有主流网络都站在它们肩上。
-</div>
+    <h3><span class="sec-no">10.6</span>NiN：网络中的网络</h3>
+    <p>前面所有网络都有一个通病——"最后一层的诅咒"：卷积层参数其实很少，但末尾的稠密层参数巨大（LeNet 末层 16×5×5×120=48K，AlexNet 更是 256×5×5×4096≈26M）。NiN（Network in Network）的思路是打破最后一层诅咒：</p>
+    <ul>
+        <li><strong>关键理念</strong>：丢弃末尾的一个或几个稠密层；卷积和池化逐步降低分辨率（如步幅 2 降 4 倍），同时增加通道数量；</li>
+        <li><strong>为什么用 1×1 卷积</strong>：具有 n 个通道的极端情况相当于"1×1 图像"——在每个像素位置上施加一个 MLP，正好充当稠密层；推理时池化还能增强平移稳定性。</li>
+    </ul>
+    <figure>
+        <img src="images/nin_block.jpg" alt="NiN 块：卷积层加两个 1x1 卷积层" loading="lazy">
+        <figcaption>NiN 块：1 个普通卷积层（核大小、步幅、填充为超参数）+ 2 个 1×1 卷积层（步幅 1、无填充、输出通道与第一层相同，充当稠密层）。</figcaption>
+    </figure>
+    <p>完整的 NiN 网络用 NiN 块替换了 AlexNet 的稠密层，最后用全局平均池化层直接输出每个类别的分数——彻底告别庞大的全连接层：</p>
+    <figure>
+        <img src="images/nin_network.jpg" alt="NiN 网络与 VGG 网络结构对比" loading="lazy">
+        <figcaption>NiN（右）与 VGG（左）对比：VGG 末尾是三层 Dense，NiN 末尾是全局平均池化（Global Average Pool）。</figcaption>
+    </figure>
+    <div class="callout try">
+        <span class="co-tag">✅ 一句话总结</span>
+        <p>LeNet 证明了 CNN 可用，AlexNet 证明了 CNN 强大，VGG 给出了"块式"设计范式，ResNet 用残差连接突破深度极限，NiN 用 1×1 卷积和全局平均池化消灭了稠密层——今天的所有主流网络都站在它们肩上。</p>
+    </div>
+</section>
 
 <!-- ==================== 第十一章 ==================== -->
-<hr class="divider">
-<h2 id="sec11">十一、核心公式速查</h2>
-
-<table class="compare-table">
-    <thead>
-        <tr><th style="width:50%;">公式</th><th style="width:50%;">含义</th></tr>
-    </thead>
-    <tbody>
-        <tr><td><strong>\(\mathbf{Y} = \mathbf{X} \star \mathbf{W} + b\)</strong></td><td>卷积层基本运算</td></tr>
-        <tr><td><strong>\(h(i,j) = \sum_a \sum_b X(i+a,j+b) \cdot K(a,b)\)</strong></td><td>二维互相关</td></tr>
-        <tr><td><strong>\((n_h-k_h+p_h+1) \times (n_w-k_w+p_w+1)\)</strong></td><td>填充后的输出尺寸</td></tr>
-        <tr><td><strong>\(\lfloor (n_h+p_h-k_h+s_h)/s_h \rfloor \times \lfloor (n_w+p_w-k_w+s_w)/s_w \rfloor\)</strong></td><td>步幅后的输出尺寸</td></tr>
-        <tr><td><strong>\(\mathbf{Y} = \sum_{c} \mathbf{X}(c,:,:) \star \mathbf{W}(c,:,:)\)</strong></td><td>多输入通道卷积</td></tr>
-        <tr><td><strong>\(c_o \times c_i \times k_h \times k_w\)</strong></td><td>卷积核的总参数量</td></tr>
-    </tbody>
-</table>
+<section class="chapter" id="ch11">
+    <div class="chapter-head">
+        <span class="chapter-num">11</span>
+        <h2>核心公式速查</h2>
+    </div>
+    <div class="tbl-wrap">
+        <table>
+            <tr><th>公式</th><th>含义</th></tr>
+            <tr><td>\(\mathbf{Y} = \mathbf{X} \star \mathbf{W} + b\)</td><td>卷积层基本运算</td></tr>
+            <tr><td>\(h(i,j) = \sum_a \sum_b X(i+a,j+b) \cdot K(a,b)\)</td><td>二维互相关</td></tr>
+            <tr><td>\((n_h-k_h+p_h+1) \times (n_w-k_w+p_w+1)\)</td><td>填充后的输出尺寸</td></tr>
+            <tr><td>\(\lfloor (n_h+p_h-k_h+s_h)/s_h \rfloor \times \lfloor (n_w+p_w-k_w+s_w)/s_w \rfloor\)</td><td>步幅后的输出尺寸</td></tr>
+            <tr><td>\(\mathbf{Y} = \sum_{c} \mathbf{X}(c,:,:) \star \mathbf{W}(c,:,:)\)</td><td>多输入通道卷积</td></tr>
+            <tr><td>\(c_o \times c_i \times k_h \times k_w\)</td><td>卷积核的总参数量</td></tr>
+        </table>
+    </div>
+</section>
 
 <!-- ==================== 第十二章 ==================== -->
-<hr class="divider">
-<h2 id="sec12">十二、总结与思考</h2>
-
-<h3>12.1 CNN 核心组件一览</h3>
-
-<ol class="step-list">
-    <li>
-        <span class="step-num">1</span>
-        <div class="step-content">
-            <strong>卷积运算</strong>：滑动核提取局部特征，权重共享大幅减少参数
-        </div>
-    </li>
-    <li>
-        <span class="step-num">2</span>
-        <div class="step-content">
-            <strong>填充与步幅</strong>：灵活控制输出尺寸，适应不同网络设计需求
-        </div>
-    </li>
-    <li>
-        <span class="step-num">3</span>
-        <div class="step-content">
-            <strong>多通道</strong>：输入通道融合多源信息，输出通道学习多样化特征
-        </div>
-    </li>
-    <li>
-        <span class="step-num">4</span>
-        <div class="step-content">
-            <strong>池化层</strong>：提供平移不变性，降低空间分辨率，无额外参数
-        </div>
-    </li>
-    <li>
-        <span class="step-num">5</span>
-        <div class="step-content">
-            <strong>设计哲学</strong>：局部性 + 权值共享 + 平移不变性 + 层次特征
-        </div>
-    </li>
-</ol>
-
-<h3>12.2 课堂自测</h3>
-
-<div class="quiz-section">
-    <div class="quiz-item">
-        <span class="quiz-num">1</span>
-        <div class="quiz-content">
-            <div class="quiz-question">3×3 输入矩阵和 2×2 卷积核进行互相关运算（无填充，步幅为 1），输出的尺寸是多少？</div>
-            <div class="quiz-hint">✅ 答案：2×2。由 \((n_h - k_h + 1) \times (n_w - k_w + 1) = (3-2+1) \times (3-2+1)\)。常见误区：误算成 3−2=1——别忘了 "+1"。</div>
-        </div>
+<section class="chapter" id="ch12">
+    <div class="chapter-head">
+        <span class="chapter-num">12</span>
+        <h2>总结与思考</h2>
     </div>
-    <div class="quiz-item">
-        <span class="quiz-num">2</span>
-        <div class="quiz-content">
-            <div class="quiz-question">对于 32×32×3 的彩色输入图像，使用 64 个 3×3 卷积核（无偏置），总参数量是多少？</div>
-            <div class="quiz-hint">✅ 答案：\(c_o \times c_i \times k_h \times k_w = 64 \times 3 \times 3 \times 3 = 1{,}728\)。常见误区：把图像尺寸 32×32 乘进参数量——卷积参数量与输入尺寸无关，这正是权值共享的威力。</div>
-        </div>
-    </div>
-    <div class="quiz-item">
-        <span class="quiz-num">3</span>
-        <div class="quiz-content">
-            <div class="quiz-question">输入尺寸为 6×6，卷积核为 3×3，步幅为 2，无填充。输出尺寸是多少？</div>
-            <div class="quiz-hint">✅ 答案：2×2。\(\lfloor (6 - 3 + 2) / 2 \rfloor = \lfloor 2.5 \rfloor = 2\)。注意最后一步要<strong>向下取整</strong>——装不下的边缘位置直接丢弃。</div>
-        </div>
-    </div>
-    <div class="quiz-item">
-        <span class="quiz-num">4</span>
-        <div class="quiz-content">
-            <div class="quiz-question">1×1 卷积层的主要用途是什么？它和全连接层有什么联系？</div>
-            <div class="quiz-hint">✅ 答案：用途是通道数变换（升/降维）、跨通道信息融合、配合激活函数增加非线性。它等价于在<strong>每个像素位置</strong>共享地施加一个 \(c_i \to c_o\) 的全连接层——空间尺寸不变，只重组通道。</div>
-        </div>
-    </div>
-    <div class="quiz-item">
-        <span class="quiz-num">5</span>
-        <div class="quiz-content">
-            <div class="quiz-question">池化层为什么没有可学习的参数？最大池化和平均池化各有什么优缺点？</div>
-            <div class="quiz-hint">✅ 答案：池化是固定的函数运算（max 或 mean），不含权重，自然无参数可学。最大池化保留最强特征信号、对分类更友好，但完全丢弃幅值信息；平均池化更平滑、保留整体分布，但会稀释强特征。现代网络也常用步幅为 2 的卷积替代池化。</div>
-        </div>
-    </div>
-    <div class="quiz-item">
-        <span class="quiz-num">6</span>
-        <div class="quiz-content">
-            <div class="quiz-question">如果将卷积核大小设为输入大小（即 \(k_h = n_h, k_w = n_w\)），CNN 与全连接网络还有什么区别？</div>
-            <div class="quiz-hint">✅ 答案：几乎没有区别。此时每个核在整个输入上只输出一个值，"局部连接"覆盖全图、"权值共享"无处共享——该核就退化为全连接层的一个神经元。这说明<strong>全连接层是卷积层的特例</strong>，卷积的优势恰恰来自"核比输入小"。</div>
-        </div>
-    </div>
-    <div class="quiz-item">
-        <span class="quiz-num">7</span>
-        <div class="quiz-content">
-            <div class="quiz-question">ResNet 的残差连接解决了什么问题？残差映射 \(F(x)\) 与目标映射 \(H(x)\) 是什么关系？</div>
-            <div class="quiz-hint">✅ 答案：解决超深网络中的梯度消失/爆炸与<strong>网络退化</strong>（层数增加、训练误差反而上升）问题。关系为 \(H(x) = F(x) + x\)——网络不再直接拟合 \(H(x)\)，而是拟合相对于恒等映射的残差 \(F(x)\)；当某层不需要额外变换时，只需让 \(F(x)\) 趋近 0，比硬学一个恒等映射容易得多。</div>
-        </div>
-    </div>
-    <div class="quiz-item">
-        <span class="quiz-num">8</span>
-        <div class="quiz-content">
-            <div class="quiz-question">NiN 用什么办法打破了"最后一层的诅咒"（末尾稠密层参数巨大）？</div>
-            <div class="quiz-hint">✅ 答案：用 <strong>NiN 块</strong>（普通卷积 + 两个 1×1 卷积，充当逐像素的 MLP）替换末尾的稠密层，最后用<strong>全局平均池化</strong>直接输出各类别分数。1×1 卷积在空间上不改变尺寸、只重组通道，正好扮演了全连接的角色。</div>
-        </div>
-    </div>
-</div>
 
-<h3>12.3 下讲预告</h3>
+    <h3><span class="sec-no">12.1</span>CNN 核心组件一览</h3>
+    <ol>
+        <li><strong>卷积运算</strong>：滑动核提取局部特征，权重共享大幅减少参数</li>
+        <li><strong>填充与步幅</strong>：灵活控制输出尺寸，适应不同网络设计需求</li>
+        <li><strong>多通道</strong>：输入通道融合多源信息，输出通道学习多样化特征</li>
+        <li><strong>池化层</strong>：提供平移不变性，降低空间分辨率，无额外参数</li>
+        <li><strong>设计哲学</strong>：局部性 + 权值共享 + 平移不变性 + 层次特征</li>
+    </ol>
 
-<div class="alert-success">
-    <strong>📖 第 05 讲：循环神经网络（RNN）</strong>（理论 2 学时）——从图像转向序列数据：文本、语音与时间序列如何建模？循环结构、梯度消失的再认识、LSTM 与 GRU 的门控设计。请先复习第 03 讲的反向传播与数值稳定性。
-</div>
+    <h3><span class="sec-no">12.2</span>课堂自测</h3>
+    <div class="quiz">
+        <div class="q">1. 3×3 输入矩阵和 2×2 卷积核进行互相关运算（无填充，步幅为 1），输出的尺寸是多少？</div>
+        <div class="a">✅ 答案：2×2。由 \((n_h - k_h + 1) \times (n_w - k_w + 1) = (3-2+1) \times (3-2+1)\)。常见误区：误算成 3−2=1——别忘了 "+1"。</div>
+    </div>
+    <div class="quiz">
+        <div class="q">2. 对于 32×32×3 的彩色输入图像，使用 64 个 3×3 卷积核（无偏置），总参数量是多少？</div>
+        <div class="a">✅ 答案：\(c_o \times c_i \times k_h \times k_w = 64 \times 3 \times 3 \times 3 = 1{,}728\)。常见误区：把图像尺寸 32×32 乘进参数量——卷积参数量与输入尺寸无关，这正是权值共享的威力。</div>
+    </div>
+    <div class="quiz">
+        <div class="q">3. 输入尺寸为 6×6，卷积核为 3×3，步幅为 2，无填充。输出尺寸是多少？</div>
+        <div class="a">✅ 答案：2×2。\(\lfloor (6 - 3 + 2) / 2 \rfloor = \lfloor 2.5 \rfloor = 2\)。注意最后一步要向下取整——装不下的边缘位置直接丢弃。</div>
+    </div>
+    <div class="quiz">
+        <div class="q">4. 1×1 卷积层的主要用途是什么？它和全连接层有什么联系？</div>
+        <div class="a">✅ 答案：用途是通道数变换（升/降维）、跨通道信息融合、配合激活函数增加非线性。它等价于在每个像素位置共享地施加一个 \(c_i \to c_o\) 的全连接层——空间尺寸不变，只重组通道。</div>
+    </div>
+    <div class="quiz">
+        <div class="q">5. 池化层为什么没有可学习的参数？最大池化和平均池化各有什么优缺点？</div>
+        <div class="a">✅ 答案：池化是固定的函数运算（max 或 mean），不含权重，自然无参数可学。最大池化保留最强特征信号、对分类更友好，但完全丢弃幅值信息；平均池化更平滑、保留整体分布，但会稀释强特征。现代网络也常用步幅为 2 的卷积替代池化。</div>
+    </div>
+    <div class="quiz">
+        <div class="q">6. 如果将卷积核大小设为输入大小（即 \(k_h = n_h, k_w = n_w\)），CNN 与全连接网络还有什么区别？</div>
+        <div class="a">✅ 答案：几乎没有区别。此时每个核在整个输入上只输出一个值，"局部连接"覆盖全图、"权值共享"无处共享——该核就退化为全连接层的一个神经元。这说明全连接层是卷积层的特例，卷积的优势恰恰来自"核比输入小"。</div>
+    </div>
+    <div class="quiz">
+        <div class="q">7. ResNet 的残差连接解决了什么问题？残差映射 \(F(x)\) 与目标映射 \(H(x)\) 是什么关系？</div>
+        <div class="a">✅ 答案：解决超深网络中的梯度消失/爆炸与网络退化（层数增加、训练误差反而上升）问题。关系为 \(H(x) = F(x) + x\)——网络不再直接拟合 \(H(x)\)，而是拟合相对于恒等映射的残差 \(F(x)\)；当某层不需要额外变换时，只需让 \(F(x)\) 趋近 0，比硬学一个恒等映射容易得多。</div>
+    </div>
+    <div class="quiz">
+        <div class="q">8. NiN 用什么办法打破了"最后一层的诅咒"（末尾稠密层参数巨大）？</div>
+        <div class="a">✅ 答案：用 NiN 块（普通卷积 + 两个 1×1 卷积，充当逐像素的 MLP）替换末尾的稠密层，最后用全局平均池化直接输出各类别分数。1×1 卷积在空间上不改变尺寸、只重组通道，正好扮演了全连接的角色。</div>
+    </div>
 
-
-</div><!-- /container -->
+    <h3><span class="sec-no">12.3</span>下讲预告</h3>
+    <div class="callout try">
+        <span class="co-tag">📖 下讲预告</span>
+        <p>第 05 讲：循环神经网络（RNN）（理论 2 学时）——从图像转向序列数据：文本、语音与时间序列如何建模？循环结构、梯度消失的再认识、LSTM 与 GRU 的门控设计。请先复习第 03 讲的反向传播与数值稳定性。</p>
+    </div>
+</section>
 
 <div class="footer">
-    <p>深度学习课程站 · 第04讲 卷积神经网络（CNN） · 基于《动手学深度学习》课程</p>
-    <p style="font-size:13px;color:#94A3B8;margin-top:4px;">
-        📊 <span id="busuanzi_container_site_pv">总访问量 <span id="busuanzi_value_site_pv">—</span> 次</span>
-        · <span id="busuanzi_container_site_uv">访客数 <span id="busuanzi_value_site_uv">—</span> 人</span>
-        · <span id="busuanzi_container_page_pv">本页阅读 <span id="busuanzi_value_page_pv">—</span> 次</span>
-    </p>
-        <p style="font-size:13px;color:#94A3B8;margin-top:2px;">💬 课程反馈与留言：<a href="mailto:dlcourses2026@sina.com" style="color:#2563EB;text-decoration:none;">dlcourses2026@sina.com</a></p>
+    深度学习课程站 · 第04讲 卷积神经网络（CNN）· 互动讲义版 · 基于《动手学深度学习》课程<br>
+    版式与互动设计参考 <a href="https://ai.richardxu.com/ml/#/m/transformer" target="_blank" rel="noopener">ai.richardxu.com/ml</a> · 课程反馈：dlcourses2026@sina.com
 </div>
-<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
-<!-- KaTeX auto-render -->
+<style>
+/* CNN 讲专用：可编辑矩阵与池化格子 */
+.mx { display: inline-block; border: 1px solid var(--line); border-radius: 10px; padding: 10px; background: var(--wash); }
+.mx .mx-row { display: flex; gap: 6px; margin-bottom: 6px; }
+.mx .mx-row:last-child { margin-bottom: 0; }
+.mx input, .mx .mx-cell {
+    width: 52px; height: 42px; border-radius: 6px; border: 1px solid var(--line);
+    text-align: center; font-size: 14px; font-family: inherit;
+    background: #fff; color: var(--ink); font-variant-numeric: tabular-nums;
+}
+.mx input:focus { outline: 2px solid #93C5FD; border-color: var(--brand); }
+.mx .mx-cell { display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: 600; }
+.mx .mx-cell:hover { border-color: var(--brand); }
+.mx .mx-cell.sel { background: var(--brand); border-color: var(--brand); color: #fff; }
+.mx input.hl, .mx .mx-cell.hl { background: var(--brand-soft); border-color: #93C5FD; }
+.mx .mx-cell.static { cursor: default; font-weight: 400; }
+@media (max-width: 768px) {
+    .mx input, .mx .mx-cell { width: 44px; height: 38px; font-size: 13px; }
+}
+</style>
+
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        renderMathInElement(document.body, {
-            delimiters: [
-                {left: "$$", right: "$$", display: true},
-                {left: "$", right: "$", display: false},
-                {left: "\\[", right: "\\]", display: true},
-                {left: "\\(", right: "\\)", display: false}
-            ],
-            throwOnError: false
-        });
-    });
-</script>
+/* ================= 实验 1：卷积随手算 ================= */
+(function () {
+    var X0 = [[0, 1, 2, 0], [3, 4, 5, 1], [6, 7, 8, 2], [1, 0, 1, 3]];
+    var K0 = [[0, 1, 0], [1, 2, 1], [0, 1, 0]];
+    var sel = null;
+    var xEl = document.getElementById('conv-x');
+    var kEl = document.getElementById('conv-k');
+    var yEl = document.getElementById('conv-y');
+    var dEl = document.getElementById('conv-detail');
 
-<!-- 滚动监听：高亮当前章节 -->
-<script>
-(function() {
-    var navLinks = document.querySelectorAll('.sidebar-nav a');
-    var sections = [];
-    navLinks.forEach(function(link) {
-        var id = link.getAttribute('href').substring(1);
-        var el = document.getElementById(id);
-        if (el) sections.push({ el: el, link: link });
-    });
-
-    function onScroll() {
-        var scrollY = window.scrollY + 100;
-        var current = null;
-        sections.forEach(function(sec) {
-            if (sec.el.offsetTop <= scrollY) {
-                current = sec.link;
+    function readMatrix(el, rows, cols) {
+        var m = [];
+        for (var i = 0; i < rows; i++) {
+            var row = [];
+            for (var j = 0; j < cols; j++) {
+                var v = parseFloat(el.children[i].children[j].value);
+                row.push(isNaN(v) ? 0 : v);
             }
+            m.push(row);
+        }
+        return m;
+    }
+    function fmt(v) { return Math.abs(v % 1) < 1e-9 ? String(Math.round(v)) : v.toFixed(1); }
+
+    function buildMatrix(el, data) {
+        el.className = 'mx';
+        el.innerHTML = '';
+        data.forEach(function (row) {
+            var r = document.createElement('div');
+            r.className = 'mx-row';
+            row.forEach(function (v) {
+                var inp = document.createElement('input');
+                inp.type = 'number'; inp.step = '1'; inp.value = v;
+                inp.addEventListener('input', function () { sel = null; render(); });
+                r.appendChild(inp);
+            });
+            el.appendChild(r);
         });
-        navLinks.forEach(function(l) { l.classList.remove('active'); });
-        if (current) current.classList.add('active');
     }
 
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
+    function render() {
+        var X = readMatrix(xEl, 4, 4), K = readMatrix(kEl, 3, 3);
+        var oh = 4 - 3 + 1, ow = 4 - 3 + 1;
+        var Y = [];
+        for (var i = 0; i < oh; i++) {
+            var row = [];
+            for (var j = 0; j < ow; j++) {
+                var s = 0;
+                for (var a = 0; a < 3; a++) for (var b = 0; b < 3; b++) s += X[i + a][j + b] * K[a][b];
+                row.push(s);
+            }
+            Y.push(row);
+        }
+        yEl.className = 'mx';
+        yEl.innerHTML = '';
+        Y.forEach(function (row, i) {
+            var r = document.createElement('div');
+            r.className = 'mx-row';
+            row.forEach(function (v, j) {
+                var c = document.createElement('div');
+                c.className = 'mx-cell' + (sel && sel[0] === i && sel[1] === j ? ' sel' : '');
+                c.textContent = fmt(v);
+                c.addEventListener('click', function () { sel = [i, j]; render(); });
+                r.appendChild(c);
+            });
+            yEl.appendChild(r);
+        });
+        /* 高亮窗口 */
+        for (var i = 0; i < 4; i++) for (var j = 0; j < 4; j++) {
+            var inp = xEl.children[i].children[j];
+            var inWin = sel && i >= sel[0] && i < sel[0] + 3 && j >= sel[1] && j < sel[1] + 3;
+            inp.classList.toggle('hl', !!inWin);
+        }
+        if (sel) {
+            var i2 = sel[0], j2 = sel[1], terms = [], sum = 0;
+            for (var a = 0; a < 3; a++) for (var b = 0; b < 3; b++) {
+                terms.push(fmt(X[i2 + a][j2 + b]) + '×' + fmt(K[a][b]));
+                sum += X[i2 + a][j2 + b] * K[a][b];
+            }
+            dEl.innerHTML = '输出 <strong>Y(' + i2 + ',' + j2 + ')</strong> = '
+                + terms.join(' + ') + ' = <strong style="color:var(--brand);">' + fmt(sum) + '</strong>（左侧高亮的 3×3 窗口与核逐元素相乘再求和）';
+        } else {
+            dEl.textContent = '点击右侧输出格，查看该位置的详细计算过程。';
+        }
+    }
+    buildMatrix(xEl, X0);
+    buildMatrix(kEl, K0);
+    render();
+})();
+
+/* ================= 实验 2：输出尺寸计算器 ================= */
+(function () {
+    var ids = ['n', 'k', 'p', 's'];
+    var els = {}, vals = {};
+    ids.forEach(function (id) {
+        els[id] = document.getElementById('sz-' + id);
+        vals[id] = document.getElementById('sz-' + id + '-v');
+    });
+    var out = document.getElementById('sz-out');
+    var cv = document.getElementById('sz-canvas');
+    var ctx = cv.getContext('2d');
+
+    function render() {
+        var n = +els.n.value, k = +els.k.value, p = +els.p.value, s = +els.s.value;
+        vals.n.textContent = n; vals.k.textContent = k; vals.p.textContent = p; vals.s.textContent = s;
+        var o = Math.floor((n - k + p) / s) + 1;
+        var valid = o > 0;
+        out.innerHTML = '输出尺寸 = ⌊(n − k + p) / s⌋ + 1 = ⌊(' + n + ' − ' + k + ' + ' + p + ') / ' + s + '⌋ + 1 = '
+            + (valid ? '<strong style="color:var(--brand);">' + o + ' × ' + o + '</strong>' : '<strong style="color:var(--red);">无效（核比输入还大）</strong>');
+        ctx.clearRect(0, 0, cv.width, cv.height);
+        var unit = Math.min(26, Math.floor(180 / Math.max(n, 1)));
+        var x0 = 40, y0 = (cv.height - n * unit) / 2;
+        /* 输入方格 */
+        ctx.strokeStyle = '#94A3B8'; ctx.lineWidth = 1;
+        for (var i = 0; i <= n; i++) {
+            ctx.beginPath(); ctx.moveTo(x0, y0 + i * unit); ctx.lineTo(x0 + n * unit, y0 + i * unit); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(x0 + i * unit, y0); ctx.lineTo(x0 + i * unit, y0 + n * unit); ctx.stroke();
+        }
+        ctx.fillStyle = '#5F6368'; ctx.font = '13px sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText('输入 ' + n + '×' + n, x0 + n * unit / 2, y0 + n * unit + 20);
+        /* 箭头 */
+        var ax = x0 + n * unit + 30, ay = cv.height / 2;
+        ctx.strokeStyle = '#2563EB'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(ax + 50, ay); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(ax + 42, ay - 6); ctx.lineTo(ax + 50, ay); ctx.lineTo(ax + 42, ay + 6); ctx.stroke();
+        /* 输出方格 */
+        if (valid) {
+            var ox = ax + 70;
+            var ou = Math.min(unit, Math.floor(180 / Math.max(o, 1)));
+            var oy = (cv.height - o * ou) / 2;
+            ctx.strokeStyle = '#2563EB';
+            for (var i2 = 0; i2 <= o; i2++) {
+                ctx.beginPath(); ctx.moveTo(ox, oy + i2 * ou); ctx.lineTo(ox + o * ou, oy + i2 * ou); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(ox + i2 * ou, oy); ctx.lineTo(ox + i2 * ou, oy + o * ou); ctx.stroke();
+            }
+            ctx.fillStyle = '#2563EB';
+            ctx.fillText('输出 ' + o + '×' + o, ox + o * ou / 2, oy + o * ou + 20);
+        } else {
+            ctx.fillStyle = '#DC2626'; ctx.textAlign = 'left';
+            ctx.fillText('输出尺寸 ≤ 0，卷积无法进行', ax + 70, ay);
+        }
+    }
+    ids.forEach(function (id) { els[id].addEventListener('input', render); });
+    render();
+})();
+
+/* ================= 实验 3：池化演示 ================= */
+(function () {
+    var X = [[0, 1, 2, 0], [3, 4, 1, 5], [2, 0, 1, 1], [1, 3, 0, 2]];
+    var sel = null;
+    var modeEl = document.getElementById('pool-mode');
+    var xEl = document.getElementById('pool-x');
+    var yEl = document.getElementById('pool-y');
+    var dEl = document.getElementById('pool-detail');
+    function fmt(v) { return Math.abs(v % 1) < 1e-9 ? String(Math.round(v)) : v.toFixed(1); }
+
+    function render() {
+        var avg = modeEl.checked;
+        xEl.className = 'mx'; xEl.innerHTML = '';
+        X.forEach(function (row, i) {
+            var r = document.createElement('div'); r.className = 'mx-row';
+            row.forEach(function (v, j) {
+                var c = document.createElement('div');
+                var inWin = sel && i >= sel[0] * 2 && i < sel[0] * 2 + 2 && j >= sel[1] * 2 && j < sel[1] * 2 + 2;
+                c.className = 'mx-cell static' + (inWin ? ' hl' : '');
+                c.textContent = v;
+                r.appendChild(c);
+            });
+            xEl.appendChild(r);
+        });
+        yEl.className = 'mx'; yEl.innerHTML = '';
+        for (var i = 0; i < 2; i++) {
+            var r2 = document.createElement('div'); r2.className = 'mx-row';
+            for (var j = 0; j < 2; j++) {
+                var win = [X[i * 2][j * 2], X[i * 2][j * 2 + 1], X[i * 2 + 1][j * 2], X[i * 2 + 1][j * 2 + 1]];
+                var v = avg ? win.reduce(function (a, b) { return a + b; }, 0) / 4 : Math.max.apply(null, win);
+                var c2 = document.createElement('div');
+                c2.className = 'mx-cell' + (sel && sel[0] === i && sel[1] === j ? ' sel' : '');
+                c2.textContent = fmt(v);
+                (function (ii, jj) {
+                    c2.addEventListener('click', function () { sel = [ii, jj]; render(); });
+                })(i, j);
+                r2.appendChild(c2);
+            }
+            yEl.appendChild(r2);
+        }
+        if (sel) {
+            var i2 = sel[0], j2 = sel[1];
+            var w = [X[i2 * 2][j2 * 2], X[i2 * 2][j2 * 2 + 1], X[i2 * 2 + 1][j2 * 2], X[i2 * 2 + 1][j2 * 2 + 1]];
+            var detail = avg
+                ? 'avg(' + w.join(', ') + ') = (' + w.join(' + ') + ') / 4 = <strong style="color:var(--brand);">' + fmt(w.reduce(function (a, b) { return a + b; }, 0) / 4) + '</strong>'
+                : 'max(' + w.join(', ') + ') = <strong style="color:var(--brand);">' + Math.max.apply(null, w) + '</strong>';
+            dEl.innerHTML = '输出 <strong>Y(' + i2 + ',' + j2 + ')</strong>：窗口 {' + w.join(', ') + '} → ' + detail;
+        } else {
+            dEl.textContent = '点击输出格，查看该位置的窗口与计算过程。';
+        }
+    }
+    modeEl.addEventListener('change', render);
+    render();
 })();
 </script>
-</div><!-- /main-wrapper -->
 
+</div><!-- /page -->
+
+<script src="../../assets/katex/katex.min.js"></script>
+<script src="../../assets/katex/auto-render.min.js"></script>
 <script>
-(function() {
-    var btn = document.createElement('button');
-    btn.className = 'sidebar-toggle';
-    btn.type = 'button';
-    btn.title = '收起 / 展开目录';
-    btn.setAttribute('aria-label', '收起或展开目录');
-    btn.textContent = '☰';
-    document.body.appendChild(btn);
-    btn.addEventListener('click', function() {
-        document.body.classList.toggle('sidebar-collapsed');
+document.addEventListener('DOMContentLoaded', function () {
+    renderMathInElement(document.body, {
+        delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '\\(', right: '\\)', display: false}
+        ]
     });
-    if (window.innerWidth < 1280 && window.innerWidth > 768) {
-        document.body.classList.add('sidebar-collapsed');
-    }
-    document.querySelectorAll('.quiz-item').forEach(function(item) {
-        item.addEventListener('click', function() { item.classList.toggle('open'); });
+    document.querySelectorAll('.quiz').forEach(function (q) {
+        q.addEventListener('click', function () { q.classList.toggle('open'); });
     });
-})();
+});
 </script>
-<script src="../../assets/search-index.js"></script>
-<script src="../../assets/site-tools.js"></script>
+
 </body>
 </html>
