@@ -1086,16 +1086,24 @@ var _hmt = _hmt || [];
 
 <h3>6.1 NLP 中的迁移学习</h3>
 
-<p>计算机视觉早已习惯"预训练 + 微调"：用在 ImageNet 上练好的网络提取特征，新任务只训一个小分类头。NLP 也想走这条路，但早期的词向量（word2vec）有两个短板：<strong>忽略顺序信息</strong>，且同一个词在任何语境下向量都一样（"苹果"不分水果和公司）。</p>
+<p>计算机视觉早已习惯"预训练 + 微调"：用在 ImageNet 上练好的网络提取特征，新任务只训一个小分类头。NLP 中的迁移学习也是同样的三步：</p>
+
+<ul>
+    <li>使用<strong>预先训练的模型</strong>（例如 word2vec 或语言模型）为新任务提取单词/句子特征；</li>
+    <li><strong>通常不更新</strong>预训练模型的权重；</li>
+    <li>再<strong>构建一个新模型</strong>来捕获新任务所需的信息。</li>
+</ul>
+
+<p>但早期的预训练表示有两个短板：word2vec <strong>忽略顺序信息</strong>，且同一个词在任何语境下向量都一样（"苹果"不分水果和公司）；语言模型又<strong>只查看单一方向</strong>，看不到后文。NLP 需要一种能真正理解双向上下文的预训练模型。</p>
 
 <h3>6.2 BERT 的动机与架构</h3>
 
 <p>2018 年 Google 提出 <strong>BERT</strong>（Bidirectional Encoder Representations from Transformers）：拿 Transformer 的<strong>编码器</strong>（没有解码器），在超过 30 亿单词的书籍和维基百科语料上预训练，让模型充分吸收语言知识；下游任务只需在顶部加一个简单的输出层做微调：</p>
 
-<!-- BERT 微调示意图 -->
+<!-- BERT 微调示意图（讲义 p25：NLP 与 CV 迁移学习对比） -->
 <div class="img-container">
-    <img src="images/bert_finetune.jpg" alt="BERT 预训练加微调范式" style="max-width:56%;">
-    <div class="img-caption">BERT 范式：预训练模型充当强大的"特征提取器"，新任务（如情感分类"我喜欢这个电影 → 0/1"）只需加一个分类器微调——与 CV 中的迁移学习完全对齐。</div>
+    <img src="images/bert_finetune.jpg" alt="NLP 与 CV 中的迁移学习对比：特征提取器加分类器" style="max-width:50%;">
+    <div class="img-caption">NLP 与 CV 的迁移学习完全对齐：预训练模型充当"特征提取器"（Layer 1 … L−1），新任务只需加一个"分类器"输出层——NLP 侧如情感分类（"我喜欢这个电影 → 0/1"），CV 侧如识别猫。</div>
 </div>
 
 <table class="compare-table">
