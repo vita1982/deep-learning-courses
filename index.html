@@ -54,7 +54,7 @@
 <style>
     html.dl-gating body > *:not(#dl-gate) { display: none !important; }
     #dl-gate { position: fixed; inset: 0; z-index: 99999; background: #F1F5F9; display: flex; align-items: center; justify-content: center; font-family: "Microsoft YaHei", sans-serif; }
-    #dl-gate .dl-gate-card { background: #fff; border-radius: 14px; padding: 32px 30px; width: 340px; max-width: 88vw; text-align: center; box-shadow: 0 10px 40px rgba(15,23,42,.15); }
+    #dl-gate .dl-gate-card { background: #fff; border-radius: 14px; padding: 32px 30px; width: 340px; max-width: 88vw; box-sizing: border-box; text-align: center; box-shadow: 0 10px 40px rgba(15,23,42,.15); }
     /* 深色模式：整体反转，媒体与浮层再反转回来 */
     html.dl-dark { filter: invert(1) hue-rotate(180deg); background: #0F172A; }
     html.dl-dark img, html.dl-dark canvas, html.dl-dark #dl-tools, html.dl-dark .dl-modal-mask, html.dl-dark #dl-gate { filter: invert(1) hue-rotate(180deg); }
