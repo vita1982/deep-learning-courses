@@ -680,8 +680,9 @@ var _hmt = _hmt || [];
         <li><a href="#sec7">七、1×1 卷积层</a></li>
         <li><a href="#sec8">八、池化层</a></li>
         <li><a href="#sec9">九、Why CNN？</a></li>
-        <li><a href="#sec10">十、核心公式速查</a></li>
-        <li><a href="#sec11">十一、总结与思考</a></li>
+        <li><a href="#sec10">十、代表性卷积神经网络</a></li>
+        <li><a href="#sec11">十一、核心公式速查</a></li>
+        <li><a href="#sec12">十二、总结与思考</a></li>
     </ul>
 </nav>
 
@@ -1459,7 +1460,8 @@ var _hmt = _hmt || [];
 <h3>9.2 局部性</h3>
 <!-- 局部性图 -->
 <div class="img-container">
-    <img src="images/p35_30.jpeg" alt="局部性" style="max-width:50%;">
+    <img src="images/locality.jpg" alt="局部连接网络：每个神经元只连接输入图像的局部区域" style="max-width:42%;">
+    <div class="img-caption">局部连接：每个神经元只看输入的一个局部窗口（如 10×10），参数量从 10¹² 降到 10⁸ 量级。</div>
 </div>
 <ul>
     <li>图像的特征是<strong>局部的</strong>：边缘、角点、纹理都在小区域内出现</li>
@@ -1488,8 +1490,8 @@ var _hmt = _hmt || [];
 <h3>9.4 层次特征学习</h3>
 <!-- 层次特征图 -->
 <div class="img-container">
-    <img src="images/hierarchical_features.png" alt="CNN层次特征学习：输入图像经过不同层后提取不同层次的特征" style="max-width:55%;">
-    <div class="img-caption">CNN 层次特征学习：左侧为输入图像，右侧为不同层/通道学到的特征（从低级纹理到高级语义）。</div>
+    <img src="images/p35_30.jpeg" alt="CNN层次特征学习：低层边缘纹理、中层部件、高层语义特征可视化" style="max-width:72%;">
+    <div class="img-caption">特征可视化（Zeiler &amp; Fergus 2013，来自 Yann LeCun 讲义）：低层学到颜色与边缘，中层学到纹理与部件，高层学到整体语义。</div>
 </div>
 <p>CNN 通过多层结构实现从低级到高级的特征抽象：</p>
 <div class="code-block">浅层 → 边缘、颜色、纹理
@@ -1501,7 +1503,154 @@ var _hmt = _hmt || [];
 
 <!-- ==================== 第十章 ==================== -->
 <hr class="divider">
-<h2 id="sec10">十、核心公式速查</h2>
+<h2 id="sec10">十、代表性卷积神经网络</h2>
+
+<p>掌握了 CNN 的基本组件之后，讲义按演化脉络介绍了五个里程碑式的经典网络：<strong>LeNet</strong>（第一个实用的卷积神经网络）、<strong>AlexNet</strong>（升级版的 LeNet：ReLU 激活、丢弃法、数据增强）、<strong>VGG</strong>（升华版的 AlexNet：用重复的"块"做深）、<strong>ResNet</strong>（残差连接驯服超深网络）和 <strong>NiN</strong>（网络中的网络：1×1 卷积 + 全局平均池化）。</p>
+
+<h3>10.1 CNN 的演化脉络</h3>
+
+<div class="img-container">
+    <img src="images/cnn_evolution.jpg" alt="卷积神经网络的演化脉络图" style="max-width:80%;">
+    <div class="img-caption">从 Hubel &amp; Wiesel 的早期尝试、Neocognitron、LeCun1989 到 LeNet；2012 年 AlexNet 实现历史突破。</div>
+</div>
+
+<p>AlexNet 之后，CNN 沿四条主线发展：</p>
+
+<ul>
+    <li><strong>网络加深</strong>：VGG16 → VGG19 → MSRANet，并与增强模块路线集成为 ResNet；</li>
+    <li><strong>增强卷积模块功能</strong>：NIN → GoogLeNet → Inception V3/V4；</li>
+    <li><strong>从分类任务到检测任务</strong>：SPP-Net / R-CNN → Fast R-CNN → Faster R-CNN；</li>
+    <li><strong>增加新的功能单元</strong>：Inception V2（BN）、FCN、STNet、CNN+RNN/LSTM。</li>
+</ul>
+
+<h3>10.2 LeNet（1998）：第一个实用的 CNN</h3>
+
+<p>LeNet 由 Yann LeCun 等人于 1998 年提出（LeCun, Bottou, Bengio, Haffner：<em>Gradient-based learning applied to document recognition</em>），最早成功应用于<strong>手写数字识别</strong>——邮政编码和银行支票金额的自动读取。它使用的 <strong>MNIST</strong> 数据集包含居中缩放后的 28×28 灰度图像：60,000 个训练样本、10,000 个测试样本、共 10 类。</p>
+
+<div class="img-container">
+    <img src="images/lenet_arch.jpg" alt="LeNet 架构：卷积-池化-卷积-池化-全连接" style="max-width:88%;">
+    <div class="img-caption">LeNet 架构：32×32 输入 → C1 卷积（6@28×28）→ S2 池化（6@14×14）→ C3 卷积（16@10×10）→ S4 池化（16@5×5）→ 全连接（120 → 84）→ 输出（10）。</div>
+</div>
+
+<p>每一层的输入尺寸、卷积/池化配置、输出尺寸和训练参数都可以手工核算——这正是本章前面所有公式的一次完整实战：</p>
+
+<div class="img-container">
+    <img src="images/lenet_layers.jpg" alt="LeNet 各层配置与参数量计算表" style="max-width:88%;">
+    <div class="img-caption">LeNet 逐层核算表：例如卷积层 1 用 6 个 5×5 卷积核、步长 1，输出 6×28×28，训练参数 1×(5×5)×6+6=156。</div>
+</div>
+
+<div class="img-container">
+    <img src="images/lenet_demo.jpg" alt="AT&amp;T LeNet-5 手写数字实时识别演示" style="max-width:80%;">
+    <div class="img-caption">AT&amp;T 实验室的 LeNet-5 实时识别演示：左侧为各层特征图，网络对手写数字 "0" 给出正确答案。</div>
+</div>
+
+<h3>10.3 AlexNet（2012）：引爆深度学习革命</h3>
+
+<p>2012 年，AlexNet 以巨大优势赢得 ImageNet 竞赛，让全世界重新认识了深度学习。它面对的 <strong>ImageNet 数据集（2010）</strong>比 MNIST 大了好几个数量级：</p>
+
+<div class="img-container">
+    <img src="images/imagenet_vs_mnist.jpg" alt="ImageNet 与 MNIST 数据集对比" style="max-width:80%;">
+    <div class="img-caption">ImageNet：自然物体的彩色图像（469×387）、1200 万样本、1000 类；MNIST：手写数字灰度图（28×28）、6 万样本、10 类。</div>
+</div>
+
+<p><strong>AlexNet 本质上是"更深更大的 LeNet"</strong>，主要修改包括：</p>
+
+<ul>
+    <li><strong>结构更大</strong>：更大的卷积核（11×11、步幅 4）与更大的池化窗口，池化改为<strong>最大池化</strong>；增加 3 个额外的卷积层，输出通道更多；隐含层大小从 120 增加到 4096；输出从 10 类变为 1000 类；</li>
+    <li><strong>ReLU 激活</strong>：替代 sigmoid，缓解梯度消失，训练更快；</li>
+    <li><strong>丢弃法（Dropout）</strong>：在两个隐含层之后应用，正则化效果更好、训练更稳定；</li>
+    <li><strong>数据增强</strong>：扩充训练数据，提升泛化。</li>
+</ul>
+
+<div class="img-container">
+    <img src="images/alexnet_vs_lenet.jpg" alt="AlexNet 与 LeNet 首层结构对比" style="max-width:55%;">
+    <div class="img-caption">输入从 32×32 灰度图变为 3×224×224 彩色图；首层从 5×5 Conv(6) 变为 11×11 Conv(96) stride 4，池化从 2×2 平均池化变为 3×3 最大池化。</div>
+</div>
+
+<p>代价是计算量与参数量的飙升——这也解释了为什么 AlexNet 必须依靠 GPU 训练：</p>
+
+<div class="img-container">
+    <img src="images/alexnet_complexity.jpg" alt="AlexNet 与 LeNet 参数量和计算量对比" style="max-width:88%;">
+    <div class="img-caption">复杂度对比：AlexNet 总参数量 46M（LeNet 为 0.6M），浮点计算量约 1G FLOP（LeNet 为 4M，约 250 倍）。</div>
+</div>
+
+<h3>10.4 VGG（2014）：用重复的"块"做深网络</h3>
+
+<p>AlexNet 已经比 LeNet 更深更大，下一步怎么走？两个选项：<em>更多全连接层</em>（开销太大，不可取）或<em>更多卷积层</em>。VGG 选择了后者，并给出两条关键设计经验：</p>
+
+<ul>
+    <li><strong>卷积层分组成"块"</strong>：像搭积木一样重复堆叠，便于构建不同深度的网络；</li>
+    <li><strong>用小核替代大核</strong>：5×5 卷积换成多个 3×3 卷积——<strong>更深、更窄</strong>的网络效果更好。</li>
+</ul>
+
+<div class="img-container">
+    <img src="images/vgg_block.jpg" alt="VGG 块与 AlexNet 片段对比" style="max-width:55%;">
+    <div class="img-caption">VGG 块 = n 层 3×3 卷积（填充=1，m 个通道）+ 2×2 最大池化（步幅=2）。</div>
+</div>
+
+<p>完整的 VGG 网络由<strong>多个 VGG 块后接稠密层</strong>构成；改变块的重复次数，就得到 VGG-16、VGG-19 等不同架构：</p>
+
+<div class="img-container">
+    <img src="images/vgg_structure.jpg" alt="VGG 与 AlexNet 网络结构对比" style="max-width:48%;">
+    <div class="img-caption">VGG（左）用规整的块式结构取代了 AlexNet（右）逐层手工设计的卷积配置。</div>
+</div>
+
+<h3>10.5 ResNet（2015）：残差连接驯服超深网络</h3>
+
+<p>网络继续加深会遇到两个障碍：<strong>梯度爆炸/消失</strong>，以及<strong>网络退化</strong>（degradation）——层数增加，训练误差不降反升。ResNet 的核心组件是<strong>跳跃连接（Skip / shortcut connection）</strong>：</p>
+
+<ul>
+    <li>普通网络（Plain net）：直接拟合目标映射 \(H(x)\)；</li>
+    <li>残差网络（Residual net）：改为拟合残差映射 \(F(x)\)，令 \(H(x) = F(x) + x\)——学"变化量"比学"完整映射"容易得多，恒等映射只需让 \(F(x)\) 趋近 0。</li>
+</ul>
+
+<div class="img-container">
+    <img src="images/resnet_block.jpg" alt="普通块与残差块对比：H(x)=F(x)+x" style="max-width:55%;">
+    <div class="img-caption">残差块：输入 \(x\) 经跳跃连接与 \(F(x)\) 相加，\(H(x)=F(x)+x\)。</div>
+</div>
+
+<p>更深的 ResNet 用 <strong>Bottleneck（瓶颈）</strong>结构优化残差映射：原始两层 3×3×256×256 卷积，改为 1×1×256×64 → 3×3×64×64 → 1×1×64×256——先用 1×1 卷积降维、再升维，计算量相近但深度大增（用于 ResNet-50/101/152）：</p>
+
+<div class="img-container">
+    <img src="images/resnet_bottleneck.jpg" alt="all-3x3 与 bottleneck 残差块对比" style="max-width:58%;">
+    <div class="img-caption">左：普通残差块（all-3x3）；右：瓶颈块（bottleneck），1×1 卷积负责降维/升维。</div>
+</div>
+
+<p>残差连接让网络深度从十几层跃升到上百层。讲义给出的典型 CNN 对比一览：</p>
+
+<div class="img-container">
+    <img src="images/cnn_comparison.jpg" alt="典型CNN对比表：AlexNet、VGG、GoogLeNet、ResNet" style="max-width:75%;">
+    <div class="img-caption">AlexNet（2012，8 层，Top-5 错误率 16.4%）→ VGG（2014，19 层，7.3%）→ GoogLeNet v1（2014，22 层，6.7%）→ ResNet（2015，152 层，3.57%）。</div>
+</div>
+
+<h3>10.6 NiN：网络中的网络</h3>
+
+<p>前面所有网络都有一个通病——<strong>"最后一层的诅咒"</strong>：卷积层参数其实很少，但末尾的稠密层参数巨大（LeNet 末层 16×5×5×120=48K，AlexNet 更是 256×5×5×4096≈26M）。NiN（Network in Network）的思路是<strong>打破最后一层诅咒</strong>：</p>
+
+<ul>
+    <li><strong>关键理念</strong>：丢弃末尾的一个或几个稠密层；卷积和池化逐步降低分辨率（如步幅 2 降 4 倍），同时增加通道数量；</li>
+    <li><strong>为什么用 1×1 卷积</strong>：具有 n 个通道的极端情况相当于"1×1 图像"——在每个像素位置上施加一个 MLP，正好充当稠密层；推理时池化还能增强平移稳定性。</li>
+</ul>
+
+<div class="img-container">
+    <img src="images/nin_block.jpg" alt="NiN 块：卷积层加两个 1x1 卷积层" style="max-width:32%;">
+    <div class="img-caption">NiN 块：1 个普通卷积层（核大小、步幅、填充为超参数）+ 2 个 1×1 卷积层（步幅 1、无填充、输出通道与第一层相同，充当稠密层）。</div>
+</div>
+
+<p>完整的 <strong>NiN 网络</strong>用 NiN 块替换了 AlexNet 的稠密层，最后用<strong>全局平均池化层</strong>直接输出每个类别的分数——彻底告别庞大的全连接层：</p>
+
+<div class="img-container">
+    <img src="images/nin_network.jpg" alt="NiN 网络与 VGG 网络结构对比" style="max-width:85%;">
+    <div class="img-caption">NiN（右）与 VGG（左）对比：VGG 末尾是三层 Dense，NiN 末尾是全局平均池化（Global Average Pool）。</div>
+</div>
+
+<div class="alert-success">
+    <strong>✅ 一句话总结：</strong>LeNet 证明了 CNN 可用，AlexNet 证明了 CNN 强大，VGG 给出了"块式"设计范式，ResNet 用残差连接突破深度极限，NiN 用 1×1 卷积和全局平均池化消灭了稠密层——今天的所有主流网络都站在它们肩上。
+</div>
+
+<!-- ==================== 第十一章 ==================== -->
+<hr class="divider">
+<h2 id="sec11">十一、核心公式速查</h2>
 
 <table class="compare-table">
     <thead>
@@ -1517,11 +1666,11 @@ var _hmt = _hmt || [];
     </tbody>
 </table>
 
-<!-- ==================== 第十一章 ==================== -->
+<!-- ==================== 第十二章 ==================== -->
 <hr class="divider">
-<h2 id="sec11">十一、总结与思考</h2>
+<h2 id="sec12">十二、总结与思考</h2>
 
-<h3>11.1 CNN 核心组件一览</h3>
+<h3>12.1 CNN 核心组件一览</h3>
 
 <ol class="step-list">
     <li>
@@ -1556,7 +1705,7 @@ var _hmt = _hmt || [];
     </li>
 </ol>
 
-<h3>11.2 课堂自测</h3>
+<h3>12.2 课堂自测</h3>
 
 <div class="quiz-section">
     <div class="quiz-item">
@@ -1601,9 +1750,23 @@ var _hmt = _hmt || [];
             <div class="quiz-hint">✅ 答案：几乎没有区别。此时每个核在整个输入上只输出一个值，"局部连接"覆盖全图、"权值共享"无处共享——该核就退化为全连接层的一个神经元。这说明<strong>全连接层是卷积层的特例</strong>，卷积的优势恰恰来自"核比输入小"。</div>
         </div>
     </div>
+    <div class="quiz-item">
+        <span class="quiz-num">7</span>
+        <div class="quiz-content">
+            <div class="quiz-question">ResNet 的残差连接解决了什么问题？残差映射 \(F(x)\) 与目标映射 \(H(x)\) 是什么关系？</div>
+            <div class="quiz-hint">✅ 答案：解决超深网络中的梯度消失/爆炸与<strong>网络退化</strong>（层数增加、训练误差反而上升）问题。关系为 \(H(x) = F(x) + x\)——网络不再直接拟合 \(H(x)\)，而是拟合相对于恒等映射的残差 \(F(x)\)；当某层不需要额外变换时，只需让 \(F(x)\) 趋近 0，比硬学一个恒等映射容易得多。</div>
+        </div>
+    </div>
+    <div class="quiz-item">
+        <span class="quiz-num">8</span>
+        <div class="quiz-content">
+            <div class="quiz-question">NiN 用什么办法打破了"最后一层的诅咒"（末尾稠密层参数巨大）？</div>
+            <div class="quiz-hint">✅ 答案：用 <strong>NiN 块</strong>（普通卷积 + 两个 1×1 卷积，充当逐像素的 MLP）替换末尾的稠密层，最后用<strong>全局平均池化</strong>直接输出各类别分数。1×1 卷积在空间上不改变尺寸、只重组通道，正好扮演了全连接的角色。</div>
+        </div>
+    </div>
 </div>
 
-<h3>11.3 下讲预告</h3>
+<h3>12.3 下讲预告</h3>
 
 <div class="alert-success">
     <strong>📖 第 05 讲：循环神经网络（RNN）</strong>（理论 2 学时）——从图像转向序列数据：文本、语音与时间序列如何建模？循环结构、梯度消失的再认识、LSTM 与 GRU 的门控设计。请先复习第 03 讲的反向传播与数值稳定性。
