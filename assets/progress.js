@@ -8,5 +8,5 @@ window.DL_PROGRESS = {
     'dnn': 'open',    /* 03 深度神经网络 */
     'cnn': 'open',    /* 04 卷积神经网络 */
     'rnn': 'open',    /* 05 循环神经网络 */
-    'attention': 'locked'    /* 06 注意力机制与Transformer */
+    'attention': 'open'    /* 06 注意力机制与Transformer */
 };
