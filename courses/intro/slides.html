@@ -91,6 +91,28 @@
 .divider-title { font-size: 46px; font-weight: bold; color: #1E40AF; margin-top: 8px; }
 .divider-lede { font-size: 22px; color: #64748B; margin-top: 18px; max-width: 900px; }
 .toc-list { font-size: 26px; line-height: 2.0; color: #1E293B; }
+/* ===== 图片双击放大灯箱 ===== */
+.slide-body img { cursor: zoom-in; }
+#img-lightbox {
+    position: fixed; inset: 0; z-index: 99998; display: none;
+    align-items: center; justify-content: center; overflow: auto;
+    background: rgba(15, 23, 42, .92);
+}
+#img-lightbox.open { display: flex; }
+#img-lightbox img {
+    max-width: 96vw; max-height: 96vh; background: #fff; border-radius: 6px;
+    box-shadow: 0 10px 50px rgba(0,0,0,.5); cursor: zoom-out; margin: auto;
+}
+#img-lightbox img.lb-natural { max-width: none; max-height: none; cursor: zoom-out; }
+#img-lightbox .lb-close {
+    position: fixed; top: 14px; right: 26px; z-index: 2;
+    color: #fff; font-size: 34px; cursor: pointer; line-height: 1;
+}
+#img-lightbox .lb-cap {
+    position: fixed; left: 0; right: 0; bottom: 0; padding: 10px 60px;
+    color: #E2E8F0; font-size: 15px; text-align: center;
+    background: rgba(15,23,42,.75); pointer-events: none;
+}
 </style>
 </head>
 <body>
@@ -1195,7 +1217,7 @@ print(a.device, t1 - t0, c.norm(2)) # 依次输出：计算设备、耗时(秒)�
 </section>
 </div>
 </div>
-<div class="slide-hint">←→ 翻页 · F 全屏 · Esc 总览</div>
+<div class="slide-hint">←→ 翻页 · 双击图片放大 · F 全屏 · Esc 总览</div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.0/dist/reveal.js"></script>
 <script>
 Reveal.initialize({
@@ -1264,6 +1286,33 @@ document.addEventListener('DOMContentLoaded', function () {
         q.addEventListener('click', function () { q.classList.toggle('open'); });
     });
 });
+</script>
+<script>
+/* ===== 图片双击放大灯箱 ===== */
+(function () {
+    var lb = document.createElement('div');
+    lb.id = 'img-lightbox';
+    lb.innerHTML = '<span class="lb-close">×</span><img alt=""><div class="lb-cap"></div>';
+    document.body.appendChild(lb);
+    var limg = lb.querySelector('img');
+    var cap = lb.querySelector('.lb-cap');
+    function close() { lb.classList.remove('open'); limg.classList.remove('lb-natural'); }
+    lb.addEventListener('click', function (e) { if (e.target !== limg) close(); });
+    limg.addEventListener('click', function () { limg.classList.toggle('lb-natural'); });
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && lb.classList.contains('open')) { e.stopPropagation(); close(); }
+    }, true);
+    document.querySelectorAll('.slide-body img').forEach(function (im) {
+        im.addEventListener('dblclick', function (e) {
+            e.preventDefault();
+            limg.src = im.src;
+            var box = im.closest('.img-container, figure');
+            var capEl = box ? box.querySelector('.img-caption, figcaption') : null;
+            cap.textContent = capEl ? capEl.textContent : (im.alt || '');
+            lb.classList.add('open');
+        });
+    });
+})();
 </script>
 </body>
 </html>
