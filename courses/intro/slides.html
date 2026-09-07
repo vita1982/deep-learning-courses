@@ -111,7 +111,7 @@
 #img-lightbox .lb-cap {
     position: fixed; left: 0; right: 0; bottom: 0; padding: 10px 60px;
     color: #E2E8F0; font-size: 15px; text-align: center;
-    background: rgba(15,23,42,.75); pointer-events: none;
+    background: rgba(15,23,42,.75);
 }
 </style>
 </head>
@@ -1298,9 +1298,12 @@ document.addEventListener('DOMContentLoaded', function () {
     var cap = lb.querySelector('.lb-cap');
     function close() { lb.classList.remove('open'); limg.classList.remove('lb-natural'); }
     lb.addEventListener('click', function (e) { if (e.target !== limg) close(); });
+    cap.addEventListener('click', function (e) { e.stopPropagation(); });  /* 点图注不关闭灯箱 */
     limg.addEventListener('click', function () { limg.classList.toggle('lb-natural'); });
     document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape' && lb.classList.contains('open')) { e.stopPropagation(); close(); }
+        if (!lb.classList.contains('open')) return;
+        e.stopPropagation();  /* 灯箱打开期间拦截全部按键，防止 reveal 在背后翻页/全屏 */
+        if (e.key === 'Escape') close();
     }, true);
     document.querySelectorAll('.slide-body img').forEach(function (im) {
         im.addEventListener('dblclick', function (e) {
