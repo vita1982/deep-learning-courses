@@ -73,16 +73,17 @@
 .slide-body p { margin: 0 0 14px; }
 .slide-body ul, .slide-body ol { margin: 0 0 14px 1.4em; }
 .slide-body table { font-size: 19px; width: 100%; }
-.slide-body img { max-height: 36vh !important; }
+.slide-body img { max-height: 259px !important; }
 .slide-body .img-caption, .slide-body figcaption { font-size: 16px; }
 .slide-hint {
     position: fixed; right: 14px; bottom: 10px; z-index: 30;
     font-size: 12px; color: #94A3B8; pointer-events: none;
 }
-/* 内容较少的页垂直居中，避免"顶部几行+大片空白"的观感 */
-.reveal .slides section.slide-short { display: flex; flex-direction: column; justify-content: center; }
-/* 封面与节隔页 */
-section.cover-slide, section.section-divider { text-align: center !important; display: flex !important; flex-direction: column; justify-content: center; align-items: center; }
+/* 内容较少的页垂直居中（safe center：内容真超高时退化为顶部对齐，不会发生负滚动区裁切；
+   加 .present 限定，避免压过 reveal 对非当前页的 display:none 隐藏规则） */
+.reveal .slides section.slide-short.present { display: flex; flex-direction: column; justify-content: safe center; }
+/* 封面与节隔页（同理加 .present 限定） */
+.reveal .slides section.cover-slide.present, .reveal .slides section.section-divider.present { text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; }
 .cover-title { font-size: 56px; font-weight: bold; color: #1E293B; margin-bottom: 18px; }
 .cover-sub { font-size: 26px; color: #475569; margin-bottom: 10px; }
 .cover-meta { font-size: 19px; color: #94A3B8; }
@@ -103,7 +104,7 @@ section.cover-slide, section.section-divider { text-align: center !important; di
 <section>
   <div class="slide-breadcrumb">第01讲 深度学习概述 › 目录</div>
   <div class="slide-title">📋 本讲目录</div>
-  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 课程简介</a></li><li><a href="#/8" style="color:#1E40AF;text-decoration:none;">2. 什么是深度学习</a></li><li><a href="#/19" style="color:#1E40AF;text-decoration:none;">3. 深度学习发展简史</a></li><li><a href="#/26" style="color:#1E40AF;text-decoration:none;">4. 深度学习为什么现在火热？</a></li><li><a href="#/29" style="color:#1E40AF;text-decoration:none;">5. 深度学习典型应用</a></li><li><a href="#/45" style="color:#1E40AF;text-decoration:none;">6. 深度学习主流框架</a></li><li><a href="#/57" style="color:#1E40AF;text-decoration:none;">7. 实验环境配置</a></li><li><a href="#/66" style="color:#1E40AF;text-decoration:none;">8. 动手实操：安装 PyTorch 并验证环境</a></li><li><a href="#/73" style="color:#1E40AF;text-decoration:none;">9. 本讲小结与自测</a></li></ol></div>
+  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 课程简介</a></li><li><a href="#/9" style="color:#1E40AF;text-decoration:none;">2. 什么是深度学习</a></li><li><a href="#/23" style="color:#1E40AF;text-decoration:none;">3. 深度学习发展简史</a></li><li><a href="#/31" style="color:#1E40AF;text-decoration:none;">4. 深度学习为什么现在火热？</a></li><li><a href="#/34" style="color:#1E40AF;text-decoration:none;">5. 深度学习典型应用</a></li><li><a href="#/50" style="color:#1E40AF;text-decoration:none;">6. 深度学习主流框架</a></li><li><a href="#/63" style="color:#1E40AF;text-decoration:none;">7. 实验环境配置</a></li><li><a href="#/73" style="color:#1E40AF;text-decoration:none;">8. 动手实操：安装 PyTorch 并验证环境</a></li><li><a href="#/81" style="color:#1E40AF;text-decoration:none;">9. 本讲小结与自测</a></li></ol></div>
 </section>
 <section class="section-divider">
   <div class="divider-num">1</div>
@@ -157,10 +158,16 @@ section.cover-slide, section.section-divider { text-align: center !important; di
             <tr><td>08</td><td>注意力机制、Transformer、大语言模型</td><td>理论 1 学时 + 实验 1 学时</td></tr>
         </table>
     </div>
-<p><strong>地图解读</strong>：第 03 章"深度神经网络"学时最多（共 10 学时），是全课程的核心与难点；第 04、05 章是卷积神经网络与循环神经网络两大基础模型；第 06、07 章分别对应图像和文本两大类主流应用；最后的注意力机制与 Transformer 落到大语言模型（LLM）上。本讲是整个旅程的起点。</p>
   </div>
 </section>
 <section class="slide-short">
+  <div class="slide-breadcrumb">第01讲 深度学习概述 › 1. 课程简介</div>
+  <div class="slide-title">1.2 全学期课程地图</div>
+  <div class="slide-body">
+<p><strong>地图解读</strong>：第 03 章"深度神经网络"学时最多（共 10 学时），是全课程的核心与难点；第 04、05 章是卷积神经网络与循环神经网络两大基础模型；第 06、07 章分别对应图像和文本两大类主流应用；最后的注意力机制与 Transformer 落到大语言模型（LLM）上。本讲是整个旅程的起点。</p>
+  </div>
+</section>
+<section>
   <div class="slide-breadcrumb">第01讲 深度学习概述 › 1. 课程简介</div>
   <div class="slide-title">1.3 课外学习资料</div>
   <div class="slide-body">
@@ -199,6 +206,12 @@ section.cover-slide, section.section-divider { text-align: center !important; di
         <span class="co-tag">🔑 初学者理解</span>
         <p>一个神经元就像一个"迷你函数"——吃进去一个数，吐出来一个数。所谓"学习"，就是自动调整这个函数的参数，让预测越来越准。</p>
     </div>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第01讲 深度学习概述 › 2. 什么是深度学习</div>
+  <div class="slide-title">2.1 从房价预测说起：一个神经元能做什么</div>
+  <div class="slide-body">
 <div class="lab">
         <div class="lab-head">
             <span class="lab-badge">互动实验</span>
@@ -228,13 +241,13 @@ section.cover-slide, section.section-divider { text-align: center !important; di
         </div>
         <div class="lab-note">sigmoid 把任意实数压到 (0, 1)，可理解为"概率/强度"；ReLU 负数归零、正数原样通过；阶跃函数就是最早的"感知机"——输出非 0 即 1。</div>
     </div>
+<p><strong>第二步：考虑更多因素。</strong>现实中房价不只由面积决定。把更多特征加进来，一个神经元就不够用了，需要多个神经元协同工作——这就是"神经网络"：</p>
   </div>
 </section>
 <section>
   <div class="slide-breadcrumb">第01讲 深度学习概述 › 2. 什么是深度学习</div>
   <div class="slide-title">2.1 从房价预测说起：一个神经元能做什么</div>
   <div class="slide-body">
-<p><strong>第二步：考虑更多因素。</strong>现实中房价不只由面积决定。把更多特征加进来，一个神经元就不够用了，需要多个神经元协同工作——这就是"神经网络"：</p>
 <div class="tbl-wrap">
         <table>
             <tr><th>输入特征</th><th>符号</th><th>说明</th></tr>
@@ -247,7 +260,7 @@ section.cover-slide, section.section-divider { text-align: center !important; di
     </div>
   </div>
 </section>
-<section>
+<section class="slide-short">
   <div class="slide-breadcrumb">第01讲 深度学习概述 › 2. 什么是深度学习</div>
   <div class="slide-title">2.2 神经网络的三层结构</div>
   <div class="slide-body">
@@ -257,17 +270,23 @@ section.cover-slide, section.section-divider { text-align: center !important; di
         <li><strong>隐含层（Hidden layer）</strong>：位于输入和输出之间，是计算真正发生的地方。外界看不到它的中间输出，所以叫"隐含"；</li>
         <li><strong>输出层（Output layer）</strong>：给出最终预测结果（房价）。</li>
     </ul>
-<figure>
-        <img src="images/nn_layers.png" alt="神经网络三层结构：4个输入、3个隐含层、2个输出" loading="lazy">
-        <figcaption>一个"深"网络：4 个输入（\(x_1 \sim x_4\)）、3 个隐含层（分别有 5、3、2 个神经元）、2 个输出（\(o_1\)、\(o_2\)）。隐含层一层叠一层，网络就"深"了。</figcaption>
-    </figure>
   </div>
 </section>
 <section>
   <div class="slide-breadcrumb">第01讲 深度学习概述 › 2. 什么是深度学习</div>
   <div class="slide-title">2.2 神经网络的三层结构</div>
   <div class="slide-body">
+<figure>
+        <img src="images/nn_layers.png" alt="神经网络三层结构：4个输入、3个隐含层、2个输出" loading="lazy">
+        <figcaption>一个"深"网络：4 个输入（\(x_1 \sim x_4\)）、3 个隐含层（分别有 5、3、2 个神经元）、2 个输出（\(o_1\)、\(o_2\)）。隐含层一层叠一层，网络就"深"了。</figcaption>
+    </figure>
 <p>数据在网络中是怎样"流动"的？下面这张动图演示了一次完整的前向传播：信号从输入层出发，逐层计算，直到输出层给出预测：</p>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第01讲 深度学习概述 › 2. 什么是深度学习</div>
+  <div class="slide-title">2.2 神经网络的三层结构</div>
+  <div class="slide-body">
 <figure>
         <img src="images/forward_pass_v2.gif" alt="前向传播动图：信号从输入层经隐含层流向输出层" loading="lazy">
         <figcaption>前向传播动画：每个神经元先做加权和 \(z = \sum_i w_i x_i + b\)，再经激活函数 \(a = f(z)\)，把结果传给下一层。</figcaption>
@@ -328,6 +347,12 @@ section.cover-slide, section.section-divider { text-align: center !important; di
         </table>
     </div>
 <p>举个识别人脸的例子：传统方法需要人告诉机器"先看边缘、再看五官比例"；而深度学习自己逐层总结——底层学边缘和色块 → 中层学眼睛、鼻子 → 高层学整张脸的轮廓。特征不再靠人教，而是机器从数据中自动学出来的。</p>
+  </div>
+</section>
+<section class="slide-short">
+  <div class="slide-breadcrumb">第01讲 深度学习概述 › 2. 什么是深度学习</div>
+  <div class="slide-title">2.5 深度学习 vs 传统机器学习：特征从哪来？</div>
+  <div class="slide-body">
 <div class="quiz">
         <div class="q">Q2. 与传统机器学习方法相比，深度学习的优势在于？　A. 深度学习可以自动学习特征　B. 深度学习完全不需要做数据预处理　C. 深度学习完全不提取底层特征，如图像边缘、纹理等　D. 深度学习不需要调参</div>
         <div class="a">✅ 正确答案：A。其余三个都是常见误区：深度学习仍需数据预处理；它恰恰是从边缘、纹理等底层特征学起的；它同样需要调参（学习率、层数等超参数）。</div>
@@ -411,7 +436,7 @@ section.cover-slide, section.section-divider { text-align: center !important; di
     </div>
   </div>
 </section>
-<section>
+<section class="slide-short">
   <div class="slide-breadcrumb">第01讲 深度学习概述 › 3. 深度学习发展简史</div>
   <div class="slide-title">3.2 第二次浪潮（20 世纪 80—90 年代）：联结主义时期</div>
   <div class="slide-body">
@@ -420,6 +445,12 @@ section.cover-slide, section.section-divider { text-align: center !important; di
         <span class="co-tag">🔑 反向传播为什么重要？</span>
         <p>它解决了"多层网络怎么训练"的核心难题：先正向算出预测结果，再把误差从输出层反向逐层传回，告诉每一层"你该往哪个方向调整、调整多少"。有了 BP，训练多层（深层）网络才成为可能。直到今天，它仍是训练所有深度学习模型的基础算法。</p>
     </div>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第01讲 深度学习概述 › 3. 深度学习发展简史</div>
+  <div class="slide-title">3.2 第二次浪潮（20 世纪 80—90 年代）：联结主义时期</div>
+  <div class="slide-body">
 <figure>
         <img src="images/backprop_chain.jpg" alt="反向传播中的链式法则" loading="lazy">
         <figcaption>反向传播的数学本质：链式法则。误差 \(E_p\) 对权重 \(w_{ji}\) 的梯度，可以分解为"误差对输出" × "输出对权重"逐层相乘，从输出层一路传回输入层。</figcaption>
@@ -438,13 +469,13 @@ section.cover-slide, section.section-divider { text-align: center !important; di
         <img src="images/dbn_pretraining.jpg" alt="深度信念网络的贪婪逐层预训练示意图" loading="lazy">
         <figcaption>贪婪逐层预训练示意：先用受限玻尔兹曼机（RBM）把每一层单独预训练（左），堆叠成自编码器（中），最后用反向传播整体微调（右）。这让训练深层网络第一次变得可行。</figcaption>
     </figure>
-<p>此次浪潮普及了"深度学习"这一术语——从此"神经网络"换上了"深度学习"的新名字，一直火热至今。Hinton 也因此被誉为"深度学习之父"，并于 2018 年获得图灵奖。</p>
   </div>
 </section>
 <section>
   <div class="slide-breadcrumb">第01讲 深度学习概述 › 3. 深度学习发展简史</div>
   <div class="slide-title">3.3 第三次浪潮（2006 年至今）：深度学习时期</div>
   <div class="slide-body">
+<p>此次浪潮普及了"深度学习"这一术语——从此"神经网络"换上了"深度学习"的新名字，一直火热至今。Hinton 也因此被誉为"深度学习之父"，并于 2018 年获得图灵奖。</p>
 <figure>
         <img src="images/turing_award_2018.jpg" alt="2018年图灵奖得主：Hinton、Bengio、LeCun" loading="lazy">
         <figcaption>2018 年图灵奖授予"深度学习三巨头"：Geoffrey Hinton、Yoshua Bengio、Yann LeCun——图灵奖是计算机领域最高荣誉。</figcaption>
@@ -494,7 +525,7 @@ section.cover-slide, section.section-divider { text-align: center !important; di
   <div class="divider-title">深度学习典型应用</div>
   <div class="divider-lede"><p class="chapter-lede">深度学习到底"能做什么"？本节用大量实例给出答案。以下按领域整理，每个应用都附了出处，学有余力的同学可以顺藤摸瓜。这些应用现在不要求懂原理，目的是建立整体印象——第 04~08 章会逐步带你走近它们。</p></div>
 </section>
-<section class="slide-short">
+<section>
   <div class="slide-breadcrumb">第01讲 深度学习概述 › 5. 深度学习典型应用</div>
   <div class="slide-title">5.1 计算机视觉（Computer Vision）</div>
   <div class="slide-body">
@@ -595,7 +626,7 @@ section.cover-slide, section.section-divider { text-align: center !important; di
     </figure>
   </div>
 </section>
-<section class="slide-short">
+<section>
   <div class="slide-breadcrumb">第01讲 深度学习概述 › 5. 深度学习典型应用</div>
   <div class="slide-title">5.2 自然语言处理（NLP）</div>
   <div class="slide-body">
@@ -646,13 +677,13 @@ section.cover-slide, section.section-divider { text-align: center !important; di
     </figure>
 <p>词向量类比有多神奇？把词语映射成向量之后，词语之间的语义关系就变成了向量之间的算术关系：</p>
 <p>\(\vec{\text{国王}} - \vec{\text{男人}} + \vec{\text{女人}} \approx \vec{\text{女王}}\)</p>
-<p>也就是说，"国王"减去"男人"再加上"女人"，得到的向量最接近的词竟然是"女王"——模型自己领悟了"性别"这个抽象概念。</p>
   </div>
 </section>
 <section>
   <div class="slide-breadcrumb">第01讲 深度学习概述 › 5. 深度学习典型应用</div>
   <div class="slide-title">5.2 自然语言处理（NLP）</div>
   <div class="slide-body">
+<p>也就是说，"国王"减去"男人"再加上"女人"，得到的向量最接近的词竟然是"女王"——模型自己领悟了"性别"这个抽象概念。</p>
 <figure>
         <img src="images/word2vec_analogy.jpg" alt="词向量类比关系示意图" loading="lazy">
         <figcaption>词向量捕捉到的类比关系：男女（king→queen 与 man→woman 方向一致）、动词时态、国家与首都。（图：TensorFlow word2vec 教程）</figcaption>
@@ -716,41 +747,39 @@ section.cover-slide, section.section-divider { text-align: center !important; di
   <div class="slide-breadcrumb">第01讲 深度学习概述 › 6. 深度学习主流框架</div>
   <div class="slide-title">6.1 五大框架速览</div>
   <div class="slide-body">
-<div class="tbl-wrap">
-        <table>
-            <tr><th>框架</th><th>特点</th><th>优点</th><th>缺点</th></tr>
-            <tr>
+<table><tbody><tr><th>框架</th><th>特点</th><th>优点</th><th>缺点</th></tr><tr>
                 <td>Caffe</td>
                 <td>用 Protobuf 配置文件作为界面，网络结构写在 .prototxt 里（如 ResNet-101-deploy.prototxt）</td>
                 <td>强大的视觉模型覆盖率；灵活可移植</td>
                 <td>不易开发（改网络结构很麻烦）</td>
-            </tr>
-            <tr>
+            </tr><tr>
                 <td>TensorFlow</td>
                 <td>Python 的域特定语言（DSL），Google 开发，示例：实现 Adam 优化算法</td>
                 <td>算子丰富、功能全面（训练/部署/可视化生态完整）</td>
                 <td>代码可读性有限（尤其 1.x 版本）</td>
-            </tr>
-            <tr>
+            </tr><tr>
                 <td>Keras</td>
                 <td>简单的 Python DSL，可使用多个后端（TensorFlow、MXNet、CNTK……），相当于"统一高层接口"</td>
                 <td>比 TensorFlow 简易，上手快</td>
                 <td>相对更慢；封装太深，不易开发和调试</td>
-            </tr>
-            <tr>
+            </tr></tbody></table>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第01讲 深度学习概述 › 6. 深度学习主流框架</div>
+  <div class="slide-title">6.1 五大框架速览</div>
+  <div class="slide-body">
+<table><tbody><tr>
                 <td>PyTorch</td>
                 <td>Torch tensors + Chainer 风格的神经网络，动态计算图，写起来像普通 Python</td>
                 <td>易开发和调试（学术界最爱）</td>
                 <td>不易配置部署</td>
-            </tr>
-            <tr>
+            </tr><tr>
                 <td>MXNet</td>
                 <td>像 Numpy 一样的 Tensor + 像 Keras 一样的神经网络，示例：实现 ResNet、Adam</td>
                 <td>高性能、高实用性</td>
                 <td>社区生态相对较小</td>
-            </tr>
-        </table>
-    </div>
+            </tr></tbody></table>
 <p class="muted">补充：本课程教材《动手学深度学习》早期版本正是基于 MXNet 的 Gluon 接口编写的。</p>
   </div>
 </section>
@@ -847,7 +876,7 @@ section.cover-slide, section.section-divider { text-align: center !important; di
     </div>
   </div>
 </section>
-<section class="slide-short">
+<section>
   <div class="slide-breadcrumb">第01讲 深度学习概述 › 6. 深度学习主流框架</div>
   <div class="slide-title">6.4 补充概念：动态图 vs 静态图</div>
   <div class="slide-body">
@@ -866,7 +895,7 @@ section.cover-slide, section.section-divider { text-align: center !important; di
   <div class="divider-title">实验环境配置</div>
   
 </section>
-<section class="slide-short">
+<section>
   <div class="slide-breadcrumb">第01讲 深度学习概述 › 7. 实验环境配置</div>
   <div class="slide-title">7.1 两种配置方案</div>
   <div class="slide-body">
@@ -887,7 +916,7 @@ section.cover-slide, section.section-divider { text-align: center !important; di
     </div>
   </div>
 </section>
-<section class="slide-short">
+<section>
   <div class="slide-breadcrumb">第01讲 深度学习概述 › 7. 实验环境配置</div>
   <div class="slide-title">7.2 各软件安装指南</div>
   <div class="slide-body">
@@ -926,7 +955,7 @@ section.cover-slide, section.section-divider { text-align: center !important; di
     </div>
   </div>
 </section>
-<section>
+<section class="slide-short">
   <div class="slide-breadcrumb">第01讲 深度学习概述 › 7. 实验环境配置</div>
   <div class="slide-title">7.3 使用 PyCharm 创建工程</div>
   <div class="slide-body">
@@ -936,6 +965,12 @@ section.cover-slide, section.section-divider { text-align: center !important; di
         <li>关键一步：在 Python Interpreter（解释器）选项中，选择 Anaconda 自带的 Python（通常形如 ...\Anaconda3\python.exe），这样项目才能直接使用 numpy、pandas 等已安装的科学计算库。</li>
         <li>点击 Create 创建工程，在工程中新建 .py 文件，就可以开始写代码了。</li>
     </ol>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第01讲 深度学习概述 › 7. 实验环境配置</div>
+  <div class="slide-title">7.3 使用 PyCharm 创建工程</div>
+  <div class="slide-body">
 <figure>
         <img src="images/pycharm_step1.jpg" alt="PyCharm 新建工程向导截图1" loading="lazy">
         <figcaption>PyCharm 新建工程向导。</figcaption>
@@ -1015,6 +1050,12 @@ conda config --set show_channel_urls yes</pre>
         <img src="images/pytorch_versions.jpg" alt="PyTorch 官网历史版本安装命令" loading="lazy">
         <figcaption>官网"<a href="https://pytorch.org/get-started/previous-versions/#conda-3" target="_blank" rel="noopener">Previous Versions</a>"页面列出了各历史版本的 conda / pip 安装命令。</figcaption>
     </figure>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第01讲 深度学习概述 › 8. 动手实操：安装 PyTorch 并验证环境</div>
+  <div class="slide-title">8.2 安装 PyTorch</div>
+  <div class="slide-body">
 <div class="codecard">
         <div class="code-label">Anaconda Prompt</div>
         <pre># 安装 PyTorch 三件套：本体 + torchvision 视觉工具包 + cudatoolkit GPU 组件
@@ -1024,12 +1065,6 @@ conda install pytorch torchvision cudatoolkit=10.0
 # 安装常用科学计算库：数组计算 / 绘图 / 图像处理 / 表格分析
 pip install numpy matplotlib pillow pandas</pre>
     </div>
-  </div>
-</section>
-<section class="slide-short">
-  <div class="slide-breadcrumb">第01讲 深度学习概述 › 8. 动手实操：安装 PyTorch 并验证环境</div>
-  <div class="slide-title">8.2 安装 PyTorch</div>
-  <div class="slide-body">
 <div class="callout key">
         <span class="co-tag">💡 初学者答疑</span>
         <p>torchvision 是 PyTorch 的计算机视觉工具包（含常用数据集和预训练模型）；cudatoolkit=10.0 是 NVIDIA GPU 加速所需的组件，版本号需与显卡驱动匹配；没有 NVIDIA 显卡的电脑可以装 CPU 版本（官网命令中选择 CUDA = None），学习本课程完全够用。另外，conda 频道与 cudatoolkit 版本号会随时间更新，请以 PyTorch 官网当前给出的命令为准。</p>
@@ -1073,6 +1108,12 @@ print(a.device, t1 - t0, c.norm(2)) # 依次输出：计算设备、耗时(秒)�
             <tr><td>c.norm(2) 输出一个数值</td><td>计算结果有效</td></tr>
         </table>
     </div>
+  </div>
+</section>
+<section class="slide-short">
+  <div class="slide-breadcrumb">第01讲 深度学习概述 › 8. 动手实操：安装 PyTorch 并验证环境</div>
+  <div class="slide-title">8.3 验证环境是否安装成功</div>
+  <div class="slide-body">
 <div class="callout key">
         <span class="co-tag">🔍 逐行讲解（写给完全没接触过 PyTorch 的同学）</span>
         <p>torch.randn(m, n)：生成 m 行 n 列、服从标准正态分布的随机数矩阵（PyTorch 中叫"张量" Tensor）；</p>
@@ -1086,7 +1127,7 @@ print(a.device, t1 - t0, c.norm(2)) # 依次输出：计算设备、耗时(秒)�
   <div class="divider-title">本讲小结与自测</div>
   
 </section>
-<section class="slide-short">
+<section>
   <div class="slide-breadcrumb">第01讲 深度学习概述 › 9. 本讲小结与自测</div>
   <div class="slide-title">9.1 知识脉络</div>
   <div class="slide-body">

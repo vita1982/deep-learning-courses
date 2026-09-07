@@ -291,6 +291,7 @@ var _hmt = _hmt || [];
         var m = a.getAttribute('href').match(/^courses\/([^/]+)\//);
         if (!m || P[m[1]] !== 'locked') return;
         var card = a.closest('.course-card');
+        if (card && card.classList.contains('dl-locked')) return; /* 双按钮卡片去重，只处理一次 */
         if (card) {
             card.classList.add('dl-locked');
             var done = card.querySelector('.tag-green');
