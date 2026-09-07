@@ -101,19 +101,12 @@ section.cover-slide, section.section-divider { text-align: center !important; di
 <section>
   <div class="slide-breadcrumb">第01讲 深度学习概述 › 目录</div>
   <div class="slide-title">📋 本讲目录</div>
-  <div class="slide-body toc-list"><ol><li>课程简介</li><li>什么是深度学习</li><li>深度学习发展简史</li><li>深度学习为什么现在火热？</li><li>深度学习典型应用</li><li>深度学习主流框架</li><li>实验环境配置</li><li>动手实操：安装 PyTorch 并验证环境</li><li>本讲小结与自测</li></ol></div>
+  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 课程简介</a></li><li><a href="#/7" style="color:#1E40AF;text-decoration:none;">2. 什么是深度学习</a></li><li><a href="#/18" style="color:#1E40AF;text-decoration:none;">3. 深度学习发展简史</a></li><li><a href="#/25" style="color:#1E40AF;text-decoration:none;">4. 深度学习为什么现在火热？</a></li><li><a href="#/28" style="color:#1E40AF;text-decoration:none;">5. 深度学习典型应用</a></li><li><a href="#/41" style="color:#1E40AF;text-decoration:none;">6. 深度学习主流框架</a></li><li><a href="#/53" style="color:#1E40AF;text-decoration:none;">7. 实验环境配置</a></li><li><a href="#/61" style="color:#1E40AF;text-decoration:none;">8. 动手实操：安装 PyTorch 并验证环境</a></li><li><a href="#/67" style="color:#1E40AF;text-decoration:none;">9. 本讲小结与自测</a></li></ol></div>
 </section>
 <section class="section-divider">
   <div class="divider-num">1</div>
   <div class="divider-title">课程简介</div>
   <div class="divider-lede"><p class="chapter-lede">欢迎来到《动手学深度学习》的第一讲！在正式接触神经网络之前，我们先弄清楚三件事：这门课怎么上、怎么考、需要什么基础。</p></div>
-</section>
-<section>
-  <div class="slide-breadcrumb">第01讲 深度学习概述 › 1. 课程简介</div>
-  <div class="slide-title">1. 课程简介</div>
-  <div class="slide-body">
-<p class="chapter-lede">欢迎来到《动手学深度学习》的第一讲！在正式接触神经网络之前，我们先弄清楚三件事：这门课怎么上、怎么考、需要什么基础。</p>
-  </div>
 </section>
 <section>
   <div class="slide-breadcrumb">第01讲 深度学习概述 › 1. 课程简介</div>
@@ -185,13 +178,6 @@ section.cover-slide, section.section-divider { text-align: center !important; di
   <div class="divider-num">2</div>
   <div class="divider-title">什么是深度学习</div>
   <div class="divider-lede"><p class="chapter-lede">从一个神经元预测房价开始，一步步看清"深度"到底深在哪里。</p></div>
-</section>
-<section>
-  <div class="slide-breadcrumb">第01讲 深度学习概述 › 2. 什么是深度学习</div>
-  <div class="slide-title">2. 什么是深度学习</div>
-  <div class="slide-body">
-<p class="chapter-lede">从一个神经元预测房价开始，一步步看清"深度"到底深在哪里。</p>
-  </div>
 </section>
 <section>
   <div class="slide-breadcrumb">第01讲 深度学习概述 › 2. 什么是深度学习</div>
@@ -379,7 +365,6 @@ section.cover-slide, section.section-divider { text-align: center !important; di
   <div class="slide-breadcrumb">第01讲 深度学习概述 › 3. 深度学习发展简史</div>
   <div class="slide-title">3. 深度学习发展简史</div>
   <div class="slide-body">
-<p class="chapter-lede">深度学习并非一夜成名。从 20 世纪 40 年代至今，神经网络研究经历了三次浪潮。下面这张词频统计图出自"花书"：它统计了 "cybernetics（控制论）" 与 "connectionism + neural networks（联结主义/神经网络）" 两组术语在出版物中的出现频率，曲线的三次起伏正好对应三次浪潮。</p>
 <figure>
         <img src="images/three_waves.jpg" alt="1940-2010年间控制论与神经网络术语的词频变化曲线" loading="lazy">
         <figcaption>蓝线（控制论）的兴衰对应第一次浪潮；绿虚线（联结主义/神经网络）在 80-90 年代的崛起对应第二次浪潮，2006 年后的再度攀升对应第三次浪潮。（图自《Deep Learning》）</figcaption>
@@ -471,7 +456,6 @@ section.cover-slide, section.section-divider { text-align: center !important; di
   <div class="slide-breadcrumb">第01讲 深度学习概述 › 4. 深度学习为什么现在火热？</div>
   <div class="slide-title">4. 深度学习为什么现在火热？</div>
   <div class="slide-body">
-<p class="chapter-lede">一个自然的疑问是：神经网络的基本思想几十年前就有了，为什么直到最近十年才突然爆发？吴恩达（Andrew Ng）对此给出过经典解释，原因有两个：</p>
 <div class="callout key">
         <span class="co-tag">⛽ 原因一：海量带有标签的数据</span>
         <p>互联网时代积累了前所未有的标注数据——图片、文字、语音、视频……模型越大，需要"喂"的数据越多。数据是深度学习的"燃料"，而这桶燃料在 2010 年代才真正加满。</p>
@@ -501,13 +485,6 @@ section.cover-slide, section.section-divider { text-align: center !important; di
   <div class="divider-num">5</div>
   <div class="divider-title">深度学习典型应用</div>
   <div class="divider-lede"><p class="chapter-lede">深度学习到底"能做什么"？本节用大量实例给出答案。以下按领域整理，每个应用都附了出处，学有余力的同学可以顺藤摸瓜。这些应用现在不要求懂原理，目的是建立整体印象——第 04~08 章会逐步带你走近它们。</p></div>
-</section>
-<section>
-  <div class="slide-breadcrumb">第01讲 深度学习概述 › 5. 深度学习典型应用</div>
-  <div class="slide-title">5. 深度学习典型应用</div>
-  <div class="slide-body">
-<p class="chapter-lede">深度学习到底"能做什么"？本节用大量实例给出答案。以下按领域整理，每个应用都附了出处，学有余力的同学可以顺藤摸瓜。这些应用现在不要求懂原理，目的是建立整体印象——第 04~08 章会逐步带你走近它们。</p>
-  </div>
 </section>
 <section>
   <div class="slide-breadcrumb">第01讲 深度学习概述 › 5. 深度学习典型应用</div>
@@ -967,13 +944,6 @@ section.cover-slide, section.section-divider { text-align: center !important; di
   <div class="divider-num">8</div>
   <div class="divider-title">动手实操：安装 PyTorch 并验证环境</div>
   <div class="divider-lede"><p class="chapter-lede">以下命令全部在 Anaconda Prompt（Windows 开始菜单中搜索）中执行。</p></div>
-</section>
-<section>
-  <div class="slide-breadcrumb">第01讲 深度学习概述 › 8. 动手实操：安装 PyTorch 并验证环境</div>
-  <div class="slide-title">8. 动手实操：安装 PyTorch 并验证环境</div>
-  <div class="slide-body">
-<p class="chapter-lede">以下命令全部在 Anaconda Prompt（Windows 开始菜单中搜索）中执行。</p>
-  </div>
 </section>
 <section>
   <div class="slide-breadcrumb">第01讲 深度学习概述 › 8. 动手实操：安装 PyTorch 并验证环境</div>
