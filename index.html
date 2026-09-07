@@ -58,6 +58,11 @@
     /* 深色模式：整体反转，媒体与浮层再反转回来 */
     html.dl-dark { filter: invert(1) hue-rotate(180deg); background: #0F172A; }
     html.dl-dark img, html.dl-dark canvas, html.dl-dark #dl-tools, html.dl-dark .dl-modal-mask, html.dl-dark #dl-gate { filter: invert(1) hue-rotate(180deg); }
+    /* 章节进度锁定：未开课卡片置灰 */
+    .course-card.dl-locked { opacity: .6; filter: grayscale(.5); }
+    .course-card.dl-locked:hover { transform: none; }
+    .course-card.dl-locked .course-btn { background: #9CA3AF !important; cursor: not-allowed; }
+    .tag.dl-tag-locked { background: #6B7280; color: #fff; }
 </style>
 <script>
 /* 百度统计 */
@@ -269,6 +274,35 @@ var _hmt = _hmt || [];
     </footer>
     <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
+<script src="assets/progress.js"></script>
+<script>
+/* 章节开放进度：locked 的章节卡片置灰并拦截跳转（配置在 assets/progress.js） */
+(function () {
+    var P = window.DL_PROGRESS || {};
+    document.querySelectorAll('a.course-btn[href^="courses/"]').forEach(function (a) {
+        var m = a.getAttribute('href').match(/^courses\/([^/]+)\//);
+        if (!m || P[m[1]] !== 'locked') return;
+        var card = a.closest('.course-card');
+        if (card) {
+            card.classList.add('dl-locked');
+            var done = card.querySelector('.tag-green');
+            if (done) done.style.display = 'none';
+            var tags = card.querySelector('.course-tags');
+            if (tags) {
+                var s = document.createElement('span');
+                s.className = 'tag dl-tag-locked';
+                s.textContent = '未开课';
+                tags.appendChild(s);
+            }
+        }
+        a.textContent = '🔒 尚未开课';
+        a.addEventListener('click', function (ev) {
+            ev.preventDefault();
+            alert('本讲内容将随课程进度开放，敬请期待。');
+        });
+    });
+})();
+</script>
 <script src="assets/search-index.js"></script>
 <script src="assets/site-tools.js"></script>
 </body>
