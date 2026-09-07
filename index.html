@@ -63,6 +63,11 @@
     .course-card.dl-locked:hover { transform: none; }
     .course-card.dl-locked .course-btn { background: #9CA3AF !important; cursor: not-allowed; }
     .tag.dl-tag-locked { background: #6B7280; color: #fff; }
+    /* 幻灯片入口：双按钮并排，描边紫次级按钮 */
+    .course-card .btn-row { display: flex; gap: 10px; margin-top: auto; }
+    .course-card .btn-row .course-btn { flex: 1; }
+    .course-btn.btn-slides { background: #FFFFFF; color: #7C3AED; border: 1.5px solid #7C3AED; }
+    .course-btn.btn-slides:hover { background: #7C3AED; color: #FFFFFF; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(124,58,237,.25); }
 </style>
 <script>
 /* 百度统计 */
@@ -125,8 +130,10 @@ var _hmt = _hmt || [];
                         <li>典型应用纵览</li>
                         <li>PyTorch 环境搭建</li>
                     </ul>
-                    <a href="courses/intro/index.html" class="course-btn">开始学习 →</a>
-                    <a href="courses/intro/slides.html" class="course-btn" style="margin-left:8px;background:#7C3AED;">🎞 幻灯片</a>
+                    <div class="btn-row">
+                        <a href="courses/intro/index.html" class="course-btn">开始学习 →</a>
+                        <a href="courses/intro/slides.html" class="course-btn btn-slides">🎞 幻灯片</a>
+                    </div>
                 </article>
 
                 <!-- 课程 2: 深度学习基础 -->
