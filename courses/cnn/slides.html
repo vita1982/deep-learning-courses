@@ -1188,7 +1188,7 @@
   <div class="slide-title">10.5 ResNet（2015）：残差连接驯服超深网络</div>
   <div class="slide-body">
 <figure>
-        <img src="images/resnet_block.jpg" alt="普通块与残差块对比：H(x)=F(x)+x" loading="lazy">
+        <img src="images/resnet_block.jpg" alt="残差块：含与不含 1×1 卷积捷径的两种形式，H(x)=F(x)+x" loading="lazy">
         <figcaption>残差块：输入 \(x\) 经跳跃连接与 \(F(x)\) 相加，\(H(x)=F(x)+x\)。</figcaption>
     </figure>
 <p>更深的 ResNet 用 Bottleneck（瓶颈）结构优化残差映射：原始两层 3×3×256×256 卷积，改为 1×1×256×64 → 3×3×64×64 → 1×1×64×256——先用 1×1 卷积降维、再升维，计算量相近但深度大增（用于 ResNet-50/101/152）：</p>
