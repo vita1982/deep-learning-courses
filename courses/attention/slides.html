@@ -92,10 +92,11 @@
     font-size: 12px; color: #94A3B8; pointer-events: none;
 }
 /* 内容较少的页垂直居中（safe center：内容真超高时退化为顶部对齐，不会发生负滚动区裁切；
-   加 .present 限定，避免压过 reveal 对非当前页的 display:none 隐藏规则） */
-.reveal .slides section.slide-short.present { display: flex; flex-direction: column; justify-content: safe center; }
-/* 封面与节隔页（同理加 .present 限定） */
-.reveal .slides section.cover-slide.present, .reveal .slides section.section-divider.present { text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+   加 .present 限定，避免压过 reveal 对非当前页的 display:none 隐藏规则；
+   display 必须 !important：reveal 运行时会给当前页写内联 style="display:block"，会顶掉普通 flex 声明） */
+.reveal .slides section.slide-short.present { display: flex !important; flex-direction: column; justify-content: safe center; }
+/* 封面与节隔页（同理加 .present 限定与 !important） */
+.reveal .slides section.cover-slide.present, .reveal .slides section.section-divider.present { text-align: center; display: flex !important; flex-direction: column; justify-content: safe center; align-items: center; }
 .cover-title { font-size: 56px; font-weight: bold; color: #1E293B; margin-bottom: 18px; }
 .cover-sub { font-size: 26px; color: #475569; margin-bottom: 10px; }
 .cover-meta { font-size: 19px; color: #94A3B8; }
