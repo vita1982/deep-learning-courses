@@ -61,12 +61,12 @@
 .reveal { font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif; }
 .reveal .slides section {
     text-align: left; font-size: 23px; line-height: 1.75; color: #1E293B;
-    padding: 58px 50px 30px; overflow-y: auto;
+    padding: 48px 50px 26px; overflow-y: auto;
 }
 .reveal h1, .reveal h2, .reveal h3 { text-transform: none; letter-spacing: 0; }
 .slide-breadcrumb {
     position: absolute; top: 0; left: 0; right: 0;
-    font-size: 15px; color: #64748B; padding: 10px 50px;
+    font-size: 14px; color: #64748B; padding: 6px 50px;
     border-bottom: 1px solid #E2E8F0; background: #F8FAFC;
 }
 .slide-title { font-size: 34px; color: #1E40AF; margin: 4px 0 18px; font-weight: bold; }
@@ -75,6 +75,18 @@
 .slide-body table { font-size: 19px; width: 100%; }
 .slide-body img { max-height: 259px !important; }
 .slide-body .img-caption, .slide-body figcaption { font-size: 16px; }
+.slide-body canvas { display: block; margin: 0 auto; }
+/* 组件字号适配幻灯片基准（course.css 的组件字号是为阅读页定的，需放大） */
+.reveal .callout { font-size: 19px; margin: 16px 0; }
+.reveal .callout p { font-size: 19px; }
+.reveal .callout .co-tag { font-size: 14px; }
+.reveal .lab { margin: 18px 0; }
+.reveal .lab-body { padding: 12px 20px; }
+.reveal .lab-title { font-size: 22px; }
+.reveal .lab-sub { font-size: 17px; }
+.reveal .lab-hint { font-size: 15px; }
+.reveal .lab-note { font-size: 16px; }
+.reveal .ctl { font-size: 17px; }
 .slide-hint {
     position: fixed; right: 14px; bottom: 10px; z-index: 30;
     font-size: 12px; color: #94A3B8; pointer-events: none;
@@ -87,9 +99,15 @@
 .cover-title { font-size: 56px; font-weight: bold; color: #1E293B; margin-bottom: 18px; }
 .cover-sub { font-size: 26px; color: #475569; margin-bottom: 10px; }
 .cover-meta { font-size: 19px; color: #94A3B8; }
-.divider-num { font-size: 110px; font-weight: bold; color: #DBEAFE; line-height: 1; }
-.divider-title { font-size: 46px; font-weight: bold; color: #1E40AF; margin-top: 8px; }
-.divider-lede { font-size: 22px; color: #64748B; margin-top: 18px; max-width: 900px; }
+/* 节隔页：蓝色圆形序号徽章 + 大标题 + 左对齐收窄导语 */
+.divider-num {
+    width: 88px; height: 88px; border-radius: 50%; background: #2563EB;
+    color: #FFFFFF; font-size: 44px; font-weight: bold;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 20px; box-shadow: 0 6px 20px rgba(37,99,235,.35);
+}
+.divider-title { font-size: 42px; font-weight: bold; color: #1E40AF; }
+.divider-lede { font-size: 23px; color: #475569; margin-top: 20px; max-width: 640px; text-align: left; line-height: 1.8; }
 .toc-list { font-size: 26px; line-height: 2.0; color: #1E293B; }
 /* ===== 图片双击放大灯箱 ===== */
 .slide-body img { cursor: zoom-in; }
@@ -259,7 +277,7 @@
     </div>
   </div>
 </section>
-<section class="slide-short">
+<section>
   <div class="slide-breadcrumb">第03讲 深度神经网络 › 2. 基础优化：梯度下降</div>
   <div class="slide-title">2.2 选择学习率：不要太小，也不要太大</div>
   <div class="slide-body">
@@ -589,7 +607,7 @@
     </figure>
   </div>
 </section>
-<section class="slide-short">
+<section>
   <div class="slide-breadcrumb">第03讲 深度神经网络 › 4. 感知机与多层感知机</div>
   <div class="slide-title">4.6 常用激活函数</div>
   <div class="slide-body">

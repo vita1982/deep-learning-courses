@@ -61,12 +61,12 @@
 .reveal { font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif; }
 .reveal .slides section {
     text-align: left; font-size: 23px; line-height: 1.75; color: #1E293B;
-    padding: 58px 50px 30px; overflow-y: auto;
+    padding: 48px 50px 26px; overflow-y: auto;
 }
 .reveal h1, .reveal h2, .reveal h3 { text-transform: none; letter-spacing: 0; }
 .slide-breadcrumb {
     position: absolute; top: 0; left: 0; right: 0;
-    font-size: 15px; color: #64748B; padding: 10px 50px;
+    font-size: 14px; color: #64748B; padding: 6px 50px;
     border-bottom: 1px solid #E2E8F0; background: #F8FAFC;
 }
 .slide-title { font-size: 34px; color: #1E40AF; margin: 4px 0 18px; font-weight: bold; }
@@ -75,6 +75,18 @@
 .slide-body table { font-size: 19px; width: 100%; }
 .slide-body img { max-height: 259px !important; }
 .slide-body .img-caption, .slide-body figcaption { font-size: 16px; }
+.slide-body canvas { display: block; margin: 0 auto; }
+/* 组件字号适配幻灯片基准（course.css 的组件字号是为阅读页定的，需放大） */
+.reveal .callout { font-size: 19px; margin: 16px 0; }
+.reveal .callout p { font-size: 19px; }
+.reveal .callout .co-tag { font-size: 14px; }
+.reveal .lab { margin: 18px 0; }
+.reveal .lab-body { padding: 12px 20px; }
+.reveal .lab-title { font-size: 22px; }
+.reveal .lab-sub { font-size: 17px; }
+.reveal .lab-hint { font-size: 15px; }
+.reveal .lab-note { font-size: 16px; }
+.reveal .ctl { font-size: 17px; }
 .slide-hint {
     position: fixed; right: 14px; bottom: 10px; z-index: 30;
     font-size: 12px; color: #94A3B8; pointer-events: none;
@@ -87,9 +99,15 @@
 .cover-title { font-size: 56px; font-weight: bold; color: #1E293B; margin-bottom: 18px; }
 .cover-sub { font-size: 26px; color: #475569; margin-bottom: 10px; }
 .cover-meta { font-size: 19px; color: #94A3B8; }
-.divider-num { font-size: 110px; font-weight: bold; color: #DBEAFE; line-height: 1; }
-.divider-title { font-size: 46px; font-weight: bold; color: #1E40AF; margin-top: 8px; }
-.divider-lede { font-size: 22px; color: #64748B; margin-top: 18px; max-width: 900px; }
+/* 节隔页：蓝色圆形序号徽章 + 大标题 + 左对齐收窄导语 */
+.divider-num {
+    width: 88px; height: 88px; border-radius: 50%; background: #2563EB;
+    color: #FFFFFF; font-size: 44px; font-weight: bold;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 20px; box-shadow: 0 6px 20px rgba(37,99,235,.35);
+}
+.divider-title { font-size: 42px; font-weight: bold; color: #1E40AF; }
+.divider-lede { font-size: 23px; color: #475569; margin-top: 20px; max-width: 640px; text-align: left; line-height: 1.8; }
 .toc-list { font-size: 26px; line-height: 2.0; color: #1E293B; }
 /* ===== 图片双击放大灯箱 ===== */
 .slide-body img { cursor: zoom-in; }
@@ -127,7 +145,7 @@
 <section>
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 目录</div>
   <div class="slide-title">📋 本讲目录</div>
-  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 注意力机制：从心理学到机器学习</a></li><li><a href="#/7" style="color:#1E40AF;text-decoration:none;">2. 注意力池化：从非参数到参数化</a></li><li><a href="#/14" style="color:#1E40AF;text-decoration:none;">3. Seq2Seq 中的注意力</a></li><li><a href="#/19" style="color:#1E40AF;text-decoration:none;">4. 自注意力（Self-Attention）</a></li><li><a href="#/25" style="color:#1E40AF;text-decoration:none;">5. Transformer：完全建立在注意力上的架构</a></li><li><a href="#/39" style="color:#1E40AF;text-decoration:none;">6. BERT：预训练时代的开幕</a></li><li><a href="#/43" style="color:#1E40AF;text-decoration:none;">7. 本讲小结与自测</a></li></ol></div>
+  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 注意力机制：从心理学到机器学习</a></li><li><a href="#/7" style="color:#1E40AF;text-decoration:none;">2. 注意力池化：从非参数到参数化</a></li><li><a href="#/14" style="color:#1E40AF;text-decoration:none;">3. Seq2Seq 中的注意力</a></li><li><a href="#/20" style="color:#1E40AF;text-decoration:none;">4. 自注意力（Self-Attention）</a></li><li><a href="#/26" style="color:#1E40AF;text-decoration:none;">5. Transformer：完全建立在注意力上的架构</a></li><li><a href="#/40" style="color:#1E40AF;text-decoration:none;">6. BERT：预训练时代的开幕</a></li><li><a href="#/44" style="color:#1E40AF;text-decoration:none;">7. 本讲小结与自测</a></li></ol></div>
 </section>
 <section class="section-divider">
   <div class="divider-num">1</div>
@@ -317,7 +335,7 @@
     </figure>
   </div>
 </section>
-<section>
+<section class="slide-short">
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 3. Seq2Seq 中的注意力</div>
   <div class="slide-title">3.2 加入注意力的 seq2seq</div>
   <div class="slide-body">
@@ -336,6 +354,12 @@
         </div>
         <div class="lab-note">注意力权重画成热力图，就能直观展示两种语言词与词的对齐关系——这是神经网络难得的<b>可解释性</b>。</div>
     </div>
+  </div>
+</section>
+<section class="slide-short">
+  <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 3. Seq2Seq 中的注意力</div>
+  <div class="slide-title">3.2 加入注意力的 seq2seq</div>
+  <div class="slide-body">
 <div class="callout key">
         <span class="co-tag">✅ 划时代的意义</span>
         <p>注意力让解码器每一步都能"回头看"整个源句并自动对焦，长句翻译质量大幅提升——固定向量的瓶颈被打破，"对齐"也第一次变得可见。</p>
@@ -551,7 +575,7 @@
     </figure>
   </div>
 </section>
-<section class="slide-short">
+<section>
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 5. Transformer：完全建立在注意力上的架构</div>
   <div class="slide-title">5.6 位置编码：把顺序"注入"模型</div>
   <div class="slide-body">
