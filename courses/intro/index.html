@@ -906,9 +906,11 @@ pip install numpy matplotlib pillow pandas -i https://pypi.tuna.tsinghua.edu.cn/
 # 3. 安装对应版本 PyTorch（RTX40 及以下用第一条，RTX50 用第二条）
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121 --extra-index-url https://pypi.tuna.tsinghua.edu.cn/simple
 # pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu128 --extra-index-url https://pypi.tuna.tsinghua.edu.cn/simple
-# 4. 配置 Jupyter 内核（详见 8.6）+ 终端验证
+# 4. 配置 Jupyter 内核（详见 8.6）
 pip install ipykernel
-python -m ipykernel install --user --name=pytorch_env --display-name "PyTorch_GPU"</pre>
+python -m ipykernel install --user --name=pytorch_env --display-name "PyTorch_GPU"
+# 5. 终端验证
+python</pre>
     </div>
 
     <h3><span class="sec-no">8.8</span>高频报错踩坑手册</h3>
@@ -940,7 +942,7 @@ python -m ipykernel install --user --name=pytorch_env --display-name "PyTorch_GP
         <p><strong>为什么火热</strong>：海量标注数据 + GPU 硬件支持，规模驱动进步；</p>
         <p><strong>典型应用</strong>：视觉（分类 / 检测分割 / 风格迁移 / 人脸合成）、NLP（词向量 / 翻译 / 文本合成 / 问答）、图像描述；</p>
         <p><strong>主流框架</strong>：Caffe / TensorFlow / Keras / PyTorch ★ / MXNet，本课程选用 PyTorch；</p>
-        <p><strong>动手实操</strong>：创建 Conda 虚拟环境 → 配 pip 清华源 → 安装 PyTorch（GPU/CPU 双方案）→ PyCharm / Jupyter 运行验证脚本。</p>
+        <p><strong>动手实操</strong>：创建 Conda 虚拟环境 → 配 pip 清华源 → 装依赖库 → 安装 PyTorch（GPU/CPU 双方案）→ PyCharm / Jupyter 运行验证脚本。</p>
     </div>
 
     <h3><span class="sec-no">9.2</span>课后自测题</h3>
