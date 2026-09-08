@@ -677,80 +677,250 @@
         <span class="chapter-num">8</span>
         <h2>动手实操：安装 PyTorch 并验证环境</h2>
     </div>
-    <p class="chapter-lede">以下命令全部在 Anaconda Prompt（Windows 开始菜单中搜索）中执行。</p>
+    <p class="chapter-lede">本节按最新部署流程操作：创建 Conda 虚拟环境 → 配置 pip 清华源 → 安装依赖库 → 安装 PyTorch（GPU/CPU 双方案）→ PyCharm / Jupyter 双平台验证。命令全部在 Anaconda Powershell Prompt（Windows 开始菜单中搜索）中执行。</p>
 
-    <h3><span class="sec-no">8.1</span>配置国内镜像源（让下载飞起来）</h3>
-    <div class="codecard">
-        <div class="code-label">Anaconda Prompt</div>
-        <pre># 配置国内源，方便安装 Numpy、Matplotlib 等
-conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/
-conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/
-
-# 配置国内源，安装 PyTorch 用
-conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/pytorch/
-
-# 显示源地址（安装时能确认包来自哪个源）
-conda config --set show_channel_urls yes</pre>
+    <div class="callout warn">
+        <span class="co-tag">⚠️ 动手之前：四条重要前提</span>
+        <p>① GPU 版仅支持 NVIDIA 显卡，AMD 显卡请直接安装 CPU 版；② Python 统一使用 3.12（3.14 没有 PyTorch GPU 预编译包，禁止使用）；③ PyTorch GPU 包无法用普通清华源安装，必须指定官方 whl 源，其余依赖走清华源加速；④ RTX 50 系显卡（5070/5080/5090，Blackwell 架构 sm_120）不兼容正式版 cu121，需安装 cu128 预览版（见 8.4 方案 B）。</p>
     </div>
-    <p class="muted">注：镜像频道列表可能随时间调整，若某个频道失效，以清华大学镜像站的实际页面为准。</p>
 
-    <h3><span class="sec-no">8.2</span>安装 PyTorch</h3>
-    <p>可以在 PyTorch 官网查看适合自己系统的安装命令：</p>
+    <h3><span class="sec-no">8.1</span>创建纯净的 Conda 虚拟环境</h3>
+    <div class="codecard">
+        <div class="code-label">Anaconda Powershell Prompt</div>
+        <pre># 退出当前环境，切回基础 base 环境
+conda deactivate
+
+# 创建 Python 3.12 专属虚拟环境
+conda create -n pytorch_env python=3.12 -y
+
+# 激活虚拟环境（后续所有安装操作必须在此环境）
+conda activate pytorch_env</pre>
+    </div>
+    <div class="callout key">
+        <span class="co-tag">✅ 验证</span>
+        <p>终端前缀显示 (pytorch_env) 即为环境激活成功。后续所有安装命令都要看到这个前缀再执行。</p>
+    </div>
+
+    <h3><span class="sec-no">8.2</span>配置 pip 清华镜像源（全局永久生效）</h3>
+    <p>配置后普通依赖库高速下载，且不影响 PyTorch GPU 专属源的安装：</p>
+    <div class="codecard">
+        <div class="code-label">Anaconda Powershell Prompt</div>
+        <pre># 设置全局清华 pip 源
+pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+
+# 查看配置是否生效
+pip config list</pre>
+    </div>
+    <div class="callout warn">
+        <span class="co-tag">⚠️ 关键规则</span>
+        <p>全局清华源仅用于普通库。<strong>安装 PyTorch GPU 版必须额外指定官方 whl 源</strong>（见 8.4），否则会默认装成 CPU 版本。</p>
+    </div>
+
+    <h3><span class="sec-no">8.3</span>安装深度学习必备依赖库</h3>
+    <p>数值计算、可视化、图像处理、数据分析全套常用库，一次装好：</p>
+    <div class="codecard">
+        <div class="code-label">Anaconda Powershell Prompt</div>
+        <pre># 清华源批量安装
+pip install numpy matplotlib pillow pandas -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+# 验证安装完整性
+pip show numpy matplotlib pillow pandas</pre>
+    </div>
+
+    <h3><span class="sec-no">8.4</span>安装 PyTorch（GPU/CPU 双方案）</h3>
+    <p>也可以在 PyTorch 官网查看适合自己系统的安装命令：</p>
     <figure>
         <img src="images/pytorch_getstarted.jpg" alt="PyTorch 官网安装命令生成器" loading="lazy">
         <figcaption>PyTorch 官网的安装命令生成器：按操作系统、包管理器、CUDA 版本点选后，自动生成对应的安装命令。</figcaption>
     </figure>
     <figure>
         <img src="images/pytorch_versions.jpg" alt="PyTorch 官网历史版本安装命令" loading="lazy">
-        <figcaption>官网"<a href="https://pytorch.org/get-started/previous-versions/#conda-3" target="_blank" rel="noopener">Previous Versions</a>"页面列出了各历史版本的 conda / pip 安装命令。</figcaption>
+        <figcaption>官网"<a href="https://pytorch.org/get-started/previous-versions/" target="_blank" rel="noopener">Previous Versions</a>"页面列出了各历史版本的安装命令。</figcaption>
     </figure>
+    <p><strong>方案 A：RTX 40 及更早显卡（通用稳定版 CUDA 12.1）</strong></p>
     <div class="codecard">
-        <div class="code-label">Anaconda Prompt</div>
-        <pre># 安装 PyTorch 三件套：本体 + torchvision 视觉工具包 + cudatoolkit GPU 组件
-# 注意：要使用国内源，请去掉官网命令里的 -c pytorch 这个参数！！
-conda install pytorch torchvision cudatoolkit=10.0
+        <div class="code-label">Anaconda Powershell Prompt</div>
+        <pre>pip install torch torchvision torchaudio ^
+--index-url https://download.pytorch.org/whl/cu121 ^
+--extra-index-url https://pypi.tuna.tsinghua.edu.cn/simple</pre>
+    </div>
+    <p><strong>方案 B：RTX 50 系列专属（5070/5080/5090，sm_120 架构）</strong>——正式版不兼容，必须安装预览版 CUDA 12.8：</p>
+    <div class="codecard">
+        <div class="code-label">Anaconda Powershell Prompt</div>
+        <pre># 先卸载错误的旧版本
+pip uninstall torch torchvision torchaudio -y
 
-# 安装常用科学计算库：数组计算 / 绘图 / 图像处理 / 表格分析
-pip install numpy matplotlib pillow pandas</pre>
+# 安装 RTX50 专属 GPU 版本
+pip install --pre torch torchvision torchaudio ^
+--index-url https://download.pytorch.org/whl/nightly/cu128 ^
+--extra-index-url https://pypi.tuna.tsinghua.edu.cn/simple</pre>
+    </div>
+    <p><strong>CPU 版本（所有设备通用，学习本课程完全够用）</strong></p>
+    <div class="codecard">
+        <div class="code-label">Anaconda Powershell Prompt</div>
+        <pre>pip install torch torchvision torchaudio -i https://pypi.tuna.tsinghua.edu.cn/simple</pre>
+    </div>
+    <p>装完后先在命令行快速验证：</p>
+    <div class="codecard">
+        <div class="code-label">python</div>
+        <pre>import torch
+print("PyTorch版本：", torch.__version__)
+print("CUDA可用状态：", torch.cuda.is_available())</pre>
     </div>
     <div class="callout key">
-        <span class="co-tag">💡 初学者答疑</span>
-        <p>torchvision 是 PyTorch 的计算机视觉工具包（含常用数据集和预训练模型）；cudatoolkit=10.0 是 NVIDIA GPU 加速所需的组件，版本号需与显卡驱动匹配；没有 NVIDIA 显卡的电脑可以装 CPU 版本（官网命令中选择 CUDA = None），学习本课程完全够用。另外，conda 频道与 cudatoolkit 版本号会随时间更新，请以 PyTorch 官网当前给出的命令为准。</p>
+        <span class="co-tag">✅ 正常结果</span>
+        <p>GPU 版：版本号带 +cu121 / +cu128，CUDA 可用状态显示 True；CPU 版：版本号带 +cpu，显示 False。torchvision 是 PyTorch 的计算机视觉工具包（含常用数据集和预训练模型），torchaudio 是语音工具包，随本体一并安装。</p>
     </div>
 
-    <h3><span class="sec-no">8.3</span>验证环境是否安装成功</h3>
-    <p>在 PyCharm 或 Jupyter Notebook 中运行以下代码：</p>
+    <h3><span class="sec-no">8.5</span>PyCharm 绑定解释器 + 全功能验证</h3>
+    <p><strong>第 1 步：绑定虚拟环境解释器</strong></p>
+    <ol>
+        <li>打开 PyCharm → File → Settings → Project: 当前项目 → Python Interpreter；</li>
+        <li>点击右上角齿轮 → Add → Conda Environment → Existing environment；</li>
+        <li>选择路径 C:\Users\用户名\miniconda3\envs\pytorch_env\python.exe（路径可在终端用 where python 查询）；</li>
+        <li>确认后，解释器列表出现 torch、numpy、pandas 等库即为配置成功。</li>
+    </ol>
+    <p><strong>第 2 步：运行全功能验证脚本 verify_env.py</strong>（覆盖所有库功能测试 + GPU 算力测速）：</p>
     <div class="codecard">
-        <div class="code-label">verify_env.py</div>
+        <div class="code-label">verify_env.py（一）基础库版本校验</div>
         <pre>import torch
-import time                     # 计时用
+import time
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+from PIL import Image
 
-print(torch.__version__) # 打印 PyTorch 版本号，能打印说明安装成功
-
-a = torch.randn(10000, 1000) # 生成 10000×1000 的随机矩阵
-b = torch.randn(1000, 200) # 生成 1000×200 的随机矩阵
-
-t0 = time.time()               # 记录开始时刻
-c = torch.matmul(a, b) # 矩阵乘法：深度学习中最核心的运算
-t1 = time.time()               # 记录结束时刻
-
-print(a.device, t1 - t0, c.norm(2)) # 依次输出：计算设备、耗时(秒)、结果矩阵的L2范数</pre>
+# 1. 基础库版本校验
+print("===== 基础依赖库校验完成 =====")
+print(f"numpy版本: {np.__version__}")
+print(f"pandas版本: {pd.__version__}")
+print(f"PyTorch版本: {torch.__version__}")
+print(f"CUDA是否可用: {torch.cuda.is_available()}")</pre>
     </div>
-    <div class="tbl-wrap">
-        <table>
-            <tr><th>输出</th><th>含义</th></tr>
-            <tr><td>torch.__version__ 正常显示（如 1.x.x）</td><td>PyTorch 安装成功</td></tr>
-            <tr><td>a.device 显示 cpu</td><td>正常情况：不指定 device 时张量默认在 CPU 上创建，本代码即如此</td></tr>
-            <tr><td>想用 GPU 计算</td><td>需安装 GPU 版 PyTorch，并显式把张量移到显卡，如 a = torch.randn(10000, 1000, device='cuda')，此时 device 会显示 cuda:0</td></tr>
-            <tr><td>t1 - t0 很小（零点几秒级）</td><td>矩阵运算正常，性能符合预期</td></tr>
-            <tr><td>c.norm(2) 输出一个数值</td><td>计算结果有效</td></tr>
-        </table>
+    <div class="codecard">
+        <div class="code-label">verify_env.py（二）四库功能测试</div>
+        <pre># 2. Matplotlib 绘图测试
+plt.figure(figsize=(3,2))
+plt.plot([1,2,3],[2,4,1])
+plt.title("Matplotlib Test Success")
+plt.close()
+print("Matplotlib 绘图测试完成")
+
+# 3. Pandas 数据表测试
+df = pd.DataFrame({"序号":[1,2,3],"数值":[10,20,30]})
+print("Pandas 数据表测试：\n", df)
+
+# 4. Pillow 图像处理测试
+img = Image.new("RGB", (100, 100), color=(120, 180, 220))
+print(f"Pillow 图片创建成功，尺寸：{img.size}")</pre>
+    </div>
+    <div class="codecard">
+        <div class="code-label">verify_env.py（三）GPU 算力测速</div>
+        <pre># 5. PyTorch GPU/CPU 算力测速（有 GPU 时）
+if torch.cuda.is_available():
+    a = torch.randn(10000, 1000).cuda()
+    b = torch.randn(1000, 200).cuda()
+    t0 = time.time()
+    c = torch.matmul(a, b)
+    t1 = time.time()
+    print("\n===== GPU 加速运算测试完成 =====")
+    print(f"运算设备：{a.device} | 耗时：{t1-t0:.4f}秒 | 矩阵范数：{c.norm(2).item():.2f}")</pre>
+    </div>
+    <div class="codecard">
+        <div class="code-label">verify_env.py（四）CPU 算力测速</div>
+        <pre># 没有 GPU 时（else 分支）
+else:
+    a = torch.randn(10000, 1000)
+    b = torch.randn(1000, 200)
+    t0 = time.time()
+    c = torch.matmul(a, b)
+    t1 = time.time()
+    print("\n===== CPU 运算测试完成 =====")
+    print(f"运算设备：{a.device} | 耗时：{t1-t0:.4f}秒 | 矩阵范数：{c.norm(2).item():.2f}")</pre>
     </div>
     <div class="callout key">
         <span class="co-tag">🔍 逐行讲解（写给完全没接触过 PyTorch 的同学）</span>
         <p>torch.randn(m, n)：生成 m 行 n 列、服从标准正态分布的随机数矩阵（PyTorch 中叫"张量" Tensor）；</p>
-        <p>torch.matmul(a, b)：矩阵乘法，要求 a 的列数 = b 的行数，本例结果维度为 10000×200；</p>
+        <p>.cuda()：把张量移到 NVIDIA 显卡上，之后 torch.matmul 就在 GPU 中计算（a.device 会显示 cuda:0）；</p>
+        <p>torch.matmul(a, b)：矩阵乘法，深度学习中最核心的运算，要求 a 的列数 = b 的行数，本例结果维度为 10000×200；</p>
         <p>c.norm(2)：求矩阵 c 的 L2 范数（所有元素平方和再开方），用来快速验证计算结果是否正常。</p>
+    </div>
+
+    <h3><span class="sec-no">8.6</span>Jupyter Notebook 内核配置</h3>
+    <p>Anaconda3 自带完整 Jupyter 组件，<strong>无需重复安装 Jupyter 本体</strong>，只需把虚拟环境注册为内核——实现 base 启动 Jupyter、虚拟环境运行代码：</p>
+    <div class="codecard">
+        <div class="code-label">Anaconda Powershell Prompt</div>
+        <pre># 激活 pytorch_env 虚拟环境
+conda activate pytorch_env
+
+# 仅安装内核依赖（不重装 Jupyter）
+pip install ipykernel
+
+# 注册自定义内核，显示名方便识别
+python -m ipykernel install --user --name=pytorch_env --display-name "PyTorch_GPU"
+
+# 查看所有已注册内核，确认成功
+jupyter kernelspec list</pre>
+    </div>
+    <ol>
+        <li>启动 Jupyter：Anaconda Navigator 图形化启动，或在 base 环境执行 jupyter notebook（无需在虚拟环境中启动）；</li>
+        <li>浏览器中新建 Notebook，顶部菜单栏 Kernel → Change kernel → 选择 <strong>PyTorch_GPU</strong>（不要选默认的 Python3(base)）；</li>
+        <li>粘贴 8.5 的完整验证脚本运行，全部无报错即为配置成功。</li>
+    </ol>
+    <div class="callout warn">
+        <span class="co-tag">🧹 内核故障清理</span>
+        <p>内核错乱或报错时，先删除旧内核再重新注册：jupyter kernelspec remove pytorch_env</p>
+    </div>
+
+    <h3><span class="sec-no">8.7</span>卸载与重置（环境错乱时备用）</h3>
+    <p><strong>仅卸载 PyTorch（保留虚拟环境）：</strong></p>
+    <div class="codecard">
+        <div class="code-label">Anaconda Powershell Prompt</div>
+        <pre>conda activate pytorch_env
+pip uninstall torch torchvision torchaudio -y
+pip show torch</pre>
+    </div>
+    <p><strong>彻底删除虚拟环境（环境错乱的终极解决方案）：</strong></p>
+    <div class="codecard">
+        <div class="code-label">Anaconda Powershell Prompt</div>
+        <pre># 必须先退出环境
+conda deactivate
+
+# 彻底删除整个环境
+conda remove -n pytorch_env --all -y
+
+# 确认环境已删除
+conda env list</pre>
+    </div>
+    <p><strong>一键全新重置（把完整流程串起来）：</strong></p>
+    <div class="codecard">
+        <div class="code-label">Anaconda Powershell Prompt</div>
+        <pre># 1. 重置环境
+conda deactivate
+conda remove -n pytorch_env --all -y
+conda create -n pytorch_env python=3.12 -y
+conda activate pytorch_env
+# 2. 配置清华源 + 安装基础库
+pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+pip install numpy matplotlib pillow pandas -i https://pypi.tuna.tsinghua.edu.cn/simple
+# 3. 安装对应版本 PyTorch（RTX40 及以下用第一条，RTX50 用第二条）
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121 --extra-index-url https://pypi.tuna.tsinghua.edu.cn/simple
+# pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu128 --extra-index-url https://pypi.tuna.tsinghua.edu.cn/simple
+# 4. 配置 Jupyter 内核（详见 8.6）+ 终端验证
+pip install ipykernel
+python -m ipykernel install --user --name=pytorch_env --display-name "PyTorch_GPU"</pre>
+    </div>
+
+    <h3><span class="sec-no">8.8</span>高频报错踩坑手册</h3>
+    <div class="tbl-wrap">
+        <table>
+            <tr><th>现象 / 报错</th><th>原因与解决</th></tr>
+            <tr><td>版本号带 +cpu</td><td>未添加 PyTorch 官方 GPU 源：卸载后重新执行完整的 GPU 安装命令（8.4 方案 A/B）</td></tr>
+            <tr><td>RTX50 报错 sm_120 不兼容</td><td>cu121 不支持新架构：替换为 cu128 预览版（8.4 方案 B）</td></tr>
+            <tr><td>Jupyter 报模块不存在</td><td>内核未切换为 PyTorch_GPU，或内核注册失败：重新注册内核（8.6）</td></tr>
+            <tr><td>无法删除环境</td><td>当前正处于该环境中：先执行 conda deactivate</td></tr>
+            <tr><td>No matching distribution</td><td>Python 版本过高：必须使用 3.12</td></tr>
+        </table>
     </div>
 </section>
 
@@ -770,7 +940,7 @@ print(a.device, t1 - t0, c.norm(2)) # 依次输出：计算设备、耗时(秒)�
         <p><strong>为什么火热</strong>：海量标注数据 + GPU 硬件支持，规模驱动进步；</p>
         <p><strong>典型应用</strong>：视觉（分类 / 检测分割 / 风格迁移 / 人脸合成）、NLP（词向量 / 翻译 / 文本合成 / 问答）、图像描述；</p>
         <p><strong>主流框架</strong>：Caffe / TensorFlow / Keras / PyTorch ★ / MXNet，本课程选用 PyTorch；</p>
-        <p><strong>动手实操</strong>：Anaconda + PyCharm → 配国内源 → 安装 PyTorch → 运行验证代码。</p>
+        <p><strong>动手实操</strong>：创建 Conda 虚拟环境 → 配 pip 清华源 → 安装 PyTorch（GPU/CPU 双方案）→ PyCharm / Jupyter 运行验证脚本。</p>
     </div>
 
     <h3><span class="sec-no">9.2</span>课后自测题</h3>

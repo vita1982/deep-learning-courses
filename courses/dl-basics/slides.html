@@ -87,6 +87,9 @@
 .reveal .lab-hint { font-size: 15px; }
 .reveal .lab-note { font-size: 16px; }
 .reveal .ctl { font-size: 17px; }
+.reveal .codecard { margin: 16px 0; }
+.reveal .codecard .code-label { font-size: 13px; }
+.reveal .codecard pre { font-size: 15px; line-height: 1.55; padding: 12px 16px; }
 .slide-hint {
     position: fixed; right: 14px; bottom: 10px; z-index: 30;
     font-size: 12px; color: #94A3B8; pointer-events: none;
@@ -147,7 +150,7 @@
 <section>
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 目录</div>
   <div class="slide-title">📋 本讲目录</div>
-  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 线性代数基础：标量与向量</a></li><li><a href="#/9" style="color:#1E40AF;text-decoration:none;">2. 矩阵及其运算</a></li><li><a href="#/17" style="color:#1E40AF;text-decoration:none;">3. GPU 与向量化计算</a></li><li><a href="#/21" style="color:#1E40AF;text-decoration:none;">4. 数据表示与张量</a></li><li><a href="#/26" style="color:#1E40AF;text-decoration:none;">5. 矩阵微积分</a></li><li><a href="#/36" style="color:#1E40AF;text-decoration:none;">6. 自动微分与计算图</a></li><li><a href="#/42" style="color:#1E40AF;text-decoration:none;">7. 正向传播与反向传播</a></li><li><a href="#/48" style="color:#1E40AF;text-decoration:none;">8. 本讲小结与自测</a></li></ol></div>
+  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 线性代数基础：标量与向量</a></li><li><a href="#/9" style="color:#1E40AF;text-decoration:none;">2. 矩阵及其运算</a></li><li><a href="#/17" style="color:#1E40AF;text-decoration:none;">3. GPU 与向量化计算</a></li><li><a href="#/21" style="color:#1E40AF;text-decoration:none;">4. 数据表示与张量</a></li><li><a href="#/26" style="color:#1E40AF;text-decoration:none;">5. 矩阵微积分</a></li><li><a href="#/36" style="color:#1E40AF;text-decoration:none;">6. 自动微分与计算图</a></li><li><a href="#/43" style="color:#1E40AF;text-decoration:none;">7. 正向传播与反向传播</a></li><li><a href="#/49" style="color:#1E40AF;text-decoration:none;">8. 本讲小结与自测</a></li></ol></div>
 </section>
 <section class="section-divider">
   <div class="divider-num">1</div>
@@ -352,16 +355,16 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
         <div class="code-label">向量化：一条 np.dot 语句完成</div>
         <pre>z = np.dot(w, x) + b  # np.dot 一次性算完整个点积（底层 C 库并行），再加偏置 b——结果相同，快几十到上百倍</pre>
     </div>
-<div class="callout key">
-        <span class="co-tag">🔍 逐行讲解</span>
-        <p>for 循环版本逐个访问 w[i] 和 x[i]，Python 解释器每轮都要做类型检查和索引计算，\(n\) 很大时非常慢；而 np.dot 把整个计算交给底层 C/Fortran 库一次性完成，在 GPU 上还可以进一步并行。同样的数学结果，速度常常相差几十到上百倍。</p>
-    </div>
   </div>
 </section>
 <section class="slide-short">
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 3. GPU 与向量化计算</div>
   <div class="slide-title">3.2 向量化 vs for 循环</div>
   <div class="slide-body">
+<div class="callout key">
+        <span class="co-tag">🔍 逐行讲解</span>
+        <p>for 循环版本逐个访问 w[i] 和 x[i]，Python 解释器每轮都要做类型检查和索引计算，\(n\) 很大时非常慢；而 np.dot 把整个计算交给底层 C/Fortran 库一次性完成，在 GPU 上还可以进一步并行。同样的数学结果，速度常常相差几十到上百倍。</p>
+    </div>
 <div class="callout try">
         <span class="co-tag">✅ 工程习惯</span>
         <p>写深度学习代码时，看到 for 循环遍历数据就要警惕——先想想能否改写成矩阵/向量运算（向量化），让 NumPy 或 PyTorch 帮你并行。</p>
@@ -603,6 +606,12 @@ loss = next_h.sum()           # 演示用的标量损失：所有元素求和
 
 loss.backward() # 一键反向传播，计算所有梯度</pre>
     </div>
+  </div>
+</section>
+<section class="slide-short">
+  <div class="slide-breadcrumb">第02讲 深度学习基础 › 6. 自动微分与计算图</div>
+  <div class="slide-title">6.3 显式构造与隐式构造</div>
+  <div class="slide-body">
 <div class="callout key">
         <span class="co-tag">🔑 关键点</span>
         <p>requires_grad=True 告诉 PyTorch"请追踪以该张量为起点的所有运算"；执行运算时框架在后台悄悄把计算图搭好；调用 loss.backward() 后，W_h.grad 和 W_x.grad 里就存好了 \(\partial\,loss / \partial\,\mathbf{W}\)。</p>
