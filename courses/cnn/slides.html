@@ -165,7 +165,7 @@
 <section>
   <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 目录</div>
   <div class="slide-title">📋 本讲目录</div>
-  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 回顾：单隐含层网络</a></li><li><a href="#/8" style="color:#1E40AF;text-decoration:none;">2. 卷积神经网络概述</a></li><li><a href="#/13" style="color:#1E40AF;text-decoration:none;">3. 卷积运算基础</a></li><li><a href="#/24" style="color:#1E40AF;text-decoration:none;">4. 二维卷积层</a></li><li><a href="#/27" style="color:#1E40AF;text-decoration:none;">5. 填充与步幅</a></li><li><a href="#/37" style="color:#1E40AF;text-decoration:none;">6. 多输入输出通道</a></li><li><a href="#/45" style="color:#1E40AF;text-decoration:none;">7. 1×1 卷积层</a></li><li><a href="#/50" style="color:#1E40AF;text-decoration:none;">8. 池化层</a></li><li><a href="#/59" style="color:#1E40AF;text-decoration:none;">9. Why CNN？—— 卷积神经网络的核心优势</a></li><li><a href="#/65" style="color:#1E40AF;text-decoration:none;">10. 代表性卷积神经网络</a></li><li><a href="#/84" style="color:#1E40AF;text-decoration:none;">11. 核心公式速查</a></li><li><a href="#/87" style="color:#1E40AF;text-decoration:none;">12. 总结与思考</a></li></ol></div>
+  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 回顾：单隐含层网络</a></li><li><a href="#/8" style="color:#1E40AF;text-decoration:none;">2. 卷积神经网络概述</a></li><li><a href="#/13" style="color:#1E40AF;text-decoration:none;">3. 卷积运算基础</a></li><li><a href="#/24" style="color:#1E40AF;text-decoration:none;">4. 二维卷积层</a></li><li><a href="#/27" style="color:#1E40AF;text-decoration:none;">5. 填充与步幅</a></li><li><a href="#/37" style="color:#1E40AF;text-decoration:none;">6. 多输入输出通道</a></li><li><a href="#/45" style="color:#1E40AF;text-decoration:none;">7. 1×1 卷积层</a></li><li><a href="#/50" style="color:#1E40AF;text-decoration:none;">8. 池化层</a></li><li><a href="#/59" style="color:#1E40AF;text-decoration:none;">9. Why CNN？—— 卷积神经网络的核心优势</a></li><li><a href="#/65" style="color:#1E40AF;text-decoration:none;">10. 代表性卷积神经网络</a></li><li><a href="#/85" style="color:#1E40AF;text-decoration:none;">11. 核心公式速查</a></li><li><a href="#/88" style="color:#1E40AF;text-decoration:none;">12. 总结与思考</a></li></ol></div>
 </section>
 <section class="section-divider">
   <div class="divider-num">1</div>
@@ -1063,22 +1063,28 @@
     </ul>
   </div>
 </section>
-<section>
+<section class="slide-short">
   <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 10. 代表性卷积神经网络</div>
   <div class="slide-title">10.2 LeNet（1998）：第一个实用的 CNN</div>
   <div class="slide-body">
 <p>LeNet 由 Yann LeCun 等人于 1998 年提出（LeCun, Bottou, Bengio, Haffner：Gradient-based learning applied to document recognition），最早成功应用于手写数字识别——邮政编码和银行支票金额的自动读取。它使用的 MNIST 数据集包含居中缩放后的 28×28 灰度图像：60,000 个训练样本、10,000 个测试样本、共 10 类。</p>
-<figure>
-        <img src="images/lenet_arch.jpg" alt="LeNet 架构：卷积-池化-卷积-池化-全连接" loading="lazy">
-        <figcaption>LeNet 架构：32×32 输入 → C1 卷积（6@28×28）→ S2 池化（6@14×14）→ C3 卷积（16@10×10）→ S4 池化（16@5×5）→ 全连接（120 → 84）→ 输出（10）。</figcaption>
-    </figure>
   </div>
 </section>
 <section>
   <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 10. 代表性卷积神经网络</div>
   <div class="slide-title">10.2 LeNet（1998）：第一个实用的 CNN</div>
   <div class="slide-body">
+<figure>
+        <img src="images/lenet_arch.jpg" alt="LeNet 架构：卷积-池化-卷积-池化-全连接" loading="lazy">
+        <figcaption>LeNet 架构：C1 卷积（6@28×28）→ S2 池化（6@14×14）→ C3 卷积（16@10×10）→ S4 池化（16@5×5）→ 全连接（120 → 84）→ 输出（10）。图中输入按 MNIST 原图 28×28 绘制；经典论文输入为补边后的 32×32（下表按 32×32 核算，两者仅差一圈补边）。</figcaption>
+    </figure>
 <p>每一层的输入尺寸、卷积/池化配置、输出尺寸和训练参数都可以手工核算——这正是本章前面所有公式的一次完整实战：</p>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 10. 代表性卷积神经网络</div>
+  <div class="slide-title">10.2 LeNet（1998）：第一个实用的 CNN</div>
+  <div class="slide-body">
 <figure>
         <img src="images/lenet_layers.jpg" alt="LeNet 各层配置与参数量计算表" loading="lazy">
         <figcaption>LeNet 逐层核算表：例如卷积层 1 用 6 个 5×5 卷积核、步长 1，输出 6×28×28，训练参数 1×(5×5)×6+6=156。</figcaption>
