@@ -768,7 +768,8 @@ Reveal.initialize({
     width: 1280, height: 720, margin: 0.03,
     minScale: 0.3, maxScale: 1.6,
     hash: true, progress: true, slideNumber: 'c/t',
-    transition: 'slide', controls: true, center: false
+    transition: 'slide', controls: true, center: false,
+    keyboard: { 80: null }  /* 解绑 reveal 默认的 P=上一页，P 键留给画笔标注 */
 });
 </script>
 <script src="../../assets/katex/katex.min.js"></script>
@@ -906,12 +907,14 @@ document.addEventListener('DOMContentLoaded', function () {
         '<button class="act" data-t="eraser">橡皮</button>' +
         '<span class="sep"></span>' +
         '<button class="act" id="anno-clear">清除本页</button>' +
-        '<button class="act" id="anno-exit">退出 (Esc)</button>';
+        '<button class="act" id="anno-exit">退出 (Esc)</button>' +
+        '<span style="font-size:12px;color:#94A3B8">标注中用 ←→ 翻页</span>';
     document.body.appendChild(bar);
 
     var STORE_KEY = 'anno:' + location.pathname;
     var store = {};            // {slideIndex: [stroke, ...]}
     try { store = JSON.parse(localStorage.getItem(STORE_KEY) || '{}'); } catch (e) { store = {}; }
+    if (!store || typeof store !== 'object' || Array.isArray(store)) store = {};
 
     var active = false;        // 标注模式开关
     var tool = 'pen';          // pen | hl | eraser
@@ -970,6 +973,10 @@ document.addEventListener('DOMContentLoaded', function () {
         toggle.classList.toggle('on', on);
         bar.classList.toggle('open', on);
         toggle.textContent = on ? '✏️ 标注中…' : '✏️ 标注';
+        /* 深色模式下默认黑笔看不见，切浅色笔 */
+        if (on && color === '#1E293B' && document.documentElement.classList.contains('dl-dark')) {
+            color = '#F8FAFC';
+        }
     }
     function selectTool(t) {
         tool = t;
@@ -998,6 +1005,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     cv.addEventListener('pointerdown', function (e) {
         if (!active) return;
+        if (e.pointerType === 'mouse' && e.button !== 0) return;  /* 右键/中键不起笔 */
         e.preventDefault();
         cv.setPointerCapture(e.pointerId);
         drawing = true;
@@ -1027,16 +1035,20 @@ document.addEventListener('DOMContentLoaded', function () {
     cv.addEventListener('pointerup', endStroke);
     cv.addEventListener('pointercancel', endStroke);
 
+    /* capture 阶段注册：先于 reveal 的 bubble 监听器执行，stopPropagation 才能拦住 reveal */
     document.addEventListener('keydown', function (e) {
+        if (e.ctrlKey || e.metaKey || e.altKey) return;  /* Ctrl+P 打印等组合键不拦截 */
+        var ae = document.activeElement;
+        if (ae && /INPUT|TEXTAREA|SELECT/.test(ae.tagName)) return;  /* 口令门密码框/滑块输入时不触发 */
         if (e.key === 'p' || e.key === 'P') {
-            setActive(!active);  /* P 键开关标注模式 */
+            setActive(!active);  /* P 键开关标注模式（reveal 的 P=上一页已在 initialize 解绑） */
             return;
         }
         if (e.key === 'Escape' && active) {
             setActive(false);
             e.stopPropagation();  /* 标注模式下 Esc 只退出标注，不触发 reveal 总览 */
         }
-    });
+    }, true);
 
     Reveal.on('slidechanged', redraw);  /* 翻页后重画该页笔画 */
     window.addEventListener('resize', resize);
