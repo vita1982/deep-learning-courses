@@ -150,7 +150,7 @@
 <section>
   <div class="slide-breadcrumb">第03讲 深度神经网络 › 目录</div>
   <div class="slide-title">📋 本讲目录</div>
-  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 线性回归：从房价预测开始</a></li><li><a href="#/10" style="color:#1E40AF;text-decoration:none;">2. 基础优化：梯度下降</a></li><li><a href="#/17" style="color:#1E40AF;text-decoration:none;">3. softmax 回归：从回归到分类</a></li><li><a href="#/30" style="color:#1E40AF;text-decoration:none;">4. 感知机与多层感知机</a></li><li><a href="#/44" style="color:#1E40AF;text-decoration:none;">5. 模型选择与泛化</a></li><li><a href="#/52" style="color:#1E40AF;text-decoration:none;">6. 正则化：权重衰减与丢弃法</a></li><li><a href="#/57" style="color:#1E40AF;text-decoration:none;">7. 正反向传播与数值稳定性</a></li><li><a href="#/66" style="color:#1E40AF;text-decoration:none;">8. 综合案例与本讲小结</a></li></ol></div>
+  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 线性回归：从房价预测开始</a></li><li><a href="#/10" style="color:#1E40AF;text-decoration:none;">2. 基础优化：梯度下降</a></li><li><a href="#/17" style="color:#1E40AF;text-decoration:none;">3. softmax 回归：从回归到分类</a></li><li><a href="#/30" style="color:#1E40AF;text-decoration:none;">4. 感知机与多层感知机</a></li><li><a href="#/45" style="color:#1E40AF;text-decoration:none;">5. 模型选择与泛化</a></li><li><a href="#/53" style="color:#1E40AF;text-decoration:none;">6. 正则化：权重衰减与丢弃法</a></li><li><a href="#/58" style="color:#1E40AF;text-decoration:none;">7. 正反向传播与数值稳定性</a></li><li><a href="#/67" style="color:#1E40AF;text-decoration:none;">8. 综合案例与本讲小结</a></li></ol></div>
 </section>
 <section class="section-divider">
   <div class="divider-num">1</div>
@@ -531,6 +531,16 @@
   <div class="slide-title">4.2 XOR 问题：感知机的阿喀琉斯之踵</div>
   <div class="slide-body">
 <p>1969 年，Minsky 与 Papert 在《Perceptrons》一书中指出：感知机无法学习 XOR（异或）问题。原因很根本——单个感知机只能画出一条直线（线性分离器）来分割两类样本，而 XOR 的四个样本点（分属两类）根本不存在这样的直线。</p>
+<figure>
+        <img src="images/xor_linearly_inseparable.jpg" alt="XOR 问题线性不可分示意图" loading="lazy">
+        <figcaption>XOR 线性不可分：输出 0（蓝）和输出 1（红）的点各据一条对角线，单层感知机只能画一条直线，无论怎么画都至少分错两个点。</figcaption>
+    </figure>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第03讲 深度神经网络 › 4. 感知机与多层感知机</div>
+  <div class="slide-title">4.2 XOR 问题：感知机的阿喀琉斯之踵</div>
+  <div class="slide-body">
 <div class="tbl-wrap">
         <table>
             <tr><th>\(x_1\)</th><th>\(x_2\)</th><th>XOR 输出</th><th>能否线性分割</th></tr>

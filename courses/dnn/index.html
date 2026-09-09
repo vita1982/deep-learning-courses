@@ -327,6 +327,10 @@
 
     <h3><span class="sec-no">4.2</span>XOR 问题：感知机的阿喀琉斯之踵</h3>
     <p>1969 年，Minsky 与 Papert 在《Perceptrons》一书中指出：感知机无法学习 XOR（异或）问题。原因很根本——单个感知机只能画出一条直线（线性分离器）来分割两类样本，而 XOR 的四个样本点（分属两类）根本不存在这样的直线。</p>
+    <figure>
+        <img src="images/xor_linearly_inseparable.jpg" alt="XOR 问题线性不可分示意图" loading="lazy">
+        <figcaption>XOR 线性不可分：输出 0（蓝）和输出 1（红）的点各据一条对角线，单层感知机只能画一条直线，无论怎么画都至少分错两个点。</figcaption>
+    </figure>
     <div class="tbl-wrap">
         <table>
             <tr><th>\(x_1\)</th><th>\(x_2\)</th><th>XOR 输出</th><th>能否线性分割</th></tr>
