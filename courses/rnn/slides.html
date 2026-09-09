@@ -136,6 +136,22 @@
     color: #E2E8F0; font-size: 15px; text-align: center;
     background: rgba(15,23,42,.75);
 }
+
+/* ===== 课堂画笔标注 ===== */
+#anno-canvas { position: fixed; inset: 0; z-index: 40; pointer-events: none; }
+#anno-canvas.active { pointer-events: auto; touch-action: none; cursor: crosshair; }
+#anno-toggle { position: fixed; right: 18px; bottom: 64px; z-index: 42; border: 1px solid #CBD5E1; background: rgba(255,255,255,.92); color: #334155; border-radius: 999px; padding: 8px 16px; font-size: 15px; cursor: pointer; box-shadow: 0 2px 10px rgba(15,23,42,.12); }
+#anno-toggle:hover { background: #EFF6FF; border-color: #2563EB; color: #2563EB; }
+#anno-toggle.on { background: #2563EB; border-color: #2563EB; color: #fff; }
+#anno-bar { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); z-index: 42; display: none; align-items: center; gap: 8px; background: rgba(255,255,255,.95); border: 1px solid #CBD5E1; border-radius: 999px; padding: 8px 14px; box-shadow: 0 4px 16px rgba(15,23,42,.15); font-size: 14px; color: #334155; }
+#anno-bar.open { display: flex; }
+#anno-bar .swatch { width: 22px; height: 22px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; padding: 0; }
+#anno-bar .swatch.sel { border-color: #1E293B; }
+#anno-bar button.act { border: 1px solid #CBD5E1; background: #fff; border-radius: 999px; padding: 5px 12px; font-size: 14px; cursor: pointer; color: #334155; }
+#anno-bar button.act:hover { background: #F1F5F9; }
+#anno-bar button.act.sel { background: #2563EB; border-color: #2563EB; color: #fff; }
+#anno-bar .sep { width: 1px; height: 20px; background: #E2E8F0; }
+@media print { #anno-canvas, #anno-toggle, #anno-bar { display: none !important; } }
 </style>
     
 </head>
@@ -815,7 +831,7 @@
 </section>
 </div>
 </div>
-<div class="slide-hint">←→ 翻页 · 双击图片放大 · F 全屏 · Esc 总览</div>
+<div class="slide-hint">←→ 翻页 · 双击图片放大 · P 画笔标注 · F 全屏 · Esc 总览</div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.0/dist/reveal.js"></script>
 <script>
 Reveal.initialize({
@@ -1042,6 +1058,170 @@ document.addEventListener('DOMContentLoaded', function () {
             lb.classList.add('open');
         });
     });
+})();
+</script>
+<script>
+/* ===== 课堂画笔标注（P 键或右下角按钮开关；笔画按页记忆并持久化） ===== */
+(function () {
+    var cv = document.createElement('canvas');
+    cv.id = 'anno-canvas';
+    document.body.appendChild(cv);
+    var ctx = cv.getContext('2d');
+
+    var toggle = document.createElement('button');
+    toggle.id = 'anno-toggle';
+    toggle.textContent = '✏️ 标注';
+    toggle.title = '课堂标注（快捷键 P）';
+    document.body.appendChild(toggle);
+
+    var bar = document.createElement('div');
+    bar.id = 'anno-bar';
+    bar.innerHTML =
+        '<button class="swatch sel" data-c="#1E293B" style="background:#1E293B" title="黑"></button>' +
+        '<button class="swatch" data-c="#DC2626" style="background:#DC2626" title="红"></button>' +
+        '<button class="swatch" data-c="#2563EB" style="background:#2563EB" title="蓝"></button>' +
+        '<button class="swatch" data-c="#D97706" style="background:#D97706" title="橙"></button>' +
+        '<span class="sep"></span>' +
+        '<button class="act sel" data-t="pen">画笔</button>' +
+        '<button class="act" data-t="hl">荧光笔</button>' +
+        '<button class="act" data-t="eraser">橡皮</button>' +
+        '<span class="sep"></span>' +
+        '<button class="act" id="anno-clear">清除本页</button>' +
+        '<button class="act" id="anno-exit">退出 (Esc)</button>';
+    document.body.appendChild(bar);
+
+    var STORE_KEY = 'anno:' + location.pathname;
+    var store = {};            // {slideIndex: [stroke, ...]}
+    try { store = JSON.parse(localStorage.getItem(STORE_KEY) || '{}'); } catch (e) { store = {}; }
+
+    var active = false;        // 标注模式开关
+    var tool = 'pen';          // pen | hl | eraser
+    var color = '#1E293B';
+    var drawing = false;
+    var cur = null;            // 进行中的笔画
+
+    function slideIdx() {
+        var i = Reveal.getIndices();
+        return i.h + (i.v ? '.' + i.v : '');
+    }
+    function strokes() {
+        var k = slideIdx();
+        if (!store[k]) store[k] = [];
+        return store[k];
+    }
+    function save() {
+        try { localStorage.setItem(STORE_KEY, JSON.stringify(store)); } catch (e) {}
+    }
+    function resize() {
+        cv.width = window.innerWidth;
+        cv.height = window.innerHeight;
+        redraw();
+    }
+    function styleOf(s) {
+        if (s.tool === 'hl') return { w: 16, alpha: 0.35, comp: 'source-over' };
+        if (s.tool === 'eraser') return { w: 26, alpha: 1, comp: 'destination-out' };
+        return { w: 3.5, alpha: 1, comp: 'source-over' };
+    }
+    function drawStroke(s) {
+        if (s.pts.length < 2) return;
+        var st = styleOf(s);
+        ctx.save();
+        ctx.globalCompositeOperation = st.comp;
+        ctx.globalAlpha = st.alpha;
+        ctx.strokeStyle = s.color;
+        ctx.lineWidth = st.w;
+        ctx.lineJoin = 'round';
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(s.pts[0][0] * cv.width, s.pts[0][1] * cv.height);
+        for (var i = 1; i < s.pts.length; i++) {
+            ctx.lineTo(s.pts[i][0] * cv.width, s.pts[i][1] * cv.height);
+        }
+        ctx.stroke();
+        ctx.restore();
+    }
+    function redraw() {
+        ctx.clearRect(0, 0, cv.width, cv.height);
+        strokes().forEach(drawStroke);
+        if (cur) drawStroke(cur);
+    }
+    function setActive(on) {
+        active = on;
+        cv.classList.toggle('active', on);
+        toggle.classList.toggle('on', on);
+        bar.classList.toggle('open', on);
+        toggle.textContent = on ? '✏️ 标注中…' : '✏️ 标注';
+    }
+    function selectTool(t) {
+        tool = t;
+        bar.querySelectorAll('button.act[data-t]').forEach(function (b) {
+            b.classList.toggle('sel', b.dataset.t === t);
+        });
+    }
+
+    toggle.addEventListener('click', function () { setActive(!active); });
+    bar.querySelectorAll('.swatch').forEach(function (b) {
+        b.addEventListener('click', function () {
+            color = b.dataset.c;
+            bar.querySelectorAll('.swatch').forEach(function (x) { x.classList.toggle('sel', x === b); });
+            if (tool === 'eraser') selectTool('pen');
+        });
+    });
+    bar.querySelectorAll('button.act[data-t]').forEach(function (b) {
+        b.addEventListener('click', function () { selectTool(b.dataset.t); });
+    });
+    document.getElementById('anno-clear').addEventListener('click', function () {
+        store[slideIdx()] = [];
+        save();
+        redraw();
+    });
+    document.getElementById('anno-exit').addEventListener('click', function () { setActive(false); });
+
+    cv.addEventListener('pointerdown', function (e) {
+        if (!active) return;
+        e.preventDefault();
+        cv.setPointerCapture(e.pointerId);
+        drawing = true;
+        cur = { tool: tool, color: color, pts: [[e.clientX / cv.width, e.clientY / cv.height]] };
+    });
+    cv.addEventListener('pointermove', function (e) {
+        if (!drawing || !cur) return;
+        e.preventDefault();
+        cur.pts.push([e.clientX / cv.width, e.clientY / cv.height]);
+        redraw();
+    });
+    function endStroke(e) {
+        if (!drawing) return;
+        drawing = false;
+        if (cur && cur.pts.length > 1) {
+            strokes().push(cur);
+            save();
+        } else if (cur) {  /* 单击画一个点 */
+            cur.pts.push(cur.pts[0].slice());
+            cur.pts[1][0] += 0.001;
+            strokes().push(cur);
+            save();
+        }
+        cur = null;
+        redraw();
+    }
+    cv.addEventListener('pointerup', endStroke);
+    cv.addEventListener('pointercancel', endStroke);
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'p' || e.key === 'P') {
+            setActive(!active);  /* P 键开关标注模式 */
+            return;
+        }
+        if (e.key === 'Escape' && active) {
+            setActive(false);
+            e.stopPropagation();  /* 标注模式下 Esc 只退出标注，不触发 reveal 总览 */
+        }
+    });
+
+    Reveal.on('slidechanged', redraw);  /* 翻页后重画该页笔画 */
+    window.addEventListener('resize', resize);
+    resize();
 })();
 </script>
 </body>
