@@ -166,7 +166,7 @@
 <section>
   <div class="slide-breadcrumb">第01讲 深度学习概述 › 目录</div>
   <div class="slide-title">📋 本讲目录</div>
-  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 课程简介</a></li><li><a href="#/9" style="color:#1E40AF;text-decoration:none;">2. 什么是深度学习</a></li><li><a href="#/23" style="color:#1E40AF;text-decoration:none;">3. 深度学习发展简史</a></li><li><a href="#/32" style="color:#1E40AF;text-decoration:none;">4. 深度学习为什么现在火热？</a></li><li><a href="#/35" style="color:#1E40AF;text-decoration:none;">5. 深度学习典型应用</a></li><li><a href="#/51" style="color:#1E40AF;text-decoration:none;">6. 深度学习主流框架</a></li><li><a href="#/64" style="color:#1E40AF;text-decoration:none;">7. 实验环境配置</a></li><li><a href="#/74" style="color:#1E40AF;text-decoration:none;">8. 动手实操：安装 PyTorch 并验证环境</a></li><li><a href="#/94" style="color:#1E40AF;text-decoration:none;">9. 本讲小结与自测</a></li></ol></div>
+  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 课程简介</a></li><li><a href="#/9" style="color:#1E40AF;text-decoration:none;">2. 什么是深度学习</a></li><li><a href="#/23" style="color:#1E40AF;text-decoration:none;">3. 深度学习发展简史</a></li><li><a href="#/33" style="color:#1E40AF;text-decoration:none;">4. 深度学习为什么现在火热？</a></li><li><a href="#/36" style="color:#1E40AF;text-decoration:none;">5. 深度学习典型应用</a></li><li><a href="#/52" style="color:#1E40AF;text-decoration:none;">6. 深度学习主流框架</a></li><li><a href="#/65" style="color:#1E40AF;text-decoration:none;">7. 实验环境配置</a></li><li><a href="#/75" style="color:#1E40AF;text-decoration:none;">8. 动手实操：安装 PyTorch 并验证环境</a></li><li><a href="#/95" style="color:#1E40AF;text-decoration:none;">9. 本讲小结与自测</a></li></ol></div>
 </section>
 <section class="section-divider">
   <div class="divider-num">1</div>
@@ -541,6 +541,21 @@
         <img src="images/dbn_pretraining.jpg" alt="深度信念网络的贪婪逐层预训练示意图" loading="lazy">
         <figcaption>贪婪逐层预训练示意：先用受限玻尔兹曼机（RBM）把每一层单独预训练（左），堆叠成自编码器（中），最后用反向传播整体微调（右）。这让训练深层网络第一次变得可行。</figcaption>
     </figure>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第01讲 深度学习概述 › 3. 深度学习发展简史</div>
+  <div class="slide-title">3.3 第三次浪潮（2006 年至今）：深度学习时期</div>
+  <div class="slide-body">
+<div class="callout key">
+        <span class="co-tag">🔍 一图读懂：贪婪逐层预训练三步走</span>
+        <p><strong>◀ 左图 · Pretraining 逐层预训练</strong></p>
+        <p>DBN 是一层层堆叠的受限玻尔兹曼机（RBM）——RBM 是一种无监督的两层网络（可见层 + 隐藏层），专门学习输入数据的特征。"贪婪"就是一层一层来，不一次性训练整个网络：① 拿原始人脸图像训练第 1 个 RBM（\(W_1\)），学习第一层特征；② 把它的隐藏层输出当作下一个 RBM 的输入，训练 \(W_2\)；③ 依次向上训练 \(W_3, W_4\)。每一层只负责学习上一层输出的特征，单独训练、无需标注。直觉类比：底层学边缘，中层学轮廓，高层学人脸整体。</p>
+        <p><strong>▲ 中图 · 堆叠成自编码器</strong></p>
+        <p>把逐个训练好的 RBM 拼接起来：下半部分 Encoder 编码器把原始图像一步步压缩到高层低维特征（黄色 30 维），上半部分 Decoder 解码器用转置权重 \(W^T\) 把高层特征还原回原始图像。这一步的意义是得到一组不错的初始权重——以前神经网络权重靠随机初始化，很容易训练失败；现在通过 RBM 预训练，拿到了一个接近好解的起点。</p>
+        <p><strong>▶ 右图 · Fine-tuning 反向传播整体微调</strong></p>
+        <p>用预训练得到的权重作为起点，拿标注数据用反向传播（BP）整体微调全部参数。一句话记住分工：<strong>预训练（无监督）帮网络找到好起点，微调（有监督）让网络适配具体任务。</strong></p>
+    </div>
   </div>
 </section>
 <section>
