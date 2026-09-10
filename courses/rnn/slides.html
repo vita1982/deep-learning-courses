@@ -154,6 +154,29 @@
 @media print { #anno-canvas, #anno-toggle, #anno-bar { display: none !important; } }
 </style>
     
+<!-- DL-LOCK:BEGIN -->
+<script src="../../assets/progress.js"></script>
+<script>
+/* 本章尚未开放：locked 时用提示页替换幻灯片全部内容（配置在 assets/progress.js） */
+(function () {
+    try { if ((window.DL_PROGRESS || {})['rnn'] !== 'locked') return; } catch (e) { return; }
+    var st = document.createElement('style');
+    st.textContent = 'body{visibility:hidden}';
+    document.head.appendChild(st);
+    document.addEventListener('DOMContentLoaded', function () {
+        document.body.innerHTML = '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#F1F5F9;font-family:Microsoft YaHei,sans-serif;visibility:visible;">'
+            + '<div style="background:#fff;border-radius:16px;padding:48px 44px;max-width:520px;width:88vw;box-sizing:border-box;text-align:center;box-shadow:0 10px 40px rgba(15,23,42,.12);">'
+            + '<div style="font-size:44px;">🔒</div>'
+            + '<h1 style="margin:14px 0 8px;font-size:22px;color:#1E293B;">第05讲 · 循环神经网络</h1>'
+            + '<p style="margin:0 0 8px;font-size:16px;color:#2563EB;font-weight:bold;">本讲尚未开放</p>'
+            + '<p style="margin:0 0 24px;font-size:14px;color:#64748B;line-height:1.8;">本讲内容将随课程进度开放，开放前暂时无法阅读。<br>已上过的章节会完整开放，请按课程安排学习。</p>'
+            + '<a href="../../index.html" style="display:inline-block;padding:10px 28px;background:#2563EB;color:#fff;text-decoration:none;border-radius:8px;font-size:15px;">返回课程首页</a>'
+            + '</div></div>';
+        document.body.style.visibility = 'visible';
+    });
+})();
+</script>
+<!-- DL-LOCK:END -->
 </head>
 <body>
 <div class="reveal">

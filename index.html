@@ -298,37 +298,8 @@ var _hmt = _hmt || [];
     <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
 <script src="assets/progress.js"></script>
-<script>
-/* 章节开放进度：locked 的章节卡片置灰并拦截跳转（配置在 assets/progress.js） */
-(function () {
-    var P = window.DL_PROGRESS || {};
-    document.querySelectorAll('a.course-btn[href^="courses/"]').forEach(function (a) {
-        var m = a.getAttribute('href').match(/^courses\/([^/]+)\//);
-        if (!m || P[m[1]] !== 'locked') return;
-        var card = a.closest('.course-card');
-        if (card && !card.classList.contains('dl-locked')) { /* 卡片级操作只执行一次（双按钮去重），按钮级操作照常 */
-            card.classList.add('dl-locked');
-            var done = card.querySelector('.tag-green');
-            if (done) done.style.display = 'none';
-            var tags = card.querySelector('.course-tags');
-            if (tags) {
-                var s = document.createElement('span');
-                s.className = 'tag dl-tag-locked';
-                s.textContent = '未开课';
-                tags.appendChild(s);
-            }
-            /* 锁定卡片只保留一个按钮：隐藏"幻灯片"等第二个及以后的按钮 */
-            var btns = card.querySelectorAll('a.course-btn[href^="courses/"]');
-            for (var bi = 1; bi < btns.length; bi++) btns[bi].style.display = 'none';
-        }
-        a.textContent = '🔒 尚未开课';
-        a.addEventListener('click', function (ev) {
-            ev.preventDefault();
-            alert('本讲内容将随课程进度开放，敬请期待。');
-        });
-    });
-})();
-</script>
+<!-- 章节开放进度：首页不再置灰拦截，所有章节均可点击进入；
+     未开放章节由其正文页/幻灯片页自行提示"尚未开放"（配置在 assets/progress.js） -->
 <script src="assets/search-index.js"></script>
 <script src="assets/site-tools.js"></script>
 </body>
