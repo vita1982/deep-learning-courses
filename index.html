@@ -317,6 +317,9 @@ var _hmt = _hmt || [];
                 s.textContent = '未开课';
                 tags.appendChild(s);
             }
+            /* 锁定卡片只保留一个按钮：隐藏"幻灯片"等第二个及以后的按钮 */
+            var btns = card.querySelectorAll('a.course-btn[href^="courses/"]');
+            for (var bi = 1; bi < btns.length; bi++) btns[bi].style.display = 'none';
         }
         a.textContent = '🔒 尚未开课';
         a.addEventListener('click', function (ev) {
