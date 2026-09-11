@@ -253,8 +253,8 @@
     <div class="tbl-wrap">
         <table>
             <tr><th>类型</th><th>定义</th><th>要点与用途</th></tr>
-            <tr><td>单位矩阵 \(\mathbf{I}\)</td><td>对角线是 1、其余全 0 的方阵</td><td>矩阵世界的"1"：任何矩阵乘它不变，\(\mathbf{A}\mathbf{I} = \mathbf{A}\)</td></tr>
-            <tr><td>对角矩阵</td><td>只有对角线上可能有非零元</td><td>计算最省事：乘它就是对每个坐标"各管各"地伸缩，交叉项全为零</td></tr>
+            <tr><td>单位矩阵 \(\mathbf{I}\)</td><td>主对角线全为 1、其余全 0 的方阵</td><td>矩阵世界的"1"：任何矩阵乘它不变，\(\mathbf{A}\mathbf{I} = \mathbf{A}\)</td></tr>
+            <tr><td>对角矩阵</td><td>只有主对角线上可能有非零元</td><td>计算最省事：乘它就是对每个坐标"各管各"地伸缩，交叉项全为零</td></tr>
             <tr><td>对称矩阵</td><td>\(\mathbf{A} = \mathbf{A}^\top\)（关于主对角线镜像对称）</td><td>特征值全为实数、特征向量两两正交；协方差矩阵、Hessian 矩阵都是它，总可特征分解</td></tr>
             <tr><td>正定矩阵</td><td>对任意 \(\mathbf{x} \neq 0\) 有 \(\mathbf{x}^\top \mathbf{A}\mathbf{x} &gt; 0\)</td><td>特征值均为正（半正定则非负）；二次型损失为碗状，有唯一最小值</td></tr>
             <tr><td>正交矩阵</td><td>所有列（行）向量都是单位正交向量，即 \(\mathbf{Q}^\top\mathbf{Q} = \mathbf{I}\)</td><td>逆就是转置：\(\mathbf{Q}^{-1} = \mathbf{Q}^\top\)；只做旋转/翻转、保持长度不变 \(\|\mathbf{Q}\mathbf{x}\| = \|\mathbf{x}\|\)，很多归一化与初始化技巧都利用这个"不破坏尺度"的性质</td></tr>
