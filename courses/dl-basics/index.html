@@ -419,7 +419,7 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
     <h3><span class="sec-no">5.5</span>链式法则</h3>
     <p>复合函数的求导遵循链式法则——"剥洋葱"：先对外层求导，再乘内层的导数。它是整个反向传播的数学基础：</p>
     <p>\[\text{标量：}\; y=f(u),\; u=g(x) \;\Rightarrow\; \frac{dy}{dx} = \frac{dy}{du}\cdot\frac{du}{dx} \qquad\qquad \text{向量：}\; \frac{\partial y}{\partial \mathbf{x}} = \underbrace{\frac{\partial y}{\partial \mathbf{u}}}_{(1,k)} \underbrace{\frac{\partial \mathbf{u}}{\partial \mathbf{x}}}_{(k,n)}\]</p>
-    <p>向量版本里，每个因子都是一个雅可比矩阵（5.3 节两种布局约定的主角），局部导数按矩阵乘法依次相乘，形状必须能匹配。神经网络就是一层层复合起来的超长函数 \(f^{(L)} \circ \cdots \circ f^{(2)} \circ f^{(1)}\)，损失对第一层参数的导数可以拆成一连串简单导数的乘积：</p>
+    <p>向量版本里，局部导数按矩阵乘法依次相乘，形状必须能匹配。神经网络就是一层层复合起来的超长函数 \(f^{(L)} \circ \cdots \circ f^{(2)} \circ f^{(1)}\)，损失对第一层参数的导数可以拆成一连串简单导数的乘积：</p>
     <p>\[\frac{\partial f^{(L)}}{\partial f^{(L-1)}} \cdot \frac{\partial f^{(L-1)}}{\partial f^{(L-2)}} \cdots \frac{\partial f^{(2)}}{\partial f^{(1)}}\]</p>
 <p>这条乘积算出的是损失对第一层<strong>输出</strong>的导数；再乘上各层对自身参数的局部导数 \(\partial f^{(l)}/\partial \mathbf{w}^{(l)}\)，就得到每层权重的梯度。</p>
     <div class="callout key">
