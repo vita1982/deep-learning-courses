@@ -517,7 +517,7 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
   <div class="slide-body">
 <p>当函数的自变量从标量变成向量时，导数也升级为梯度（gradient）：多元函数 \(y = f(\mathbf{x})\) 对每个分量求偏导，排成一行就是梯度：</p>
 <p>\[\mathbf{x} = \begin{bmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{bmatrix}, \qquad \frac{\partial y}{\partial \mathbf{x}} = \left[ \frac{\partial y}{\partial x_1}, \frac{\partial y}{\partial x_2}, \ldots, \frac{\partial y}{\partial x_n} \right]\]</p>
-<p>例：\(f = x_1^2 + 2x_2^2\)，则 \(\nabla f = [2x_1,\ 4x_2]\)，在 \((3,2)\) 处为 \([6, 8]\)。梯度垂直于等高线、指向上坡最陡方向，所以梯度下降沿<strong>负</strong>梯度走：\(\mathbf{w} \leftarrow \mathbf{w} - \eta\,\nabla f\)。</p>
+<p>例：\(f = x_1^2 + 2x_2^2\)，则 \(\frac{\partial f}{\partial \mathbf{x}} = [2x_1,\ 4x_2]\)，在 \((3,2)\) 处为 \([6, 8]\)。梯度垂直于等高线、指向上坡最陡方向，所以梯度下降沿<strong>负</strong>梯度走：\(\mathbf{w} \leftarrow \mathbf{w} - \eta\,\nabla f\)。</p>
   </div>
 </section>
 <section>

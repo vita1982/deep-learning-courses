@@ -375,7 +375,7 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
     <p>一元函数 \(f(x)\) 只有一个"旋钮"，导数只有一个数；但损失函数同时依赖成千上万个权重 \(x_1, x_2, \ldots, x_n\)——对每个旋钮单独问"拧它一下，\(f\) 变多少"，就得到 \(n\) 个偏导数。把它们排成一行，就是<strong>梯度</strong>（gradient）：</p>
     <p>\[\mathbf{x} = \begin{bmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{bmatrix}, \qquad \frac{\partial y}{\partial \mathbf{x}} = \left[ \frac{\partial y}{\partial x_1}, \frac{\partial y}{\partial x_2}, \ldots, \frac{\partial y}{\partial x_n} \right]\]</p>
     <p>梯度就是第 1 章故事里"推力"的精确版本：梯度下降每一轮做的事就是 \(\mathbf{w} \leftarrow \mathbf{w} - \eta\,\nabla f\)。</p>
-    <p>手算一个例子：\(f = x_1^2 + 2x_2^2\)。对 \(x_1\) 求偏导（把 \(x_2\) 当常数）得 \(2x_1\)，对 \(x_2\) 求偏导得 \(4x_2\)，所以 \(\nabla f = [2x_1,\ 4x_2]\)。在点 \((3, 2)\) 处 \(\nabla f = [6, 8]\)——含义是：在 \((3,2)\) 附近，\(x_1\) 每增大一点 \(f\) 以约 6 倍速增加，\(x_2\) 每增大一点 \(f\) 以约 8 倍速增加。</p>
+    <p>手算一个例子：\(f = x_1^2 + 2x_2^2\)。对 \(x_1\) 求偏导（把 \(x_2\) 当常数）得 \(2x_1\)，对 \(x_2\) 求偏导得 \(4x_2\)，所以 \(\frac{\partial f}{\partial \mathbf{x}} = [2x_1,\ 4x_2]\)。在点 \((3, 2)\) 处梯度为 \([6, 8]\)——含义是：在 \((3,2)\) 附近，\(x_1\) 每增大一点 \(f\) 以约 6 倍速增加，\(x_2\) 每增大一点 \(f\) 以约 8 倍速增加。</p>
     <figure>
         <img src="images/gradient_layout.jpg" alt="分子布局与梯度方向示例" loading="lazy">
         <figcaption>左：标量对向量求导的结果排成一行（分子布局）；右：梯度的几何意义——例如 \(\frac{\partial}{\partial \mathbf{x}}(x_1^2 + 2x_2^2) = [2x_1, 4x_2]\)，在点 (1,1) 处指向 (2,4)，垂直于等高线、指向函数增长最快的方向。</figcaption>
@@ -425,6 +425,7 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
     <p>\[\text{标量：}\; y=f(u),\; u=g(x) \;\Rightarrow\; \frac{dy}{dx} = \frac{dy}{du}\cdot\frac{du}{dx} \qquad\qquad \text{向量：}\; \frac{\partial y}{\partial \mathbf{x}} = \underbrace{\frac{\partial y}{\partial \mathbf{u}}}_{(1,k)} \underbrace{\frac{\partial \mathbf{u}}{\partial \mathbf{x}}}_{(k,n)}\]</p>
     <p>向量版本里，每个因子都是一个雅可比矩阵（5.3 节两种布局约定的主角），局部导数按矩阵乘法依次相乘，形状必须能匹配。神经网络就是一层层复合起来的超长函数 \(f^{(L)} \circ \cdots \circ f^{(2)} \circ f^{(1)}\)，损失对第一层参数的导数可以拆成一连串简单导数的乘积：</p>
     <p>\[\frac{\partial f^{(L)}}{\partial f^{(L-1)}} \cdot \frac{\partial f^{(L-1)}}{\partial f^{(L-2)}} \cdots \frac{\partial f^{(2)}}{\partial f^{(1)}}\]</p>
+<p>这条乘积算出的是损失对第一层<strong>输出</strong>的导数；再乘上各层对自身参数的局部导数 \(\partial f^{(l)}/\partial \mathbf{w}^{(l)}\)，就得到每层权重的梯度。</p>
     <div class="callout key">
         <span class="co-tag">🔑 反向传播在干什么</span>
         <p>训练需要"损失对每一层权重"的导数，而每一层都是这条长链的一环。<strong>反向传播 = 从输出端开始，把导数逐层往回传，每传一层就顺手算出该层权重的梯度</strong>，而不是对每条路径单独重算。共享中间结果后，整个网络的求导成本从"指数级"降到"和正向计算同量级"。没有这个技巧，深度学习的梯度根本算不动——可以说，链式法则的高效实现撑起了整个训练流程。</p>
