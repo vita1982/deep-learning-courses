@@ -372,29 +372,40 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
     </div>
 
     <h3><span class="sec-no">5.2</span>梯度：把求导推广到向量</h3>
-    <p>当函数的自变量从标量变成向量时，导数也升级为梯度（gradient）：多元函数 \(y = f(\mathbf{x})\) 对每个分量求偏导，排成一行就是梯度：</p>
+    <p>一元函数 \(f(x)\) 只有一个"旋钮"，导数只有一个数；但损失函数同时依赖成千上万个权重 \(x_1, x_2, \ldots, x_n\)——对每个旋钮单独问"拧它一下，\(f\) 变多少"，就得到 \(n\) 个偏导数。把它们排成一行，就是<strong>梯度</strong>（gradient）：</p>
     <p>\[\mathbf{x} = \begin{bmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{bmatrix}, \qquad \frac{\partial y}{\partial \mathbf{x}} = \left[ \frac{\partial y}{\partial x_1}, \frac{\partial y}{\partial x_2}, \ldots, \frac{\partial y}{\partial x_n} \right]\]</p>
+    <p>梯度就是第 1 章故事里"推力"的精确版本：梯度下降每一轮做的事就是 \(\mathbf{w} \leftarrow \mathbf{w} - \eta\,\nabla f\)。</p>
+    <p>手算一个例子：\(f = x_1^2 + 2x_2^2\)。对 \(x_1\) 求偏导（把 \(x_2\) 当常数）得 \(2x_1\)，对 \(x_2\) 求偏导得 \(4x_2\)，所以 \(\nabla f = [2x_1,\ 4x_2]\)。在点 \((3, 2)\) 处 \(\nabla f = [6, 8]\)——含义是：在 \((3,2)\) 附近，\(x_1\) 每增大一点 \(f\) 以约 6 倍速增加，\(x_2\) 每增大一点 \(f\) 以约 8 倍速增加。</p>
     <figure>
         <img src="images/gradient_layout.jpg" alt="分子布局与梯度方向示例" loading="lazy">
         <figcaption>左：标量对向量求导的结果排成一行（分子布局）；右：梯度的几何意义——例如 \(\frac{\partial}{\partial \mathbf{x}}(x_1^2 + 2x_2^2) = [2x_1, 4x_2]\)，在点 (1,1) 处指向 (2,4)，垂直于等高线、指向函数增长最快的方向。</figcaption>
     </figure>
+    <div class="callout key">
+        <span class="co-tag">🔑 为什么梯度下降沿"负"梯度走？</span>
+        <p>把 \(f\) 想象成一片山坡，等高线是高度相同的环线：梯度方向与等高线垂直，指向<strong>上坡最陡</strong>的方向；负梯度则指向<strong>下坡最陡</strong>的方向。沿负梯度走，保证每一步都朝函数值降低最快的方向迈——在 \((3,2)\) 处负梯度是 \((-6, -8)\)，沿它走 \(f\) 掉得最快。</p>
+    </div>
+    <p>再验证一个与 1.3 节的连接：正则化惩罚 \(\lambda\|\mathbf{w}\|^2\) 的梯度是 \(2\lambda\mathbf{w}\)，梯度下降每轮减去它，就是把权重"往 0 推"的数学本体。</p>
 
     <h3><span class="sec-no">5.3</span>分子布局与分母布局</h3>
-    <p>向量求导的结果"横着排还是竖着排"，文献中有两种约定：</p>
+    <p>当 \(\mathbf{x}\) 和 \(\mathbf{y}\) 都是向量时，\(\partial \mathbf{y}/\partial \mathbf{x}\) 一共有 \(m \times n\) 个偏导数，排成矩阵时"横着放还是竖着放"有两种约定：</p>
     <div class="tbl-wrap">
         <table>
-            <tr><th>布局约定</th><th>含义</th></tr>
-            <tr><td>分子布局（numerator-layout，Jacobian 形式）</td><td>导数的形状跟随分子，标量对向量求导得到行向量</td></tr>
-            <tr><td>分母布局（denominator-layout，Hessian 形式）</td><td>导数的形状跟随分母，标量对向量求导得到列向量</td></tr>
+            <tr><th>布局约定</th><th>排法</th><th>形状</th><th>别名</th></tr>
+            <tr><td>分子布局（numerator-layout）</td><td>以 \(\mathbf{y}\) 的分量分行</td><td>\(m \times n\)</td><td>Jacobian 形式</td></tr>
+            <tr><td>分母布局（denominator-layout）</td><td>以 \(\mathbf{x}\) 的分量分行（即转置）</td><td>\(n \times m\)</td><td>梯度 / Hessian 形式</td></tr>
         </table>
     </div>
     <div class="callout key">
         <span class="co-tag">🔑 初学者理解</span>
-        <p>两种布局只是"摆放方式"不同，数值完全一样。《动手学深度学习》教材采用分母布局（梯度是列向量）。阅读不同资料时先确认它用哪种布局，避免矩阵求导时转置出错。</p>
+        <p>两种布局只是"摆放方式"不同，数值完全一样、互为转置。《动手学深度学习》教材采用分母布局（梯度是列向量）。阅读不同资料时先确认它用哪种布局，避免矩阵求导时转置出错。</p>
+    </div>
+    <div class="callout warn">
+        <span class="co-tag">⚠️ 注意</span>
+        <p>不同教材、不同论文约定不同；<strong>同一份材料里必须统一用同一种</strong>——混着用会差一个转置，结果全错。实际建议：不必死记布局名词，查每个公式时确认一句"这个结果是列向量还是行向量"，保持一致即可。本讲义统一采用分子布局。</p>
     </div>
 
     <h3><span class="sec-no">5.4</span>常用的向量/矩阵求导公式</h3>
-    <p>以下公式在推导线性回归、反向传播时会反复用到（设 \(\mathbf{a}\)、\(\mathbf{A}\) 不是 \(\mathbf{x}\) 的函数）：</p>
+    <p>以下三个公式覆盖了机器学习绝大多数手算场景，推导线性回归、反向传播时会反复用到（设 \(\mathbf{a}\)、\(\mathbf{A}\) 不是 \(\mathbf{x}\) 的函数）：</p>
     <div class="tbl-wrap">
         <table>
             <tr><th>公式（分子布局）</th><th>说明</th></tr>
@@ -403,12 +414,21 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
             <tr><td>\(\frac{\partial \|\mathbf{x}\|^2}{\partial \mathbf{x}} = 2\mathbf{x}^\top\)</td><td>平方范数的梯度，权重衰减的梯度来源</td></tr>
         </table>
     </div>
+    <p>都可以当成"乘法分配律的求导版"来记：\(\mathbf{a}^\top\mathbf{x} = a_1x_1 + \cdots + a_nx_n\)，对 \(x_i\) 求偏导只剩 \(a_i\)，合起来就是系数向量本身；二次型 \(\mathbf{x}^\top\mathbf{A}\mathbf{x}\) 可看成"带权重的平方和"，求导结果是"对称化"后的 \((\mathbf{A}+\mathbf{A}^\top)\) 乘 \(\mathbf{x}\)，若 \(\mathbf{A}\) 对称就退化成干净的 \(2\mathbf{A}\mathbf{x}\)；第三个公式是第二个的特例（\(\mathbf{A} = \mathbf{I}\)），也正是权重衰减惩罚项的导数——1.3 节已经用过它。</p>
+    <p>进一步，函数在 \(\mathbf{x}_0\) 附近的二阶泰勒展开为：</p>
+    <p>\[f(\mathbf{x}) \approx f(\mathbf{x}_0) + \nabla f(\mathbf{x}_0)^{\top}(\mathbf{x}-\mathbf{x}_0) + \tfrac{1}{2}(\mathbf{x}-\mathbf{x}_0)^{\top}\mathbf{H}(\mathbf{x}-\mathbf{x}_0)\]</p>
+    <p>读法：函数 ≈ 常数项 + 梯度的一次项 + 二阶导矩阵 \(\mathbf{H}\)（Hessian 矩阵）的二次项。Hessian 必为对称矩阵，性质极好（特征值全为实数），优化理论大量围绕它展开：梯度下降只看一次项；牛顿法把二次项也用上，收敛更快但每一步计算更贵。</p>
     <p>把求导推广到矩阵后，形状规则可以概括为一句话：标量对矩阵求导得到同形状矩阵；向量对向量求导得到雅可比矩阵。实际工程中我们很少手推这些公式——交给自动微分即可，但理解它们是看懂反向传播的前提。</p>
 
     <h3><span class="sec-no">5.5</span>链式法则</h3>
-    <p>复合函数的求导遵循链式法则，它是整个反向传播的数学基础：</p>
+    <p>复合函数的求导遵循链式法则——"剥洋葱"：先对外层求导，再乘内层的导数。它是整个反向传播的数学基础：</p>
     <p>\[\text{标量：}\; y=f(u),\; u=g(x) \;\Rightarrow\; \frac{dy}{dx} = \frac{dy}{du}\cdot\frac{du}{dx} \qquad\qquad \text{向量：}\; \frac{\partial y}{\partial \mathbf{x}} = \underbrace{\frac{\partial y}{\partial \mathbf{u}}}_{(1,k)} \underbrace{\frac{\partial \mathbf{u}}{\partial \mathbf{x}}}_{(k,n)}\]</p>
-    <p>向量版本里，局部导数按矩阵乘法依次相乘，形状必须能匹配。神经网络就是一层层复合起来的超长函数 \(f^{(L)} \circ \cdots \circ f^{(2)} \circ f^{(1)}\)，链式法则让我们能把"损失对第一层参数的导数"拆成一连串简单导数的乘积。</p>
+    <p>向量版本里，每个因子都是一个雅可比矩阵（5.3 节两种布局约定的主角），局部导数按矩阵乘法依次相乘，形状必须能匹配。神经网络就是一层层复合起来的超长函数 \(f^{(L)} \circ \cdots \circ f^{(2)} \circ f^{(1)}\)，损失对第一层参数的导数可以拆成一连串简单导数的乘积：</p>
+    <p>\[\frac{\partial f^{(L)}}{\partial f^{(L-1)}} \cdot \frac{\partial f^{(L-1)}}{\partial f^{(L-2)}} \cdots \frac{\partial f^{(2)}}{\partial f^{(1)}}\]</p>
+    <div class="callout key">
+        <span class="co-tag">🔑 反向传播在干什么</span>
+        <p>训练需要"损失对每一层权重"的导数，而每一层都是这条长链的一环。<strong>反向传播 = 从输出端开始，把导数逐层往回传，每传一层就顺手算出该层权重的梯度</strong>，而不是对每条路径单独重算。共享中间结果后，整个网络的求导成本从"指数级"降到"和正向计算同量级"。没有这个技巧，深度学习的梯度根本算不动——可以说，链式法则的高效实现撑起了整个训练流程。</p>
+    </div>
 </section>
 
 <!-- ==================== 第六章 ==================== -->
