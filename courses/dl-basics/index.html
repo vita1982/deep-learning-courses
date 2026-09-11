@@ -55,16 +55,574 @@
     <link rel="stylesheet" href="../../assets/katex/katex.min.css">
     <link rel="stylesheet" href="../../assets/course.css">
     <script src="../../assets/course.js" defer></script>
+<!-- DL-LOCK:BEGIN -->
+<script src="../../assets/progress.js"></script>
+<script>
+/* 本章尚未开放：locked 时用不透明遮罩盖住全部内容（配置在 assets/progress.js） */
+(function () {
+    try { if ((window.DL_PROGRESS || {})['dl-basics'] !== 'locked') return; } catch (e) { return; }
+    document.addEventListener('DOMContentLoaded', function () {
+        var d = document.createElement('div');
+        d.id = 'dl-chapter-lock';
+        d.style.cssText = 'position:fixed;inset:0;z-index:999999;background:#F1F5F9;'
+            + 'display:flex;align-items:center;justify-content:center;font-family:Microsoft YaHei,sans-serif;';
+        d.innerHTML = '<div style="background:#fff;border-radius:16px;padding:48px 44px;max-width:520px;width:88vw;box-sizing:border-box;text-align:center;box-shadow:0 10px 40px rgba(15,23,42,.12);"><div style="font-size:44px;">🔒</div><h1 style="margin:14px 0 8px;font-size:22px;color:#1E293B;">第02讲 · 深度学习基础</h1><p style="margin:0 0 8px;font-size:16px;color:#2563EB;font-weight:bold;">本讲尚未开放</p><p style="margin:0 0 24px;font-size:14px;color:#64748B;line-height:1.8;">本讲内容将随课程进度开放，开放前暂时无法阅读。<br>已上过的章节会完整开放，请按课程安排学习。</p><a href="../../index.html" style="display:inline-block;padding:10px 28px;background:#2563EB;color:#fff;text-decoration:none;border-radius:8px;font-size:15px;">返回课程首页</a></div>';
+        document.body.appendChild(d);
+        document.body.style.overflow = 'hidden';
+    });
+})();
+</script>
+<!-- DL-LOCK:END -->
 </head>
 <body>
-<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#F1F5F9;font-family:'Microsoft YaHei',sans-serif;">
-  <div style="background:#fff;border-radius:16px;padding:48px 44px;max-width:520px;width:88vw;box-sizing:border-box;text-align:center;box-shadow:0 10px 40px rgba(15,23,42,.12);">
-    <div style="font-size:44px;">🔒</div>
-    <h1 style="margin:14px 0 8px;font-size:22px;color:#1E293B;">第02讲 · 深度学习基础</h1>
-    <p style="margin:0 0 8px;font-size:16px;color:#2563EB;font-weight:bold;">本讲尚未开放</p>
-    <p style="margin:0 0 24px;font-size:14px;color:#64748B;line-height:1.8;">本讲内容将随课程进度开放，开放前暂时无法阅读。<br>已上过的章节会完整开放，请按课程安排学习。</p>
-    <a href="../../index.html" style="display:inline-block;padding:10px 28px;background:#2563EB;color:#fff;text-decoration:none;border-radius:8px;font-size:15px;">返回课程首页</a>
-  </div>
+
+<nav class="topbar">
+    <div class="topbar-inner">
+        <a href="../../index.html">← 课程首页</a>
+        <span class="spacer"></span>
+        <span class="pill">互动讲义</span>
+    </div>
+</nav>
+
+<div class="page">
+
+<header class="hero">
+    <div class="kicker">深度学习 · 第02讲</div>
+    <h1>深度学习基础</h1>
+    <p class="sub">Foundations of Deep Learning —— 互动讲义</p>
+    <p class="meta">基于《动手学深度学习》课程 · 适用对象：零基础 / 初学者</p>
+</header>
+<!-- ==================== 第一章 ==================== -->
+<section class="chapter" id="ch1">
+    <div class="chapter-head">
+        <span class="chapter-num">1</span>
+        <h2>线性代数基础：标量与向量</h2>
+    </div>
+    <p class="chapter-lede">深度学习的所有计算——从一次房价预测到千亿参数的大模型——最终都可以归结为标量、向量、矩阵之间的运算。本节用最短路径复习这些数学对象，并重点关注它们在深度学习中的实际含义。</p>
+
+    <h3><span class="sec-no">1.1</span>标量：最简单的数学对象</h3>
+    <p>标量（scalar）就是单独的一个数，例如学习率 \(0.01\)、某张图片的类别标签 \(3\)、某次训练的损失值 \(0.25\)。标量之间可以进行加减乘除、指数、对数等简单运算。</p>
+    <div class="callout key">
+        <span class="co-tag">🔑 初学者理解</span>
+        <p>在深度学习代码里，标量通常对应一个 float 或 int，或者一个"0 维张量"。判断一个量是不是标量，只需问一句：它有没有"方向"或"下标"？没有，就是标量。</p>
+    </div>
+
+    <h3><span class="sec-no">1.2</span>向量：一串有序的数</h3>
+    <p>向量（vector）是把若干标量排成一列（或一行）得到的对象：</p>
+    <p>\[\mathbf{x} = \begin{bmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{bmatrix}, \qquad \mathbf{x} + \mathbf{y} = \begin{bmatrix} x_1 + y_1 \\ x_2 + y_2 \\ \vdots \\ x_n + y_n \end{bmatrix}, \qquad c\,\mathbf{x} = \begin{bmatrix} c\,x_1 \\ c\,x_2 \\ \vdots \\ c\,x_n \end{bmatrix}\]</p>
+    <p>向量的加法和数乘都是逐元素进行的。在深度学习中，一个样本的特征（卧室数、卫浴数、面积）就是一个向量；一个模型的全部参数也可以拉直成一个很长的向量。</p>
+
+    <h3><span class="sec-no">1.3</span>范数：向量的"长度"</h3>
+    <p>范数（norm）用来度量向量的大小。最常用的是 \(L^p\) 范数：</p>
+    <p>\[\|\mathbf{x}\|_p = \left( \sum_{i=1}^{n} |x_i|^p \right)^{1/p}\]</p>
+    <div class="tbl-wrap">
+        <table>
+            <tr><th>范数</th><th>定义</th><th>深度学习中的典型用途</th></tr>
+            <tr><td>\(L^1\) 范数</td><td>\(\|\mathbf{x}\|_1 = \sum_i |x_i|\)</td><td>L1 正则化，让权重变得稀疏（很多权重变成 0）</td></tr>
+            <tr><td>\(L^2\) 范数</td><td>\(\|\mathbf{x}\|_2 = \sqrt{\sum_i x_i^2}\)</td><td>欧氏距离；权重衰减（weight decay）惩罚的就是它</td></tr>
+            <tr><td>\(L^\infty\) 范数</td><td>\(\|\mathbf{x}\|_\infty = \max_i |x_i|\)</td><td>衡量最大扰动，对抗样本研究中常用</td></tr>
+        </table>
+    </div>
+    <div class="callout key">
+        <span class="co-tag">💡 提示</span>
+        <p>直接使用平方 \(L^2\) 范数 \(\|\mathbf{x}\|_2^2\)（不开根号）求导更干净——导数是 \(2\mathbf{x}\)，没有根号带来的繁琐项，所以损失函数里经常出现"平方 \(L^2\) 范数"。</p>
+    </div>
+    <div class="callout try">
+        <span class="co-tag">🧠 深入理解：模型为什么需要范数？</span>
+        <p>用五句话讲清来龙去脉：</p>
+        <ol style="margin:0;padding-left:24px;line-height:1.9;">
+            <li><strong>模型就是一大堆数字。</strong>神经网络里存着几百万个数字，叫权重；模型做任何判断，都是在用这些数字做计算。</li>
+            <li><strong>训练就是调这些数字。</strong>给模型看很多例题，每看一道就把数字稍微调一调，让答案更接近正确答案。</li>
+            <li><strong>只追求"例题做对"有个毛病。</strong>模型为了全做对可以走两条路：真正学会方法，或者把例题连同里面的巧合一起<strong>背下来</strong>——只看例题分数，分不出高下。</li>
+            <li><strong>但考试考的是没见过的题。</strong>背答案的模型遇到新数据就傻眼，真学会方法的模型新题照样会做，所以要想办法<strong>禁止背答案</strong>。</li>
+            <li><strong>办法是规定数字不许太大。</strong>背答案需要一些特别大的权重（把偶然的细节记得很重）。于是训练目标立一条规矩：<strong>总分 = 答错的损失 + \(\lambda\) × 权重的"大小"</strong>——权重越大扣分越多，模型为了总分低只能把数字调小：没能力背了，只能学方法。这条扣分规矩就是<strong>惩罚项（正则化）</strong>，\(\lambda\) 控制罚多重。</li>
+        </ol>
+        <p>为什么"权重小"能防止背答案？权重是每个特征的"投票权"：权重都小，结论要靠<strong>大家一起投</strong>才能定；而背答案恰恰需要"一言堂"——给训练数据里偶然出现的细节配上巨大的权重，靠它一锤定音。把权重限制小，等于剥夺死记硬背的能力，模型只能依赖许多特征共同呈现的稳定规律；而规律是普适的，新数据来了照样管用。</p>
+        <p>问题只剩一个：几百万个权重的"总体大小"必须量化成<strong>一个数</strong>才能算进总分。量"一堆数字总体大小"的尺子就是范数——定义式里的 \(p\) 是"换刻度的旋钮"，取 1、2、\(\infty\) 就是三把不同的尺子。</p>
+    </div>
+    <p>用只有两个分量的向量 \(\mathbf{w}=(3,4)\) 感受三种量法（可想象成三种"距离"）：</p>
+    <div class="tbl-wrap">
+        <table>
+            <tr><th>旋钮</th><th>量法</th><th>读数</th><th>生活类比</th></tr>
+            <tr><td>\(p=1\)（L1）</td><td>绝对值相加：\(3+4\)</td><td><strong>7</strong></td><td>沿街区走的总步数</td></tr>
+            <tr><td>\(p=2\)（L2）</td><td>平方和开根号：\(\sqrt{9+16}\)</td><td><strong>5</strong></td><td>直线距离（勾股定理）</td></tr>
+            <tr><td>\(p=\infty\)（\(L^\infty\)）</td><td>取最大：\(\max(3,4)\)</td><td><strong>4</strong></td><td>只关心最远那段路</td></tr>
+        </table>
+    </div>
+    <p>三把尺子量同一个东西，读数不同，没有对错——<strong>选哪把，取决于想防的是哪种"坏情况"</strong>：</p>
+    <ul style="line-height:1.9;">
+        <li><strong>L1："干活的都要交税" → 没用的权重被清零。</strong>每个非零权重固定贡献一份惩罚，为零就"免税"。恒定的推力把没用的权重<strong>精确压成 0</strong>：100 万个权重可能只剩 10 万个非零——这就是<strong>稀疏</strong>。好处是模型更小更快，还能看出哪些特征真正有用。</li>
+        <li><strong>L2："越大的税率越高" → 大权重被重点压制。</strong>平方让大数字膨胀得不成比例（\(5^2=25\)，\(50^2=2500\)），背答案用的大数字被重罚；同时求导干净（导数是 \(2\mathbf{w}\)，没有根号），训练每轮要算几百万次导数，省掉根号既快又稳。效果是所有权重被温柔压小、但没有谁被精确清零——<strong>全员降薪，不裁员</strong>。这就是权重衰减（weight decay），防过拟合的主力手段。</li>
+        <li><strong>L∞："最狠那一处也不许过线"。</strong>只看最大的那个分量。它的主场不是训练，而是<strong>给图片加扰动骗过 AI</strong> 的对抗样本研究：要求扰动的 \(\|\cdot\|_\infty \le \varepsilon\)，即改动最大的那个像素也不许超过 \(\varepsilon\)。为什么不用 L1 管总量？因为有漏洞——只改三个像素、每个改得夸张，总量照样达标，图上却会冒出三个刺眼噪点。L∞ 把洞堵死：每个像素单独被盯，没有一处能过分。</li>
+    </ul>
+    <div class="callout key">
+        <span class="co-tag">📌 一句话收拢</span>
+        <p>模型靠调数字学习，只追分会背答案，背答案需要大数字；所以评分时立规矩"数字大就扣分"；而"数字总体多大"必须量化，量化用的尺子就是范数。选 L1、L2 还是 L∞，就是选用哪种定义执行这条规矩，模型于是分别被逼出"清零、压小、限制最坏情况"三种行为。</p>
+    </div>
+
+    <h3><span class="sec-no">1.4</span>点积与正交性</h3>
+    <p>两个等长向量的点积（dot product，也叫内积）定义为：</p>
+    <p>\[\langle \mathbf{w}, \mathbf{x} \rangle = \mathbf{w}^\top \mathbf{x} = \sum_{i=1}^{n} w_i x_i = \|\mathbf{w}\|\,\|\mathbf{x}\|\cos\theta\]</p>
+    <p>点积同时有两种读法：代数上它是对应元素相乘再求和；几何上它度量两个向量方向的接近程度——夹角 \(\theta\) 越小，点积越大。</p>
+    <p><strong>正交（垂直）：点积为 0</strong>——当 \(\langle \mathbf{x}, \mathbf{y} \rangle = 0\) 时，称向量 \(\mathbf{x}\) 与 \(\mathbf{y}\) 正交。一个有用的性质是：如果两个向量都与第三个向量正交，那么它们的任意线性组合也与第三个向量正交。这一性质是后面理解正交矩阵、特征向量分解的基础。</p>
+    <div class="callout try">
+        <span class="co-tag">✅ 本讲核心线索</span>
+        <p>线性模型 \(\hat{y} = \langle \mathbf{w}, \mathbf{x} \rangle + b\) 就是一次点积加一个偏置。看懂了点积，就看懂了神经网络的"半个身子"。</p>
+    </div>
+
+    <div class="lab">
+        <div class="lab-head">
+            <span class="lab-badge">互动实验</span>
+            <div class="lab-title">点积的几何直觉</div>
+            <div class="lab-sub">a·b = |a||b|cosθ——点积度量的是两个向量方向的接近程度</div>
+            <div class="lab-hint">拖动滑块改变两个向量的长度和方向，观察点积、夹角如何变化；当夹角为 90° 时点积恰好为 0（正交）</div>
+        </div>
+        <div class="lab-body">
+            <div class="ctl-row">
+                <label class="ctl">向量 a 长度<input type="range" id="dot-la" min="0.2" max="3" step="0.1" value="2"><span class="val" id="dot-la-v">2.0</span></label>
+                <label class="ctl">向量 a 角度<input type="range" id="dot-aa" min="0" max="360" step="1" value="30"><span class="val" id="dot-aa-v">30°</span></label>
+            </div>
+            <div class="ctl-row">
+                <label class="ctl">向量 b 长度<input type="range" id="dot-lb" min="0.2" max="3" step="0.1" value="1.5"><span class="val" id="dot-lb-v">1.5</span></label>
+                <label class="ctl">向量 b 角度<input type="range" id="dot-ab" min="0" max="360" step="1" value="100"><span class="val" id="dot-ab-v">100°</span></label>
+            </div>
+            <p id="dot-out" style="font-size:16px;margin:14px 0;"></p>
+            <canvas id="dot-canvas" class="plot" width="640" height="300"></canvas>
+        </div>
+        <div class="lab-note">夹角 &lt; 90° 时点积为正（方向相近），= 90° 时为 0（<b>正交</b>），&gt; 90° 时为负（方向相反）。注意力机制里的"相似度分数"就是点积。</div>
+    </div>
+</section>
+
+<!-- ==================== 第二章 ==================== -->
+<section class="chapter" id="ch2">
+    <div class="chapter-head">
+        <span class="chapter-num">2</span>
+        <h2>矩阵及其运算</h2>
+    </div>
+
+    <h3><span class="sec-no">2.1</span>矩阵：向量的"批量"</h3>
+    <p>矩阵（matrix）是把数按行、列排成的矩形阵列：</p>
+    <p>\[\mathbf{A} = \begin{bmatrix} a_{11} & a_{12} & \cdots & a_{1n} \\ a_{21} & a_{22} & \cdots & a_{2n} \\ \vdots & \vdots & \ddots & \vdots \\ a_{m1} & a_{m2} & \cdots & a_{mn} \end{bmatrix} \in \mathbb{R}^{m \times n}\]</p>
+    <p>矩阵的加法和数乘同样是逐元素的。可以把矩阵想成"一批样本的特征表"：每一行是一个样本，每一列是一个特征。</p>
+
+    <h3><span class="sec-no">2.2</span>矩阵乘法：神经网络最核心的运算</h3>
+    <p>矩阵 × 向量：结果是一个向量，其每个元素是矩阵对应行与向量的点积：</p>
+    <p>\[\mathbf{A}\mathbf{x} = \begin{bmatrix} \text{— } \mathbf{a}_{1}^{\top} \text{—} \\ \text{— } \mathbf{a}_{2}^{\top} \text{—} \\ \vdots \\ \text{— } \mathbf{a}_{m}^{\top} \text{—} \end{bmatrix} \mathbf{x} = \begin{bmatrix} \mathbf{a}_{1}^{\top}\mathbf{x} \\ \mathbf{a}_{2}^{\top}\mathbf{x} \\ \vdots \\ \mathbf{a}_{m}^{\top}\mathbf{x} \end{bmatrix}\]</p>
+    <p>矩阵 × 矩阵：\(\mathbf{C} = \mathbf{A}\mathbf{B}\)，其中 \(c_{ij}\) 是 \(\mathbf{A}\) 的第 \(i\) 行与 \(\mathbf{B}\) 的第 \(j\) 列的点积。注意矩阵乘法一般不满足交换律：\(\mathbf{A}\mathbf{B} \neq \mathbf{B}\mathbf{A}\)。</p>
+    <div class="callout key">
+        <span class="co-tag">🔑 为什么这是神经网络的核心运算？</span>
+        <p>一个全连接层做的事就是 \(\mathbf{h} = \sigma(\mathbf{W}\mathbf{x} + \mathbf{b})\)：权重矩阵 \(\mathbf{W}\) 乘输入向量 \(\mathbf{x}\)，再加偏置、过激活函数。训练时一次性送入一个批量（batch）的样本，就是一次矩阵 × 矩阵。可以说，深度学习工程的本质，就是把一切都组织成高效的矩阵乘法。</p>
+    </div>
+
+    <h3><span class="sec-no">2.3</span>矩阵的范数</h3>
+    <p>矩阵最常用的是 Frobenius 范数——把矩阵拉直成向量后取 \(L^2\) 范数：</p>
+    <p>\[\|\mathbf{A}\|_F = \sqrt{\sum_{i=1}^{m}\sum_{j=1}^{n} a_{ij}^2}\]</p>
+    <p>它衡量矩阵"整体有多大"。对权重矩阵做 Frobenius 范数惩罚，就是多层网络版本的权重衰减。</p>
+
+    <h3><span class="sec-no">2.4</span>特征值与特征向量</h3>
+    <p>对于一个给定的线性变换 \(\mathbf{A}\)，如果某个非零向量 \(\mathbf{v}\) 经过变换后仍然停留在原来的直线上，只是长度或方向被缩放，那么 \(\mathbf{v}\) 就是 \(\mathbf{A}\) 的特征向量，缩放倍数 \(\lambda\) 就是对应的特征值：</p>
+    <p>\[\mathbf{A}\mathbf{v} = \lambda \mathbf{v}\]</p>
+    <div class="callout key">
+        <span class="co-tag">🔑 初学者理解</span>
+        <p>特征向量是变换 \(\mathbf{A}\) 的"主轴方向"——沿着这些方向，变换只拉伸不旋转。对称矩阵总有一组两两正交的实特征向量和实特征值，这是为什么协方差矩阵（对称）可以被特征分解、PCA 才能成立。</p>
+    </div>
+
+    <h3><span class="sec-no">2.5</span>特殊矩阵</h3>
+    <div class="tbl-wrap">
+        <table>
+            <tr><th>类型</th><th>定义</th><th>要点与用途</th></tr>
+            <tr><td>对称矩阵</td><td>\(\mathbf{A} = \mathbf{A}^\top\)</td><td>协方差矩阵、Hessian 矩阵；总可特征分解</td></tr>
+            <tr><td>正定矩阵</td><td>对任意 \(\mathbf{x} \neq 0\) 有 \(\mathbf{x}^\top \mathbf{A}\mathbf{x} &gt; 0\)</td><td>特征值均为正（半正定则非负）；二次型损失为碗状，有唯一最小值</td></tr>
+            <tr><td>正交矩阵</td><td>所有列（行）向量都是单位正交向量，即 \(\mathbf{Q}^\top\mathbf{Q} = \mathbf{I}\)</td><td>逆就是转置：\(\mathbf{Q}^{-1} = \mathbf{Q}^\top\)；保持长度和角度不变</td></tr>
+            <tr><td>置换矩阵</td><td>每行每列恰好只有一个 1，其余为 0</td><td>乘上它相当于重新排列向量元素；正交矩阵的特例</td></tr>
+        </table>
+    </div>
+    <div class="callout warn">
+        <span class="co-tag">⚠️ 注意</span>
+        <p>"对称"不等于"正定"。对称矩阵的特征值可正可负；只有特征值全部为正时才叫正定。判断二次型损失有没有唯一最小值，看的就是 Hessian 矩阵是否正定。</p>
+    </div>
+</section>
+
+<!-- ==================== 第三章 ==================== -->
+<section class="chapter" id="ch3">
+    <div class="chapter-head">
+        <span class="chapter-num">3</span>
+        <h2>GPU 与向量化计算</h2>
+    </div>
+
+    <h3><span class="sec-no">3.1</span>GPU 为什么"十分喜爱"矩阵和向量</h3>
+    <p>CPU 擅长处理复杂的串行逻辑，但核心数量有限；GPU 则为图形渲染而生，内部有成千上万个简单计算核心，可以同时对大量数据执行同一种运算。矩阵乘法恰好是"同一运算、海量数据"的完美代表：计算 \(\mathbf{C} = \mathbf{A}\mathbf{B}\) 的每个元素 \(c_{ij}\) 都互不依赖，可以分派给不同核心并行完成。</p>
+    <figure>
+        <img src="images/gpu_die.jpg" alt="GPU 芯片显微照片" loading="lazy">
+        <figcaption>GPU 芯片内部：大量重复排列的计算单元。正是这种"人多力量大"的并行结构，让 GPU 执行矩阵运算的速度远超 CPU，成为深度学习的标配硬件。</figcaption>
+    </figure>
+
+    <h3><span class="sec-no">3.2</span>向量化 vs for 循环</h3>
+    <p>要计算线性模型 \(\hat{y} = \mathbf{w}^\top\mathbf{x} + b\)（\(\mathbf{w}\) 和 \(\mathbf{x}\) 都是 \(n\) 维列向量），有两种写法：</p>
+    <div class="codecard">
+        <div class="code-label">非向量化：for 循环逐元素累加</div>
+        <pre>z = 0               # 累加器清零，准备累加各分量的乘积
+for i in range(n):  # 逐个访问全部 n 个分量（Python 解释器逐行执行，慢）
+    z += w[i] * x[i]  # 取第 i 对分量相乘，累加进 z
+z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
+    </div>
+    <div class="codecard">
+        <div class="code-label">向量化：一条 np.dot 语句完成</div>
+        <pre>z = np.dot(w, x) + b  # np.dot 一次性算完整个点积（底层 C 库并行），再加偏置 b——结果相同，快几十到上百倍</pre>
+    </div>
+    <div class="callout key">
+        <span class="co-tag">🔍 逐行讲解</span>
+        <p>for 循环版本逐个访问 w[i] 和 x[i]，Python 解释器每轮都要做类型检查和索引计算，\(n\) 很大时非常慢；而 np.dot 把整个计算交给底层 C/Fortran 库一次性完成，在 GPU 上还可以进一步并行。同样的数学结果，速度常常相差几十到上百倍。</p>
+    </div>
+    <div class="callout try">
+        <span class="co-tag">✅ 工程习惯</span>
+        <p>写深度学习代码时，看到 for 循环遍历数据就要警惕——先想想能否改写成矩阵/向量运算（向量化），让 NumPy 或 PyTorch 帮你并行。</p>
+    </div>
+</section>
+
+<!-- ==================== 第四章 ==================== -->
+<section class="chapter" id="ch4">
+    <div class="chapter-head">
+        <span class="chapter-num">4</span>
+        <h2>数据表示与张量</h2>
+    </div>
+
+    <h3><span class="sec-no">4.1</span>从标量到 5 维张量：一切都是张量</h3>
+    <p>深度学习框架把所有数据统一表示为张量（tensor）——可以把张量理解为"任意维度的数组"。不同维度的张量对应不同的数据形态：</p>
+    <div class="tbl-wrap">
+        <table>
+            <tr><th>维度</th><th>数学对象</th><th>示例</th><th>深度学习中对应</th></tr>
+            <tr><td>0 维</td><td>标量</td><td>1.0</td><td>一个类别标签、一个损失值</td></tr>
+            <tr><td>1 维</td><td>向量</td><td>[1.0, 2.7, 3.4]</td><td>一个样本的特征向量</td></tr>
+            <tr><td>2 维</td><td>矩阵</td><td>[[1.0, 2.7, 3.4], [5.0, 0.2, 4.6]]</td><td>一批样本的特征矩阵（样本数 × 特征数）</td></tr>
+            <tr><td>3 维</td><td>张量</td><td>形状（高 × 宽 × 通道）</td><td>一张 RGB 图像</td></tr>
+            <tr><td>4 维</td><td>张量</td><td>形状（批量 × 高 × 宽 × 通道）</td><td>一批 RGB 图像</td></tr>
+            <tr><td>5 维</td><td>张量</td><td>形状（批量 × 时间 × 高 × 宽 × 通道）</td><td>一批 RGB 视频</td></tr>
+        </table>
+    </div>
+    <div class="callout key">
+        <span class="co-tag">💡 提示</span>
+        <p>"批量维度"几乎总是张量的第 0 维。注意 PyTorch 的图像张量采用 NCHW 顺序（批量 × 通道 × 高 × 宽）：看到形状 (32, 3, 224, 224)，要立刻读出：32 张图片，每张 3 通道、224×224 像素。上表按"高 × 宽 × 通道"（NHWC，TensorFlow 惯例）书写是为了便于从图像直觉理解，两种顺序只是通道维摆放位置不同。</p>
+    </div>
+
+    <h3><span class="sec-no">4.2</span>PyTorch 中的张量类型</h3>
+    <p>Python 原生类型与 PyTorch 张量的对应关系如下：</p>
+    <figure>
+        <img src="images/python_pytorch_types.jpg" alt="Python 类型与 PyTorch 张量对照" loading="lazy">
+        <figcaption>Python 类型 ↔ PyTorch 张量：标量对应 size() 为空的张量，数组对应带维度大小的张量；注意 Python 字符串没有对应的张量类型。</figcaption>
+    </figure>
+    <p>进一步地，每种张量还区分数值精度（dtype）与所在设备（CPU / GPU）：</p>
+    <figure>
+        <img src="images/torch_dtypes.jpg" alt="PyTorch 数据类型对照表" loading="lazy">
+        <figcaption>PyTorch 常用 dtype 一览：深度学习训练默认使用 32 位浮点（torch.float32）；GPU 上的张量类型带 cuda 前缀，混合精度训练会用到 16 位浮点（torch.float16）。</figcaption>
+    </figure>
+    <div class="callout warn">
+        <span class="co-tag">⚠️ 常见错误</span>
+        <p>两个张量运算前，要确认它们的 dtype 一致、设备一致。一个张量在 CPU、另一个在 GPU 会直接报错；标签张量该用 torch.long 而不是 float。</p>
+    </div>
+</section>
+<!-- ==================== 第五章 ==================== -->
+<section class="chapter" id="ch5">
+    <div class="chapter-head">
+        <span class="chapter-num">5</span>
+        <h2>矩阵微积分</h2>
+    </div>
+
+    <h3><span class="sec-no">5.1</span>标量求导回顾</h3>
+    <p>训练神经网络的每一步都依赖求导。先回顾一元函数的求导：导数是函数曲线在某点处切线的斜率。例如 \(f(x) = x^2\) 的导数 \(\frac{df}{dx} = 2x\)，在 \(x = 1\) 处斜率为 2。</p>
+    <figure>
+        <img src="images/derivative_tangent.png" alt="导数的几何意义：切线斜率" loading="lazy">
+        <figcaption>导数的几何意义：\(f(x)=x^2\) 在 \(x=1\) 处的切线斜率等于该点的导数 2。梯度下降正是沿着"斜率"指示的方向寻找最低点。</figcaption>
+    </figure>
+    <p>常用求导规则一览：</p>
+    <div class="tbl-wrap">
+        <table>
+            <tr><th>规则</th><th>公式</th></tr>
+            <tr><td>幂函数</td><td>\(\frac{d}{dx} x^n = n x^{n-1}\)</td></tr>
+            <tr><td>和/差</td><td>\(\frac{d}{dx}(u \pm v) = \frac{du}{dx} \pm \frac{dv}{dx}\)</td></tr>
+            <tr><td>乘积</td><td>\(\frac{d}{dx}(uv) = \frac{du}{dx}v + u\frac{dv}{dx}\)</td></tr>
+            <tr><td>商</td><td>\(\frac{d}{dx}\frac{u}{v} = \frac{\frac{du}{dx}v - u\frac{dv}{dx}}{v^2}\)</td></tr>
+            <tr><td>三角/指数/对数</td><td>\((\sin x)' = \cos x\)，\((\exp x)' = \exp x\)，\((\log x)' = \frac{1}{x}\)</td></tr>
+            <tr><td>链式法则</td><td>\(y=f(u),\ u=g(x) \Rightarrow \frac{dy}{dx} = \frac{dy}{du}\cdot\frac{du}{dx}\)</td></tr>
+        </table>
+    </div>
+
+    <h3><span class="sec-no">5.2</span>梯度：把求导推广到向量</h3>
+    <p>当函数的自变量从标量变成向量时，导数也升级为梯度（gradient）：多元函数 \(y = f(\mathbf{x})\) 对每个分量求偏导，排成一行就是梯度：</p>
+    <p>\[\mathbf{x} = \begin{bmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{bmatrix}, \qquad \frac{\partial y}{\partial \mathbf{x}} = \left[ \frac{\partial y}{\partial x_1}, \frac{\partial y}{\partial x_2}, \ldots, \frac{\partial y}{\partial x_n} \right]\]</p>
+    <figure>
+        <img src="images/gradient_layout.jpg" alt="分子布局与梯度方向示例" loading="lazy">
+        <figcaption>左：标量对向量求导的结果排成一行（分子布局）；右：梯度的几何意义——例如 \(\frac{\partial}{\partial \mathbf{x}}(x_1^2 + 2x_2^2) = [2x_1, 4x_2]\)，在点 (1,1) 处指向 (2,4)，垂直于等高线、指向函数增长最快的方向。</figcaption>
+    </figure>
+
+    <h3><span class="sec-no">5.3</span>分子布局与分母布局</h3>
+    <p>向量求导的结果"横着排还是竖着排"，文献中有两种约定：</p>
+    <div class="tbl-wrap">
+        <table>
+            <tr><th>布局约定</th><th>含义</th></tr>
+            <tr><td>分子布局（numerator-layout，Jacobian 形式）</td><td>导数的形状跟随分子，标量对向量求导得到行向量</td></tr>
+            <tr><td>分母布局（denominator-layout，Hessian 形式）</td><td>导数的形状跟随分母，标量对向量求导得到列向量</td></tr>
+        </table>
+    </div>
+    <div class="callout key">
+        <span class="co-tag">🔑 初学者理解</span>
+        <p>两种布局只是"摆放方式"不同，数值完全一样。《动手学深度学习》教材采用分母布局（梯度是列向量）。阅读不同资料时先确认它用哪种布局，避免矩阵求导时转置出错。</p>
+    </div>
+
+    <h3><span class="sec-no">5.4</span>常用的向量/矩阵求导公式</h3>
+    <p>以下公式在推导线性回归、反向传播时会反复用到（设 \(\mathbf{a}\)、\(\mathbf{A}\) 不是 \(\mathbf{x}\) 的函数）：</p>
+    <div class="tbl-wrap">
+        <table>
+            <tr><th>公式（分子布局）</th><th>说明</th></tr>
+            <tr><td>\(\frac{\partial \mathbf{a}^\top \mathbf{x}}{\partial \mathbf{x}} = \mathbf{a}^\top\)</td><td>线性函数的导数就是系数本身</td></tr>
+            <tr><td>\(\frac{\partial \mathbf{x}^\top \mathbf{A} \mathbf{x}}{\partial \mathbf{x}} = \mathbf{x}^\top(\mathbf{A} + \mathbf{A}^\top)\)</td><td>二次型求导；若 \(\mathbf{A}\) 对称则化简为 \(2\mathbf{x}^\top\mathbf{A}\)</td></tr>
+            <tr><td>\(\frac{\partial \|\mathbf{x}\|^2}{\partial \mathbf{x}} = 2\mathbf{x}^\top\)</td><td>平方范数的梯度，权重衰减的梯度来源</td></tr>
+        </table>
+    </div>
+    <p>把求导推广到矩阵后，形状规则可以概括为一句话：标量对矩阵求导得到同形状矩阵；向量对向量求导得到雅可比矩阵。实际工程中我们很少手推这些公式——交给自动微分即可，但理解它们是看懂反向传播的前提。</p>
+
+    <h3><span class="sec-no">5.5</span>链式法则</h3>
+    <p>复合函数的求导遵循链式法则，它是整个反向传播的数学基础：</p>
+    <p>\[\text{标量：}\; y=f(u),\; u=g(x) \;\Rightarrow\; \frac{dy}{dx} = \frac{dy}{du}\cdot\frac{du}{dx} \qquad\qquad \text{向量：}\; \frac{\partial y}{\partial \mathbf{x}} = \underbrace{\frac{\partial y}{\partial \mathbf{u}}}_{(1,k)} \underbrace{\frac{\partial \mathbf{u}}{\partial \mathbf{x}}}_{(k,n)}\]</p>
+    <p>向量版本里，局部导数按矩阵乘法依次相乘，形状必须能匹配。神经网络就是一层层复合起来的超长函数 \(f^{(L)} \circ \cdots \circ f^{(2)} \circ f^{(1)}\)，链式法则让我们能把"损失对第一层参数的导数"拆成一连串简单导数的乘积。</p>
+</section>
+
+<!-- ==================== 第六章 ==================== -->
+<section class="chapter" id="ch6">
+    <div class="chapter-head">
+        <span class="chapter-num">6</span>
+        <h2>自动微分与计算图</h2>
+    </div>
+
+    <h3><span class="sec-no">6.1</span>三种求导方式对比</h3>
+    <div class="tbl-wrap">
+        <table>
+            <tr><th>方式</th><th>原理</th><th>优缺点</th></tr>
+            <tr><td>符号微分</td><td>像手算一样，对表达式做代数变换得到导数公式</td><td>精确，但表达式容易"爆炸"（越求导越长）</td></tr>
+            <tr><td>数值微分</td><td>用定义近似：\(\frac{df}{dx} = \lim_{h\to0}\frac{f(x+h)-f(x)}{h}\)，取很小的 \(h\) 估算</td><td>简单通用，但有舍入误差，且每个参数要算两次函数值，代价高</td></tr>
+            <tr><td>自动微分（AD）</td><td>把函数分解为基本算子，对每个基本算子套用符号微分规则，再代入数值沿链式法则组合</td><td>既精确又高效，是 PyTorch / TensorFlow 的核心引擎</td></tr>
+        </table>
+    </div>
+    <div class="callout key">
+        <span class="co-tag">🔑 初学者理解</span>
+        <p>自动微分不是数值近似，它的结果和手算一样精确；它也不是对整个表达式做符号推导，而是"分解 → 逐点求值 → 链式组合"。在 PyTorch 里，你只需调用一次 loss.backward()，背后跑的就是自动微分。</p>
+    </div>
+
+    <h3><span class="sec-no">6.2</span>计算图：把函数画成有向无环图</h3>
+    <p>以单层网络的平方损失为例：</p>
+    <p>\[z = (\langle \mathbf{w}, \mathbf{x} \rangle - y)^2 \qquad \xrightarrow{\text{分解}} \qquad a = \langle \mathbf{w}, \mathbf{x} \rangle,\quad b = a - y,\quad z = b^2\]</p>
+    <p>把每一步基本运算画成节点、依赖关系画成有向边，就得到计算图（computational graph）——一张有向无环图（DAG）：</p>
+    <figure>
+        <img src="images/comp_graph.png" alt="计算图结构示意" loading="lazy">
+        <figcaption>计算图：黄色节点是输入（权重 w、特征 x、标签 y），蓝色节点是中间运算，绿色节点是最终输出 z。前向传播沿着箭头方向逐节点求值。</figcaption>
+    </figure>
+
+    <h3><span class="sec-no">6.3</span>显式构造与隐式构造</h3>
+    <p>深度学习框架构建计算图的方式分两类：</p>
+    <div class="tbl-wrap">
+        <table>
+            <tr><th>方式</th><th>代表框架</th><th>特点</th></tr>
+            <tr><td>显式构造（静态图）</td><td>TensorFlow 1.x、Theano、MXNet（符号式）</td><td>先完整定义计算图，再灌入数据执行；便于全局优化和部署</td></tr>
+            <tr><td>隐式构造（动态图）</td><td>PyTorch、MXNet（命令式）</td><td>每执行一行代码就实时记录到图中；调试直观，可以配合 Python 控制流</td></tr>
+        </table>
+    </div>
+    <p>本课程使用 PyTorch，其动态图风格如下：</p>
+    <div class="codecard">
+        <div class="code-label">PyTorch 动态图示例</div>
+        <pre>import torch
+
+W_h = torch.randn(20, 20, requires_grad=True) # 隐状态权重；声明需要追踪梯度
+W_x = torch.randn(20, 10, requires_grad=True) # 输入权重；同样需要追踪梯度
+x = torch.randn(1, 10)                        # 输入向量（1×10）
+prev_h = torch.randn(1, 20)                   # 上一时刻的隐状态（1×20）
+
+h2h = torch.mm(W_h, prev_h.t()) # 矩阵乘：20x20 @ 20x1 → 隐状态带来的贡献
+i2h = torch.mm(W_x, x.t()) # 矩阵乘：20x10 @ 10x1 → 当前输入带来的贡献
+next_h = h2h + i2h            # 两路贡献相加，得到未激活的隐状态
+next_h = next_h.tanh() # 激活函数：压到 (-1, 1)，引入非线性
+loss = next_h.sum()           # 演示用的标量损失：所有元素求和
+
+loss.backward() # 一键反向传播，计算所有梯度</pre>
+    </div>
+    <div class="callout key">
+        <span class="co-tag">🔑 关键点</span>
+        <p>requires_grad=True 告诉 PyTorch"请追踪以该张量为起点的所有运算"；执行运算时框架在后台悄悄把计算图搭好；调用 loss.backward() 后，W_h.grad 和 W_x.grad 里就存好了 \(\partial\,loss / \partial\,\mathbf{W}\)。</p>
+    </div>
+</section>
+
+<!-- ==================== 第七章 ==================== -->
+<section class="chapter" id="ch7">
+    <div class="chapter-head">
+        <span class="chapter-num">7</span>
+        <h2>正向传播与反向传播</h2>
+    </div>
+
+    <h3><span class="sec-no">7.1</span>链式法则的两种计算顺序</h3>
+    <p>对计算图应用链式法则求 \(\frac{\partial z}{\partial \mathbf{w}}\)，可以从两头开始：</p>
+    <div class="tbl-wrap">
+        <table>
+            <tr><th>模式</th><th>计算方向</th><th>适用场景</th></tr>
+            <tr><td>正向模式（forward mode）</td><td>从输入端开始：\(\frac{\partial a}{\partial \mathbf{w}} \to \frac{\partial b}{\partial \mathbf{w}} \to \frac{\partial z}{\partial \mathbf{w}}\)</td><td>输入少、输出多时高效</td></tr>
+            <tr><td>反向模式（reverse mode，即反向传播）</td><td>从输出端开始：\(\frac{\partial z}{\partial z} \to \frac{\partial z}{\partial b} \to \frac{\partial z}{\partial a} \to \frac{\partial z}{\partial \mathbf{w}}\)</td><td>输出少、参数多时高效——这正是深度学习的情形（一个标量损失，上百万参数）</td></tr>
+        </table>
+    </div>
+
+    <h3><span class="sec-no">7.2</span>反向传播逐步推演</h3>
+    <p>仍以上一节的计算图为例，取 \(\mathbf{x} = (1, 2)\)、\(\mathbf{w} = (0.5, 0.5)\)、\(y = 1\)，先看前向数值，再看梯度如何"逆流而上"：</p>
+    <figure>
+        <img src="images/comp_graph_backprop.png" alt="前向传播数值与反向传播梯度示例" loading="lazy">
+        <figcaption>前向（绿色）：a = 0.5×1 + 0.5×2 = 1.5，b = 1.5 − 1 = 0.5，z = 0.25。反向（红色）：从 ∂z/∂z = 1 出发，逐步乘以各节点的局部导数——∂z/∂b = 2b = 1.0，∂z/∂a = ∂z/∂b × ∂b/∂a = 1.0，∂z/∂w = ∂z/∂a × ∂a/∂w = 1.0 × x = (1, 2)。</figcaption>
+    </figure>
+    <p>再看一个更小的例子 \(f = (a+b)\times c\)（取 a=2, b=3, c=4），下面这张动图把前向求值和梯度逆流的完整过程连起来演示：</p>
+    <figure>
+        <img src="images/comp_graph_v2.gif" alt="计算图前向传播与反向传播动图" loading="lazy">
+        <figcaption>计算图动画：前向阶段（橙色）逐节点算出 d = 5、f = 20；反向阶段（红色）从 ∂f/∂f = 1 出发，每个节点把上游梯度乘以自己的局部导数传下去——乘法节点的局部导数是"另一个输入"，加法节点则原样分发给两个输入。</figcaption>
+    </figure>
+    <p>把反向传播写成通用步骤：</p>
+    <ol>
+        <li><strong>前向传播</strong>：沿计算图逐节点求值，并缓存每个中间结果（反向时要用）。</li>
+        <li><strong>初始化</strong>：从输出节点出发，令 \(\partial z / \partial z = 1\)。</li>
+        <li><strong>逆向遍历</strong>：对每个节点读取上一步的梯度和缓存的中间值，乘以该节点的局部导数，把梯度传向它的输入。</li>
+        <li><strong>到达参数节点</strong>：得到的梯度存入参数的 .grad，供优化器更新使用。</li>
+    </ol>
+    <div class="callout try">
+        <span class="co-tag">✅ 一句话总结</span>
+        <p>反向传播 = 链式法则 + 计算图 + 缓存中间值。它不是神秘的新算法，而是把复合函数求导组织得井井有条的工程实现。</p>
+    </div>
+</section>
+
+<!-- ==================== 第八章 ==================== -->
+<section class="chapter" id="ch8">
+    <div class="chapter-head">
+        <span class="chapter-num">8</span>
+        <h2>本讲小结与自测</h2>
+    </div>
+
+    <h3><span class="sec-no">8.1</span>知识要点回顾</h3>
+    <div class="tbl-wrap">
+        <table>
+            <tr><th>主题</th><th>必须掌握的内容</th></tr>
+            <tr><td>向量与矩阵</td><td>逐元素运算、点积的几何意义、矩阵乘法的"行×列"规则、\(L^p\) / Frobenius 范数</td></tr>
+            <tr><td>特殊矩阵</td><td>对称矩阵可特征分解；正定 ↔ 特征值全正；正交矩阵 \(\mathbf{Q}^\top\mathbf{Q}=\mathbf{I}\)</td></tr>
+            <tr><td>向量化</td><td>GPU 并行矩阵运算；用 np.dot 代替 for 循环</td></tr>
+            <tr><td>张量</td><td>0~5 维张量与数据的对应关系；批量维度在第 0 维；dtype 与设备一致性</td></tr>
+            <tr><td>矩阵微积分</td><td>梯度 = 偏导向量；分子/分母布局；链式法则的向量形式</td></tr>
+            <tr><td>自动微分</td><td>三种微分方式的区别；计算图 DAG；PyTorch 动态图与 backward()</td></tr>
+            <tr><td>反向传播</td><td>反向模式为何适合深度学习；逐步推演梯度</td></tr>
+        </table>
+    </div>
+
+    <h3><span class="sec-no">8.2</span>课堂自测</h3>
+    <div class="quiz">
+        <div class="q">Q1. 设 \(\mathbf{w} = [1, 0, 2]^\top\)，\(\mathbf{x} = [3, 1, 1]^\top\)，它们的点积是多少？两个向量正交时点积等于多少？</div>
+        <div class="a">✅ 答案：\(\langle \mathbf{w}, \mathbf{x} \rangle = 1\times3 + 0\times1 + 2\times1 = 5\)。正交时点积为 0。常见误区：把点积误算成逐元素相乘得到的向量 [3, 0, 2]——点积的结果一定是标量。</div>
+    </div>
+    <div class="quiz">
+        <div class="q">Q2. 矩阵 \(\mathbf{A} \in \mathbb{R}^{3\times4}\) 乘以向量 \(\mathbf{x} \in \mathbb{R}^{4}\)，结果的形状是什么？结果的第 2 个元素是怎么算出来的？</div>
+        <div class="a">✅ 答案：结果是 3 维向量；第 2 个元素 = \(\mathbf{A}\) 的第 2 行与 \(\mathbf{x}\) 的点积。常见误区：把"行"和"列"记反，导致矩阵乘法时维度对不上。</div>
+    </div>
+    <div class="quiz">
+        <div class="q">Q3. 为什么深度学习训练普遍使用反向模式（反向传播）而不是正向模式来计算梯度？</div>
+        <div class="a">✅ 答案：因为损失是一个标量（输出维度 1），而参数动辄成千上万（输入维度巨大）。反向模式从标量输出出发，只需一遍逆向遍历就能得到所有参数的梯度；正向模式要为每个输入维度各跑一遍，代价不可接受。</div>
+    </div>
+    <div class="quiz">
+        <div class="q">Q4. 在 PyTorch 中，张量运算前必须检查哪两个属性是否一致？把一个张量的 requires_grad 设为 True 会发生什么？</div>
+        <div class="a">✅ 答案：检查 dtype（数值类型）和 device（CPU/GPU）是否一致。设置 requires_grad=True 后，PyTorch 会追踪以它为起点的所有运算并构建动态计算图，调用 backward() 时就能算出它的梯度并存入 .grad。</div>
+    </div>
+
+    <h3><span class="sec-no">8.3</span>下讲预告</h3>
+    <div class="callout try">
+        <span class="co-tag">📖 下讲预告</span>
+        <p>第 03 讲：深度神经网络（理论 2 学时）——从线性回归到 softmax 回归，从感知机到多层感知机，模型选择与正则化，以及正向/反向传播的完整实现。请带着本讲的向量与链式法则知识进入下一讲。</p>
+    </div>
+</section>
+
+<div class="footer">
+    深度学习课程站 · 第02讲 深度学习基础 · 互动讲义版 · 基于《动手学深度学习》课程<br>
+    课程反馈：dlcourses2026@sina.com
 </div>
+
+<script>
+/* ================= 实验：点积的几何直觉 ================= */
+(function () {
+    var la = document.getElementById('dot-la'), aa = document.getElementById('dot-aa');
+    var lb = document.getElementById('dot-lb'), ab = document.getElementById('dot-ab');
+    var laV = document.getElementById('dot-la-v'), aaV = document.getElementById('dot-aa-v');
+    var lbV = document.getElementById('dot-lb-v'), abV = document.getElementById('dot-ab-v');
+    var out = document.getElementById('dot-out');
+    var cv = document.getElementById('dot-canvas');
+    var ctx = cv.getContext('2d');
+
+    function render() {
+        var LA = parseFloat(la.value), AA = parseFloat(aa.value) * Math.PI / 180;
+        var LB = parseFloat(lb.value), AB = parseFloat(ab.value) * Math.PI / 180;
+        laV.textContent = LA.toFixed(1); aaV.textContent = aa.value + '°';
+        lbV.textContent = LB.toFixed(1); abV.textContent = ab.value + '°';
+        var ax = LA * Math.cos(AA), ay = LA * Math.sin(AA);
+        var bx = LB * Math.cos(AB), by = LB * Math.sin(AB);
+        var dot = ax * bx + ay * by;
+        var cosT = dot / (LA * LB);
+        var theta = Math.acos(Math.max(-1, Math.min(1, cosT))) * 180 / Math.PI;
+        var orth = Math.abs(theta - 90) < 0.5;
+        out.innerHTML = 'a·b = <strong style="color:var(--brand);">' + dot.toFixed(2) + '</strong>　|　夹角 θ = <strong>' + theta.toFixed(1) + '°</strong>　|　cos θ = <strong>' + cosT.toFixed(2) + '</strong>'
+            + (orth ? '　<span style="color:var(--green);font-weight:700;">⇒ 正交！点积为 0</span>' : '');
+
+        ctx.clearRect(0, 0, cv.width, cv.height);
+        var ox = cv.width / 2, oy = cv.height / 2, scale = 70;
+        /* 网格与坐标轴 */
+        ctx.strokeStyle = '#F1F5F9'; ctx.lineWidth = 1;
+        for (var gx = 0; gx <= cv.width; gx += scale) { ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, cv.height); ctx.stroke(); }
+        for (var gy = 0; gy <= cv.height; gy += scale) { ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(cv.width, gy); ctx.stroke(); }
+        ctx.strokeStyle = '#CBD5E1';
+        ctx.beginPath(); ctx.moveTo(0, oy); ctx.lineTo(cv.width, oy); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(ox, 0); ctx.lineTo(ox, cv.height); ctx.stroke();
+        function arrow(x, y, color, label) {
+            var ex = ox + x * scale, ey = oy - y * scale;
+            ctx.strokeStyle = color; ctx.lineWidth = 2.5;
+            ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(ex, ey); ctx.stroke();
+            var ang = Math.atan2(oy - ey, ex - ox);
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(ex, ey);
+            ctx.lineTo(ex - 12 * Math.cos(ang - 0.4), ey + 12 * Math.sin(ang - 0.4));
+            ctx.lineTo(ex - 12 * Math.cos(ang + 0.4), ey + 12 * Math.sin(ang + 0.4));
+            ctx.closePath(); ctx.fill();
+            ctx.font = 'bold 14px sans-serif';
+            ctx.fillText(label, ex + 10 * Math.cos(ang), ey - 10 * Math.sin(ang) - 6);
+        }
+        /* 夹角弧线 */
+        ctx.strokeStyle = '#9AA0A6'; ctx.lineWidth = 1.5;
+        var a1 = -AA, a2 = -AB;
+        ctx.beginPath(); ctx.arc(ox, oy, 34, Math.min(a1, a2), Math.max(a1, a2)); ctx.stroke();
+        ctx.fillStyle = '#5F6368'; ctx.font = '12px sans-serif';
+        var midA = (a1 + a2) / 2;
+        ctx.fillText('θ=' + theta.toFixed(0) + '°', ox + 48 * Math.cos(midA), oy + 48 * Math.sin(midA) + 4);
+        arrow(ax, ay, '#2563EB', 'a');
+        arrow(bx, by, '#DC2626', 'b');
+    }
+    [la, aa, lb, ab].forEach(function (el) { el.addEventListener('input', render); });
+    render();
+})();
+</script>
+
+</div><!-- /page -->
+
+<script src="../../assets/katex/katex.min.js"></script>
+<script src="../../assets/katex/auto-render.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    renderMathInElement(document.body, {
+        delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '\\[', right: '\\]', display: true},
+            {left: '\\(', right: '\\)', display: false}
+        ]
+    });
+    document.querySelectorAll('.quiz').forEach(function (q) {
+        q.addEventListener('click', function () { q.classList.toggle('open'); });
+    });
+});
+</script>
+
 </body>
 </html>

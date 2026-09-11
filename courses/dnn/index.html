@@ -55,16 +55,840 @@
     <link rel="stylesheet" href="../../assets/katex/katex.min.css">
     <link rel="stylesheet" href="../../assets/course.css">
     <script src="../../assets/course.js" defer></script>
+<!-- DL-LOCK:BEGIN -->
+<script src="../../assets/progress.js"></script>
+<script>
+/* 本章尚未开放：locked 时用不透明遮罩盖住全部内容（配置在 assets/progress.js） */
+(function () {
+    try { if ((window.DL_PROGRESS || {})['dnn'] !== 'locked') return; } catch (e) { return; }
+    document.addEventListener('DOMContentLoaded', function () {
+        var d = document.createElement('div');
+        d.id = 'dl-chapter-lock';
+        d.style.cssText = 'position:fixed;inset:0;z-index:999999;background:#F1F5F9;'
+            + 'display:flex;align-items:center;justify-content:center;font-family:Microsoft YaHei,sans-serif;';
+        d.innerHTML = '<div style="background:#fff;border-radius:16px;padding:48px 44px;max-width:520px;width:88vw;box-sizing:border-box;text-align:center;box-shadow:0 10px 40px rgba(15,23,42,.12);"><div style="font-size:44px;">🔒</div><h1 style="margin:14px 0 8px;font-size:22px;color:#1E293B;">第03讲 · 深度神经网络</h1><p style="margin:0 0 8px;font-size:16px;color:#2563EB;font-weight:bold;">本讲尚未开放</p><p style="margin:0 0 24px;font-size:14px;color:#64748B;line-height:1.8;">本讲内容将随课程进度开放，开放前暂时无法阅读。<br>已上过的章节会完整开放，请按课程安排学习。</p><a href="../../index.html" style="display:inline-block;padding:10px 28px;background:#2563EB;color:#fff;text-decoration:none;border-radius:8px;font-size:15px;">返回课程首页</a></div>';
+        document.body.appendChild(d);
+        document.body.style.overflow = 'hidden';
+    });
+})();
+</script>
+<!-- DL-LOCK:END -->
 </head>
 <body>
-<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#F1F5F9;font-family:'Microsoft YaHei',sans-serif;">
-  <div style="background:#fff;border-radius:16px;padding:48px 44px;max-width:520px;width:88vw;box-sizing:border-box;text-align:center;box-shadow:0 10px 40px rgba(15,23,42,.12);">
-    <div style="font-size:44px;">🔒</div>
-    <h1 style="margin:14px 0 8px;font-size:22px;color:#1E293B;">第03讲 · 深度神经网络</h1>
-    <p style="margin:0 0 8px;font-size:16px;color:#2563EB;font-weight:bold;">本讲尚未开放</p>
-    <p style="margin:0 0 24px;font-size:14px;color:#64748B;line-height:1.8;">本讲内容将随课程进度开放，开放前暂时无法阅读。<br>已上过的章节会完整开放，请按课程安排学习。</p>
-    <a href="../../index.html" style="display:inline-block;padding:10px 28px;background:#2563EB;color:#fff;text-decoration:none;border-radius:8px;font-size:15px;">返回课程首页</a>
-  </div>
+
+<nav class="topbar">
+    <div class="topbar-inner">
+        <a href="../../index.html">← 课程首页</a>
+        <span class="spacer"></span>
+        <span class="pill">互动讲义</span>
+    </div>
+</nav>
+
+<div class="page">
+
+<header class="hero">
+    <div class="kicker">深度学习 · 第03讲</div>
+    <h1>深度神经网络</h1>
+    <p class="sub">Deep Neural Networks —— 互动讲义</p>
+    <p class="meta">基于《动手学深度学习》课程 · 适用对象：已修完第 02 讲</p>
+</header>
+<!-- ==================== 第一章 ==================== -->
+<section class="chapter" id="ch1">
+    <div class="chapter-head">
+        <span class="chapter-num">1</span>
+        <h2>线性回归：从房价预测开始</h2>
+    </div>
+    <p class="chapter-lede">想象你要竞拍一套房子。中介会给出一个市场估价，但如果估价系统出错——比如某平台高估了房价——相信它的买家就要多付十万美元量级的真金白银。房价预测不是玩具问题，而是机器学习最经典的实战场景。</p>
+
+    <h3><span class="sec-no">1.1</span>一个简易模型</h3>
+    <p>我们对房价问题做两个假设：</p>
+    <p><strong>假设 1：找出关键影响因素</strong>——影响房价的关键因素有：卧室数目、卫浴数目和房子大小（面积），分别记为 \(x_1, x_2, x_3\)。</p>
+    <p><strong>假设 2：售价是关键因素的加权总和</strong>——估计价格 \(\hat{y} = w_1 x_1 + w_2 x_2 + w_3 x_3 + b\)，其中权重 \(w_1, w_2, w_3\) 和偏差 \(b\) 稍后通过数据确定。权重为正表示该因素抬升房价，权重越大影响越强。</p>
+
+    <h3><span class="sec-no">1.2</span>线性方法就是一个单层神经网络</h3>
+    <p>把上面的模型推广到 \(n\) 维输入：线性方法有 \(n\) 个权重和一个偏差，输出是输入的加权总和：</p>
+    <p>\[\mathbf{x} = [x_1, x_2, \ldots, x_n]^\top, \quad \mathbf{w} = [w_1, w_2, \ldots, w_n]^\top, \quad \hat{y} = w_1 x_1 + w_2 x_2 + \cdots + w_n x_n + b = \mathbf{w}^\top \mathbf{x} + b\]</p>
+    <p>把这个计算画成网络图，你会发现它就是一个单层神经网络：</p>
+    <figure>
+        <img src="images/single_layer_nn.jpg" alt="线性回归等价于单层神经网络" loading="lazy">
+        <figcaption>输入层的每个特征 \(x_1, x_2, \ldots, x_d\) 都连接到唯一的输出 \(o_1\)，每条连线对应一个权重。这就是线性回归的神经网络视角——堆叠更多这样的层，就得到深层神经网络。</figcaption>
+    </figure>
+
+    <h3><span class="sec-no">1.3</span>训练数据</h3>
+    <p>模型里的权重怎么定？靠真实数据。收集过去一段时间真实成交的房屋记录，就得到训练数据：</p>
+    <ul>
+        <li><strong>训练集（training set）</strong>：用来训练参数的数据；另有测试集（test set）用来最终评估。</li>
+        <li>假设训练集中有 \(m\) 个样本（sample），每个样本的真实价格 \(y\) 叫做标签（label），用来预测的因素 \(\mathbf{x}\) 叫做特征（feature）。</li>
+        <li>对第 \(i\) 个样本，模型的预测为 \(\hat{y}^{(i)} = w_1 x_1^{(i)} + w_2 x_2^{(i)} + \cdots + b\)。</li>
+    </ul>
+
+    <h3><span class="sec-no">1.4</span>损失函数：度量"估得有多差"</h3>
+    <p>比较真实值与估计值，需要一个量化指标。回归问题最常用平方损失（squared loss）：</p>
+    <p>\[\ell^{(i)}(\mathbf{w}, b) = \frac{1}{2}\left( \hat{y}^{(i)} - y^{(i)} \right)^2\]</p>
+    <div class="callout key">
+        <span class="co-tag">🔑 为什么有个 1/2？</span>
+        <p>纯粹为了求导好看：平方项求导会带出系数 2，乘上 1/2 正好抵消。它不改变最优解的位置。</p>
+    </div>
+
+    <h3><span class="sec-no">1.5</span>学习参数与封闭解</h3>
+    <p>把所有样本的损失取平均，得到训练损失；学习的目标就是找到使训练损失最小的参数：</p>
+    <p>\[\ell(\mathbf{w}, b) = \frac{1}{m} \sum_{i=1}^{m} \frac{1}{2}\left( \mathbf{w}^\top \mathbf{x}^{(i)} + b - y^{(i)} \right)^2, \qquad \mathbf{w}^*, b^* = \underset{\mathbf{w}, b}{\arg\min}\; \ell(\mathbf{w}, b)\]</p>
+    <p>把偏差 \(b\) 吸收进权重向量（给每个样本追加一个恒为 1 的特征，\(\mathbf{x} \leftarrow [\mathbf{x}, 1]\)，\(\mathbf{w} \leftarrow [\mathbf{w}, b]\)），损失可写成矩阵形式 \(\ell(\mathbf{w}) = \frac{1}{2m} \| \mathbf{y} - \mathbf{X}\mathbf{w} \|^2\)。它是凸函数，令梯度为零即可解出最优解：</p>
+    <p>\[\nabla_{\mathbf{w}}\, \ell(\mathbf{w}) = \frac{1}{m}(\mathbf{X}\mathbf{w} - \mathbf{y})^\top \mathbf{X} = 0 \quad\Longleftrightarrow\quad \mathbf{w}^* = (\mathbf{X}^\top \mathbf{X})^{-1} \mathbf{X}^\top \mathbf{y}\]</p>
+    <div class="callout warn">
+        <span class="co-tag">⚠️ 注意</span>
+        <p>这种能一步解出的封闭解（解析解）是线性回归的"特权"。深层神经网络的损失高度非凸，没有封闭解，只能依靠迭代优化——这正是下一节梯度下降登场的原因。</p>
+    </div>
+</section>
+
+<!-- ==================== 第二章 ==================== -->
+<section class="chapter" id="ch2">
+    <div class="chapter-head">
+        <span class="chapter-num">2</span>
+        <h2>基础优化：梯度下降</h2>
+    </div>
+
+    <h3><span class="sec-no">2.1</span>梯度下降算法</h3>
+    <p>对凸的损失曲面（想象一个碗），当前位置的梯度指向"上坡最陡"的方向，那么沿着负梯度方向走一小步，损失一定下降。梯度下降把这一直觉变成迭代算法：</p>
+    <ol>
+        <li>随机选择一个起点 \(\mathbf{w}_0\)；</li>
+        <li>重复更新：\(\mathbf{w}_t = \mathbf{w}_{t-1} - \eta \, \nabla_{\mathbf{w}}\, \ell(\mathbf{w}_{t-1})\)，其中 \(t = 1, 2, 3, \ldots\)</li>
+    </ol>
+    <p>公式里的两个角色：</p>
+    <div class="tbl-wrap">
+        <table>
+            <tr><th>符号</th><th>含义</th></tr>
+            <tr><td>梯度 \(\nabla \ell\)</td><td>更新权重的方向（负梯度 = 下坡方向）</td></tr>
+            <tr><td>学习率 \(\eta\)</td><td>一个超参数，指定每一步沿梯度方向走多远</td></tr>
+        </table>
+    </div>
+    <p>用最简单的函数 \(f(w) = w^2\) 看梯度下降如何一步步逼近最优点（学习率 \(\eta = 0.2\)）：</p>
+    <figure>
+        <img src="images/gd_descent.gif" alt="梯度下降动图：沿负梯度方向逐步逼近最小值" loading="lazy">
+        <figcaption>梯度下降动画：每一步在当前位置计算梯度 \(2w\)，沿负梯度方向走 \(\eta \cdot 2w\) 的一步——越接近谷底梯度越小，步子也自动变小，这就是它能"刚好停住"的原因。</figcaption>
+    </figure>
+
+    <h3><span class="sec-no">2.2</span>选择学习率：不要太小，也不要太大</h3>
+    <div class="tbl-wrap">
+        <table>
+            <tr><th>学习率</th><th>后果</th></tr>
+            <tr><td>太小</td><td>每次只挪一小步，收敛极慢，训练很久也到不了谷底</td></tr>
+            <tr><td>太大</td><td>一步跨过谷底，在两侧来回震荡，甚至发散（损失越来越大）</td></tr>
+            <tr><td>合适</td><td>稳定下降并收敛到低点</td></tr>
+        </table>
+    </div>
+    <div class="callout key">
+        <span class="co-tag">💡 提示</span>
+        <p>学习率没有万能取值，常用经验是从 \(10^{-3}\) 附近开始尝试，观察训练损失曲线再调整。学习率是深度学习中最需要调的超参数之一。</p>
+    </div>
+
+    <div class="lab">
+        <div class="lab-head">
+            <span class="lab-badge">互动实验</span>
+            <div class="lab-title">学习率实验器</div>
+            <div class="lab-sub">在 f(w) = w² 上做梯度下降：η = 1 是临界值</div>
+            <div class="lab-hint">调大学习率直到发散，亲身体验"太小""合适""太大"三种情形；点击"运行 20 步"看轨迹</div>
+        </div>
+        <div class="lab-body">
+            <div class="ctl-row">
+                <label class="ctl">学习率 η<input type="range" id="gd-eta" min="0.01" max="1.3" step="0.01" value="0.2"><span class="val" id="gd-eta-v">0.20</span></label>
+                <label class="ctl">起点 w₀<input type="range" id="gd-w0" min="-3" max="3" step="0.1" value="2.6"><span class="val" id="gd-w0-v">2.6</span></label>
+                <button class="btn" id="gd-run">▶ 运行 20 步</button>
+                <button class="btn ghost" id="gd-reset">重置</button>
+            </div>
+            <p id="gd-out" style="font-size:15px;margin:12px 0;" class="muted">点击"运行"开始梯度下降。</p>
+            <canvas id="gd-canvas" class="plot" width="640" height="300"></canvas>
+        </div>
+        <div class="lab-note">对 f(w) = w²，更新式为 w ← w(1 − 2η)：η &lt; 1 收敛；η = 1 原地震荡；η &gt; 1 <b>每步放大 (2η−1) 倍，直接发散</b>。</div>
+    </div>
+
+    <h3><span class="sec-no">2.3</span>小批量随机梯度下降（SGD）</h3>
+    <p>梯度下降有个现实问题：每一步都要用全部训练数据计算梯度。深度网络的数据集动辄上百万样本，算一次全量梯度可能要几分钟到几小时，代价太高。解决方案是小批量随机梯度下降（mini-batch SGD）：</p>
+    <div class="callout key">
+        <span class="co-tag">🔑 核心思想</span>
+        <p>每步随机抽样 \(b\) 个样本 \(\mathbf{x}_1, \mathbf{x}_2, \ldots, \mathbf{x}_b\)，用它们的平均损失 \(\frac{1}{b} \sum_{i \in \mathcal{B}} \ell(\mathbf{x}_i, \mathbf{w})\) 来估计整体梯度。\(b\) 称为批量大小（batch size），是另一个重要的超参数。</p>
+    </div>
+
+    <h3><span class="sec-no">2.4</span>批量大小的选择</h3>
+    <div class="tbl-wrap">
+        <table>
+            <tr><th>批量大小 \(b\)</th><th>影响</th></tr>
+            <tr><td>太小（如 \(b=1\)）</td><td>难以充分利用 GPU 并行能力；梯度噪声大，训练曲线抖动剧烈</td></tr>
+            <tr><td>太大（接近全量）</td><td>浪费计算资源——当批量中的样本梯度彼此相近时，多算只是重复劳动；内存也可能放不下</td></tr>
+            <tr><td>常用区间</td><td>32 ~ 256，通常取 2 的幂（如 64、128）以适配硬件</td></tr>
+        </table>
+    </div>
+    <div class="callout try">
+        <span class="co-tag">✅ 核心结论</span>
+        <p>梯度下降给出方向，学习率控制步长，小批量 SGD 用少量样本近似全量梯度——这三件套装在一起，就是今天训练一切深度网络的基本引擎。</p>
+    </div>
+</section>
+
+<!-- ==================== 第三章 ==================== -->
+<section class="chapter" id="ch3">
+    <div class="chapter-head">
+        <span class="chapter-num">3</span>
+        <h2>softmax 回归：从回归到分类</h2>
+    </div>
+
+    <h3><span class="sec-no">3.1</span>回归与分类：两类基本问题</h3>
+    <div class="tbl-wrap">
+        <table>
+            <tr><th>任务</th><th>输出</th><th>典型例子</th></tr>
+            <tr><td>回归</td><td>估计连续值</td><td>房价预测、气温预测</td></tr>
+            <tr><td>分类</td><td>预测离散类别</td><td>MNIST 手写数字分类（10 类）、ImageNet 自然物体分类（1000 类）</td></tr>
+        </table>
+    </div>
+    <figure>
+        <img src="images/mnist_samples.jpg" alt="MNIST 手写数字样本" loading="lazy">
+        <figcaption>MNIST：28×28 灰度手写数字图像，10 个类别，是分类任务的"hello world"。</figcaption>
+    </figure>
+    <figure>
+        <img src="images/imagenet_banner.jpg" alt="ImageNet 数据集" loading="lazy">
+        <figcaption>ImageNet：上百万张自然图像、1000 个类别，2012 年深度学习在此上一战成名。</figcaption>
+    </figure>
+    <p>分类任务在真实世界中无处不在。竞赛平台 Kaggle 上的典型题目包括：把人类蛋白质显微镜图像分为 28 类、把恶意软件分为 9 个家族、把维基百科上的恶意评论按 toxic、obscene、insult 等多种类型打标签——它们本质上都是"输入一段数据，输出一个类别"。</p>
+
+    <h3><span class="sec-no">3.2</span>从单个输出到多个输出</h3>
+    <p>回归只需一个连续输出；分类则需要每个类别一个置信度分数。以 4 个输入特征、3 个类别为例，给每个类别各配一套权重和偏差：</p>
+    <p>\[\begin{aligned} o_1 &= x_1 w_{11} + x_2 w_{21} + x_3 w_{31} + x_4 w_{41} + b_1 \\ o_2 &= x_1 w_{12} + x_2 w_{22} + x_3 w_{32} + x_4 w_{42} + b_2 \\ o_3 &= x_1 w_{13} + x_2 w_{23} + x_3 w_{33} + x_4 w_{43} + b_3 \end{aligned} \qquad\Longleftrightarrow\qquad \mathbf{o} = \mathbf{W}^\top \mathbf{x} + \mathbf{b}\]</p>
+    <figure>
+        <img src="images/multi_output_layer.jpg" alt="多输出全连接层" loading="lazy">
+        <figcaption>多输出全连接层：每个输入连接到每个输出。最终预测类别取分数最大者：\(\hat{y} = \arg\max_i o_i\)。</figcaption>
+    </figure>
+
+    <h3><span class="sec-no">3.3</span>softmax 函数：把分数变成概率</h3>
+    <p>原始分数 \(o_i\) 可正可负、大小任意，不便解释为"置信度"。softmax 两步把它变成概率分布：</p>
+    <ol>
+        <li>取指数 \(\exp(o_i)\)，保证所有值大于 0；</li>
+        <li>除以总和归一化，保证所有值加起来等于 1。</li>
+    </ol>
+    <p>\[\hat{y}_i = \operatorname{softmax}(\mathbf{o})_i = \frac{\exp(o_i)}{\sum_{j=1}^{3} \exp(o_j)}\]</p>
+    <p>例：\([1, -1, 2]\) 的 softmax 结果为 \([0.26, 0.04, 0.70]\)——模型认为图像属于第 3 类的概率最高，为 70%。</p>
+
+    <div class="lab">
+        <div class="lab-head">
+            <span class="lab-badge">互动实验</span>
+            <div class="lab-title">softmax 演示器</div>
+            <div class="lab-sub">概率之和恒等于 1——一个类别升高，其余必然被"挤下去"</div>
+            <div class="lab-hint">拖动三个类别的原始分数，观察概率如何此消彼长；再调温度系数 T，看分布如何变"尖锐"或变"平缓"</div>
+        </div>
+        <div class="lab-body">
+            <div class="ctl-row">
+                <label class="ctl">分数 o₁（猫）<input type="range" id="sm-o1" min="-4" max="4" step="0.1" value="1"><span class="val" id="sm-o1-v">1.0</span></label>
+                <label class="ctl">分数 o₂（狗）<input type="range" id="sm-o2" min="-4" max="4" step="0.1" value="-1"><span class="val" id="sm-o2-v">-1.0</span></label>
+                <label class="ctl">分数 o₃（兔子）<input type="range" id="sm-o3" min="-4" max="4" step="0.1" value="2"><span class="val" id="sm-o3-v">2.0</span></label>
+                <label class="ctl">温度 T<input type="range" id="sm-t" min="0.1" max="3" step="0.1" value="1"><span class="val" id="sm-t-v">1.0</span></label>
+            </div>
+            <div class="bars" id="sm-bars"></div>
+            <p id="sm-note" class="muted" style="font-size:13.5px;margin:10px 0;"></p>
+        </div>
+        <div class="lab-note">温度 T 是实际生成式模型的常用旋钮：<b>T &lt; 1 分布变尖锐</b>（更有把握但更保守），<b>T &gt; 1 分布变平缓</b>（更多样但更随机）。</div>
+    </div>
+
+    <h3><span class="sec-no">3.4</span>为什么不用平方损失？交叉熵登场</h3>
+    <p>先把标签做独热编码（one-hot encoding）：真实类别为 \(i\) 时 \(\mathbf{y}\) 的第 \(i\) 位为 1、其余为 0，例如 \(\mathbf{y} = [0, 0, 1]\)。我们希望 softmax 的输出概率逼近这个分布。用平方损失行不行？</p>
+    <div class="tbl-wrap">
+        <table>
+            <tr><th>softmax 输出</th><th>与 [0,0,1] 的平方损失</th><th>解读</th></tr>
+            <tr><td>[0.3, 0, 0.7]</td><td>0.18</td><td>预测还不错</td></tr>
+            <tr><td>[0.17, 0.17, 0.66]</td><td>0.173</td><td>预测明显更差，损失却反而更低</td></tr>
+        </table>
+    </div>
+    <p>问题在于：第二个预测把 34% 的概率分散到了错误类别上，明显更差，平方损失却给出了更低的分数（0.173 &lt; 0.18）——平方损失只关心"数值接近"，无法可靠地区分概率预测的好坏，梯度信号也弱。交叉熵（cross-entropy）才是衡量两个概率分布差异的标准工具：</p>
+    <p>\[H(\mathbf{y}, \hat{\mathbf{y}}) = -\sum_{i=1}^{q} y_i \log \hat{y}_i \qquad\xrightarrow{\;\mathbf{y}\text{ 为独热，真实类为 } i\;}\qquad H(\mathbf{y}, \hat{\mathbf{y}}) = -\log \hat{y}_i\]</p>
+    <p>对 \(n\) 个样本的训练集，总损失为 \(\ell = \frac{1}{n} \sum_{i=1}^{n} H(\mathbf{y}^{(i)}, \hat{\mathbf{y}}^{(i)})\)。</p>
+    <div class="callout key">
+        <span class="co-tag">🔑 初学者理解</span>
+        <p>独热标签下，交叉熵退化为"\(-\log\)（真实类别的预测概率）"。预测概率越接近 1，损失越接近 0；概率越接近 0，损失趋向无穷大——它毫不留情地惩罚"自信地犯错"，梯度信号因此非常清晰。</p>
+    </div>
+
+    <h3><span class="sec-no">3.5</span>线性回归 vs softmax 回归</h3>
+    <div class="tbl-wrap">
+        <table>
+            <tr><th></th><th>线性回归（回归问题）</th><th>softmax 回归（分类问题）</th></tr>
+            <tr><td>模型</td><td>\(\hat{y} = \langle \mathbf{w}, \mathbf{x} \rangle + b\)</td><td>\(\hat{\mathbf{y}} = \operatorname{softmax}(\mathbf{W}^\top \mathbf{x} + \mathbf{b})\)</td></tr>
+            <tr><td>参数</td><td>\(\mathbf{w} \in \mathbb{R}^{n}\)，\(b \in \mathbb{R}\)</td><td>\(\mathbf{W} \in \mathbb{R}^{n \times q}\)，\(\mathbf{b} \in \mathbb{R}^{q}\)</td></tr>
+            <tr><td>输出</td><td>单个连续值</td><td>各类别的概率分布</td></tr>
+            <tr><td>损失</td><td>平方损失</td><td>交叉熵损失</td></tr>
+        </table>
+    </div>
+
+    <h3><span class="sec-no">3.6</span>逻辑回归：二分类的特例</h3>
+    <p>逻辑回归（Logistic Regression）是 softmax 回归在二分类下的特例：用 sigmoid 函数把线性输出压缩到 \((0, 1)\) 区间，解释为"属于正类的概率"，再用交叉熵（对数损失）训练：</p>
+    <p>\[z = \mathbf{w}^\top \mathbf{x} + b, \qquad \hat{y} = \sigma(z) = \frac{1}{1 + e^{-z}}, \qquad \ell(y, \hat{y}) = -\left[ y \log \hat{y} + (1-y) \log (1 - \hat{y}) \right]\]</p>
+    <figure>
+        <img src="images/logistic_neuron.jpg" alt="逻辑回归神经元结构" loading="lazy">
+        <figcaption>逻辑回归的计算单元：输入加权和 \(z = \mathbf{w}^\top\mathbf{x} + b\)，再经 sigmoid 得到概率输出 \(a = \hat{y}\)。名字里虽有"回归"，它做的却是分类。</figcaption>
+    </figure>
+</section>
+<!-- ==================== 第四章 ==================== -->
+<section class="chapter" id="ch4">
+    <div class="chapter-head">
+        <span class="chapter-num">4</span>
+        <h2>感知机与多层感知机</h2>
+    </div>
+
+    <h3><span class="sec-no">4.1</span>感知机：神经网络的起点</h3>
+    <p>1957 年 Rosenblatt 提出感知机（Perceptron），并在 1960 年造出硬件实现 Mark I——这是第一台能够"学习"的神经机器，曾引起巨大轰动。</p>
+    <figure>
+        <img src="images/mark1_perceptron.jpg" alt="Mark I 感知机硬件" loading="lazy">
+        <figcaption>Mark I 感知机（1960）：权重由电动机驱动的电位器实现，是感知机算法的硬件版本。</figcaption>
+    </figure>
+    <p>给定输入 \(\mathbf{x}\)、权重 \(\mathbf{w}\) 和偏差 \(b\)，感知机输出二分类结果：</p>
+    <p>\[\hat{y} = \sigma(\mathbf{w}^\top \mathbf{x} + b) = \begin{cases} 1 & \text{if } \mathbf{w}^\top \mathbf{x} + b > 0 \\ 0 & \text{otherwise} \end{cases}\]</p>
+    <p>训练感知机相当于对损失 \(\ell(\mathbf{w}, b) = \max(0, -y \langle \mathbf{w}, \mathbf{x} \rangle)\) 做批量为 1 的随机梯度下降：</p>
+    <figure>
+        <img src="images/perceptron_training.jpg" alt="感知机训练算法" loading="lazy">
+        <figcaption>感知机训练规则：参数初始化为 0；每当样本被误分类（\(y_i[\langle \mathbf{w}, \mathbf{x}_i \rangle + b] \le 0\)），就执行 \(\mathbf{w} \leftarrow \mathbf{w} + y_i \mathbf{x}_i\)，\(b \leftarrow b + y_i\)，直到全部分类正确。</figcaption>
+    </figure>
+
+    <h3><span class="sec-no">4.2</span>XOR 问题：感知机的阿喀琉斯之踵</h3>
+    <p>1969 年，Minsky 与 Papert 在《Perceptrons》一书中指出：感知机无法学习 XOR（异或）问题。原因很根本——单个感知机只能画出一条直线（线性分离器）来分割两类样本，而 XOR 的四个样本点（分属两类）根本不存在这样的直线。</p>
+    <figure>
+        <img src="images/xor_linearly_inseparable.jpg" alt="XOR 问题线性不可分示意图" loading="lazy">
+        <figcaption>XOR 线性不可分：输出 0（蓝）和输出 1（红）的点各据一条对角线，单层感知机只能画一条直线，无论怎么画都不能把两类点完全分开。（下表中 + 对应 1、− 对应 0，与上图的 0/1 表示等价。）</figcaption>
+    </figure>
+    <div class="tbl-wrap">
+        <table>
+            <tr><th>\(x_1\)</th><th>\(x_2\)</th><th>XOR 输出</th><th>能否线性分割</th></tr>
+            <tr><td>+</td><td>+</td><td>−</td><td rowspan="4">否——同类点分布在对角线上，任何直线都无法把 + 与 − 完全分开</td></tr>
+            <tr><td>+</td><td>−</td><td>+</td></tr>
+            <tr><td>−</td><td>+</td><td>+</td></tr>
+            <tr><td>−</td><td>−</td><td>−</td></tr>
+        </table>
+    </div>
+    <div class="callout warn">
+        <span class="co-tag">⚠️ 历史影响</span>
+        <p>XOR 问题的证明沉重打击了第一代神经网络研究，是 1970~80 年代"AI 寒冬"的成因之一。破解之道正是给网络加隐藏层。</p>
+    </div>
+
+    <h3><span class="sec-no">4.3</span>多层感知机：加一层就能学 XOR</h3>
+    <p>XOR 可以分解为简单逻辑运算的组合：\(y = (x_1\ \text{AND}\ (\text{NOT}\ x_2))\ \text{OR}\ ((\text{NOT}\ x_1)\ \text{AND}\ x_2)\)。每个 NOT / AND / OR 都可以由一个感知机实现——把几个感知机分层连接，让第一层的输出作为第二层的输入，XOR 就迎刃而解。这就是多层感知机（MLP, Multi-Layer Perceptron）的思想来源。</p>
+
+    <h3><span class="sec-no">4.4</span>单隐藏层网络</h3>
+    <p>在输入与输出之间插入一个含 \(m\) 个神经元的隐藏层（隐藏层大小 \(m\) 是一个超参数）：</p>
+    <figure>
+        <img src="images/single_hidden_layer.jpg" alt="单隐藏层神经网络" loading="lazy">
+        <figcaption>单隐藏层全连接网络：4 个输入 → 5 个隐藏单元 → 1 个输出。注意输入到隐藏层是"全连接"的——每个隐藏单元都接收全部输入。</figcaption>
+    </figure>
+    <p>数学上，整个网络是三步复合：</p>
+    <p>\[\text{输入：} \mathbf{x} \in \mathbb{R}^{n} \qquad \text{隐藏层：} \mathbf{h} = \sigma(\mathbf{W}_1^\top \mathbf{x} + \mathbf{b}_1) \qquad \text{输出：} \hat{y} = \mathbf{w}_2^\top \mathbf{h} + b_2\]</p>
+    <p>其中 \(\sigma\) 是一个逐元素作用的激活函数。</p>
+
+    <h3><span class="sec-no">4.5</span>为什么必须是非线性激活函数？</h3>
+    <p>假如 \(\sigma\) 是线性（恒等）函数，那么：</p>
+    <p>\[\hat{y} = \mathbf{w}_2^\top (\mathbf{W}_1^\top \mathbf{x} + \mathbf{b}_1) + b_2 = (\mathbf{W}_1 \mathbf{w}_2)^\top \mathbf{x} + (\mathbf{w}_2^\top \mathbf{b}_1 + b_2) = \mathbf{w}'^\top \mathbf{x} + b'\]</p>
+    <p>两个线性层复合后仍然是一个线性模型——隐藏层白加了，网络依旧画不出折线、学不会 XOR。只有插入非线性激活函数，堆叠多层才有意义，网络才获得逼近任意复杂函数的能力（万能逼近定理）。</p>
+
+    <h3><span class="sec-no">4.6</span>常用激活函数</h3>
+    <figure>
+        <img src="images/sigmoid.jpg" alt="sigmoid 激活函数曲线" loading="lazy">
+        <figcaption>sigmoid：\(\sigma(x) = \frac{1}{1+\exp(-x)}\)，把输入平滑地压缩到 (0, 1)，可看作阶跃函数的平滑版。</figcaption>
+    </figure>
+    <figure>
+        <img src="images/tanh.jpg" alt="tanh 激活函数曲线" loading="lazy">
+        <figcaption>tanh：\(\tanh(x) = \frac{1-\exp(-2x)}{1+\exp(-2x)}\)，输出 (−1, 1)，关于原点对称，收敛常比 sigmoid 快。</figcaption>
+    </figure>
+    <figure>
+        <img src="images/relu.jpg" alt="ReLU 激活函数曲线" loading="lazy">
+        <figcaption>ReLU（线性修正单元）：\(\operatorname{ReLU}(x) = \max(x, 0)\)，正区间导数恒为 1，计算极简且缓解梯度消失，是当今默认选择。</figcaption>
+    </figure>
+
+    <div class="lab">
+        <div class="lab-head">
+            <span class="lab-badge">互动实验</span>
+            <div class="lab-title">激活函数浏览器</div>
+            <div class="lab-sub">导数决定反向传播时梯度能"传回来多少"</div>
+            <div class="lab-hint">切换激活函数、拖动输入 x，同时观察函数值 f(x)（蓝线）和导数 f′(x)（红色虚线）</div>
+        </div>
+        <div class="lab-body">
+            <div class="ctl-row" id="act-fns">
+                <span style="font-size:14px;color:var(--ink-2);">激活函数</span>
+                <label class="switch"><input type="radio" name="act-fn" value="sigmoid" checked> sigmoid</label>
+                <label class="switch"><input type="radio" name="act-fn" value="tanh"> tanh</label>
+                <label class="switch"><input type="radio" name="act-fn" value="relu"> ReLU</label>
+                <label class="switch"><input type="radio" name="act-fn" value="leaky"> Leaky ReLU (α=0.1)</label>
+            </div>
+            <div class="ctl-row">
+                <label class="ctl">输入 x<input type="range" id="act-x" min="-5" max="5" step="0.1" value="1.5"><span class="val" id="act-x-v">1.5</span></label>
+            </div>
+            <p id="act-out" style="font-size:15.5px;margin:12px 0;"></p>
+            <canvas id="act-canvas" class="plot" width="640" height="300"></canvas>
+        </div>
+        <div class="lab-note">把 x 拖离 0 观察 sigmoid / tanh 的导数（红色虚线）如何迅速趋近 0——这就是<b>梯度消失</b>的几何来源；ReLU 在正区间导数恒为 1，梯度畅通。</div>
+    </div>
+
+    <h3><span class="sec-no">4.7</span>多类别与多隐藏层</h3>
+    <p>把输出层扩展为 \(q\) 个单元并套上 softmax，就得到多类别分类网络：\(\hat{\mathbf{y}} = \operatorname{softmax}(\mathbf{W}_2^\top \mathbf{h} + \mathbf{b}_2)\)。继续堆叠隐藏层，就得到深层的 MLP：</p>
+    <figure>
+        <img src="images/multi_hidden_layers.jpg" alt="多隐藏层网络" loading="lazy">
+        <figcaption>三个隐藏层的多层感知机。每加深一层，要选的超参数就多一组：隐藏层数量、每层的隐藏单元数目。</figcaption>
+    </figure>
+    <div class="callout try">
+        <span class="co-tag">✅ 核心结论</span>
+        <p>单层网络只能线性分割；隐藏层 + 非线性激活让网络可以表达任意复杂的决策边界。深度网络的表达能力，正是从这一简单的堆叠中生长出来的。</p>
+    </div>
+</section>
+
+<!-- ==================== 第五章 ==================== -->
+<section class="chapter" id="ch5">
+    <div class="chapter-head">
+        <span class="chapter-num">5</span>
+        <h2>模型选择与泛化</h2>
+    </div>
+
+    <h3><span class="sec-no">5.1</span>训练误差与泛化误差</h3>
+    <p>评估模型要看两种误差：</p>
+    <div class="tbl-wrap">
+        <table>
+            <tr><th>误差</th><th>含义</th></tr>
+            <tr><td>训练误差</td><td>模型在训练数据上的误差</td></tr>
+            <tr><td>泛化误差</td><td>模型在从未见过的新数据上的误差——这才是我们真正关心的</td></tr>
+        </table>
+    </div>
+    <div class="callout key">
+        <span class="co-tag">🔑 用"刷真题"类比</span>
+        <p>用历年考试真题备考：真题全对（训练误差低）不代表未来的考试能考好（泛化误差低）。学生 A 靠死记硬背让真题零错误；学生 B 真正理解知识、能解释答案。谁更可能在未来的考试中胜出？机器学习也一样——我们追求的不是记住训练集，而是泛化到新数据。</p>
+    </div>
+
+    <h3><span class="sec-no">5.2</span>验证集与测试集：分工明确</h3>
+    <div class="tbl-wrap">
+        <table>
+            <tr><th>数据集</th><th>用途</th><th>纪律</th></tr>
+            <tr><td>验证集</td><td>训练过程中评估模型、选择超参数（例如从训练数据中留出 50%）</td><td>绝不能与训练数据混在一起——这是新手最常犯的错误（没有之一）</td></tr>
+            <tr><td>测试集</td><td>模拟"未来的考试"，原则上只使用一次</td><td>例如 Kaggle 私人排行榜的数据；反复用测试集调参会让它"泄题"，评估失去意义</td></tr>
+        </table>
+    </div>
+
+    <h3><span class="sec-no">5.3</span>K 折交叉验证</h3>
+    <p>数据不够多、舍不得单独划出验证集时，使用 K 折交叉验证（K-fold cross validation）：</p>
+    <ol>
+        <li>把训练数据平均划分为 \(K\) 个部分；</li>
+        <li>循环 \(i = 1, \ldots, K\)：用第 \(i\) 部分做验证集，其余 \(K-1\) 部分做训练集；</li>
+        <li>报告 \(K\) 次验证误差的平均值作为模型性能的估计。</li>
+    </ol>
+    <p>K 的常见取值为 5 或 10。K 越大估计越准，但训练次数也越多。</p>
+
+    <h3><span class="sec-no">5.4</span>欠拟合与过拟合</h3>
+    <p>同一批数据点，用三种不同复杂度的模型去拟合，效果天差地别：</p>
+    <figure>
+        <img src="images/underfit_overfit.jpg" alt="欠拟合、正常与过拟合示意" loading="lazy">
+        <figcaption>左：欠拟合——模型太简单（一条水平线），连训练数据都拟合不了；中：正常——恰好的复杂度，平滑地穿过数据；右：过拟合——模型过于复杂，把每个噪声点都"记住"了，曲线七拐八弯，对新数据的预测反而很差。</figcaption>
+    </figure>
+    <p>把模型复杂度与数据复杂度放在一起看：</p>
+    <div class="tbl-wrap">
+        <table>
+            <tr><th></th><th>数据复杂度低</th><th>数据复杂度高</th></tr>
+            <tr><td>模型复杂度低</td><td>正常</td><td>欠拟合</td></tr>
+            <tr><td>模型复杂度高</td><td>过拟合</td><td>正常</td></tr>
+        </table>
+    </div>
+    <div class="callout key">
+        <span class="co-tag">🔑 初学者理解</span>
+        <p>过拟合和欠拟合都不是绝对的，而是"模型能力"与"数据难度"相对不匹配的结果。同一个模型，放在简单数据上可能过拟合，放在复杂数据上可能刚刚好。</p>
+    </div>
+
+    <h3><span class="sec-no">5.5</span>偏差与方差、模型复杂度的估计</h3>
+    <p>欠拟合与过拟合还有一对更专业的名字——高偏差（high bias）与高方差（high variance）。用分类问题的决策边界来看最直观：</p>
+    <figure>
+        <img src="images/bias_variance.jpg" alt="高偏差、适中与高方差示意" loading="lazy">
+        <figcaption>偏差-方差视角（Andrew Ng 经典图例）：高偏差 = 欠拟合，决策边界过于生硬；高方差 = 过拟合，边界扭曲地迎合每个样本；中间才是"刚刚好"。</figcaption>
+    </figure>
+    <p>模型复杂度（容量）指模型"适应不同数据分布"的能力：低容量模型连训练集都拟合不了（欠拟合）；高容量模型可以把训练集整个背下来（过拟合）。不同算法之间很难比较复杂度（比如决策树 vs 神经网络），但同一算法族内有两个主要因素：</p>
+    <ul>
+        <li><strong>参数个数</strong>：如单层网络的 \((n+1)m\)（输入层到隐藏层）\(+ (m+1)k\)（隐藏层到输出层）个参数；</li>
+        <li><strong>每个参数取值的范围</strong>：允许取值越大，容量越大——这正是权重衰减要限制的东西。</li>
+    </ul>
+    <p>数据复杂度则取决于：样本数量、每个样本的元素个数、时间与空间结构、类别多样性等。数据越复杂，就需要越大的模型来匹配。</p>
+</section>
+
+<!-- ==================== 第六章 ==================== -->
+<section class="chapter" id="ch6">
+    <div class="chapter-head">
+        <span class="chapter-num">6</span>
+        <h2>正则化：权重衰减与丢弃法</h2>
+    </div>
+
+    <h3><span class="sec-no">6.1</span>权重衰减：给参数加上"软约束"</h3>
+    <p>既然参数取值范围越大、模型容量越大，那么限制参数大小就能压制过拟合。最直接的写法是硬约束：</p>
+    <p>\[\min_{\mathbf{w}}\; \ell(\mathbf{w}, b) \quad \text{subject to } \|\mathbf{w}\|^2 \le \theta\]</p>
+    <p>实践中通常把它改写成等价的软约束（拉格朗日形式），即在损失后追加一个正则项：</p>
+    <p>\[\min_{\mathbf{w}}\; \ell(\mathbf{w}, b) + \frac{\lambda}{2} \|\mathbf{w}\|^2 \qquad \underbrace{\tilde{\ell}(\mathbf{w}, b) = \ell(\mathbf{w}, b) + \frac{\lambda}{2}\|\mathbf{w}\|^2}_{\text{目标函数 = 原损失 + 正则化项}}\]</p>
+    <div class="tbl-wrap">
+        <table>
+            <tr><th>要点</th><th>说明</th></tr>
+            <tr><td>超参数 \(\lambda\)</td><td>控制正则化的强度：\(\lambda = 0\) 无效果；\(\lambda \to \infty\) 时最优解 \(\mathbf{w}^* \to \mathbf{0}\)</td></tr>
+            <tr><td>偏差 \(b\)</td><td>通常不加惩罚；加不加在实践中几乎没有区别</td></tr>
+            <tr><td>别名</td><td>对向量是 \(L^2\) 范数正则化；对权重矩阵则是 Frobenius 范数正则化</td></tr>
+        </table>
+    </div>
+    <p>对带正则项的目标函数求梯度并代入梯度下降，更新规则变为：</p>
+    <p>\[\mathbf{w}_{t+1} = (1 - \eta\lambda)\, \mathbf{w}_t - \eta\, \nabla_{\mathbf{w}}\, \ell(\mathbf{w}_t, b)\]</p>
+    <div class="callout key">
+        <span class="co-tag">🔑 为什么叫"权重衰减"？</span>
+        <p>通常 \(\eta\lambda &lt; 1\)，于是每步更新前权重先乘上一个小于 1 的系数——权重在每一步都被按比例缩小，这就是"衰减"（weight decay）名字的由来。</p>
+    </div>
+
+    <h3><span class="sec-no">6.2</span>丢弃法（dropout）：把噪声注入隐藏层</h3>
+    <p>正则化的另一个思路来自"稳健性"：一个好模型在输入发生适度扰动时，输出应该保持稳定。理论表明，给输入加噪声训练等价于 Tikhonov 正则化。丢弃法更进一步——把噪声直接注入内部隐藏层：</p>
+    <p><strong>训练时的 dropout</strong>：以概率 \(p\) 把隐藏层的某些神经元输出随机置 0，其余神经元的输出除以 \((1-p)\) 放大，保证加噪后的期望不变（"没有偏差的噪音"）：\(E[h'] = h\)。这样任何神经元都不能依赖某个特定同伴的存在，网络被迫学到更冗余、更稳健的表示。通常用在全连接层的输出上。</p>
+    <p><strong>推断（预测）时的 dropout</strong>：正则化只在训练时使用。推断阶段关闭 dropout，直接使用完整的确定性网络 \(h' = \operatorname{dropout}(h)\)（恒等输出），保证结果是确定的、可复现的。</p>
+    <div class="callout try">
+        <span class="co-tag">✅ 一句话总结</span>
+        <p>权重衰减从"参数大小"上压缩模型容量，dropout 从"网络结构"上随机扰动增强稳健性——两者都是对抗过拟合的常用武器，经常同时使用。</p>
+    </div>
+</section>
+
+<!-- ==================== 第七章 ==================== -->
+<section class="chapter" id="ch7">
+    <div class="chapter-head">
+        <span class="chapter-num">7</span>
+        <h2>正反向传播与数值稳定性</h2>
+    </div>
+
+    <h3><span class="sec-no">7.1</span>用计算图看清一次完整的训练</h3>
+    <p>第 02 讲介绍的计算图，是理解正向/反向传播的最佳工具。先看一个简单例子 \(f(x, y, z) = (x + y)\,z\)，取 \(x = -2\)、\(y = 5\)、\(z = -4\)：</p>
+    <figure>
+        <img src="images/comp_graph_forward.jpg" alt="计算图前向传播示例" loading="lazy">
+        <figcaption>前向传播（绿色数字）：加法节点算出 −2 + 5 = 3，乘法节点算出 3 × (−4) = −12。反向传播时，梯度沿原路回流：∂f/∂z = (x+y) = 3，∂f/∂x = ∂f/∂y = z = −4。</figcaption>
+    </figure>
+    <p>真实的神经网络也是同一套路，只是图更大。下图是一个含 sigmoid 门的小型网络 \(f(w, x) = \dfrac{1}{1 + e^{-(w_0 x_0 + w_1 x_1 + w_2)}}\) 的完整计算图：</p>
+    <figure>
+        <img src="images/comp_graph_sigmoid_gate.jpg" alt="含 sigmoid 门的计算图与反向传播" loading="lazy">
+        <figcaption>前向（绿）与反向（红）在一图：sigmoid 门的局部导数有简洁公式 \(\frac{d\sigma}{dx} = (1-\sigma)\sigma = 0.73 \times 0.27 \approx 0.2\)，上游梯度 1.0 经过 sigmoid 门后变为 0.20，再逐节点向前分配。看懂这张图，就看懂了反向传播的全部机制。</figcaption>
+    </figure>
+
+    <h3><span class="sec-no">7.2</span>层视角的前向与反向传播</h3>
+    <p>把粒度从"单个算子"提升到"整个层"，一个 \(L\) 层网络的训练可以概括为：</p>
+    <div class="tbl-wrap">
+        <table>
+            <tr><th>阶段</th><th>输入 → 输出</th><th>缓存/传递内容</th></tr>
+            <tr><td>前向传播</td><td>第 \(t\) 层：输入 \(\mathbf{h}^{t-1}\) → 输出 \(\mathbf{h}^{t}\)</td><td>缓存每层的中间量 \(\mathbf{z}^{t}\)（反向时要用）</td></tr>
+            <tr><td>反向传播</td><td>第 \(t\) 层：输入 \(\partial \ell / \partial \mathbf{h}^{t}\) → 输出 \(\partial \ell / \partial \mathbf{h}^{t-1}\) 与 \(\partial \ell / \partial \mathbf{W}^{t}\)</td><td>沿层逆向传递梯度，逐层求出参数梯度</td></tr>
+        </table>
+    </div>
+
+    <h3><span class="sec-no">7.3</span>深度网络的两个数值问题：梯度爆炸与梯度消失</h3>
+    <p>考虑一个 \(d\) 层的网络 \(\mathbf{h}^{d} = \ell \circ f^{d} \circ \cdots \circ f^{1}(\mathbf{x})\)，损失对第 \(t\) 层输出的梯度为：</p>
+    <p>\[\frac{\partial \ell}{\partial \mathbf{h}^{t}} = \frac{\partial \ell}{\partial \mathbf{h}^{d}} \cdot \underbrace{\frac{\partial \mathbf{h}^{d}}{\partial \mathbf{h}^{d-1}} \cdots \frac{\partial \mathbf{h}^{t+1}}{\partial \mathbf{h}^{t}}}_{\text{\(d-t\) 个矩阵连乘}}\]</p>
+    <p>问题就出在这串连乘上。若每个因子略大于 1，\(d-t\) 次连乘会爆炸；略小于 1，则会消失：</p>
+    <div class="tbl-wrap">
+        <table>
+            <tr><th>问题</th><th>数值示例</th><th>后果</th></tr>
+            <tr><td>梯度爆炸</td><td>\(1.5^{100} \approx 4 \times 10^{17}\)</td><td>梯度变成天文数字，参数更新失控、训练发散</td></tr>
+            <tr><td>梯度消失</td><td>\(0.8^{100} \approx 2 \times 10^{-10}\)</td><td>梯度趋近 0，底层参数几乎不更新</td></tr>
+        </table>
+    </div>
+    <p>梯度消失最典型的元凶是 sigmoid 激活函数：</p>
+    <figure>
+        <img src="images/sigmoid_gradient.jpg" alt="sigmoid 函数及其梯度曲线" loading="lazy">
+        <figcaption>sigmoid（蓝）与其导数（橙）：导数 \(\sigma'(x) = \sigma(x)(1-\sigma(x))\) 的最大值只有 0.25，且输入稍大就趋近 0。几十层连乘下来，梯度被压得荡然无存。</figcaption>
+    </figure>
+    <div class="callout warn">
+        <span class="co-tag">⚠️ 梯度消失的实际危害</span>
+        <p>16 位浮点下，梯度小于 \(2^{-24} \approx 5.96 \times 10^{-8}\) 就等于 0。此时无论怎么调学习率，底层训练基本无效，只有顶层在学习——网络"更深"反而可能更差。</p>
+    </div>
+
+    <h3><span class="sec-no">7.4</span>稳定训练的对策与 Xavier 初始化</h3>
+    <p>目标是让梯度值保持在合适的范围（例如 \([10^{-6}, 10^{3}]\) 之间），主要手段有三类：</p>
+    <ol>
+        <li><strong>改变网络结构</strong>：把"乘法路径"变"加法路径"——ResNet 的残差连接、LSTM 的门控结构都是这个思路；</li>
+        <li><strong>归一化</strong>：批量归一化（BatchNorm）、梯度修剪（gradient clipping）；</li>
+        <li><strong>合理的权重初始化 + 激活函数搭配</strong>。</li>
+    </ol>
+    <p>第三点里最经典的是 Xavier 初始化。对加权和 \(z = w_1 x_1 + w_2 x_2 + \cdots + w_n x_n\)，若想让输出的方差与输入一致（不放大也不缩小），权重应从均值为 0、方差为 \(\frac{1}{n_{t-1}}\) 的分布中采样（\(n_{t-1}\) 为输入维度）：</p>
+    <div class="tbl-wrap">
+        <table>
+            <tr><th>激活函数</th><th>推荐初始化方差</th></tr>
+            <tr><td>tanh</td><td>\(\frac{1}{n_{t-1}}\)（Xavier 原始形式）</td></tr>
+            <tr><td>ReLU</td><td>\(\frac{2}{n_{t-1}}\)（He 初始化，ReLU 会砍掉一半信号，方差加倍补偿）</td></tr>
+            <tr><td>其他/通用</td><td>\(\frac{2}{n_{t-1} + n_{t}}\)（兼顾前向与反向的折中）</td></tr>
+        </table>
+    </div>
+</section>
+
+<!-- ==================== 第八章 ==================== -->
+<section class="chapter" id="ch8">
+    <div class="chapter-head">
+        <span class="chapter-num">8</span>
+        <h2>综合案例与本讲小结</h2>
+    </div>
+
+    <h3><span class="sec-no">8.1</span>综合案例：用两隐藏层网络识别 MNIST 手写数字</h3>
+    <figure>
+        <img src="images/mnist_grid.jpg" alt="MNIST 手写数字样本网格" loading="lazy">
+        <figcaption>MNIST 数据集：70,000 张 28×28 灰度手写数字图像，训练/测试按 60,000 : 10,000 划分（Yann LeCun 等收集，深度学习领域的标准基准）。</figcaption>
+    </figure>
+    <p>把本讲的所有零件组装起来：</p>
+    <div class="tbl-wrap">
+        <table>
+            <tr><th>组件</th><th>本案例中的选择</th></tr>
+            <tr><td>输入</td><td>图像展平为 \(\mathbf{X} = [x_1, x_2, \ldots, x_{784}]\)（28 × 28 = 784 维）</td></tr>
+            <tr><td>网络结构</td><td>\(\mathbf{h}_1 = \max(\mathbf{X}\mathbf{W}_1 + \mathbf{b}_1, 0)\)，\(\mathbf{h}_2 = \max(\mathbf{h}_1\mathbf{W}_2 + \mathbf{b}_2, 0)\)，\(\mathbf{h}_3 = \mathbf{h}_2\mathbf{W}_3 + \mathbf{b}_3\)——两个 ReLU 隐藏层 + 线性输出层</td></tr>
+            <tr><td>输出与类别</td><td>10 维输出经 softmax 得概率，\(\hat{y} = \arg\max\)，类别 \(Y \in \{0, 1, \ldots, 9\}\)</td></tr>
+            <tr><td>损失函数</td><td>交叉熵 \(\operatorname{loss} = -\log(\text{真实类别的 softmax 概率})\)</td></tr>
+            <tr><td>优化器</td><td>小批量随机梯度下降（SGD）</td></tr>
+        </table>
+    </div>
+    <div class="callout key">
+        <span class="co-tag">💡 预告</span>
+        <p>这个完整案例将在下次实验课上动手实现——从加载数据、搭建网络到训练评估，全程使用 PyTorch。</p>
+    </div>
+
+    <h3><span class="sec-no">8.2</span>知识要点回顾</h3>
+    <div class="tbl-wrap">
+        <table>
+            <tr><th>主题</th><th>必须掌握的内容</th></tr>
+            <tr><td>线性回归</td><td>模型 \(\hat{y} = \mathbf{w}^\top\mathbf{x} + b\)；平方损失；封闭解 \((\mathbf{X}^\top\mathbf{X})^{-1}\mathbf{X}^\top\mathbf{y}\)</td></tr>
+            <tr><td>优化</td><td>梯度下降公式；学习率与批量大小的权衡；小批量 SGD</td></tr>
+            <tr><td>softmax 回归</td><td>softmax 归一化；独热编码；交叉熵为何优于平方损失；逻辑回归是二分类特例</td></tr>
+            <tr><td>MLP</td><td>XOR 问题；隐藏层 + 非线性激活的必要性；sigmoid / tanh / ReLU 的特点</td></tr>
+            <tr><td>模型选择</td><td>训练误差 vs 泛化误差；验证集纪律；K 折交叉验证；欠拟合/过拟合与模型复杂度</td></tr>
+            <tr><td>正则化</td><td>权重衰减的软约束形式与更新规则；dropout 训练开、推断关</td></tr>
+            <tr><td>数值稳定性</td><td>梯度爆炸/消失的成因（矩阵连乘）；sigmoid 导数 ≤ 0.25；Xavier/He 初始化</td></tr>
+        </table>
+    </div>
+
+    <h3><span class="sec-no">8.3</span>课堂自测</h3>
+    <div class="quiz">
+        <div class="q">Q1. softmax 输出为 [0.05, 0.90, 0.05]，真实类别是第 2 类（独热编码 [0,1,0]）。交叉熵损失是多少？如果模型把 0.90 的概率押在了第 1 类上，损失又会怎样？</div>
+        <div class="a">✅ 答案：损失 = \(-\log 0.90 \approx 0.105\)，很小。若押错（真实类概率仅 0.05），损失 = \(-\log 0.05 \approx 3.0\)，是前者的近 30 倍。交叉熵对"自信地犯错"的惩罚极其严厉。</div>
+    </div>
+    <div class="quiz">
+        <div class="q">Q2. 把 MLP 的非线性激活函数全部换成恒等函数（即去掉激活），一个 3 隐藏层的网络还能学 XOR 吗？为什么？</div>
+        <div class="a">✅ 答案：不能。线性层复合仍是线性层：\(\mathbf{W}_3(\mathbf{W}_2(\mathbf{W}_1\mathbf{x})) = (\mathbf{W}_3\mathbf{W}_2\mathbf{W}_1)\mathbf{x}\)，整个网络退化为单层线性模型，依旧画不出分割 XOR 的直线。非线性激活是多层网络存在的意义。</div>
+    </div>
+    <div class="quiz">
+        <div class="q">Q3. 一位同学在训练过程中反复用测试集评估模型并挑选"在测试集上表现最好"的超参数，最后报告了非常漂亮的测试准确率。这个流程错在哪里？</div>
+        <div class="a">✅ 答案：测试集被反复用于模型选择，相当于"泄题"——报告的准确率高估了真实泛化能力。正确做法：用验证集调超参数，测试集只在最终评估时使用一次。数据不足时可用 K 折交叉验证。</div>
+    </div>
+    <div class="quiz">
+        <div class="q">Q4. 训练一个 50 层的 sigmoid 网络，发现靠近输入层的参数几乎不更新。最可能的原因是什么？给出至少两种改进方案。</div>
+        <div class="a">✅ 答案：梯度消失——sigmoid 导数最大仅 0.25，50 层连乘后梯度小到浮点数无法有效表示（16 位浮点下即视为 0）。改进：① 换用 ReLU 激活（正区间导数恒为 1）；② 使用 Xavier/He 初始化；③ 加入批量归一化；④ 使用 ResNet 式残差连接，把乘法路径改为加法路径。</div>
+    </div>
+
+    <h3><span class="sec-no">8.4</span>下讲预告</h3>
+    <div class="callout try">
+        <span class="co-tag">📖 下讲预告</span>
+        <p>第 04 讲：卷积神经网络（CNN）（理论 2 学时）——为什么全连接网络处理图像会参数爆炸？卷积运算、填充与步幅、多通道、池化层如何让图像识别脱胎换骨。请先复习本讲的隐藏层与反向传播。</p>
+    </div>
+</section>
+
+<div class="footer">
+    深度学习课程站 · 第03讲 深度神经网络 · 互动讲义版 · 基于《动手学深度学习》课程<br>
+    课程反馈：dlcourses2026@sina.com
 </div>
+
+<script>
+/* ================= 实验 1：学习率实验器 ================= */
+(function () {
+    var etaEl = document.getElementById('gd-eta'), etaV = document.getElementById('gd-eta-v');
+    var w0El = document.getElementById('gd-w0'), w0V = document.getElementById('gd-w0-v');
+    var out = document.getElementById('gd-out');
+    var cv = document.getElementById('gd-canvas');
+    var ctx = cv.getContext('2d');
+    var trail = [];
+
+    function f(w) { return w * w; }
+    function grad(w) { return 2 * w; }
+
+    function draw() {
+        ctx.clearRect(0, 0, cv.width, cv.height);
+        var pad = 46, W = cv.width - pad * 2, H = cv.height - pad - 30;
+        var y0 = 14;
+        var xmax = 3.2, ymax = 10.5;
+        function X(w) { return pad + (w + xmax) / (2 * xmax) * W; }
+        function Y(v) { return y0 + H - (v / ymax) * H; }
+        /* 坐标轴 */
+        ctx.strokeStyle = '#CBD5E1'; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(pad, Y(0)); ctx.lineTo(pad + W, Y(0)); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(X(0), y0); ctx.lineTo(X(0), y0 + H); ctx.stroke();
+        ctx.fillStyle = '#9AA0A6'; ctx.font = '11px sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText('w', pad + W + 4, Y(0) - 4);
+        ctx.fillText('f(w) = w²', pad + 44, y0 + 12);
+        /* 抛物线 */
+        ctx.strokeStyle = '#94A3B8'; ctx.lineWidth = 2; ctx.beginPath();
+        for (var i = 0; i <= 200; i++) {
+            var w = -xmax + (i / 200) * 2 * xmax;
+            if (i === 0) ctx.moveTo(X(w), Y(f(w))); else ctx.lineTo(X(w), Y(f(w)));
+        }
+        ctx.stroke();
+        /* 轨迹 */
+        for (var s = 0; s < trail.length; s++) {
+            var wv = trail[s];
+            if (Math.abs(wv) > xmax * 2) continue;
+            ctx.fillStyle = s === trail.length - 1 ? '#DC2626' : '#2563EB';
+            ctx.beginPath(); ctx.arc(X(Math.max(-xmax, Math.min(xmax, wv))), Y(Math.min(ymax, f(wv))), s === trail.length - 1 ? 6 : 3.5, 0, Math.PI * 2); ctx.fill();
+        }
+    }
+
+    function status(ws) {
+        var eta = parseFloat(etaEl.value);
+        var last = ws[ws.length - 1];
+        var msg = '20 步后 w = <strong style="color:var(--brand);">' + (Math.abs(last) > 1e4 ? last.toExponential(2) : last.toFixed(4)) + '</strong>，f(w) = ' + (f(last) > 1e6 ? f(last).toExponential(2) : f(last).toFixed(4));
+        if (eta < 1) msg += '　→ 逐步逼近谷底（η &lt; 1 收敛）';
+        else if (eta === 1) msg += '　→ 在两侧原地震荡（η = 1 临界）';
+        else msg += '　→ 每步放大 ' + (2 * eta - 1).toFixed(2) + ' 倍，<span style="color:var(--red);font-weight:700;">发散！</span>';
+        return msg;
+    }
+
+    function run() {
+        var eta = parseFloat(etaEl.value), w = parseFloat(w0El.value);
+        trail = [w];
+        for (var i = 0; i < 20; i++) {
+            w = w - eta * grad(w);
+            trail.push(w);
+            if (Math.abs(w) > 1e6) break;
+        }
+        out.innerHTML = status(trail);
+        draw();
+    }
+    etaEl.addEventListener('input', function () { etaV.textContent = parseFloat(etaEl.value).toFixed(2); });
+    w0El.addEventListener('input', function () { w0V.textContent = parseFloat(w0El.value).toFixed(1); });
+    document.getElementById('gd-run').addEventListener('click', run);
+    document.getElementById('gd-reset').addEventListener('click', function () {
+        trail = [];
+        out.textContent = '点击"运行"开始梯度下降。';
+        draw();
+    });
+    draw();
+})();
+
+/* ================= 实验 2：softmax 演示器 ================= */
+(function () {
+    var NAMES = ['猫', '狗', '兔子'];
+    var ids = ['sm-o1', 'sm-o2', 'sm-o3'];
+    var els = ids.map(function (id) { return document.getElementById(id); });
+    var vals = ids.map(function (id) { return document.getElementById(id + '-v'); });
+    var tEl = document.getElementById('sm-t'), tV = document.getElementById('sm-t-v');
+    var bars = document.getElementById('sm-bars');
+    var note = document.getElementById('sm-note');
+
+    function render() {
+        var T = parseFloat(tEl.value);
+        tV.textContent = T.toFixed(1);
+        var o = els.map(function (el, i) {
+            var v = parseFloat(el.value);
+            vals[i].textContent = v.toFixed(1);
+            return v;
+        });
+        var exps = o.map(function (v) { return Math.exp(v / T); });
+        var sum = exps.reduce(function (a, b) { return a + b; }, 0);
+        var p = exps.map(function (e) { return e / sum; });
+        bars.innerHTML = '';
+        var maxI = p.indexOf(Math.max.apply(null, p));
+        p.forEach(function (pi, i) {
+            var row = document.createElement('div');
+            row.className = 'bar-row';
+            row.innerHTML = '<span class="lbl">' + NAMES[i] + (i === maxI ? ' ★' : '') + '</span>'
+                + '<div class="track"><div class="fill" style="width:' + (pi * 100).toFixed(1) + '%;"></div></div>'
+                + '<span class="num">' + (pi * 100).toFixed(1) + '%</span>';
+            bars.appendChild(row);
+        });
+        note.textContent = T < 0.7 ? 'T 较小：分布尖锐，最高分类别几乎"通吃"。'
+            : T > 1.6 ? 'T 较大：分布平缓，三个类别概率接近均匀。'
+            : '概率之和恒等于 1——一个类别升高，其余必然被"挤下去"。';
+    }
+    els.concat([tEl]).forEach(function (el) { el.addEventListener('input', render); });
+    render();
+})();
+
+/* ================= 实验 3：激活函数浏览器 ================= */
+(function () {
+    var xEl = document.getElementById('act-x'), xV = document.getElementById('act-x-v');
+    var out = document.getElementById('act-out');
+    var cv = document.getElementById('act-canvas');
+    var ctx = cv.getContext('2d');
+    var FNS = {
+        sigmoid: {
+            f: function (x) { return 1 / (1 + Math.exp(-x)); },
+            d: function (x) { var s = 1 / (1 + Math.exp(-x)); return s * (1 - s); },
+            name: 'sigmoid'
+        },
+        tanh: {
+            f: function (x) { return Math.tanh(x); },
+            d: function (x) { var t = Math.tanh(x); return 1 - t * t; },
+            name: 'tanh'
+        },
+        relu: {
+            f: function (x) { return Math.max(0, x); },
+            d: function (x) { return x > 0 ? 1 : 0; },
+            name: 'ReLU'
+        },
+        leaky: {
+            f: function (x) { return x > 0 ? x : 0.1 * x; },
+            d: function (x) { return x > 0 ? 1 : 0.1; },
+            name: 'Leaky ReLU'
+        }
+    };
+
+    function render() {
+        var key = document.querySelector('input[name="act-fn"]:checked').value;
+        var fn = FNS[key];
+        var x = parseFloat(xEl.value);
+        xV.textContent = x.toFixed(1);
+        out.innerHTML = 'f(' + x.toFixed(1) + ') = <strong style="color:var(--brand);">' + fn.f(x).toFixed(3) + '</strong>　|　f′(' + x.toFixed(1) + ') = <strong style="color:var(--red);">' + fn.d(x).toFixed(3) + '</strong>';
+
+        ctx.clearRect(0, 0, cv.width, cv.height);
+        var ox = cv.width / 2, oy = cv.height / 2, sc = 56;
+        var ymin = -1.6, ymax = 2.2, yr = ymax - ymin;
+        function Y(v) { return oy - (v / yr) * cv.height + (0.1 / yr) * cv.height; }
+        /* 坐标轴 */
+        ctx.strokeStyle = '#CBD5E1'; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(0, Y(0)); ctx.lineTo(cv.width, Y(0)); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(ox, 0); ctx.lineTo(ox, cv.height); ctx.stroke();
+        ctx.fillStyle = '#9AA0A6'; ctx.font = '11px sans-serif'; ctx.textAlign = 'left';
+        ctx.fillText('x', cv.width - 16, Y(0) - 6);
+        /* 曲线：f 实线蓝，f′ 虚线红 */
+        function plot(g, color, dash) {
+            ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.setLineDash(dash);
+            ctx.beginPath();
+            for (var i = 0; i <= 300; i++) {
+                var xx = -5.5 + (i / 300) * 11;
+                var px = ox + xx * sc, py = Y(g(xx));
+                if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+            }
+            ctx.stroke(); ctx.setLineDash([]);
+        }
+        plot(fn.f, '#2563EB', []);
+        plot(fn.d, '#DC2626', [6, 4]);
+        /* 当前点 */
+        var px2 = ox + x * sc;
+        ctx.fillStyle = '#2563EB';
+        ctx.beginPath(); ctx.arc(px2, Y(fn.f(x)), 6, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#DC2626'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(px2, Y(fn.d(x)), 5, 0, Math.PI * 2); ctx.stroke();
+        /* 图例 */
+        ctx.fillStyle = '#2563EB'; ctx.fillText('— f(x)', 14, 20);
+        ctx.fillStyle = '#DC2626'; ctx.fillText('- - f′(x)（导数）', 70, 20);
+    }
+    xEl.addEventListener('input', render);
+    document.querySelectorAll('input[name="act-fn"]').forEach(function (r) {
+        r.addEventListener('change', render);
+    });
+    render();
+})();
+</script>
+
+</div><!-- /page -->
+
+<script src="../../assets/katex/katex.min.js"></script>
+<script src="../../assets/katex/auto-render.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    renderMathInElement(document.body, {
+        delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '\\[', right: '\\]', display: true},
+            {left: '\\(', right: '\\)', display: false}
+        ]
+    });
+    document.querySelectorAll('.quiz').forEach(function (q) {
+        q.addEventListener('click', function () { q.classList.toggle('open'); });
+    });
+});
+</script>
+
 </body>
 </html>
