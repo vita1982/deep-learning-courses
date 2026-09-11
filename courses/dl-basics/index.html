@@ -374,7 +374,7 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
     <h3><span class="sec-no">5.2</span>梯度：把求导推广到向量</h3>
     <p>一元函数 \(f(x)\) 只有一个"旋钮"，导数只有一个数；但损失函数同时依赖成千上万个权重 \(x_1, x_2, \ldots, x_n\)——对每个旋钮单独问"拧它一下，\(f\) 变多少"，就得到 \(n\) 个偏导数。把它们排成一行，就是<strong>梯度</strong>（gradient）：</p>
     <p>\[\mathbf{x} = \begin{bmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{bmatrix}, \qquad \frac{\partial y}{\partial \mathbf{x}} = \left[ \frac{\partial y}{\partial x_1}, \frac{\partial y}{\partial x_2}, \ldots, \frac{\partial y}{\partial x_n} \right]\]</p>
-    <p>梯度就是第 1 章故事里"推力"的精确版本：梯度下降每一轮做的事就是 \(\mathbf{w} \leftarrow \mathbf{w} - \eta\,\nabla f\)。</p>
+    <p>有了梯度，梯度下降每一轮做的事就可以精确写出：\(\mathbf{w} \leftarrow \mathbf{w} - \eta\,\nabla f\)，其中 \(\eta\) 是学习率。</p>
     <p>手算一个例子：\(f = x_1^2 + 2x_2^2\)。对 \(x_1\) 求偏导（把 \(x_2\) 当常数）得 \(2x_1\)，对 \(x_2\) 求偏导得 \(4x_2\)，所以 \(\frac{\partial f}{\partial \mathbf{x}} = [2x_1,\ 4x_2]\)。在点 \((3, 2)\) 处梯度为 \([6, 8]\)——含义是：在 \((3,2)\) 附近，\(x_1\) 每增大一点 \(f\) 以约 6 倍速增加，\(x_2\) 每增大一点 \(f\) 以约 8 倍速增加。</p>
     <figure>
         <img src="images/gradient_layout.jpg" alt="分子布局与梯度方向示例" loading="lazy">
