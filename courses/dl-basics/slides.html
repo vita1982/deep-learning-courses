@@ -186,7 +186,7 @@
 <section>
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 目录</div>
   <div class="slide-title">📋 本讲目录</div>
-  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 线性代数基础：标量与向量</a></li><li><a href="#/9" style="color:#1E40AF;text-decoration:none;">2. 矩阵及其运算</a></li><li><a href="#/17" style="color:#1E40AF;text-decoration:none;">3. GPU 与向量化计算</a></li><li><a href="#/21" style="color:#1E40AF;text-decoration:none;">4. 数据表示与张量</a></li><li><a href="#/26" style="color:#1E40AF;text-decoration:none;">5. 矩阵微积分</a></li><li><a href="#/39" style="color:#1E40AF;text-decoration:none;">6. 自动微分与计算图</a></li><li><a href="#/46" style="color:#1E40AF;text-decoration:none;">7. 正向传播与反向传播</a></li><li><a href="#/52" style="color:#1E40AF;text-decoration:none;">8. 本讲小结与自测</a></li></ol></div>
+  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 线性代数基础：标量与向量</a></li><li><a href="#/9" style="color:#1E40AF;text-decoration:none;">2. 矩阵及其运算</a></li><li><a href="#/17" style="color:#1E40AF;text-decoration:none;">3. GPU 与向量化计算</a></li><li><a href="#/21" style="color:#1E40AF;text-decoration:none;">4. 数据表示与张量</a></li><li><a href="#/26" style="color:#1E40AF;text-decoration:none;">5. 矩阵微积分</a></li><li><a href="#/40" style="color:#1E40AF;text-decoration:none;">6. 自动微分与计算图</a></li><li><a href="#/47" style="color:#1E40AF;text-decoration:none;">7. 正向传播与反向传播</a></li><li><a href="#/53" style="color:#1E40AF;text-decoration:none;">8. 本讲小结与自测</a></li></ol></div>
 </section>
 <section class="section-divider">
   <div class="divider-num">1</div>
@@ -632,6 +632,28 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
         <span class="co-tag">🔑 反向传播在做什么</span>
         <p>从输出端出发将导数逐层向前传递，每经过一层便一并算出该层权重的梯度，并共享中间结果——求导代价从指数级降至与正向传播同量级。链式法则的高效实现支撑了整个训练流程。</p>
     </div>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第02讲 深度学习基础 › 5. 矩阵微积分</div>
+  <div class="slide-title">5.6 链式法则示例：平方损失的梯度</div>
+  <div class="slide-body">
+<p>同一问题——<strong>线性回归平方损失对 \(\mathbf{w}\) 的梯度</strong>——的两种写法，推导骨架一致：先分解为计算图，再沿链逐因子求导相乘。</p>
+<div style="display:flex;gap:16px;flex-wrap:wrap;margin:8px 0;">
+    <div style="flex:1;min-width:400px;background:#F0FDF4;border:1px solid #16A34A;border-radius:10px;padding:10px 16px;">
+        <p style="margin:0;font-weight:700;color:#15803D;">例 1 · 单样本（标量中间变量）</p>
+        <p style="margin:4px 0;font-size:18px;">假设：\(\mathbf{x}, \mathbf{w} \in \mathbb{R}^n,\ y \in \mathbb{R}\)，\(z = \big(\langle \mathbf{x}, \mathbf{w} \rangle - y\big)^2\)　｜　分解：\(a = \langle \mathbf{x}, \mathbf{w} \rangle,\ b = a - y,\ z = b^2\)</p>
+        <p style="text-align:center;margin:4px 0;font-size:18px;">\[\frac{\partial z}{\partial \mathbf{w}} = \frac{\partial b^2}{\partial b}\,\frac{\partial (a-y)}{\partial a}\,\frac{\partial \langle \mathbf{x}, \mathbf{w} \rangle}{\partial \mathbf{w}} = 2b \cdot 1 \cdot \mathbf{x}^\top = 2\big(\langle \mathbf{x}, \mathbf{w} \rangle - y\big)\,\mathbf{x}^\top\]</p>
+        <p style="margin:0;color:#166534;font-size:17px;">形状核验：\((1,n) = (1,1)\,(1,1)\,(1,n)\)，结果为行向量</p>
+    </div>
+    <div style="flex:1;min-width:400px;background:#EFF6FF;border:1px solid #2563EB;border-radius:10px;padding:10px 16px;">
+        <p style="margin:0;font-weight:700;color:#1D4ED8;">例 2 · 多样本（向量中间变量）</p>
+        <p style="margin:4px 0;font-size:18px;">假设：\(\mathbf{X} \in \mathbb{R}^{m \times n},\ \mathbf{w} \in \mathbb{R}^n,\ \mathbf{y} \in \mathbb{R}^m\)，\(z = \|\mathbf{X}\mathbf{w} - \mathbf{y}\|^2\)　｜　分解：\(\mathbf{a} = \mathbf{X}\mathbf{w},\ \mathbf{b} = \mathbf{a} - \mathbf{y},\ z = \|\mathbf{b}\|^2\)</p>
+        <p style="text-align:center;margin:4px 0;font-size:18px;">\[\frac{\partial z}{\partial \mathbf{w}} = \frac{\partial \|\mathbf{b}\|^2}{\partial \mathbf{b}}\,\frac{\partial (\mathbf{a}-\mathbf{y})}{\partial \mathbf{a}}\,\frac{\partial \mathbf{X}\mathbf{w}}{\partial \mathbf{w}} = 2\mathbf{b}^\top \cdot \mathbf{I} \cdot \mathbf{X} = 2\big(\mathbf{X}\mathbf{w} - \mathbf{y}\big)^\top \mathbf{X}\]</p>
+        <p style="margin:0;color:#1E3A8A;font-size:17px;">形状核验：\((1,n) = (1,m)\,(m,m)\,(m,n)\)；标量因子 \(1\) 变为单位矩阵 \(\mathbf{I}\)</p>
+    </div>
+</div>
+<p style="font-size:18px;color:#475569;">例 2 的结果正是线性回归平方损失的梯度，后续章节求解线性回归时将直接用到。</p>
   </div>
 </section>
 <section class="slide-short">

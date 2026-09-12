@@ -477,6 +477,24 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
             <tr><td>③ \(\mathbf{y} \in \mathbb{R}^m\)，\(\mathbf{u} \in \mathbb{R}^k\)，\(\mathbf{x} \in \mathbb{R}^n\)</td><td>\(\dfrac{\partial \mathbf{y}}{\partial \mathbf{x}} = \dfrac{\partial \mathbf{y}}{\partial \mathbf{u}}\,\dfrac{\partial \mathbf{u}}{\partial \mathbf{x}}\)</td><td>\((m,n) = (m,k)\,(k,n)\)</td></tr>
         </table>
     </div>
+    <p>以下两个例子演示上表情形②（损失为标量、参数为向量）中链式法则的具体运用。二者是同一问题的两种写法——<strong>线性回归平方损失对权重 \(\mathbf{w}\) 的梯度</strong>：例 1 为单样本形式，例 2 为多样本的矩阵形式，推导骨架完全一致。</p>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;margin:14px 0;">
+        <div style="flex:1;min-width:320px;background:#F0FDF4;border:1px solid #16A34A;border-radius:10px;padding:14px 20px;">
+            <p style="margin:0 0 8px;font-weight:700;color:#15803D;">例 1 · 单样本（标量中间变量）</p>
+            <p style="margin:0 0 4px;"><strong>假设</strong>：\(\mathbf{x}, \mathbf{w} \in \mathbb{R}^n\)，\(y \in \mathbb{R}\)，损失 \(z = \big(\langle \mathbf{x}, \mathbf{w} \rangle - y\big)^2\)。</p>
+            <p style="margin:0 0 4px;"><strong>分解</strong>：\(a = \langle \mathbf{x}, \mathbf{w} \rangle\)，\(b = a - y\)，\(z = b^2\)。</p>
+            <p style="margin:0 0 4px;"><strong>计算</strong>：\[\frac{\partial z}{\partial \mathbf{w}} = \frac{\partial z}{\partial b}\,\frac{\partial b}{\partial a}\,\frac{\partial a}{\partial \mathbf{w}} = \frac{\partial b^2}{\partial b}\,\frac{\partial (a-y)}{\partial a}\,\frac{\partial \langle \mathbf{x}, \mathbf{w} \rangle}{\partial \mathbf{w}} = 2b \cdot 1 \cdot \mathbf{x}^\top = 2\big(\langle \mathbf{x}, \mathbf{w} \rangle - y\big)\,\mathbf{x}^\top\]</p>
+            <p style="margin:0;color:#166534;font-size:15px;">形状核验：\((1,n) = (1,1)\,(1,1)\,(1,n)\)，结果为行向量。</p>
+        </div>
+        <div style="flex:1;min-width:320px;background:#EFF6FF;border:1px solid #2563EB;border-radius:10px;padding:14px 20px;">
+            <p style="margin:0 0 8px;font-weight:700;color:#1D4ED8;">例 2 · 多样本矩阵形式（向量中间变量）</p>
+            <p style="margin:0 0 4px;"><strong>假设</strong>：\(\mathbf{X} \in \mathbb{R}^{m \times n}\)，\(\mathbf{w} \in \mathbb{R}^n\)，\(\mathbf{y} \in \mathbb{R}^m\)，损失 \(z = \|\mathbf{X}\mathbf{w} - \mathbf{y}\|^2\)。</p>
+            <p style="margin:0 0 4px;"><strong>分解</strong>：\(\mathbf{a} = \mathbf{X}\mathbf{w}\)，\(\mathbf{b} = \mathbf{a} - \mathbf{y}\)，\(z = \|\mathbf{b}\|^2\)。</p>
+            <p style="margin:0 0 4px;"><strong>计算</strong>：\[\frac{\partial z}{\partial \mathbf{w}} = \frac{\partial z}{\partial \mathbf{b}}\,\frac{\partial \mathbf{b}}{\partial \mathbf{a}}\,\frac{\partial \mathbf{a}}{\partial \mathbf{w}} = \frac{\partial \|\mathbf{b}\|^2}{\partial \mathbf{b}}\,\frac{\partial (\mathbf{a}-\mathbf{y})}{\partial \mathbf{a}}\,\frac{\partial \mathbf{X}\mathbf{w}}{\partial \mathbf{w}} = 2\mathbf{b}^\top \cdot \mathbf{I} \cdot \mathbf{X} = 2\big(\mathbf{X}\mathbf{w} - \mathbf{y}\big)^\top \mathbf{X}\]</p>
+            <p style="margin:0;color:#1E3A8A;font-size:15px;">形状核验：\((1,n) = (1,m)\,(m,m)\,(m,n)\)，结果为行向量。</p>
+        </div>
+    </div>
+    <p>两个例子的推导骨架完全相同：先将复合函数<strong>分解</strong>为三步计算图 \(a \to b \to z\)，再沿链逐因子求导相乘。区别仅在于中间变量由标量 \(a, b\) 变为向量 \(\mathbf{a}, \mathbf{b}\)，相应的中间因子由 \(1\) 变为单位矩阵 \(\mathbf{I}\)。例 2 的结果 \(2(\mathbf{X}\mathbf{w} - \mathbf{y})^\top \mathbf{X}\) 正是线性回归平方损失的梯度，后续章节求解线性回归时将直接用到这一结论。</p>
     <p>深度学习中最常用的是情形②：损失 \(y\) 是标量，中间结果 \(\mathbf{u}\) 与参数 \(\mathbf{x}\) 都是向量。神经网络是由各层逐层复合而成的深层函数 \(f^{(L)} \circ \cdots \circ f^{(2)} \circ f^{(1)}\)，损失对第一层参数的导数可分解为一系列简单导数的乘积：</p>
     <p>\[\frac{\partial f^{(L)}}{\partial f^{(L-1)}} \cdot \frac{\partial f^{(L-1)}}{\partial f^{(L-2)}} \cdots \frac{\partial f^{(2)}}{\partial f^{(1)}}\]</p>
     <p>该乘积给出的是损失对第一层<strong>输出</strong>的导数；再乘以各层对自身参数的局部导数 \(\partial f^{(l)}/\partial \mathbf{w}^{(l)}\)，即得到每层权重的梯度。</p>
