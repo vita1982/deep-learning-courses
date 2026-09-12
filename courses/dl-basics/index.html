@@ -468,8 +468,17 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
 
     <h3><span class="sec-no">5.6</span>链式法则与反向传播</h3>
     <p>复合函数的求导遵循链式法则：先对外层函数求导，再乘以内层函数的导数。它是整个反向传播的数学基础：</p>
-    <p>\[\text{标量：}\; y=f(u),\; u=g(x) \;\Rightarrow\; \frac{dy}{dx} = \frac{dy}{du}\cdot\frac{du}{dx} \qquad\qquad \text{向量：}\; \frac{\partial y}{\partial \mathbf{x}} = \underbrace{\frac{\partial \mathbf{u}}{\partial \mathbf{x}}}_{(n,k)} \underbrace{\frac{\partial y}{\partial \mathbf{u}}}_{(k,1)}\]</p>
-    <p>向量形式中，每个因子均为 5.4 节的雅可比矩阵，各局部导数按矩阵乘法依次相乘，相邻形状必须匹配。神经网络是由各层逐层复合而成的深层函数 \(f^{(L)} \circ \cdots \circ f^{(2)} \circ f^{(1)}\)，损失对第一层参数的导数可分解为一系列简单导数的乘积：</p>
+    <p>\[\text{标量：}\; y=f(u),\; u=g(x) \;\Rightarrow\; \frac{dy}{dx} = \frac{dy}{du}\cdot\frac{du}{dx}\]</p>
+    <p>推广到向量时（分母布局），每个因子都是 5.4 节的雅可比矩阵，<strong>内层在左、外层在右</strong>依次相乘，相邻形状必须匹配。按 \(y\)、\(u\)、\(\mathbf{x}\) 分别为标量或向量，链式法则分三档递进：</p>
+    <div class="tbl-wrap">
+        <table>
+            <tr><th>情形</th><th>链式法则</th><th>形状核验</th></tr>
+            <tr><td>① \(y\)、\(u\) 为标量，\(\mathbf{x} \in \mathbb{R}^n\)</td><td>\(\dfrac{\partial y}{\partial \mathbf{x}} = \dfrac{\partial u}{\partial \mathbf{x}}\,\dfrac{\partial y}{\partial u}\)</td><td>\((n,1) = (n,1)\,(1,1)\)</td></tr>
+            <tr><td>② \(y\) 为标量，\(\mathbf{u} \in \mathbb{R}^k\)，\(\mathbf{x} \in \mathbb{R}^n\)</td><td>\(\dfrac{\partial y}{\partial \mathbf{x}} = \dfrac{\partial \mathbf{u}}{\partial \mathbf{x}}\,\dfrac{\partial y}{\partial \mathbf{u}}\)</td><td>\((n,1) = (n,k)\,(k,1)\)</td></tr>
+            <tr><td>③ \(\mathbf{y} \in \mathbb{R}^m\)，\(\mathbf{u} \in \mathbb{R}^k\)，\(\mathbf{x} \in \mathbb{R}^n\)</td><td>\(\dfrac{\partial \mathbf{y}}{\partial \mathbf{x}} = \dfrac{\partial \mathbf{u}}{\partial \mathbf{x}}\,\dfrac{\partial \mathbf{y}}{\partial \mathbf{u}}\)</td><td>\((n,m) = (n,k)\,(k,m)\)</td></tr>
+        </table>
+    </div>
+    <p>深度学习中最常用的是情形②：损失 \(y\) 是标量，中间结果 \(\mathbf{u}\) 与参数 \(\mathbf{x}\) 都是向量。神经网络是由各层逐层复合而成的深层函数 \(f^{(L)} \circ \cdots \circ f^{(2)} \circ f^{(1)}\)，损失对第一层参数的导数可分解为一系列简单导数的乘积：</p>
     <p>\[\frac{\partial f^{(2)}}{\partial f^{(1)}} \cdot \frac{\partial f^{(3)}}{\partial f^{(2)}} \cdots \frac{\partial f^{(L)}}{\partial f^{(L-1)}}\]</p>
     <p>该乘积给出的是损失对第一层<strong>输出</strong>的导数；再乘以各层对自身参数的局部导数 \(\partial f^{(l)}/\partial \mathbf{w}^{(l)}\)，即得到每层权重的梯度。</p>
     <div class="callout key">

@@ -619,8 +619,16 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
   <div class="slide-title">5.6 链式法则与反向传播</div>
   <div class="slide-body">
 <p>复合函数的求导遵循链式法则，它是整个反向传播的数学基础：</p>
-<p>\[\text{标量：}\; y=f(u),\; u=g(x) \;\Rightarrow\; \frac{dy}{dx} = \frac{dy}{du}\cdot\frac{du}{dx} \qquad\qquad \text{向量：}\; \frac{\partial y}{\partial \mathbf{x}} = \underbrace{\frac{\partial \mathbf{u}}{\partial \mathbf{x}}}_{(n,k)} \underbrace{\frac{\partial y}{\partial \mathbf{u}}}_{(k,1)}\]</p>
-<p>向量形式中，每个因子均为 5.4 节的雅可比矩阵，按矩阵乘法依次相乘、相邻形状必须匹配。神经网络是由各层逐层复合而成的深层函数 \(f^{(L)} \circ \cdots \circ f^{(2)} \circ f^{(1)}\)，链式法则使我们能够将"损失对第一层参数的导数"分解为一系列简单导数的乘积 \(\frac{\partial f^{(2)}}{\partial f^{(1)}} \cdot \frac{\partial f^{(3)}}{\partial f^{(2)}} \cdots \frac{\partial f^{(L)}}{\partial f^{(L-1)}}\)。</p>
+<p>\[\text{标量：}\; y=f(u),\; u=g(x) \;\Rightarrow\; \frac{dy}{dx} = \frac{dy}{du}\cdot\frac{du}{dx}\]</p>
+<div class="tbl-wrap">
+        <table>
+            <tr><th>情形</th><th>链式法则（分母布局）</th><th>形状核验</th></tr>
+            <tr><td>① \(y,u\) 标量，\(\mathbf{x}\in\mathbb{R}^n\)</td><td>\(\frac{\partial y}{\partial \mathbf{x}} = \frac{\partial u}{\partial \mathbf{x}}\frac{\partial y}{\partial u}\)</td><td>\((n,1)=(n,1)(1,1)\)</td></tr>
+            <tr><td>② \(y\) 标量，\(\mathbf{u}\in\mathbb{R}^k,\mathbf{x}\in\mathbb{R}^n\)</td><td>\(\frac{\partial y}{\partial \mathbf{x}} = \frac{\partial \mathbf{u}}{\partial \mathbf{x}}\frac{\partial y}{\partial \mathbf{u}}\)</td><td>\((n,1)=(n,k)(k,1)\)</td></tr>
+            <tr><td>③ \(\mathbf{y}\in\mathbb{R}^m,\mathbf{u}\in\mathbb{R}^k,\mathbf{x}\in\mathbb{R}^n\)</td><td>\(\frac{\partial \mathbf{y}}{\partial \mathbf{x}} = \frac{\partial \mathbf{u}}{\partial \mathbf{x}}\frac{\partial \mathbf{y}}{\partial \mathbf{u}}\)</td><td>\((n,m)=(n,k)(k,m)\)</td></tr>
+        </table>
+    </div>
+<p>每个因子均为 5.4 节的雅可比矩阵，<strong>内层在左、外层在右</strong>依次相乘，相邻形状必须匹配；深度学习最常用情形②。神经网络是由各层逐层复合而成的深层函数 \(f^{(L)} \circ \cdots \circ f^{(2)} \circ f^{(1)}\)，损失对第一层参数的导数可分解为乘积 \(\frac{\partial f^{(2)}}{\partial f^{(1)}} \cdot \frac{\partial f^{(3)}}{\partial f^{(2)}} \cdots \frac{\partial f^{(L)}}{\partial f^{(L-1)}}\)。</p>
 <div class="callout key">
         <span class="co-tag">🔑 反向传播在做什么</span>
         <p>从输出端出发将导数逐层向前传递，每经过一层便一并算出该层权重的梯度，并共享中间结果——求导代价从指数级降至与正向传播同量级。链式法则的高效实现支撑了整个训练流程。</p>
