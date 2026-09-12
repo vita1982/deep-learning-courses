@@ -490,7 +490,7 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 5. 矩阵微积分</div>
   <div class="slide-title">5.1 标量对标量：求导回顾</div>
   <div class="slide-body">
-<p>训练神经网络的每一步都依赖求导。先回顾一元函数的求导：导数是函数曲线在某点处切线的斜率。例如 \(f(x) = x^2\) 的导数 \(\frac{df}{dx} = 2x\)，在 \(x = 1\) 处斜率为 2。</p>
+<p>神经网络的训练过程每一步都依赖求导运算。回顾一元函数的求导：导数即函数曲线在某点处切线的斜率。例如 \(f(x) = x^2\) 的导数 \(\frac{df}{dx} = 2x\)，在 \(x = 1\) 处斜率为 2。</p>
 <figure>
         <img src="images/derivative_tangent.png" alt="导数的几何意义：切线斜率" loading="lazy">
         <figcaption>导数的几何意义：\(f(x)=x^2\) 在 \(x=1\) 处的切线斜率等于该点的导数 2。梯度下降正是沿着"斜率"指示的方向寻找最低点。</figcaption>
@@ -509,10 +509,10 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 5. 矩阵微积分</div>
   <div class="slide-title">5.2 标量对向量：梯度（右上格）</div>
   <div class="slide-body">
-<p>先看"全局地图"：\(y\) 和 \(\mathbf{x}\) 各为标量或向量，四种组合对应导数的四种体量——一个数、一排数、一张表：</p>
+<p>首先看四种组合的全局结构：\(y\) 与 \(\mathbf{x}\) 各为标量或向量，四种组合对应导数的四种形状——标量、向量、矩阵：</p>
 <figure>
         <img src="images/grad_shape_map.jpg" alt="标量与向量四种组合的导数形状对照" loading="lazy" class="img-tall">
-        <figcaption>求导想成"挨个试灵敏度"：装不下就排成一排，再不够就铺成一张表。深度学习天天用右上格——损失（标量）对权重（向量）求导，结果就是梯度。</figcaption>
+        <figcaption>求导可理解为对各分量的逐一敏感度分析：结果为单个数值时是标量，多个结果按序排列成向量，进一步则组织成矩阵。深度学习中最常用的是右上格——损失（标量）对权重（向量）求导，其结果即为梯度。</figcaption>
     </figure>
   </div>
 </section>
@@ -520,10 +520,10 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 5. 矩阵微积分</div>
   <div class="slide-title">5.2 标量对向量：梯度（右上格）</div>
   <div class="slide-body">
-<p>当函数的自变量从标量变成向量时，导数也升级为梯度（gradient）：多元函数 \(y = f(\mathbf{x})\) 对每个分量求偏导，排成一行就是梯度——一张完整的"灵敏度清单"：</p>
+<p>当函数的自变量从标量扩展为向量时，导数也相应升级为梯度（gradient）：多元函数 \(y = f(\mathbf{x})\) 对每个分量求偏导，按序排成一行即为梯度——它完整刻画了函数对每个自变量的敏感程度：</p>
 <p>\[\mathbf{x} = \begin{bmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{bmatrix}, \qquad \frac{\partial y}{\partial \mathbf{x}} = \left[ \frac{\partial y}{\partial x_1}, \frac{\partial y}{\partial x_2}, \ldots, \frac{\partial y}{\partial x_n} \right]\]</p>
-<p>例：\(f = x_1^2 + 2x_2^2\)，则 \(\frac{\partial f}{\partial \mathbf{x}} = [2x_1,\ 4x_2]\)，在 \((3,2)\) 处为 \([6, 8]\)。梯度垂直于等高线、指向上坡最陡方向，所以梯度下降沿<strong>负</strong>梯度走：\(\mathbf{w} \leftarrow \mathbf{w} - \eta\,\nabla f\)。</p>
-<p>与 1.3 节的连接：正则化惩罚 \(\lambda\|\mathbf{w}\|^2\) 的梯度是 \(2\lambda\mathbf{w}\)——梯度下降每轮减去它，就是权重衰减"往 0 推"的数学本体。</p>
+<p>例：\(f = x_1^2 + 2x_2^2\)，则 \(\frac{\partial f}{\partial \mathbf{x}} = [2x_1,\ 4x_2]\)，在 \((3,2)\) 处为 \([6, 8]\)。梯度与等高线垂直、指向上升最陡的方向，因此梯度下降沿<strong>负</strong>梯度方向迭代：\(\mathbf{w} \leftarrow \mathbf{w} - \eta\,\nabla f\)。</p>
+<p>与 1.3 节的联系：正则化惩罚项 \(\lambda\|\mathbf{w}\|^2\) 的梯度为 \(2\lambda\mathbf{w}\)——梯度下降每轮减去该项，即在数学上实现了权重衰减将权重向 0 收缩的效果。</p>
   </div>
 </section>
 <section>
@@ -540,7 +540,7 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 5. 矩阵微积分</div>
   <div class="slide-title">5.3 向量对标量与布局约定（左下格）</div>
   <div class="slide-body">
-<p>先补全全局地图的左下格：\(\mathbf{y}\) 是 \(m\) 个分量的向量、\(x\) 是标量时，\(\mathbf{y}\) 的每个分量都对 \(x\) 求导，\(m\) 个结果排成一列，形状与 \(\mathbf{y}\) 相同。而当两边都是向量时，\(m \times n\) 个偏导数"横着排还是竖着排"，文献中有两种约定：</p>
+<p>左下格对应的情形：当 \(\mathbf{y}\) 为含 \(m\) 个分量的向量、\(x\) 为标量时，\(\mathbf{y}\) 的每个分量分别对 \(x\) 求导，所得 \(m\) 个结果排成一列，形状与 \(\mathbf{y}\) 相同。而当双方均为向量时，\(m \times n\) 个偏导数按行排列或按列排列，文献中存在两种约定：</p>
 <div class="tbl-wrap">
         <table>
             <tr><th>布局约定</th><th>含义</th></tr>
@@ -554,7 +554,7 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
     </figure>
 <div class="callout key">
         <span class="co-tag">🔑 初学者理解</span>
-        <p>两种布局只是"摆放方式"不同，数值完全一样、互为转置。《动手学深度学习》教材采用分母布局（梯度是列向量）。<strong>同一份材料里必须统一用同一种</strong>——混着用会差一个转置，结果全错。实用技巧：查每个公式时确认一句"这个结果是列向量还是行向量"即可。本讲义统一采用分子布局。</p>
+        <p>两种布局仅是排列方式不同，数值完全一致、互为转置。《动手学深度学习》教材采用分母布局（梯度为列向量）。<strong>同一份材料中必须统一采用同一种约定</strong>——混用将相差一个转置，导致结果错误。实用建议：使用每个公式前确认其结果为列向量还是行向量即可。本讲义统一采用分子布局。</p>
     </div>
   </div>
 </section>
@@ -564,7 +564,7 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
   <div class="slide-body">
 <figure>
         <img src="images/layout_vector_scalar.jpg" alt="向量对标量求导" loading="lazy" class="img-tall">
-        <figcaption>左下格：\(\mathbf{y}\) 是 \(m\) 个分量的向量、\(x\) 是标量——每个分量都对 \(x\) 求导，\(m\) 个结果排成一列，形状与 \(\mathbf{y}\) 相同。</figcaption>
+        <figcaption>左下格：\(\mathbf{y}\) 为含 \(m\) 个分量的向量、\(x\) 为标量——每个分量分别对 \(x\) 求导，所得 \(m\) 个结果排成一列，形状与 \(\mathbf{y}\) 相同。</figcaption>
     </figure>
   </div>
 </section>
@@ -572,17 +572,17 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 5. 矩阵微积分</div>
   <div class="slide-title">5.3 向量对标量与布局约定（左下格）</div>
   <div class="slide-body">
-<p>亲手摆一遍：\(y = x_1^2 + 2x_2^2\) 的两个偏导是 \(2x_1\) 和 \(4x_2\)。<strong>摆法 A（分子布局，行跟着 \(y\) 走）</strong>：横躺成 \([\,2x_1\ \ 4x_2\,]\)（\(1 \times 2\)）；<strong>摆法 B（分母布局，行跟着 \(\mathbf{x}\) 走）</strong>：竖躺（\(2 \times 1\)）。同一对数字，互为转置——摆法决定后面矩阵乘法能不能做、乘出什么形状。教材用摆法 B 的好处：梯度竖着摆、与 \(\mathbf{w}\) 同形，更新式两边直接对齐。</p>
+<p>具体排列示例：\(y = x_1^2 + 2x_2^2\) 的两个偏导分别为 \(2x_1\) 与 \(4x_2\)。<strong>排列方式 A（分子布局，行数由 \(y\) 的分量数决定）</strong>：排列为行向量 \([\,2x_1\ \ 4x_2\,]\)（\(1 \times 2\)）；<strong>排列方式 B（分母布局，行数由 \(\mathbf{x}\) 的分量数决定）</strong>：排列为列向量（\(2 \times 1\)）。两种方式数值相同、互为转置——排列方式决定后续矩阵乘法能否进行及结果的形状。教材采用方式 B 的优点：梯度为列向量、与 \(\mathbf{w}\) 同形，更新式两端形状自然对齐。</p>
   </div>
 </section>
 <section>
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 5. 矩阵微积分</div>
   <div class="slide-title">5.4 向量对向量：雅可比矩阵（右下格）</div>
   <div class="slide-body">
-<p>\(\mathbf{y}\) 和 \(\mathbf{x}\) 都是向量时，导数是一张 \(m \times n\) 的"导数表"——<strong>雅可比矩阵</strong>：第 \(i\) 行第 \(j\) 列是 \(\partial y_i / \partial x_j\)，两两组合一个不漏。记忆锚点：<strong>行看分子，列看分母</strong>。</p>
+<p>当 \(\mathbf{y}\) 与 \(\mathbf{x}\) 均为向量时，导数构成一个 \(m \times n\) 的矩阵——<strong>雅可比矩阵</strong>：第 \(i\) 行第 \(j\) 列的元素为 \(\partial y_i / \partial x_j\)，\(m \times n\) 种组合无一遗漏。记忆要点：<strong>行对应分子，列对应分母</strong>。</p>
 <figure>
         <img src="images/jacobian_matrix.jpg" alt="雅可比矩阵的构造" loading="lazy" class="img-tall">
-        <figcaption>雅可比矩阵的构造：梯度（5.2）是它的一行，"向量对标量"（5.3）是它的一列；反向传播在层与层之间传递的就是这张表。</figcaption>
+        <figcaption>雅可比矩阵的构造：梯度（5.2）相当于它的一行，"向量对标量"（5.3）相当于它的一列；反向传播在层与层之间传递的正是这一矩阵。</figcaption>
     </figure>
   </div>
 </section>
@@ -590,10 +590,10 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 5. 矩阵微积分</div>
   <div class="slide-title">5.5 求导公式速查</div>
   <div class="slide-body">
-<p>四种组合里最常用的求导结果汇成两张速查表，查表即用（\(\mathbf{a}\)、\(\mathbf{A}\) 不是 \(\mathbf{x}\) 的函数）：</p>
+<p>将四种组合中最常用的求导结果汇总为两张速查表，查表即用（\(\mathbf{a}\)、\(\mathbf{A}\) 不是 \(\mathbf{x}\) 的函数）：</p>
 <figure>
         <img src="images/formula_tables.jpg" alt="常用向量/矩阵求导公式表" loading="lazy" class="img-tall">
-        <figcaption>表一基本式：常向量→\(\mathbf{0}\)、\(\mathbf{x}\)→\(\mathbf{I}\)、\(\mathbf{A}\mathbf{x}\)→\(\mathbf{A}\)、\(\mathbf{x}^\top\mathbf{A}\)→\(\mathbf{A}^\top\)；表二复合式：常数倍、矩阵倍、加法——一元规则的矩阵版。数字验证：\(\mathbf{A}=\begin{bmatrix} 1 & 2 \\ 3 & 4 \end{bmatrix}\) 时 \(\mathbf{x}^\top\mathbf{A}=[\,x_1+3x_2,\ 2x_1+4x_2\,]\)，偏导排成 \(\begin{bmatrix} 1 & 3 \\ 2 & 4 \end{bmatrix}=\mathbf{A}^\top\)。</figcaption>
+        <figcaption>表一（基本式）：常向量→\(\mathbf{0}\)、\(\mathbf{x}\)→\(\mathbf{I}\)、\(\mathbf{A}\mathbf{x}\)→\(\mathbf{A}\)、\(\mathbf{x}^\top\mathbf{A}\)→\(\mathbf{A}^\top\)；表二（复合式）：常数倍、矩阵倍与加法——均为相应一元规则的矩阵推广。数字验证：\(\mathbf{A}=\begin{bmatrix} 1 & 2 \\ 3 & 4 \end{bmatrix}\) 时 \(\mathbf{x}^\top\mathbf{A}=[\,x_1+3x_2,\ 2x_1+4x_2\,]\)，偏导排列成 \(\begin{bmatrix} 1 & 3 \\ 2 & 4 \end{bmatrix}=\mathbf{A}^\top\)。</figcaption>
     </figure>
   </div>
 </section>
@@ -603,7 +603,7 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
   <div class="slide-body">
 <figure>
         <img src="images/grad_shape_tensor.jpg" alt="标量、向量、矩阵九种组合的导数形状总览" loading="lazy" class="img-tall">
-        <figcaption>九种组合的形状规律一句话：<strong>结果维度数 = 分子维度数 + 分母维度数</strong>。矩阵对矩阵是四维，纸上画不下——实际交给框架的自动微分，你只需记住"梯度与权重同形"。</figcaption>
+        <figcaption>九种组合的形状规律可概括为一条：<strong>结果维度数 = 分子维度数 + 分母维度数</strong>。矩阵对矩阵的导数为四维张量，已无法在平面上画出——实际计算由框架的自动微分完成，只需记住"梯度与权重同形"即可。</figcaption>
     </figure>
   </div>
 </section>
@@ -613,10 +613,10 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
   <div class="slide-body">
 <p>复合函数的求导遵循链式法则，它是整个反向传播的数学基础：</p>
 <p>\[\text{标量：}\; y=f(u),\; u=g(x) \;\Rightarrow\; \frac{dy}{dx} = \frac{dy}{du}\cdot\frac{du}{dx} \qquad\qquad \text{向量：}\; \frac{\partial y}{\partial \mathbf{x}} = \underbrace{\frac{\partial y}{\partial \mathbf{u}}}_{(1,k)} \underbrace{\frac{\partial \mathbf{u}}{\partial \mathbf{x}}}_{(k,n)}\]</p>
-<p>向量版本里，每个因子都是 5.4 节的雅可比矩阵，按矩阵乘法依次相乘、形状必须能匹配。神经网络就是一层层复合起来的超长函数 \(f^{(L)} \circ \cdots \circ f^{(2)} \circ f^{(1)}\)，链式法则让我们能把"损失对第一层参数的导数"拆成一连串简单导数的乘积。</p>
+<p>向量形式中，每个因子均为 5.4 节的雅可比矩阵，按矩阵乘法依次相乘、相邻形状必须匹配。神经网络是由各层逐层复合而成的深层函数 \(f^{(L)} \circ \cdots \circ f^{(2)} \circ f^{(1)}\)，链式法则使我们能够将"损失对第一层参数的导数"分解为一系列简单导数的乘积。</p>
 <div class="callout key">
-        <span class="co-tag">🔑 反向传播在干什么</span>
-        <p>从输出端开始把导数逐层往回传，每传一层顺手算出该层权重的梯度，共享中间结果——求导成本从"指数级"降到"和正向计算同量级"。链式法则的高效实现撑起了整个训练流程。</p>
+        <span class="co-tag">🔑 反向传播在做什么</span>
+        <p>从输出端出发将导数逐层向前传递，每经过一层便一并算出该层权重的梯度，并共享中间结果——求导代价从指数级降至与正向传播同量级。链式法则的高效实现支撑了整个训练流程。</p>
     </div>
   </div>
 </section>
@@ -626,14 +626,14 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
   <div class="slide-body">
 <div class="tbl-wrap">
         <table>
-            <tr><th>场景</th><th>结果形状</th><th>一句话</th></tr>
-            <tr><td>标量 \(y\) 对向量 \(\mathbf{x}\)</td><td>一排数（分子布局为行向量）</td><td>梯度——训练的步伐</td></tr>
-            <tr><td>向量 \(\mathbf{y}\) 对向量 \(\mathbf{x}\)</td><td>\(m \times n\) 矩阵</td><td>雅可比矩阵——反向传播传的就是它</td></tr>
-            <tr><td>分子布局</td><td>行跟分子 \(\mathbf{y}\) 走</td><td>本讲义用它</td></tr>
-            <tr><td>分母布局</td><td>行跟分母 \(\mathbf{x}\) 走</td><td>教材用它，梯度与 \(\mathbf{x}\) 同形</td></tr>
+            <tr><th>场景</th><th>结果形状</th><th>说明</th></tr>
+            <tr><td>标量 \(y\) 对向量 \(\mathbf{x}\)</td><td>向量（分子布局下为行向量）</td><td>梯度——参数更新的依据</td></tr>
+            <tr><td>向量 \(\mathbf{y}\) 对向量 \(\mathbf{x}\)</td><td>\(m \times n\) 矩阵</td><td>雅可比矩阵——反向传播在层间传递的对象</td></tr>
+            <tr><td>分子布局</td><td>行数由分子 \(\mathbf{y}\) 决定</td><td>本讲义采用</td></tr>
+            <tr><td>分母布局</td><td>行数由分母 \(\mathbf{x}\) 决定</td><td>教材采用，梯度与 \(\mathbf{x}\) 同形</td></tr>
         </table>
     </div>
-<p>课后思考：手算 \(\partial(\mathbf{x}^\top\mathbf{A}\mathbf{x})/\partial\mathbf{x}\)；用公式表验证 \(\partial(\lambda\|\mathbf{w}\|^2)/\partial\mathbf{w} = 2\lambda\mathbf{w}\)（提示：把 \(\|\mathbf{w}\|^2\) 展开逐项求偏导，再套常数倍规则）；找一份分母布局的资料对比同一个公式差在哪个转置。</p>
+<p>课后思考：手算 \(\partial(\mathbf{x}^\top\mathbf{A}\mathbf{x})/\partial\mathbf{x}\)；用公式表验证 \(\partial(\lambda\|\mathbf{w}\|^2)/\partial\mathbf{w} = 2\lambda\mathbf{w}\)（提示：将 \(\|\mathbf{w}\|^2\) 展开逐项求偏导，再套用常数倍规则）；找一份采用分母布局的资料，对比同一公式在两种布局下相差哪个转置。</p>
   </div>
 </section>
 <section class="section-divider">
