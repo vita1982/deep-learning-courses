@@ -813,7 +813,7 @@ loss.backward() # 一键反向传播，计算所有梯度</pre>
             <tr><td>特殊矩阵</td><td>对称矩阵可特征分解；正定 ↔ 特征值全正；正交矩阵 \(\mathbf{Q}^\top\mathbf{Q}=\mathbf{I}\)</td></tr>
             <tr><td>向量化</td><td>GPU 并行矩阵运算；用 np.dot 代替 for 循环</td></tr>
             <tr><td>张量</td><td>0~5 维张量与数据的对应关系；批量维度在第 0 维；dtype 与设备一致性</td></tr>
-            <tr><td>矩阵微积分</td><td>梯度 = 偏导列向量；分母布局约定（与教材一致）；链式法则的向量形式</td></tr>
+            <tr><td>矩阵微积分</td><td>梯度 = 偏导列向量；分母布局约定（与教材一致）；雅可比矩阵；链式法则的向量形式</td></tr>
             <tr><td>自动微分</td><td>三种微分方式的区别；计算图 DAG；PyTorch 动态图与 backward()</td></tr>
             <tr><td>反向传播</td><td>反向模式为何适合深度学习；逐步推演梯度</td></tr>
         </table>
