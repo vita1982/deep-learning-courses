@@ -354,7 +354,7 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
     <p class="chapter-lede">本章按"\(y\) 与 \(\mathbf{x}\) 分别为标量或向量"的四种组合依次展开：二者均为标量时，导数仍为标量（5.1）；其中一方为向量时，导数按分量排列成向量（5.2 梯度、5.3）；双方均为向量时，导数构成矩阵（5.4 雅可比矩阵）；随后给出常用的求导公式速查表（5.5）与反向传播的数学核心——链式法则（5.6）。</p>
     <figure>
         <img src="images/grad_shape_map.jpg" alt="标量与向量四种组合的导数形状对照" loading="lazy">
-        <figcaption>本章的结构总览：横轴为 \(\mathbf{x}\)（求导的自变量），纵轴为 \(y\)（被求导的函数）。求导可以理解为对各自变量分量的逐一敏感度分析：\(y\) 含 \(m\) 个分量、\(\mathbf{x}\) 含 \(n\) 个分量时，至多需要计算 \(m \times n\) 个偏导数——结果为单个数值时是标量，多个结果按序排列成向量，进一步增多则组织成矩阵。</figcaption>
+        <figcaption>本章的结构总览：横轴为 \(\mathbf{x}\)（求导的自变量），纵轴为 \(y\)（被求导的函数）。求导可以理解为对每个自变量分量逐一进行敏感度分析：\(y\) 含 \(m\) 个分量、\(\mathbf{x}\) 含 \(n\) 个分量时，至多需要计算 \(m \times n\) 个偏导数——结果为单个数值时是标量，多个结果按序排列成向量，进一步增多则组织成矩阵。</figcaption>
     </figure>
 
     <h3><span class="sec-no">5.1</span>标量对标量：求导回顾</h3>
@@ -383,7 +383,7 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
         <figcaption>梯度的定义：\(\mathbf{x}\) 是由 \(n\) 个分量构成的列向量，将 \(y\) 对每个分量分别求偏导的结果按序排列成一行。</figcaption>
     </figure>
     <p>\[\mathbf{x} = \begin{bmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{bmatrix}, \qquad \frac{\partial y}{\partial \mathbf{x}} = \left[ \frac{\partial y}{\partial x_1}, \frac{\partial y}{\partial x_2}, \ldots, \frac{\partial y}{\partial x_n} \right]\]</p>
-    <p>有了梯度，梯度下降每一轮做的事就可以精确写出：\(\mathbf{w} \leftarrow \mathbf{w} - \eta\,\nabla f\)，其中 \(\eta\) 是学习率。</p>
+    <p>有了梯度，梯度下降的每轮迭代更新即可精确写为：\(\mathbf{w} \leftarrow \mathbf{w} - \eta\,\nabla f\)，其中 \(\eta\) 是学习率，\(\nabla f\) 取上述行向量梯度的转置（列向量），与 \(\mathbf{w}\) 同形。</p>
     <p>以一个具体函数为例：\(f = x_1^2 + 2x_2^2\)。对 \(x_1\) 求偏导（将 \(x_2\) 视为常数）得 \(2x_1\)，对 \(x_2\) 求偏导得 \(4x_2\)，故 \(\frac{\partial f}{\partial \mathbf{x}} = [2x_1,\ 4x_2]\)。在点 \((3, 2)\) 处梯度为 \([6, 8]\)——其含义是：在 \((3,2)\) 附近，\(x_1\) 每增加一个微小量，\(f\) 约以 6 倍的速率增长；\(x_2\) 每增加一个微小量，\(f\) 约以 8 倍的速率增长。</p>
     <figure>
         <img src="images/grad_contour_example.jpg" alt="梯度的几何意义：等高线与最陡方向" loading="lazy">
@@ -423,7 +423,7 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
     </div>
     <div class="callout warn">
         <span class="co-tag">⚠️ 注意</span>
-        <p>不同教材与论文的约定并不一致；<strong>同一份材料中必须统一采用同一种约定</strong>——混用将相差一个转置，导致结果错误。实际建议：不必死记布局名称，使用每个公式前确认其结果为列向量还是行向量，并保持前后一致即可。本讲义统一采用分子布局。</p>
+        <p>不同教材与论文的约定并不一致；<strong>同一份材料中必须统一采用同一种约定</strong>——混用将相差一个转置，导致结果错误。实际建议：使用每个公式前确认其结果为列向量还是行向量，并保持前后一致即可。本讲义统一采用分子布局。</p>
     </div>
 
     <h3><span class="sec-no">5.4</span>向量对向量：雅可比矩阵（右下格）</h3>
@@ -435,7 +435,7 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
     <p>反向传播在层与层之间传递的正是这一矩阵——5.6 节的链式法则，即将一系列此类矩阵依次相乘。</p>
 
     <h3><span class="sec-no">5.5</span>求导公式速查</h3>
-    <p>将四种组合中最常用的求导结果汇总为两张速查表，查表即用（设 \(\mathbf{a}\)、\(\mathbf{A}\) 不是 \(\mathbf{x}\) 的函数；\(\mathbf{0}\) 和 \(\mathbf{I}\) 是矩阵）：</p>
+    <p>将四种组合中最常用的求导结果汇总为两张速查表，可直接查表使用（设 \(\mathbf{a}\)、\(\mathbf{A}\) 不是 \(\mathbf{x}\) 的函数；\(\mathbf{0}\) 和 \(\mathbf{I}\) 是矩阵）：</p>
     <figure>
         <img src="images/formula_tables.jpg" alt="常用向量/矩阵求导公式表" loading="lazy">
         <figcaption>表一（基本式）：常向量 \(\mathbf{a}\) → \(\mathbf{0}\)；\(\mathbf{x}\) → \(\mathbf{I}\)；\(\mathbf{A}\mathbf{x}\) → \(\mathbf{A}\)；\(\mathbf{x}^\top\mathbf{A}\) → \(\mathbf{A}^\top\)。表二（复合式，\(\mathbf{u}\)、\(\mathbf{v}\) 为 \(\mathbf{x}\) 的函数）：常数倍、矩阵倍与加法规则——均为相应一元规则的矩阵推广。</figcaption>
@@ -473,7 +473,7 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
     </div>
     <div class="callout try">
         <span class="co-tag">✏️ 课后思考</span>
-        <p>① 手算 \(\partial(\mathbf{x}^\top\mathbf{A}\mathbf{x})/\partial\mathbf{x}\)（提示：展开成二次型逐项求偏导）；② 用 5.5 的速查表验证 \(\partial(\lambda\|\mathbf{w}\|^2)/\partial\mathbf{w} = 2\lambda\mathbf{w}\)（提示：把 \(\|\mathbf{w}\|^2\) 展开成 \(w_1^2 + w_2^2 + \cdots\) 逐项求偏导，再套表二的常数倍规则）——这正是权重衰减在每轮迭代中将权重向 0 收缩的数学本质；③ 找一份采用分母布局的资料，对比同一个公式在两种布局下相差哪个转置。</p>
+        <p>① 手算 \(\partial(\mathbf{x}^\top\mathbf{A}\mathbf{x})/\partial\mathbf{x}\)（提示：展开成二次型逐项求偏导）；② 用 5.5 的速查表验证 \(\partial(\lambda\|\mathbf{w}\|^2)/\partial\mathbf{w} = 2\lambda\mathbf{w}\)（提示：把 \(\|\mathbf{w}\|^2\) 展开成 \(w_1^2 + w_2^2 + \cdots\) 逐项求偏导，再套用表二的常数倍规则）——这正是权重衰减在每轮迭代中将权重向 0 收缩的数学本质；③ 找一份采用分母布局的资料，对比同一个公式在两种布局下相差哪个转置。</p>
     </div>
 </section>
 

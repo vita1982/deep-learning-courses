@@ -512,7 +512,7 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
 <p>首先看四种组合的全局结构：\(y\) 与 \(\mathbf{x}\) 各为标量或向量，四种组合对应导数的四种形状——标量、向量、矩阵：</p>
 <figure>
         <img src="images/grad_shape_map.jpg" alt="标量与向量四种组合的导数形状对照" loading="lazy" class="img-tall">
-        <figcaption>求导可理解为对各分量的逐一敏感度分析：结果为单个数值时是标量，多个结果按序排列成向量，进一步则组织成矩阵。深度学习中最常用的是右上格——损失（标量）对权重（向量）求导，其结果即为梯度。</figcaption>
+        <figcaption>求导可理解为对各分量逐一进行敏感度分析：结果为单个数值时是标量，多个结果按序排列成向量，进一步则组织成矩阵。深度学习中最常用的是右上格——损失（标量）对权重（向量）求导，其结果即为梯度。</figcaption>
     </figure>
   </div>
 </section>
@@ -590,7 +590,7 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 5. 矩阵微积分</div>
   <div class="slide-title">5.5 求导公式速查</div>
   <div class="slide-body">
-<p>将四种组合中最常用的求导结果汇总为两张速查表，查表即用（\(\mathbf{a}\)、\(\mathbf{A}\) 不是 \(\mathbf{x}\) 的函数）：</p>
+<p>将四种组合中最常用的求导结果汇总为两张速查表，可直接查表使用（\(\mathbf{a}\)、\(\mathbf{A}\) 不是 \(\mathbf{x}\) 的函数）：</p>
 <figure>
         <img src="images/formula_tables.jpg" alt="常用向量/矩阵求导公式表" loading="lazy" class="img-tall">
         <figcaption>表一（基本式）：常向量→\(\mathbf{0}\)、\(\mathbf{x}\)→\(\mathbf{I}\)、\(\mathbf{A}\mathbf{x}\)→\(\mathbf{A}\)、\(\mathbf{x}^\top\mathbf{A}\)→\(\mathbf{A}^\top\)；表二（复合式）：常数倍、矩阵倍与加法——均为相应一元规则的矩阵推广。数字验证：\(\mathbf{A}=\begin{bmatrix} 1 & 2 \\ 3 & 4 \end{bmatrix}\) 时 \(\mathbf{x}^\top\mathbf{A}=[\,x_1+3x_2,\ 2x_1+4x_2\,]\)，偏导排列成 \(\begin{bmatrix} 1 & 3 \\ 2 & 4 \end{bmatrix}=\mathbf{A}^\top\)。</figcaption>
