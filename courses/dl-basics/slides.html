@@ -186,7 +186,7 @@
 <section>
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 目录</div>
   <div class="slide-title">📋 本讲目录</div>
-  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 线性代数基础：标量与向量</a></li><li><a href="#/9" style="color:#1E40AF;text-decoration:none;">2. 矩阵及其运算</a></li><li><a href="#/17" style="color:#1E40AF;text-decoration:none;">3. GPU 与向量化计算</a></li><li><a href="#/21" style="color:#1E40AF;text-decoration:none;">4. 数据表示与张量</a></li><li><a href="#/26" style="color:#1E40AF;text-decoration:none;">5. 矩阵微积分</a></li><li><a href="#/39" style="color:#1E40AF;text-decoration:none;">6. 自动微分与计算图</a></li><li><a href="#/46" style="color:#1E40AF;text-decoration:none;">7. 正向传播与反向传播</a></li><li><a href="#/52" style="color:#1E40AF;text-decoration:none;">8. 本讲小结与自测</a></li></ol></div>
+  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 线性代数基础：标量与向量</a></li><li><a href="#/9" style="color:#1E40AF;text-decoration:none;">2. 矩阵及其运算</a></li><li><a href="#/17" style="color:#1E40AF;text-decoration:none;">3. GPU 与向量化计算</a></li><li><a href="#/21" style="color:#1E40AF;text-decoration:none;">4. 数据表示与张量</a></li><li><a href="#/26" style="color:#1E40AF;text-decoration:none;">5. 矩阵微积分</a></li><li><a href="#/40" style="color:#1E40AF;text-decoration:none;">6. 自动微分与计算图</a></li><li><a href="#/47" style="color:#1E40AF;text-decoration:none;">7. 正向传播与反向传播</a></li><li><a href="#/53" style="color:#1E40AF;text-decoration:none;">8. 本讲小结与自测</a></li></ol></div>
 </section>
 <section class="section-divider">
   <div class="divider-num">1</div>
@@ -255,7 +255,7 @@
 <p>两个等长向量的点积（dot product，也叫内积）定义为：</p>
 <p>\[\langle \mathbf{w}, \mathbf{x} \rangle = \mathbf{w}^\top \mathbf{x} = \sum_{i=1}^{n} w_i x_i = \|\mathbf{w}\|\,\|\mathbf{x}\|\cos\theta\]</p>
 <p>点积同时有两种读法：代数上它是对应元素相乘再求和；几何上它度量两个向量方向的接近程度——夹角 \(\theta\) 越小，点积越大。</p>
-<p><strong>正交（垂直）：点积为 0</strong>——当 \(\langle \mathbf{x}, \mathbf{y} \rangle = 0\) 时，称向量 \(\mathbf{x}\) 与 \(\mathbf{y}\) 正交。一个有用的性质是：如果两个向量都与第三个向量正交，那么它们的任意线性组合也与第三个向量正交。这一性质是后面理解正交矩阵、特征向量分解的基础。</p>
+<p><strong>正交（垂直）：点积为 0</strong>——当 \(\langle \mathbf{x}, \mathbf{y} \rangle = 0\) 时，称向量 \(\mathbf{x}\) 与 \(\mathbf{y}\) 正交。这是后面理解正交矩阵、特征向量分解的基础。</p>
 <div class="callout try">
         <span class="co-tag">✅ 本讲核心线索</span>
         <p>线性模型 \(\hat{y} = \langle \mathbf{w}, \mathbf{x} \rangle + b\) 就是一次点积加一个偏置。看懂了点积，就看懂了神经网络的"半个身子"。</p>
@@ -283,7 +283,7 @@
                 <label class="ctl">向量 b 角度<input type="range" id="dot-ab" min="0" max="360" step="1" value="100"><span class="val" id="dot-ab-v">100°</span></label>
             </div>
             <p id="dot-out" style="font-size:16px;margin:14px 0;"></p>
-            <canvas id="dot-canvas" class="plot" width="640" height="300"></canvas>
+            <canvas id="dot-canvas" class="plot" width="640" height="240"></canvas>
         </div>
         <div class="lab-note">夹角 &lt; 90° 时点积为正（方向相近），= 90° 时为 0（<b>正交</b>），&gt; 90° 时为负（方向相反）。注意力机制里的"相似度分数"就是点积。</div>
     </div>
@@ -488,7 +488,7 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
 </section>
 <section>
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 5. 矩阵微积分</div>
-  <div class="slide-title">5.1 标量求导回顾</div>
+  <div class="slide-title">5.1 标量对标量：求导回顾</div>
   <div class="slide-body">
 <p>训练神经网络的每一步都依赖求导。先回顾一元函数的求导：导数是函数曲线在某点处切线的斜率。例如 \(f(x) = x^2\) 的导数 \(\frac{df}{dx} = 2x\)，在 \(x = 1\) 处斜率为 2。</p>
 <figure>
@@ -500,14 +500,14 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
 </section>
 <section>
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 5. 矩阵微积分</div>
-  <div class="slide-title">5.1 标量求导回顾</div>
+  <div class="slide-title">5.1 标量对标量：求导回顾</div>
   <div class="slide-body">
 <table><tr><th>规则</th><th>公式</th></tr><tbody><tr><td>幂函数</td><td>\(\frac{d}{dx} x^n = n x^{n-1}\)</td></tr><tr><td>和/差</td><td>\(\frac{d}{dx}(u \pm v) = \frac{du}{dx} \pm \frac{dv}{dx}\)</td></tr><tr><td>乘积</td><td>\(\frac{d}{dx}(uv) = \frac{du}{dx}v + u\frac{dv}{dx}\)</td></tr><tr><td>商</td><td>\(\frac{d}{dx}\frac{u}{v} = \frac{\frac{du}{dx}v - u\frac{dv}{dx}}{v^2}\)</td></tr><tr><td>三角/指数/对数</td><td>\((\sin x)' = \cos x\)，\((\exp x)' = \exp x\)，\((\log x)' = \frac{1}{x}\)</td></tr><tr><td>链式法则</td><td>\(y=f(u),\ u=g(x) \Rightarrow \frac{dy}{dx} = \frac{dy}{du}\cdot\frac{du}{dx}\)</td></tr></tbody></table>
   </div>
 </section>
 <section>
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 5. 矩阵微积分</div>
-  <div class="slide-title">5.2 梯度：标量对向量求导</div>
+  <div class="slide-title">5.2 标量对向量：梯度（右上格）</div>
   <div class="slide-body">
 <p>先看"全局地图"：\(y\) 和 \(\mathbf{x}\) 各为标量或向量，四种组合对应导数的四种体量——一个数、一排数、一张表：</p>
 <figure>
@@ -518,7 +518,7 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
 </section>
 <section>
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 5. 矩阵微积分</div>
-  <div class="slide-title">5.2 梯度：标量对向量求导</div>
+  <div class="slide-title">5.2 标量对向量：梯度（右上格）</div>
   <div class="slide-body">
 <p>当函数的自变量从标量变成向量时，导数也升级为梯度（gradient）：多元函数 \(y = f(\mathbf{x})\) 对每个分量求偏导，排成一行就是梯度——一张完整的"灵敏度清单"：</p>
 <p>\[\mathbf{x} = \begin{bmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{bmatrix}, \qquad \frac{\partial y}{\partial \mathbf{x}} = \left[ \frac{\partial y}{\partial x_1}, \frac{\partial y}{\partial x_2}, \ldots, \frac{\partial y}{\partial x_n} \right]\]</p>
@@ -528,17 +528,17 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
 </section>
 <section>
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 5. 矩阵微积分</div>
-  <div class="slide-title">5.2 梯度：标量对向量求导</div>
+  <div class="slide-title">5.2 标量对向量：梯度（右上格）</div>
   <div class="slide-body">
 <figure>
-        <img src="images/gradient_layout.jpg" alt="分子布局与梯度方向示例" loading="lazy">
-        <figcaption>左：标量对向量求导的结果排成一行（分子布局）；右：梯度的几何意义——例如 \(\frac{\partial}{\partial \mathbf{x}}(x_1^2 + 2x_2^2) = [2x_1, 4x_2]\)，在点 (1,1) 处指向 (2,4)，垂直于等高线、指向函数增长最快的方向。</figcaption>
+        <img src="images/grad_contour_example.jpg" alt="梯度的几何意义：等高线与最陡方向" loading="lazy" class="img-tall">
+        <figcaption>梯度的几何意义：\(f = x_1^2 + 2x_2^2\) 的等高线是一圈圈椭圆，在点 \((1,1)\) 处梯度指向 \((2,4)\)——垂直于等高线、指向函数增长最快的方向。</figcaption>
     </figure>
   </div>
 </section>
 <section>
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 5. 矩阵微积分</div>
-  <div class="slide-title">5.3 向量对标量与两种布局约定</div>
+  <div class="slide-title">5.3 向量对标量与布局约定（左下格）</div>
   <div class="slide-body">
 <p>先补全全局地图的左下格：\(\mathbf{y}\) 是 \(m\) 个分量的向量、\(x\) 是标量时，\(\mathbf{y}\) 的每个分量都对 \(x\) 求导，\(m\) 个结果排成一列，形状与 \(\mathbf{y}\) 相同。而当两边都是向量时，\(m \times n\) 个偏导数"横着排还是竖着排"，文献中有两种约定：</p>
 <div class="tbl-wrap">
@@ -548,22 +548,36 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
             <tr><td>分母布局（denominator-layout，Hessian 形式）</td><td>导数的形状跟随分母，标量对向量求导得到列向量</td></tr>
         </table>
     </div>
+<figure>
+        <img src="images/layout_naming.jpg" alt="分子布局与分母布局的命名" loading="lazy">
+        <figcaption>分子布局又称 Jacobian 形式（行向量），分母布局又称 Hessian 形式（列向量）。</figcaption>
+    </figure>
 <div class="callout key">
         <span class="co-tag">🔑 初学者理解</span>
         <p>两种布局只是"摆放方式"不同，数值完全一样、互为转置。《动手学深度学习》教材采用分母布局（梯度是列向量）。<strong>同一份材料里必须统一用同一种</strong>——混着用会差一个转置，结果全错。实用技巧：查每个公式时确认一句"这个结果是列向量还是行向量"即可。本讲义统一采用分子布局。</p>
     </div>
   </div>
 </section>
+<section>
+  <div class="slide-breadcrumb">第02讲 深度学习基础 › 5. 矩阵微积分</div>
+  <div class="slide-title">5.3 向量对标量与布局约定（左下格）</div>
+  <div class="slide-body">
+<figure>
+        <img src="images/layout_vector_scalar.jpg" alt="向量对标量求导" loading="lazy" class="img-tall">
+        <figcaption>左下格：\(\mathbf{y}\) 是 \(m\) 个分量的向量、\(x\) 是标量——每个分量都对 \(x\) 求导，\(m\) 个结果排成一列，形状与 \(\mathbf{y}\) 相同。</figcaption>
+    </figure>
+  </div>
+</section>
 <section class="slide-short">
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 5. 矩阵微积分</div>
-  <div class="slide-title">5.3 向量对标量与两种布局约定</div>
+  <div class="slide-title">5.3 向量对标量与布局约定（左下格）</div>
   <div class="slide-body">
 <p>亲手摆一遍：\(y = x_1^2 + 2x_2^2\) 的两个偏导是 \(2x_1\) 和 \(4x_2\)。<strong>摆法 A（分子布局，行跟着 \(y\) 走）</strong>：横躺成 \([\,2x_1\ \ 4x_2\,]\)（\(1 \times 2\)）；<strong>摆法 B（分母布局，行跟着 \(\mathbf{x}\) 走）</strong>：竖躺（\(2 \times 1\)）。同一对数字，互为转置——摆法决定后面矩阵乘法能不能做、乘出什么形状。教材用摆法 B 的好处：梯度竖着摆、与 \(\mathbf{w}\) 同形，更新式两边直接对齐。</p>
   </div>
 </section>
 <section>
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 5. 矩阵微积分</div>
-  <div class="slide-title">5.4 雅可比矩阵：向量对向量求导</div>
+  <div class="slide-title">5.4 向量对向量：雅可比矩阵（右下格）</div>
   <div class="slide-body">
 <p>\(\mathbf{y}\) 和 \(\mathbf{x}\) 都是向量时，导数是一张 \(m \times n\) 的"导数表"——<strong>雅可比矩阵</strong>：第 \(i\) 行第 \(j\) 列是 \(\partial y_i / \partial x_j\)，两两组合一个不漏。记忆锚点：<strong>行看分子，列看分母</strong>。</p>
 <figure>
@@ -574,21 +588,13 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
 </section>
 <section>
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 5. 矩阵微积分</div>
-  <div class="slide-title">5.5 常用求导公式速查</div>
+  <div class="slide-title">5.5 求导公式速查</div>
   <div class="slide-body">
-<p>以下公式在推导线性回归、反向传播时会反复用到（设 \(\mathbf{a}\)、\(\mathbf{A}\) 不是 \(\mathbf{x}\) 的函数）：</p>
-<div class="tbl-wrap">
-        <table>
-            <tr><th>公式（分子布局）</th><th>说明</th></tr>
-            <tr><td>\(\frac{\partial \mathbf{a}^\top \mathbf{x}}{\partial \mathbf{x}} = \mathbf{a}^\top\)</td><td>线性函数的导数就是系数本身</td></tr>
-            <tr><td>\(\frac{\partial \mathbf{x}^\top \mathbf{A} \mathbf{x}}{\partial \mathbf{x}} = \mathbf{x}^\top(\mathbf{A} + \mathbf{A}^\top)\)</td><td>二次型求导；若 \(\mathbf{A}\) 对称则化简为 \(2\mathbf{x}^\top\mathbf{A}\)</td></tr>
-            <tr><td>\(\frac{\partial \|\mathbf{x}\|^2}{\partial \mathbf{x}} = 2\mathbf{x}^\top\)</td><td>平方范数的梯度，权重衰减的梯度来源</td></tr>
-            <tr><td>\(\frac{\partial \mathbf{A}\mathbf{x}}{\partial \mathbf{x}} = \mathbf{A}\)</td><td>线性变换的导数就是变换矩阵本身</td></tr>
-            <tr><td>\(\frac{\partial \mathbf{x}^\top\mathbf{A}}{\partial \mathbf{x}} = \mathbf{A}^\top\)</td><td>行列对调——转置</td></tr>
-            <tr><td>\(\frac{\partial \mathbf{a}}{\partial \mathbf{x}} = \mathbf{0}\)，\(\frac{\partial \mathbf{x}}{\partial \mathbf{x}} = \mathbf{I}\)</td><td>常向量不敏感；每个分量只对自己敏感</td></tr>
-        </table>
-    </div>
-<p>记忆法：都是"乘法分配律的求导版"；复合情形也一样——\(\partial(\mathbf{A}\mathbf{u})/\partial\mathbf{x} = \mathbf{A}\,\partial\mathbf{u}/\partial\mathbf{x}\)，加法逐项求导，一条新东西都没有。数字验证：\(\mathbf{A} = \begin{bmatrix} 1 & 2 \\ 3 & 4 \end{bmatrix}\) 时 \(\mathbf{x}^\top\mathbf{A} = [\,x_1+3x_2,\ 2x_1+4x_2\,]\)，四个偏导按"行看 \(y\)、列看 \(\mathbf{x}\)"排成 \(\begin{bmatrix} 1 & 3 \\ 2 & 4 \end{bmatrix} = \mathbf{A}^\top\)。</p>
+<p>四种组合里最常用的求导结果汇成两张速查表，查表即用（\(\mathbf{a}\)、\(\mathbf{A}\) 不是 \(\mathbf{x}\) 的函数）：</p>
+<figure>
+        <img src="images/formula_tables.jpg" alt="常用向量/矩阵求导公式表" loading="lazy" class="img-tall">
+        <figcaption>表一基本式：常向量→\(\mathbf{0}\)、\(\mathbf{x}\)→\(\mathbf{I}\)、\(\mathbf{A}\mathbf{x}\)→\(\mathbf{A}\)、\(\mathbf{x}^\top\mathbf{A}\)→\(\mathbf{A}^\top\)；表二复合式：常数倍、矩阵倍、加法——一元规则的矩阵版。数字验证：\(\mathbf{A}=\begin{bmatrix} 1 & 2 \\ 3 & 4 \end{bmatrix}\) 时 \(\mathbf{x}^\top\mathbf{A}=[\,x_1+3x_2,\ 2x_1+4x_2\,]\)，偏导排成 \(\begin{bmatrix} 1 & 3 \\ 2 & 4 \end{bmatrix}=\mathbf{A}^\top\)。</figcaption>
+    </figure>
   </div>
 </section>
 <section>

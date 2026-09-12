@@ -351,9 +351,14 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
         <span class="chapter-num">5</span>
         <h2>矩阵微积分</h2>
     </div>
+    <p class="chapter-lede">本章按"\(y\) 和 \(\mathbf{x}\) 各是标量还是向量"的四种组合逐个击破：都是数，导数就是一个数（5.1）；一边是向量，导数排成一排（5.2 梯度、5.3）；两边都是向量，导数铺成一张表（5.4 雅可比矩阵）；随后给出查表式求导公式（5.5）和反向传播的发动机——链式法则（5.6）。</p>
+    <figure>
+        <img src="images/grad_shape_map.jpg" alt="标量与向量四种组合的导数形状对照" loading="lazy">
+        <figcaption>本章的全局地图：横轴是 \(\mathbf{x}\)（对谁求导），纵轴是 \(y\)（求谁的导）。可以把求导想成"挨个试灵敏度"：\(y\) 有 \(m\) 个分量、\(\mathbf{x}\) 有 \(n\) 个分量，最坏要试 \(m \times n\) 次——装得下就一个数，装不下排成一排，再不够就排成一张表。</figcaption>
+    </figure>
 
-    <h3><span class="sec-no">5.1</span>标量求导回顾</h3>
-    <p>训练神经网络的每一步都依赖求导。先回顾一元函数的求导：导数是函数曲线在某点处切线的斜率。例如 \(f(x) = x^2\) 的导数 \(\frac{df}{dx} = 2x\)，在 \(x = 1\) 处斜率为 2。</p>
+    <h3><span class="sec-no">5.1</span>标量对标量：求导回顾</h3>
+    <p>先坐上全局地图的左上格：\(x\)、\(y\) 都是数，导数就是一个数。训练神经网络的每一步都依赖求导。先回顾一元函数的求导：导数是函数曲线在某点处切线的斜率。例如 \(f(x) = x^2\) 的导数 \(\frac{df}{dx} = 2x\)，在 \(x = 1\) 处斜率为 2。</p>
     <figure>
         <img src="images/derivative_tangent.png" alt="导数的几何意义：切线斜率" loading="lazy">
         <figcaption>导数的几何意义：\(f(x)=x^2\) 在 \(x=1\) 处的切线斜率等于该点的导数 2。梯度下降正是沿着"斜率"指示的方向寻找最低点。</figcaption>
@@ -371,19 +376,18 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
         </table>
     </div>
 
-    <h3><span class="sec-no">5.2</span>梯度：标量对向量求导</h3>
-    <p>在推广之前，先看一张"全局地图"：\(y\) 和 \(\mathbf{x}\) 各自可以是标量或向量，四种组合对应导数的四种"体量"——都是数，导数就是一个数；有一边是向量，导数被拉成一排数；两边都是向量，导数铺开成一张表：</p>
-    <figure>
-        <img src="images/grad_shape_map.jpg" alt="标量与向量四种组合的导数形状对照" loading="lazy">
-        <figcaption>求导的全局地图：横轴是 \(\mathbf{x}\)（对谁求导），纵轴是 \(y\)（求谁的导）。可以把求导想成"挨个试灵敏度"：\(y\) 有 \(m\) 个分量、\(\mathbf{x}\) 有 \(n\) 个分量，最坏要试 \(m \times n\) 次——装得下就一个数，装不下排成一排，再不够就排成一张表。深度学习天天用的是右上格：损失（标量）对权重（向量）求导，结果就是梯度。</figcaption>
-    </figure>
+    <h3><span class="sec-no">5.2</span>标量对向量：梯度（右上格）</h3>
     <p>一元函数 \(f(x)\) 只有一个"旋钮"，导数只有一个数；但损失函数同时依赖成千上万个权重 \(x_1, x_2, \ldots, x_n\)——对每个旋钮单独问"拧它一下，\(f\) 变多少"，就得到 \(n\) 个偏导数。把它们排成一行，就是<strong>梯度</strong>（gradient）——一张完整的"灵敏度清单"：</p>
+    <figure>
+        <img src="images/grad_definition.jpg" alt="梯度的定义" loading="lazy">
+        <figcaption>梯度的定义：\(\mathbf{x}\) 是 \(n\) 个分量排成一列，把"\(y\) 对每个分量单独求偏导"的结果排成一排。</figcaption>
+    </figure>
     <p>\[\mathbf{x} = \begin{bmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{bmatrix}, \qquad \frac{\partial y}{\partial \mathbf{x}} = \left[ \frac{\partial y}{\partial x_1}, \frac{\partial y}{\partial x_2}, \ldots, \frac{\partial y}{\partial x_n} \right]\]</p>
     <p>有了梯度，梯度下降每一轮做的事就可以精确写出：\(\mathbf{w} \leftarrow \mathbf{w} - \eta\,\nabla f\)，其中 \(\eta\) 是学习率。</p>
     <p>手算一个例子：\(f = x_1^2 + 2x_2^2\)。对 \(x_1\) 求偏导（把 \(x_2\) 当常数）得 \(2x_1\)，对 \(x_2\) 求偏导得 \(4x_2\)，所以 \(\frac{\partial f}{\partial \mathbf{x}} = [2x_1,\ 4x_2]\)。在点 \((3, 2)\) 处梯度为 \([6, 8]\)——含义是：在 \((3,2)\) 附近，\(x_1\) 每增大一点 \(f\) 以约 6 倍速增加，\(x_2\) 每增大一点 \(f\) 以约 8 倍速增加。</p>
     <figure>
-        <img src="images/gradient_layout.jpg" alt="分子布局与梯度方向示例" loading="lazy">
-        <figcaption>左：标量对向量求导的结果排成一行（分子布局）；右：梯度的几何意义——例如 \(\frac{\partial}{\partial \mathbf{x}}(x_1^2 + 2x_2^2) = [2x_1, 4x_2]\)，在点 (1,1) 处指向 (2,4)，垂直于等高线、指向函数增长最快的方向。</figcaption>
+        <img src="images/grad_contour_example.jpg" alt="梯度的几何意义：等高线与最陡方向" loading="lazy">
+        <figcaption>梯度的几何意义：\(f = x_1^2 + 2x_2^2\) 的等高线是一圈圈椭圆，在点 \((1,1)\) 处梯度指向 \((2,4)\)——垂直于等高线、指向函数增长最快的方向。</figcaption>
     </figure>
     <div class="callout key">
         <span class="co-tag">🔑 为什么梯度下降沿"负"梯度走？</span>
@@ -391,8 +395,13 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
     </div>
     <p>再验证一个与 1.3 节的连接：正则化惩罚 \(\lambda\|\mathbf{w}\|^2\) 的梯度是 \(2\lambda\mathbf{w}\)，梯度下降每轮减去它，就是把权重"往 0 推"的数学本体。</p>
 
-    <h3><span class="sec-no">5.3</span>向量对标量与两种布局约定</h3>
-    <p>先补完全局地图的左下格：\(\mathbf{y}\) 是 \(m\) 个分量的向量、\(x\) 是标量时，\(\mathbf{y}\) 的每个分量都对 \(x\) 求导，\(m\) 个结果排成一列，形状与 \(\mathbf{y}\) 相同。而当 \(\mathbf{x}\) 和 \(\mathbf{y}\) 都是向量时，\(\partial \mathbf{y}/\partial \mathbf{x}\) 一共有 \(m \times n\) 个偏导数，排成矩阵时"横着放还是竖着放"有两种约定：</p>
+    <h3><span class="sec-no">5.3</span>向量对标量与两种布局约定（左下格）</h3>
+    <p>先补完全局地图的左下格：\(\mathbf{y}\) 是 \(m\) 个分量的向量、\(x\) 是标量时，\(\mathbf{y}\) 的每个分量都对 \(x\) 求导，\(m\) 个结果排成一列，形状与 \(\mathbf{y}\) 相同：</p>
+    <figure>
+        <img src="images/layout_vector_scalar.jpg" alt="向量对标量求导" loading="lazy">
+        <figcaption>向量对标量求导：\(\mathbf{y}\) 的每个分量分别对 \(x\) 求导，结果排成一列。</figcaption>
+    </figure>
+    <p>而当 \(\mathbf{x}\) 和 \(\mathbf{y}\) 都是向量时，\(\partial \mathbf{y}/\partial \mathbf{x}\) 一共有 \(m \times n\) 个偏导数，排成矩阵时"横着放还是竖着放"有两种约定：</p>
     <div class="tbl-wrap">
         <table>
             <tr><th>布局约定</th><th>排法</th><th>形状</th><th>别名</th></tr>
@@ -400,6 +409,10 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
             <tr><td>分母布局（denominator-layout）</td><td>以 \(\mathbf{x}\) 的分量分行（即转置）</td><td>\(n \times m\)</td><td>梯度 / Hessian 形式</td></tr>
         </table>
     </div>
+    <figure>
+        <img src="images/layout_naming.jpg" alt="分子布局与分母布局的命名" loading="lazy">
+        <figcaption>两种布局的正式命名：分子布局又称 Jacobian 形式（导数是行向量），分母布局又称 Hessian 形式（导数是列向量）。</figcaption>
+    </figure>
     <div class="callout try">
         <span class="co-tag">🧠 亲手把两种布局摆一遍</span>
         <p>用 \(y = x_1^2 + 2x_2^2\) 走一遍：两个偏导数是 \(2x_1\) 和 \(4x_2\)。<strong>摆法 A（分子布局，"行跟着 \(y\) 走"）</strong>：\(y\) 只有 1 个分量 → 1 行，\(\mathbf{x}\) 有 2 个分量 → 2 列，摆成横着的一条 \([\,2x_1\ \ 4x_2\,]\)（\(1 \times 2\)）；<strong>摆法 B（分母布局，"行跟着 \(\mathbf{x}\) 走"）</strong>：\(\mathbf{x}\) 有 2 个分量 → 2 行，\(y\) 只有 1 个 → 1 列，摆成竖着的一条（\(2 \times 1\)）。同一对数字，一个横躺一个竖躺——互为转置。摆法决定后面矩阵乘法能不能做、乘出来什么形状；教材用摆法 B 的好处一句话：梯度竖着摆，和权重 \(\mathbf{w}\) 形状一样，更新式 \(\mathbf{w} \leftarrow \mathbf{w} - \eta\,\nabla f\) 两边直接对齐。</p>
@@ -413,7 +426,7 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
         <p>不同教材、不同论文约定不同；<strong>同一份材料里必须统一用同一种</strong>——混着用会差一个转置，结果全错。实际建议：不必死记布局名词，查每个公式时确认一句"这个结果是列向量还是行向量"，保持一致即可。本讲义统一采用分子布局。</p>
     </div>
 
-    <h3><span class="sec-no">5.4</span>雅可比矩阵：向量对向量求导</h3>
+    <h3><span class="sec-no">5.4</span>向量对向量：雅可比矩阵（右下格）</h3>
     <p>当 \(\mathbf{y}\) 和 \(\mathbf{x}\) 都是向量时，\(\partial \mathbf{y}/\partial \mathbf{x}\) 不再是一排数，而是一张 \(m \times n\) 的"导数表"，称为<strong>雅可比矩阵</strong>（Jacobian matrix）。它的构造分两步：先把 \(\mathbf{y}\) 的某个分量 \(y_i\) 对整个 \(\mathbf{x}\) 求梯度、占一行；再把各行展开——第 \(i\) 行第 \(j\) 列就是 \(\partial y_i/\partial x_j\)，即"\(\mathbf{y}\) 的第 \(i\) 个输出对 \(\mathbf{x}\) 的第 \(j\) 个输入"的偏导，\(m \times n\) 个组合一个不漏。记忆锚点：<strong>行看分子，列看分母</strong>。</p>
     <figure>
         <img src="images/jacobian_matrix.jpg" alt="雅可比矩阵的构造" loading="lazy">
@@ -421,28 +434,17 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
     </figure>
     <p>反向传播在层与层之间传递的就是这张表——5.6 节的链式法则，就是把一串这样的矩阵依次相乘。</p>
 
-    <h3><span class="sec-no">5.5</span>常用求导公式速查</h3>
-    <p>以下三个公式覆盖了机器学习绝大多数手算场景，推导线性回归、反向传播时会反复用到（设 \(\mathbf{a}\)、\(\mathbf{A}\) 不是 \(\mathbf{x}\) 的函数）：</p>
-    <div class="tbl-wrap">
-        <table>
-            <tr><th>公式（分子布局）</th><th>说明</th></tr>
-            <tr><td>\(\frac{\partial \mathbf{a}^\top \mathbf{x}}{\partial \mathbf{x}} = \mathbf{a}^\top\)</td><td>线性函数的导数就是系数本身</td></tr>
-            <tr><td>\(\frac{\partial \mathbf{x}^\top \mathbf{A} \mathbf{x}}{\partial \mathbf{x}} = \mathbf{x}^\top(\mathbf{A} + \mathbf{A}^\top)\)</td><td>二次型求导；若 \(\mathbf{A}\) 对称则化简为 \(2\mathbf{x}^\top\mathbf{A}\)</td></tr>
-            <tr><td>\(\frac{\partial \|\mathbf{x}\|^2}{\partial \mathbf{x}} = 2\mathbf{x}^\top\)</td><td>平方范数的梯度，权重衰减的梯度来源</td></tr>
-        </table>
+    <h3><span class="sec-no">5.5</span>求导公式速查</h3>
+    <p>把四种组合里最常用的求导结果汇成两张速查表，查表即用（设 \(\mathbf{a}\)、\(\mathbf{A}\) 不是 \(\mathbf{x}\) 的函数；\(\mathbf{0}\) 和 \(\mathbf{I}\) 是矩阵）：</p>
+    <figure>
+        <img src="images/formula_tables.jpg" alt="常用向量/矩阵求导公式表" loading="lazy">
+        <figcaption>表一（基本式）：常向量 \(\mathbf{a}\) → \(\mathbf{0}\)；\(\mathbf{x}\) → \(\mathbf{I}\)；\(\mathbf{A}\mathbf{x}\) → \(\mathbf{A}\)；\(\mathbf{x}^\top\mathbf{A}\) → \(\mathbf{A}^\top\)。表二（复合式，\(\mathbf{u}\)、\(\mathbf{v}\) 是 \(\mathbf{x}\) 的函数）：常数倍、矩阵倍、加法——就是一元规则的矩阵版，一条新东西都没有。</figcaption>
+    </figure>
+    <p>用数字验证表里最容易记错的两行：取 \(\mathbf{A} = \begin{bmatrix} 1 & 2 \\ 3 & 4 \end{bmatrix}\)。\(\mathbf{y} = \mathbf{A}\mathbf{x}\) 时 \(y_1 = x_1 + 2x_2\)，它对 \((x_1, x_2)\) 的导数是 \((1, 2)\)——正是 \(\mathbf{A}\) 的第 1 行，逐行拼起来就是 \(\mathbf{A}\) 本身；\(\mathbf{y} = \mathbf{x}^\top\mathbf{A} = [\,x_1 + 3x_2,\ 2x_1 + 4x_2\,]\) 时，四个偏导按"行看 \(y\)、列看 \(\mathbf{x}\)"排成 \(\begin{bmatrix} 1 & 3 \\ 2 & 4 \end{bmatrix}\)，恰好是 \(\mathbf{A}^\top\)——转置不是公式里长出来的，是"按行摆结果"这个动作天然造成的。</p>
+    <div class="callout try">
+        <span class="co-tag">🧠 补讲：\(\mathbf{x}^\top\mathbf{A}\) 是怎么乘出来的？</span>
+        <p>\(\mathbf{x}\) 是列向量，为什么按"行"算？因为参与乘法的不是 \(\mathbf{x}\) 本人，而是转置后的 \(\mathbf{x}^\top\)——记号里那个小 T 的意思就是"躺倒"。矩阵乘法有铁规矩：\((a \times b)\) 乘 \((b \times c)\)，中间两个数必须相等。用 \(\mathbf{x}\) 本人直接乘：\((2 \times 1) \times (2 \times 2)\)，\(1 \neq 2\)，乘不了；躺倒后 \((1 \times 2) \times (2 \times 2)\)，匹配，结果是 \(1 \times 2\)。更顺的读法：\(\mathbf{x}^\top\mathbf{A}\) 就是用 \(\mathbf{x}\) 的分量当系数，对 \(\mathbf{A}\) 的行做加权组合——\(x_1 \cdot (\mathbf{A}\) 的第 1 行\() + x_2 \cdot (\mathbf{A}\) 的第 2 行\() = x_1(1,2) + x_2(3,4) = (x_1 + 3x_2,\ 2x_1 + 4x_2)\)。</p>
     </div>
-    <p>都可以当成"乘法分配律的求导版"来记：\(\mathbf{a}^\top\mathbf{x} = a_1x_1 + \cdots + a_nx_n\)，对 \(x_i\) 求偏导只剩 \(a_i\)，合起来就是系数向量本身；二次型 \(\mathbf{x}^\top\mathbf{A}\mathbf{x}\) 可看成"带权重的平方和"，求导结果是"对称化"后的 \((\mathbf{A}+\mathbf{A}^\top)\) 乘 \(\mathbf{x}\)，若 \(\mathbf{A}\) 对称就退化成干净的 \(2\mathbf{A}\mathbf{x}\)；第三个公式是第二个的特例（\(\mathbf{A} = \mathbf{I}\)），也正是权重衰减惩罚项的导数——1.3 节已经用过它。</p>
-    <p>当 \(y\) 也是向量时（\(\mathbf{y}\) 有 \(m\) 个分量、\(\mathbf{x}\) 有 \(n\) 个分量，结果是 \(m \times n\) 矩阵），有四条基本式同样一查即用：</p>
-    <div class="tbl-wrap">
-        <table>
-            <tr><th>\(\mathbf{y}\)</th><th>\(\partial \mathbf{y}/\partial \mathbf{x}\)（分子布局）</th><th>直觉</th></tr>
-            <tr><td>\(\mathbf{a}\)（常向量）</td><td>\(\mathbf{0}\)</td><td>常数对 \(\mathbf{x}\) 不敏感</td></tr>
-            <tr><td>\(\mathbf{x}\)</td><td>\(\mathbf{I}\)</td><td>每个分量只对自己敏感</td></tr>
-            <tr><td>\(\mathbf{A}\mathbf{x}\)</td><td>\(\mathbf{A}\)</td><td>线性变换的导数就是变换矩阵本身</td></tr>
-            <tr><td>\(\mathbf{x}^\top\mathbf{A}\)</td><td>\(\mathbf{A}^\top\)</td><td>行列对调——转置</td></tr>
-        </table>
-    </div>
-    <p>用数字验证最后两行：取 \(\mathbf{A} = \begin{bmatrix} 1 & 2 \\ 3 & 4 \end{bmatrix}\)。\(\mathbf{y} = \mathbf{A}\mathbf{x}\) 时 \(y_1 = x_1 + 2x_2\)，它对 \((x_1, x_2)\) 的导数是 \((1, 2)\)——正是 \(\mathbf{A}\) 的第 1 行，逐行拼起来就是 \(\mathbf{A}\) 本身；\(\mathbf{y} = \mathbf{x}^\top\mathbf{A} = [\,x_1 + 3x_2,\ 2x_1 + 4x_2\,]\) 时，四个偏导按"行看 \(y\)、列看 \(\mathbf{x}\)"排成 \(\begin{bmatrix} 1 & 3 \\ 2 & 4 \end{bmatrix}\)，恰好是 \(\mathbf{A}^\top\)——转置不是公式里长出来的，是"按行摆结果"这个动作天然造成的。复合情形也只有一元规则的矩阵版：\(\partial(a\mathbf{u})/\partial\mathbf{x} = a\,\partial\mathbf{u}/\partial\mathbf{x}\)，\(\partial(\mathbf{A}\mathbf{u})/\partial\mathbf{x} = \mathbf{A}\,\partial\mathbf{u}/\partial\mathbf{x}\)，\(\partial(\mathbf{u}+\mathbf{v})/\partial\mathbf{x} = \partial\mathbf{u}/\partial\mathbf{x} + \partial\mathbf{v}/\partial\mathbf{x}\)——一条新东西都没有。</p>
     <p>再往上推广到矩阵：\(y\) 和 \(\mathbf{x}\) 各可取标量、向量、矩阵，九种组合的形状规律一句话——<strong>结果的维度数 = 分子维度数 + 分母维度数</strong>，各维大小照旧（\(y\) 的维度在前，\(\mathbf{x}\) 的在后）。向量对矩阵是三维、矩阵对矩阵是四维，纸上已经画不下：</p>
     <figure>
         <img src="images/grad_shape_tensor.jpg" alt="标量、向量、矩阵九种组合的导数形状总览" loading="lazy">
@@ -471,7 +473,7 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
     </div>
     <div class="callout try">
         <span class="co-tag">✏️ 课后思考</span>
-        <p>① 手算 \(\partial(\mathbf{x}^\top\mathbf{A}\mathbf{x})/\partial\mathbf{x}\)（提示：展开成二次型逐项求偏导，再对照 5.5 的公式表）；② 用公式表验证 \(\partial(\lambda\|\mathbf{w}\|^2)/\partial\mathbf{w} = 2\lambda\mathbf{w}\)——它就是权重衰减每轮"往 0 推"的数学本体；③ 找一份用分母布局的资料，对比同一个公式在两种布局下差在哪个转置。</p>
+        <p>① 手算 \(\partial(\mathbf{x}^\top\mathbf{A}\mathbf{x})/\partial\mathbf{x}\)（提示：展开成二次型逐项求偏导）；② 用 5.5 的速查表验证 \(\partial(\lambda\|\mathbf{w}\|^2)/\partial\mathbf{w} = 2\lambda\mathbf{w}\)——它就是权重衰减每轮"往 0 推"的数学本体；③ 找一份用分母布局的资料，对比同一个公式在两种布局下差在哪个转置。</p>
     </div>
 </section>
 
