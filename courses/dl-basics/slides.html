@@ -185,7 +185,7 @@
 <section>
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 目录</div>
   <div class="slide-title">📋 本讲目录</div>
-  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 线性代数基础：标量与向量</a></li><li><a href="#/9" style="color:#1E40AF;text-decoration:none;">2. 矩阵及其运算</a></li><li><a href="#/17" style="color:#1E40AF;text-decoration:none;">3. GPU 与向量化计算</a></li><li><a href="#/21" style="color:#1E40AF;text-decoration:none;">4. 数据表示与张量</a></li><li><a href="#/26" style="color:#1E40AF;text-decoration:none;">5. 矩阵微积分</a></li><li><a href="#/35" style="color:#1E40AF;text-decoration:none;">6. 自动微分与计算图</a></li><li><a href="#/42" style="color:#1E40AF;text-decoration:none;">7. 正向传播与反向传播</a></li><li><a href="#/48" style="color:#1E40AF;text-decoration:none;">8. 本讲小结与自测</a></li></ol></div>
+  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 线性代数基础：标量与向量</a></li><li><a href="#/9" style="color:#1E40AF;text-decoration:none;">2. 矩阵及其运算</a></li><li><a href="#/17" style="color:#1E40AF;text-decoration:none;">3. GPU 与向量化计算</a></li><li><a href="#/21" style="color:#1E40AF;text-decoration:none;">4. 数据表示与张量</a></li><li><a href="#/26" style="color:#1E40AF;text-decoration:none;">5. 矩阵微积分</a></li><li><a href="#/39" style="color:#1E40AF;text-decoration:none;">6. 自动微分与计算图</a></li><li><a href="#/46" style="color:#1E40AF;text-decoration:none;">7. 正向传播与反向传播</a></li><li><a href="#/52" style="color:#1E40AF;text-decoration:none;">8. 本讲小结与自测</a></li></ol></div>
 </section>
 <section class="section-divider">
   <div class="divider-num">1</div>
@@ -515,7 +515,18 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 5. 矩阵微积分</div>
   <div class="slide-title">5.2 梯度：把求导推广到向量</div>
   <div class="slide-body">
-<p>当函数的自变量从标量变成向量时，导数也升级为梯度（gradient）：多元函数 \(y = f(\mathbf{x})\) 对每个分量求偏导，排成一行就是梯度：</p>
+<p>先看"全局地图"：\(y\) 和 \(\mathbf{x}\) 各为标量或向量，四种组合对应导数的四种体量——一个数、一排数、一张表：</p>
+<figure>
+        <img src="images/grad_shape_map.jpg" alt="标量与向量四种组合的导数形状对照" loading="lazy">
+        <figcaption>求导想成"挨个试灵敏度"：装不下就排成一排，再不够就铺成一张表。深度学习天天用右上格——损失（标量）对权重（向量）求导，结果就是梯度。</figcaption>
+    </figure>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第02讲 深度学习基础 › 5. 矩阵微积分</div>
+  <div class="slide-title">5.2 梯度：把求导推广到向量</div>
+  <div class="slide-body">
+<p>当函数的自变量从标量变成向量时，导数也升级为梯度（gradient）：多元函数 \(y = f(\mathbf{x})\) 对每个分量求偏导，排成一行就是梯度——一张完整的"灵敏度清单"：</p>
 <p>\[\mathbf{x} = \begin{bmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{bmatrix}, \qquad \frac{\partial y}{\partial \mathbf{x}} = \left[ \frac{\partial y}{\partial x_1}, \frac{\partial y}{\partial x_2}, \ldots, \frac{\partial y}{\partial x_n} \right]\]</p>
 <p>例：\(f = x_1^2 + 2x_2^2\)，则 \(\frac{\partial f}{\partial \mathbf{x}} = [2x_1,\ 4x_2]\)，在 \((3,2)\) 处为 \([6, 8]\)。梯度垂直于等高线、指向上坡最陡方向，所以梯度下降沿<strong>负</strong>梯度走：\(\mathbf{w} \leftarrow \mathbf{w} - \eta\,\nabla f\)。</p>
   </div>
@@ -548,6 +559,13 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
     </div>
   </div>
 </section>
+<section class="slide-short">
+  <div class="slide-breadcrumb">第02讲 深度学习基础 › 5. 矩阵微积分</div>
+  <div class="slide-title">5.3 分子布局与分母布局</div>
+  <div class="slide-body">
+<p>亲手摆一遍：\(y = x_1^2 + 2x_2^2\) 的两个偏导是 \(2x_1\) 和 \(4x_2\)。<strong>摆法 A（分子布局，行跟着 \(y\) 走）</strong>：横躺成 \([\,2x_1\ \ 4x_2\,]\)（\(1 \times 2\)）；<strong>摆法 B（分母布局，行跟着 \(\mathbf{x}\) 走）</strong>：竖躺（\(2 \times 1\)）。同一对数字，互为转置——摆法决定后面矩阵乘法能不能做、乘出什么形状。教材用摆法 B 的好处：梯度竖着摆、与 \(\mathbf{w}\) 同形，更新式两边直接对齐。</p>
+  </div>
+</section>
 <section>
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 5. 矩阵微积分</div>
   <div class="slide-title">5.4 常用的向量/矩阵求导公式</div>
@@ -559,9 +577,11 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
             <tr><td>\(\frac{\partial \mathbf{a}^\top \mathbf{x}}{\partial \mathbf{x}} = \mathbf{a}^\top\)</td><td>线性函数的导数就是系数本身</td></tr>
             <tr><td>\(\frac{\partial \mathbf{x}^\top \mathbf{A} \mathbf{x}}{\partial \mathbf{x}} = \mathbf{x}^\top(\mathbf{A} + \mathbf{A}^\top)\)</td><td>二次型求导；若 \(\mathbf{A}\) 对称则化简为 \(2\mathbf{x}^\top\mathbf{A}\)</td></tr>
             <tr><td>\(\frac{\partial \|\mathbf{x}\|^2}{\partial \mathbf{x}} = 2\mathbf{x}^\top\)</td><td>平方范数的梯度，权重衰减的梯度来源</td></tr>
+            <tr><td>\(\frac{\partial \mathbf{A}\mathbf{x}}{\partial \mathbf{x}} = \mathbf{A}\)</td><td>线性变换的导数就是变换矩阵本身</td></tr>
+            <tr><td>\(\frac{\partial \mathbf{x}^\top\mathbf{A}}{\partial \mathbf{x}} = \mathbf{A}^\top\)</td><td>行列对调——转置</td></tr>
         </table>
     </div>
-<p>记忆法：三个公式都是"乘法分配律的求导版"——\(\partial\|\mathbf{x}\|^2/\partial\mathbf{x} = 2\mathbf{x}^\top\) 正是权重衰减惩罚项的导数（二次型公式取 \(\mathbf{A}=\mathbf{I}\) 的特例）。</p>
+<p>记忆法：都是"乘法分配律的求导版"。数字验证最后一行：\(\mathbf{A} = \begin{bmatrix} 1 & 2 \\ 3 & 4 \end{bmatrix}\) 时 \(\mathbf{x}^\top\mathbf{A} = [\,x_1+3x_2,\ 2x_1+4x_2\,]\)，四个偏导按"行看 \(y\)、列看 \(\mathbf{x}\)"排成 \(\begin{bmatrix} 1 & 3 \\ 2 & 4 \end{bmatrix} = \mathbf{A}^\top\)。</p>
   </div>
 </section>
 <section>
@@ -574,6 +594,32 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
 <div class="callout key">
         <span class="co-tag">🔑 反向传播在干什么</span>
         <p>从输出端开始把导数逐层往回传，每传一层顺手算出该层权重的梯度，共享中间结果——求导成本从"指数级"降到"和正向计算同量级"。链式法则的高效实现撑起了整个训练流程。</p>
+    </div>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第02讲 深度学习基础 › 5. 矩阵微积分</div>
+  <div class="slide-title">5.5 链式法则：每个因子都是一张"导数表"</div>
+  <div class="slide-body">
+<p>链式法则里相乘的每个因子，都是一张 \(m \times n\) 的<strong>雅可比矩阵</strong>：第 \(i\) 行第 \(j\) 列是 \(\partial y_i / \partial x_j\)，两两组合一个不漏。记忆锚点：<strong>行看分子，列看分母</strong>。</p>
+<figure>
+        <img src="images/jacobian_matrix.jpg" alt="雅可比矩阵的构造" loading="lazy">
+        <figcaption>雅可比矩阵的构造：梯度是它的一行，"向量对标量"是它的一列；反向传播在层与层之间传递的就是这张表。</figcaption>
+    </figure>
+  </div>
+</section>
+<section class="slide-short">
+  <div class="slide-breadcrumb">第02讲 深度学习基础 › 5. 矩阵微积分</div>
+  <div class="slide-title">5.5 本章速查卡</div>
+  <div class="slide-body">
+<div class="tbl-wrap">
+        <table>
+            <tr><th>场景</th><th>结果形状</th><th>一句话</th></tr>
+            <tr><td>标量 \(y\) 对向量 \(\mathbf{x}\)</td><td>一排数（分子布局为行向量）</td><td>梯度——训练的步伐</td></tr>
+            <tr><td>向量 \(\mathbf{y}\) 对向量 \(\mathbf{x}\)</td><td>\(m \times n\) 矩阵</td><td>雅可比矩阵——反向传播传的就是它</td></tr>
+            <tr><td>分子布局</td><td>行跟分子 \(\mathbf{y}\) 走</td><td>本讲义用它</td></tr>
+            <tr><td>分母布局</td><td>行跟分母 \(\mathbf{x}\) 走</td><td>教材用它，梯度与 \(\mathbf{x}\) 同形</td></tr>
+        </table>
     </div>
   </div>
 </section>

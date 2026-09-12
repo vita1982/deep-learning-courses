@@ -372,7 +372,12 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
     </div>
 
     <h3><span class="sec-no">5.2</span>梯度：把求导推广到向量</h3>
-    <p>一元函数 \(f(x)\) 只有一个"旋钮"，导数只有一个数；但损失函数同时依赖成千上万个权重 \(x_1, x_2, \ldots, x_n\)——对每个旋钮单独问"拧它一下，\(f\) 变多少"，就得到 \(n\) 个偏导数。把它们排成一行，就是<strong>梯度</strong>（gradient）：</p>
+    <p>在推广之前，先看一张"全局地图"：\(y\) 和 \(\mathbf{x}\) 各自可以是标量或向量，四种组合对应导数的四种"体量"——都是数，导数就是一个数；有一边是向量，导数被拉成一排数；两边都是向量，导数铺开成一张表：</p>
+    <figure>
+        <img src="images/grad_shape_map.jpg" alt="标量与向量四种组合的导数形状对照" loading="lazy">
+        <figcaption>求导的全局地图：横轴是 \(\mathbf{x}\)（对谁求导），纵轴是 \(y\)（求谁的导）。可以把求导想成"挨个试灵敏度"：\(y\) 有 \(m\) 个分量、\(\mathbf{x}\) 有 \(n\) 个分量，最坏要试 \(m \times n\) 次——装得下就一个数，装不下排成一排，再不够就排成一张表。深度学习天天用的是右上格：损失（标量）对权重（向量）求导，结果就是梯度。</figcaption>
+    </figure>
+    <p>一元函数 \(f(x)\) 只有一个"旋钮"，导数只有一个数；但损失函数同时依赖成千上万个权重 \(x_1, x_2, \ldots, x_n\)——对每个旋钮单独问"拧它一下，\(f\) 变多少"，就得到 \(n\) 个偏导数。把它们排成一行，就是<strong>梯度</strong>（gradient）——一张完整的"灵敏度清单"：</p>
     <p>\[\mathbf{x} = \begin{bmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{bmatrix}, \qquad \frac{\partial y}{\partial \mathbf{x}} = \left[ \frac{\partial y}{\partial x_1}, \frac{\partial y}{\partial x_2}, \ldots, \frac{\partial y}{\partial x_n} \right]\]</p>
     <p>有了梯度，梯度下降每一轮做的事就可以精确写出：\(\mathbf{w} \leftarrow \mathbf{w} - \eta\,\nabla f\)，其中 \(\eta\) 是学习率。</p>
     <p>手算一个例子：\(f = x_1^2 + 2x_2^2\)。对 \(x_1\) 求偏导（把 \(x_2\) 当常数）得 \(2x_1\)，对 \(x_2\) 求偏导得 \(4x_2\)，所以 \(\frac{\partial f}{\partial \mathbf{x}} = [2x_1,\ 4x_2]\)。在点 \((3, 2)\) 处梯度为 \([6, 8]\)——含义是：在 \((3,2)\) 附近，\(x_1\) 每增大一点 \(f\) 以约 6 倍速增加，\(x_2\) 每增大一点 \(f\) 以约 8 倍速增加。</p>
@@ -382,18 +387,22 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
     </figure>
     <div class="callout key">
         <span class="co-tag">🔑 为什么梯度下降沿"负"梯度走？</span>
-        <p>把 \(f\) 想象成一片山坡，等高线是高度相同的环线：梯度方向与等高线垂直，指向<strong>上坡最陡</strong>的方向；负梯度则指向<strong>下坡最陡</strong>的方向。沿负梯度走，保证每一步都朝函数值降低最快的方向迈——在 \((3,2)\) 处负梯度是 \((-6, -8)\)，沿它走 \(f\) 掉得最快。</p>
+        <p>把 \(f\) 想象成一片山坡，等高线是高度相同的环线：梯度方向与等高线垂直，指向<strong>上坡最陡</strong>的方向；负梯度则指向<strong>下坡最陡</strong>的方向。为什么必然垂直？沿等高线走高度不变（变化率为 0），所以变化最快的方向只能和等高线垂直。沿负梯度走，保证每一步都朝函数值降低最快的方向迈——在 \((3,2)\) 处负梯度是 \((-6, -8)\)，沿它走 \(f\) 掉得最快。</p>
     </div>
     <p>再验证一个与 1.3 节的连接：正则化惩罚 \(\lambda\|\mathbf{w}\|^2\) 的梯度是 \(2\lambda\mathbf{w}\)，梯度下降每轮减去它，就是把权重"往 0 推"的数学本体。</p>
 
     <h3><span class="sec-no">5.3</span>分子布局与分母布局</h3>
-    <p>当 \(\mathbf{x}\) 和 \(\mathbf{y}\) 都是向量时，\(\partial \mathbf{y}/\partial \mathbf{x}\) 一共有 \(m \times n\) 个偏导数，排成矩阵时"横着放还是竖着放"有两种约定：</p>
+    <p>先补完全局地图的左下格：\(\mathbf{y}\) 是 \(m\) 个分量的向量、\(x\) 是标量时，\(\mathbf{y}\) 的每个分量都对 \(x\) 求导，\(m\) 个结果排成一列，形状与 \(\mathbf{y}\) 相同。而当 \(\mathbf{x}\) 和 \(\mathbf{y}\) 都是向量时，\(\partial \mathbf{y}/\partial \mathbf{x}\) 一共有 \(m \times n\) 个偏导数，排成矩阵时"横着放还是竖着放"有两种约定：</p>
     <div class="tbl-wrap">
         <table>
             <tr><th>布局约定</th><th>排法</th><th>形状</th><th>别名</th></tr>
             <tr><td>分子布局（numerator-layout）</td><td>以 \(\mathbf{y}\) 的分量分行</td><td>\(m \times n\)</td><td>Jacobian 形式</td></tr>
             <tr><td>分母布局（denominator-layout）</td><td>以 \(\mathbf{x}\) 的分量分行（即转置）</td><td>\(n \times m\)</td><td>梯度 / Hessian 形式</td></tr>
         </table>
+    </div>
+    <div class="callout try">
+        <span class="co-tag">🧠 亲手把两种布局摆一遍</span>
+        <p>用 \(y = x_1^2 + 2x_2^2\) 走一遍：两个偏导数是 \(2x_1\) 和 \(4x_2\)。<strong>摆法 A（分子布局，"行跟着 \(y\) 走"）</strong>：\(y\) 只有 1 个分量 → 1 行，\(\mathbf{x}\) 有 2 个分量 → 2 列，摆成横着的一条 \([\,2x_1\ \ 4x_2\,]\)（\(1 \times 2\)）；<strong>摆法 B（分母布局，"行跟着 \(\mathbf{x}\) 走"）</strong>：\(\mathbf{x}\) 有 2 个分量 → 2 行，\(y\) 只有 1 个 → 1 列，摆成竖着的一条（\(2 \times 1\)）。同一对数字，一个横躺一个竖躺——互为转置。摆法决定后面矩阵乘法能不能做、乘出来什么形状；教材用摆法 B 的好处一句话：梯度竖着摆，和权重 \(\mathbf{w}\) 形状一样，更新式 \(\mathbf{w} \leftarrow \mathbf{w} - \eta\,\nabla f\) 两边直接对齐。</p>
     </div>
     <div class="callout key">
         <span class="co-tag">🔑 初学者理解</span>
@@ -415,16 +424,51 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
         </table>
     </div>
     <p>都可以当成"乘法分配律的求导版"来记：\(\mathbf{a}^\top\mathbf{x} = a_1x_1 + \cdots + a_nx_n\)，对 \(x_i\) 求偏导只剩 \(a_i\)，合起来就是系数向量本身；二次型 \(\mathbf{x}^\top\mathbf{A}\mathbf{x}\) 可看成"带权重的平方和"，求导结果是"对称化"后的 \((\mathbf{A}+\mathbf{A}^\top)\) 乘 \(\mathbf{x}\)，若 \(\mathbf{A}\) 对称就退化成干净的 \(2\mathbf{A}\mathbf{x}\)；第三个公式是第二个的特例（\(\mathbf{A} = \mathbf{I}\)），也正是权重衰减惩罚项的导数——1.3 节已经用过它。</p>
+    <p>当 \(y\) 也是向量时（\(\mathbf{y}\) 有 \(m\) 个分量、\(\mathbf{x}\) 有 \(n\) 个分量，结果是 \(m \times n\) 矩阵），有四条基本式同样一查即用：</p>
+    <div class="tbl-wrap">
+        <table>
+            <tr><th>\(\mathbf{y}\)</th><th>\(\partial \mathbf{y}/\partial \mathbf{x}\)（分子布局）</th><th>直觉</th></tr>
+            <tr><td>\(\mathbf{a}\)（常向量）</td><td>\(\mathbf{0}\)</td><td>常数对 \(\mathbf{x}\) 不敏感</td></tr>
+            <tr><td>\(\mathbf{x}\)</td><td>\(\mathbf{I}\)</td><td>每个分量只对自己敏感</td></tr>
+            <tr><td>\(\mathbf{A}\mathbf{x}\)</td><td>\(\mathbf{A}\)</td><td>线性变换的导数就是变换矩阵本身</td></tr>
+            <tr><td>\(\mathbf{x}^\top\mathbf{A}\)</td><td>\(\mathbf{A}^\top\)</td><td>行列对调——转置</td></tr>
+        </table>
+    </div>
+    <p>用数字验证最后两行：取 \(\mathbf{A} = \begin{bmatrix} 1 & 2 \\ 3 & 4 \end{bmatrix}\)。\(\mathbf{y} = \mathbf{A}\mathbf{x}\) 时 \(y_1 = x_1 + 2x_2\)，它对 \((x_1, x_2)\) 的导数是 \((1, 2)\)——正是 \(\mathbf{A}\) 的第 1 行，逐行拼起来就是 \(\mathbf{A}\) 本身；\(\mathbf{y} = \mathbf{x}^\top\mathbf{A} = [\,x_1 + 3x_2,\ 2x_1 + 4x_2\,]\) 时，四个偏导按"行看 \(y\)、列看 \(\mathbf{x}\)"排成 \(\begin{bmatrix} 1 & 3 \\ 2 & 4 \end{bmatrix}\)，恰好是 \(\mathbf{A}^\top\)——转置不是公式里长出来的，是"按行摆结果"这个动作天然造成的。复合情形也只有一元规则的矩阵版：\(\partial(a\mathbf{u})/\partial\mathbf{x} = a\,\partial\mathbf{u}/\partial\mathbf{x}\)，\(\partial(\mathbf{A}\mathbf{u})/\partial\mathbf{x} = \mathbf{A}\,\partial\mathbf{u}/\partial\mathbf{x}\)，\(\partial(\mathbf{u}+\mathbf{v})/\partial\mathbf{x} = \partial\mathbf{u}/\partial\mathbf{x} + \partial\mathbf{v}/\partial\mathbf{x}\)——一条新东西都没有。</p>
+    <p>再往上推广到矩阵：\(y\) 和 \(\mathbf{x}\) 各可取标量、向量、矩阵，九种组合的形状规律一句话——<strong>结果的维度数 = 分子维度数 + 分母维度数</strong>，各维大小照旧（\(y\) 的维度在前，\(\mathbf{x}\) 的在后）。向量对矩阵是三维、矩阵对矩阵是四维，纸上已经画不下：</p>
+    <figure>
+        <img src="images/grad_shape_tensor.jpg" alt="标量、向量、矩阵九种组合的导数形状总览" loading="lazy">
+        <figcaption>标量 / 向量 / 矩阵九种组合的导数形状总览（含三维、四维张量情形）。这一页看看就好：实际从不手算，框架的自动微分（autograd）会算好——你只需要记住"梯度与权重同形"这一条，加上链式法则，就足以理解反向传播。</figcaption>
+    </figure>
 
     <h3><span class="sec-no">5.5</span>链式法则</h3>
     <p>复合函数的求导遵循链式法则——"剥洋葱"：先对外层求导，再乘内层的导数。它是整个反向传播的数学基础：</p>
     <p>\[\text{标量：}\; y=f(u),\; u=g(x) \;\Rightarrow\; \frac{dy}{dx} = \frac{dy}{du}\cdot\frac{du}{dx} \qquad\qquad \text{向量：}\; \frac{\partial y}{\partial \mathbf{x}} = \underbrace{\frac{\partial y}{\partial \mathbf{u}}}_{(1,k)} \underbrace{\frac{\partial \mathbf{u}}{\partial \mathbf{x}}}_{(k,n)}\]</p>
+    <p>上式中每个因子都是一张 \(m \times n\) 的"导数表"，称为<strong>雅可比矩阵</strong>（Jacobian matrix）。它的构造分两步：先把 \(\mathbf{y}\) 的某个分量 \(y_i\) 对整个 \(\mathbf{x}\) 求梯度、占一行；再把各行展开——第 \(i\) 行第 \(j\) 列就是 \(\partial y_i/\partial x_j\)，即"\(\mathbf{y}\) 的第 \(i\) 个输出对 \(\mathbf{x}\) 的第 \(j\) 个输入"的偏导，\(m \times n\) 个组合一个不漏。记忆锚点：<strong>行看分子，列看分母</strong>。</p>
+    <figure>
+        <img src="images/jacobian_matrix.jpg" alt="雅可比矩阵的构造" loading="lazy">
+        <figcaption>雅可比矩阵的构造：\(\mathbf{x} \in \mathbb{R}^n\)、\(\mathbf{y} \in \mathbb{R}^m\) 时 \(\partial \mathbf{y}/\partial \mathbf{x} \in \mathbb{R}^{m \times n}\)。5.2 节的梯度是它的一行，5.3 节开头"向量对标量"的情形是它的一列。</figcaption>
+    </figure>
     <p>向量版本里，局部导数按矩阵乘法依次相乘，形状必须能匹配。神经网络就是一层层复合起来的超长函数 \(f^{(L)} \circ \cdots \circ f^{(2)} \circ f^{(1)}\)，损失对第一层参数的导数可以拆成一连串简单导数的乘积：</p>
     <p>\[\frac{\partial f^{(L)}}{\partial f^{(L-1)}} \cdot \frac{\partial f^{(L-1)}}{\partial f^{(L-2)}} \cdots \frac{\partial f^{(2)}}{\partial f^{(1)}}\]</p>
 <p>这条乘积算出的是损失对第一层<strong>输出</strong>的导数；再乘上各层对自身参数的局部导数 \(\partial f^{(l)}/\partial \mathbf{w}^{(l)}\)，就得到每层权重的梯度。</p>
     <div class="callout key">
         <span class="co-tag">🔑 反向传播在干什么</span>
         <p>训练需要"损失对每一层权重"的导数，而每一层都是这条长链的一环。<strong>反向传播 = 从输出端开始，把导数逐层往回传，每传一层就顺手算出该层权重的梯度</strong>，而不是对每条路径单独重算。共享中间结果后，整个网络的求导成本从"指数级"降到"和正向计算同量级"。没有这个技巧，深度学习的梯度根本算不动——可以说，链式法则的高效实现撑起了整个训练流程。</p>
+    </div>
+    <p>最后把本章浓缩成一张速查卡：</p>
+    <div class="tbl-wrap">
+        <table>
+            <tr><th>场景</th><th>结果形状</th><th>一句话</th></tr>
+            <tr><td>标量 \(y\) 对向量 \(\mathbf{x}\)</td><td>一排数（分子布局为行向量）</td><td>梯度——训练的步伐</td></tr>
+            <tr><td>向量 \(\mathbf{y}\) 对向量 \(\mathbf{x}\)</td><td>\(m \times n\) 矩阵</td><td>雅可比矩阵——反向传播传的就是它</td></tr>
+            <tr><td>分子布局</td><td>行跟分子 \(\mathbf{y}\) 走</td><td>本讲义用它</td></tr>
+            <tr><td>分母布局</td><td>行跟分母 \(\mathbf{x}\) 走</td><td>教材用它，梯度与 \(\mathbf{x}\) 同形</td></tr>
+        </table>
+    </div>
+    <div class="callout try">
+        <span class="co-tag">✏️ 课后思考</span>
+        <p>① 手算 \(\partial(\mathbf{x}^\top\mathbf{A}\mathbf{x})/\partial\mathbf{x}\)（提示：展开成二次型逐项求偏导，再对照 5.4 的公式表）；② 用公式表验证 \(\partial(\lambda\|\mathbf{w}\|^2)/\partial\mathbf{w} = 2\lambda\mathbf{w}\)——它就是权重衰减每轮"往 0 推"的数学本体；③ 找一份用分母布局的资料，对比同一个公式在两种布局下差在哪个转置。</p>
     </div>
 </section>
 
