@@ -486,10 +486,6 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
             <tr><td>分子布局</td><td>行数由分子 \(\mathbf{y}\) 决定</td><td>部分文献采用，阅读时注意区分</td></tr>
         </table>
     </div>
-    <div class="callout try">
-        <span class="co-tag">✏️ 课后思考</span>
-        <p>① 手算 \(\partial(\mathbf{x}^\top\mathbf{A}\mathbf{x})/\partial\mathbf{x}\)（提示：展开成二次型逐项求偏导）；② 用 5.5 的速查表验证 \(\partial(\lambda\|\mathbf{w}\|^2)/\partial\mathbf{w} = 2\lambda\mathbf{w}\)（提示：把 \(\|\mathbf{w}\|^2\) 展开成 \(w_1^2 + w_2^2 + \cdots\) 逐项求偏导，再套用表二的常数倍规则）——这正是权重衰减在每轮迭代中将权重向 0 收缩的数学本质；③ 找一份采用分子布局的资料，对比同一个公式在两种布局下相差哪个转置。</p>
-    </div>
 </section>
 
 <!-- ==================== 第六章 ==================== -->
