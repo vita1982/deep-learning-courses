@@ -473,7 +473,7 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
     </div>
     <div class="callout try">
         <span class="co-tag">✏️ 课后思考</span>
-        <p>① 手算 \(\partial(\mathbf{x}^\top\mathbf{A}\mathbf{x})/\partial\mathbf{x}\)（提示：展开成二次型逐项求偏导）；② 用 5.5 的速查表验证 \(\partial(\lambda\|\mathbf{w}\|^2)/\partial\mathbf{w} = 2\lambda\mathbf{w}\)——它就是权重衰减每轮"往 0 推"的数学本体；③ 找一份用分母布局的资料，对比同一个公式在两种布局下差在哪个转置。</p>
+        <p>① 手算 \(\partial(\mathbf{x}^\top\mathbf{A}\mathbf{x})/\partial\mathbf{x}\)（提示：展开成二次型逐项求偏导）；② 用 5.5 的速查表验证 \(\partial(\lambda\|\mathbf{w}\|^2)/\partial\mathbf{w} = 2\lambda\mathbf{w}\)（提示：把 \(\|\mathbf{w}\|^2\) 展开成 \(w_1^2 + w_2^2 + \cdots\) 逐项求偏导，再套表二的常数倍规则）——它就是权重衰减每轮"往 0 推"的数学本体；③ 找一份用分母布局的资料，对比同一个公式在两种布局下差在哪个转置。</p>
     </div>
 </section>
 
