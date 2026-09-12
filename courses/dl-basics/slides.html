@@ -520,9 +520,9 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 5. 矩阵微积分</div>
   <div class="slide-title">5.2 标量对向量：梯度（右上格）</div>
   <div class="slide-body">
-<p>当函数的自变量从标量扩展为向量时，导数也相应升级为梯度（gradient）：多元函数 \(y = f(\mathbf{x})\) 对每个分量求偏导，按序排成与 \(\mathbf{x}\) 同形的列向量即为梯度——它完整刻画了函数对每个自变量的敏感程度：</p>
-<p>\[\mathbf{x} = \begin{bmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{bmatrix}, \qquad \frac{\partial y}{\partial \mathbf{x}} = \begin{bmatrix} \dfrac{\partial y}{\partial x_1} \\[6pt] \dfrac{\partial y}{\partial x_2} \\[6pt] \vdots \\[2pt] \dfrac{\partial y}{\partial x_n} \end{bmatrix}\]</p>
-<p>例：\(f = x_1^2 + 2x_2^2\)，则 \(\frac{\partial f}{\partial \mathbf{x}} = [2x_1,\ 4x_2]^\top\)，在 \((3,2)\) 处为 \([6, 8]^\top\)。梯度与等高线垂直、指向上升最陡的方向，因此梯度下降沿<strong>负</strong>梯度方向迭代：\(\mathbf{w} \leftarrow \mathbf{w} - \eta\,\nabla f\)。</p>
+<p>当函数的自变量从标量扩展为向量时，导数也相应升级为梯度（gradient）：多元函数 \(y = f(\mathbf{x})\) 对每个分量求偏导，按序排成一行即为梯度——它完整刻画了函数对每个自变量的敏感程度：</p>
+<p>\[\mathbf{x} = \begin{bmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{bmatrix}, \qquad \frac{\partial y}{\partial \mathbf{x}} = \left[ \frac{\partial y}{\partial x_1},\ \frac{\partial y}{\partial x_2},\ \ldots,\ \frac{\partial y}{\partial x_n} \right]\]</p>
+<p>例：\(f = x_1^2 + 2x_2^2\)，则 \(\frac{\partial f}{\partial \mathbf{x}} = [2x_1,\ 4x_2]\)，在 \((3,2)\) 处为 \([6, 8]\)。梯度与等高线垂直、指向上升最陡的方向，因此梯度下降沿<strong>负</strong>梯度方向迭代：\(\mathbf{w} \leftarrow \mathbf{w} - \eta\,\nabla f\)（\(\nabla f\) 取行向量梯度的转置，与 \(\mathbf{w}\) 同形）。</p>
 <p>与 1.3 节的联系：正则化惩罚项 \(\lambda\|\mathbf{w}\|^2\) 的梯度为 \(2\lambda\mathbf{w}\)——梯度下降每轮减去该项，即在数学上实现了权重衰减将权重向 0 收缩的效果。</p>
   </div>
 </section>
@@ -540,7 +540,7 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 5. 矩阵微积分</div>
   <div class="slide-title">5.3 向量对标量与布局约定（左下格）</div>
   <div class="slide-body">
-<p>左下格对应的情形：当 \(\mathbf{y}\) 为含 \(m\) 个分量的向量、\(x\) 为标量时，\(\mathbf{y}\) 的每个分量分别对 \(x\) 求导；按分母布局（结果形状为"分母维度 × 分子维度"），所得 \(m\) 个结果排成一行，即 \(1 \times m\) 的行向量。而当双方均为向量时，\(m \times n\) 个偏导数按行排列或按列排列，文献中存在两种约定：</p>
+<p>左下格对应的情形：当 \(\mathbf{y}\) 为含 \(m\) 个分量的向量、\(x\) 为标量时，\(\mathbf{y}\) 的每个分量分别对 \(x\) 求导；按分子布局（结果形状为"分子维度 × 分母维度"），所得 \(m\) 个结果排成一列，即 \(m \times 1\) 的列向量，形状与 \(\mathbf{y}\) 相同。而当双方均为向量时，\(m \times n\) 个偏导数按行排列或按列排列，文献中存在两种约定：</p>
 <div class="tbl-wrap">
         <table>
             <tr><th>布局约定</th><th>含义</th></tr>
@@ -554,7 +554,7 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
     </figure>
 <div class="callout key">
         <span class="co-tag">🔑 初学者理解</span>
-        <p>两种布局仅是排列方式不同，数值完全一致、互为转置。《动手学深度学习》教材采用分母布局（梯度为列向量），本讲义与教材保持一致。<strong>同一份材料中必须统一采用同一种约定</strong>——混用将相差一个转置，导致结果错误。实用建议：使用每个公式前确认其结果为列向量还是行向量即可。</p>
+        <p>两种布局仅是排列方式不同，数值完全一致、互为转置。《动手学深度学习》课程采用分子布局（梯度按行排列），本讲义与课程课件保持一致。<strong>同一份材料中必须统一采用同一种约定</strong>——混用将相差一个转置，导致结果错误。实用建议：使用每个公式前确认其结果为列向量还是行向量即可。</p>
     </div>
   </div>
 </section>
@@ -564,15 +564,15 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
   <div class="slide-body">
 <p>以 \(y = x_1^2 + 2x_2^2\) 为例：两个偏导数分别为 \(2x_1\) 与 \(4x_2\)，同一对数字在两种布局下的排列结果对比：</p>
 <div style="display:flex;gap:16px;flex-wrap:wrap;margin:10px 0;">
-    <div style="flex:1;min-width:300px;background:#F8FAFC;border:1px solid #CBD5E1;border-radius:10px;padding:12px 18px;">
-        <p style="margin:0;font-weight:700;color:#475569;">方式 A · 分子布局（Jacobian 形式）</p>
-        <p style="text-align:center;margin:6px 0;">\[\frac{\partial y}{\partial \mathbf{x}} = [\,2x_1\ \ \ 4x_2\,] \quad (1 \times 2)\]</p>
-        <p style="margin:0;color:#475569;font-size:19px;">行数由分子 \(y\) 决定：偏导按行排开，得<strong>行向量</strong>。部分文献采用。</p>
-    </div>
     <div style="flex:1;min-width:300px;background:#EFF6FF;border:2px solid #2563EB;border-radius:10px;padding:12px 18px;">
-        <p style="margin:0;font-weight:700;color:#1D4ED8;">方式 B · 分母布局（梯度 / Hessian 形式）<span style="display:inline-block;margin-left:8px;padding:2px 10px;background:#2563EB;color:#fff;border-radius:12px;font-size:14px;">✅ 本课程采用</span></p>
+        <p style="margin:0;font-weight:700;color:#1D4ED8;">方式 A · 分子布局（Jacobian 形式）<span style="display:inline-block;margin-left:8px;padding:2px 10px;background:#2563EB;color:#fff;border-radius:12px;font-size:14px;">✅ 本课程采用</span></p>
+        <p style="text-align:center;margin:6px 0;">\[\frac{\partial y}{\partial \mathbf{x}} = [\,2x_1\ \ \ 4x_2\,] \quad (1 \times 2)\]</p>
+        <p style="margin:0;color:#1E3A8A;font-size:19px;">行数由分子 \(y\) 决定：偏导按行排开，得<strong>行向量</strong>。《动手学深度学习》课程采用此约定。</p>
+    </div>
+    <div style="flex:1;min-width:300px;background:#F8FAFC;border:1px solid #CBD5E1;border-radius:10px;padding:12px 18px;">
+        <p style="margin:0;font-weight:700;color:#475569;">方式 B · 分母布局（梯度 / Hessian 形式）</p>
         <p style="text-align:center;margin:6px 0;">\[\frac{\partial y}{\partial \mathbf{x}} = \begin{bmatrix} 2x_1 \\[4pt] 4x_2 \end{bmatrix} \quad (2 \times 1)\]</p>
-        <p style="margin:0;color:#1E3A8A;font-size:19px;">行数由分母 \(\mathbf{x}\) 决定：偏导按列排成<strong>列向量</strong>，与 \(\mathbf{w}\) 同形，更新式两端形状自然对齐。</p>
+        <p style="margin:0;color:#475569;font-size:19px;">行数由分母 \(\mathbf{x}\) 决定：偏导按列排成<strong>列向量</strong>。部分文献采用；优点是梯度与 \(\mathbf{w}\) 同形。</p>
     </div>
 </div>
 <p style="font-size:19px;color:#475569;">两种方式数值完全相同、互为转置；排列方式决定后续矩阵乘法能否进行及结果的形状。</p>
@@ -582,23 +582,23 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 5. 矩阵微积分</div>
   <div class="slide-title">5.4 向量对向量：雅可比矩阵（右下格）</div>
   <div class="slide-body">
-<p>当 \(\mathbf{y}\) 与 \(\mathbf{x}\) 均为向量时，导数构成矩阵——<strong>雅可比矩阵</strong>。按分母布局其形状为 \(n \times m\)：第 \(j\) 行第 \(i\) 列的元素为 \(\partial y_i / \partial x_j\)，\(m \times n\) 种组合无一遗漏。记忆要点：<strong>行对应分母 \(\mathbf{x}\)，列对应分子 \(\mathbf{y}\)</strong>。</p>
-<p style="text-align:center;">\[\frac{\partial \mathbf{y}}{\partial \mathbf{x}} = \begin{bmatrix} \dfrac{\partial y_1}{\partial x_1} & \dfrac{\partial y_2}{\partial x_1} & \cdots & \dfrac{\partial y_m}{\partial x_1} \\[8pt] \dfrac{\partial y_1}{\partial x_2} & \dfrac{\partial y_2}{\partial x_2} & \cdots & \dfrac{\partial y_m}{\partial x_2} \\[8pt] \vdots & \vdots & \ddots & \vdots \\[4pt] \dfrac{\partial y_1}{\partial x_n} & \dfrac{\partial y_2}{\partial x_n} & \cdots & \dfrac{\partial y_m}{\partial x_n} \end{bmatrix} \in \mathbb{R}^{n \times m}\]</p>
-<p>构造：将每个 \(y_i\) 对 \(\mathbf{x}\) 的梯度（列向量）各占一列、并排即成。梯度（5.2）相当于 \(m=1\) 时的一列，"向量对标量"（5.3）相当于 \(n=1\) 时的一行；反向传播在层间传递的正是这一矩阵。</p>
+<p>当 \(\mathbf{y}\) 与 \(\mathbf{x}\) 均为向量时，导数构成矩阵——<strong>雅可比矩阵</strong>。按分子布局其形状为 \(m \times n\)：第 \(i\) 行第 \(j\) 列的元素为 \(\partial y_i / \partial x_j\)，\(m \times n\) 种组合无一遗漏。记忆要点：<strong>行对应分子 \(\mathbf{y}\)，列对应分母 \(\mathbf{x}\)</strong>。</p>
+<p style="text-align:center;">\[\frac{\partial \mathbf{y}}{\partial \mathbf{x}} = \begin{bmatrix} \dfrac{\partial y_1}{\partial x_1} & \dfrac{\partial y_1}{\partial x_2} & \cdots & \dfrac{\partial y_1}{\partial x_n} \\[8pt] \dfrac{\partial y_2}{\partial x_1} & \dfrac{\partial y_2}{\partial x_2} & \cdots & \dfrac{\partial y_2}{\partial x_n} \\[8pt] \vdots & \vdots & \ddots & \vdots \\[4pt] \dfrac{\partial y_m}{\partial x_1} & \dfrac{\partial y_m}{\partial x_2} & \cdots & \dfrac{\partial y_m}{\partial x_n} \end{bmatrix} \in \mathbb{R}^{m \times n}\]</p>
+<p>构造：将每个 \(y_i\) 对 \(\mathbf{x}\) 的梯度（行向量）各占一行、叠放即成。梯度（5.2）相当于 \(m=1\) 时的一行，"向量对标量"（5.3）相当于 \(n=1\) 时的一列；反向传播在层间传递的正是这一矩阵。</p>
   </div>
 </section>
 <section>
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 5. 矩阵微积分</div>
   <div class="slide-title">5.5 求导公式速查</div>
   <div class="slide-body">
-<p>将四种组合中最常用的求导结果汇总为两张速查表（分母布局），可直接查表使用（\(\mathbf{a}\)、\(\mathbf{A}\) 与标量 \(a\) 均不是 \(\mathbf{x}\) 的函数）：</p>
+<p>将四种组合中最常用的求导结果汇总为两张速查表（分子布局），可直接查表使用（\(\mathbf{a}\)、\(\mathbf{A}\) 与标量 \(a\) 均不是 \(\mathbf{x}\) 的函数）：</p>
 <div class="tbl-wrap">
         <table>
             <tr><th colspan="2">表一（基本式）</th><th colspan="2">表二（复合式）</th></tr>
             <tr><td>\(y=\mathbf{a}\)</td><td>\(\mathbf{0}\)</td><td>\(a\mathbf{u}\)</td><td>\(a\,\partial\mathbf{u}/\partial\mathbf{x}\)</td></tr>
-            <tr><td>\(y=\mathbf{x}\)</td><td>\(\mathbf{I}\)</td><td>\(\mathbf{A}\mathbf{u}\)</td><td>\((\partial\mathbf{u}/\partial\mathbf{x})\,\mathbf{A}^\top\)</td></tr>
-            <tr><td>\(y=\mathbf{A}\mathbf{x}\)</td><td>\(\mathbf{A}^\top\)</td><td>\(\mathbf{u}+\mathbf{v}\)</td><td>\(\partial\mathbf{u}/\partial\mathbf{x}+\partial\mathbf{v}/\partial\mathbf{x}\)</td></tr>
-            <tr><td>\(y=\mathbf{x}^\top\mathbf{A}\)</td><td>\(\mathbf{A}\)</td><td colspan="2" style="color:#64748B;">\(\mathbf{u},\mathbf{v}\) 为 \(\mathbf{x}\) 的函数</td></tr>
+            <tr><td>\(y=\mathbf{x}\)</td><td>\(\mathbf{I}\)</td><td>\(\mathbf{A}\mathbf{u}\)</td><td>\(\mathbf{A}\,(\partial\mathbf{u}/\partial\mathbf{x})\)</td></tr>
+            <tr><td>\(y=\mathbf{A}\mathbf{x}\)</td><td>\(\mathbf{A}\)</td><td>\(\mathbf{u}+\mathbf{v}\)</td><td>\(\partial\mathbf{u}/\partial\mathbf{x}+\partial\mathbf{v}/\partial\mathbf{x}\)</td></tr>
+            <tr><td>\(y=\mathbf{x}^\top\mathbf{A}\)</td><td>\(\mathbf{A}^\top\)</td><td colspan="2" style="color:#64748B;">\(\mathbf{u},\mathbf{v}\) 为 \(\mathbf{x}\) 的函数</td></tr>
         </table>
     </div>
   </div>
@@ -609,7 +609,7 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
   <div class="slide-body">
 <figure>
         <img src="images/grad_shape_tensor.jpg" alt="标量、向量、矩阵九种组合的导数形状总览" loading="lazy" class="img-tall">
-        <figcaption>九种组合的形状规律可概括为一条：<strong>结果维度数 = 分母维度数 + 分子维度数</strong>。矩阵对矩阵的导数为四维张量，已无法在平面上画出——实际计算由框架的自动微分完成，只需记住"梯度与权重同形"即可。</figcaption>
+        <figcaption>九种组合的形状规律可概括为一条：<strong>结果维度数 = 分子维度数 + 分母维度数</strong>。矩阵对矩阵的导数为四维张量，已无法在平面上画出——实际计算由框架的自动微分完成，只需记住"梯度与权重同形"即可。</figcaption>
     </figure>
   </div>
 </section>
@@ -621,13 +621,13 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
 <p>\[\text{标量：}\; y=f(u),\; u=g(x) \;\Rightarrow\; \frac{dy}{dx} = \frac{dy}{du}\cdot\frac{du}{dx}\]</p>
 <div class="tbl-wrap">
         <table>
-            <tr><th>情形</th><th>链式法则（分母布局）</th><th>形状核验</th></tr>
-            <tr><td>① \(y,u\) 标量，\(\mathbf{x}\in\mathbb{R}^n\)</td><td>\(\frac{\partial y}{\partial \mathbf{x}} = \frac{\partial u}{\partial \mathbf{x}}\frac{\partial y}{\partial u}\)</td><td>\((n,1)=(n,1)(1,1)\)</td></tr>
-            <tr><td>② \(y\) 标量，\(\mathbf{u}\in\mathbb{R}^k,\mathbf{x}\in\mathbb{R}^n\)</td><td>\(\frac{\partial y}{\partial \mathbf{x}} = \frac{\partial \mathbf{u}}{\partial \mathbf{x}}\frac{\partial y}{\partial \mathbf{u}}\)</td><td>\((n,1)=(n,k)(k,1)\)</td></tr>
-            <tr><td>③ \(\mathbf{y}\in\mathbb{R}^m,\mathbf{u}\in\mathbb{R}^k,\mathbf{x}\in\mathbb{R}^n\)</td><td>\(\frac{\partial \mathbf{y}}{\partial \mathbf{x}} = \frac{\partial \mathbf{u}}{\partial \mathbf{x}}\frac{\partial \mathbf{y}}{\partial \mathbf{u}}\)</td><td>\((n,m)=(n,k)(k,m)\)</td></tr>
+            <tr><th>情形</th><th>链式法则（分子布局）</th><th>形状核验</th></tr>
+            <tr><td>① \(y,u\) 标量，\(\mathbf{x}\in\mathbb{R}^n\)</td><td>\(\frac{\partial y}{\partial \mathbf{x}} = \frac{\partial y}{\partial u}\frac{\partial u}{\partial \mathbf{x}}\)</td><td>\((1,n)=(1,1)(1,n)\)</td></tr>
+            <tr><td>② \(y\) 标量，\(\mathbf{u}\in\mathbb{R}^k,\mathbf{x}\in\mathbb{R}^n\)</td><td>\(\frac{\partial y}{\partial \mathbf{x}} = \frac{\partial y}{\partial \mathbf{u}}\frac{\partial \mathbf{u}}{\partial \mathbf{x}}\)</td><td>\((1,n)=(1,k)(k,n)\)</td></tr>
+            <tr><td>③ \(\mathbf{y}\in\mathbb{R}^m,\mathbf{u}\in\mathbb{R}^k,\mathbf{x}\in\mathbb{R}^n\)</td><td>\(\frac{\partial \mathbf{y}}{\partial \mathbf{x}} = \frac{\partial \mathbf{y}}{\partial \mathbf{u}}\frac{\partial \mathbf{u}}{\partial \mathbf{x}}\)</td><td>\((m,n)=(m,k)(k,n)\)</td></tr>
         </table>
     </div>
-<p>每个因子均为 5.4 节的雅可比矩阵，<strong>内层在左、外层在右</strong>依次相乘，相邻形状必须匹配；深度学习最常用情形②。神经网络是由各层逐层复合而成的深层函数 \(f^{(L)} \circ \cdots \circ f^{(2)} \circ f^{(1)}\)，损失对第一层参数的导数可分解为乘积 \(\frac{\partial f^{(2)}}{\partial f^{(1)}} \cdot \frac{\partial f^{(3)}}{\partial f^{(2)}} \cdots \frac{\partial f^{(L)}}{\partial f^{(L-1)}}\)。</p>
+<p>每个因子均为 5.4 节的雅可比矩阵，<strong>外层在左、内层在右</strong>依次相乘，相邻形状必须匹配；深度学习最常用情形②。神经网络是由各层逐层复合而成的深层函数 \(f^{(L)} \circ \cdots \circ f^{(2)} \circ f^{(1)}\)，损失对第一层参数的导数可分解为乘积 \(\frac{\partial f^{(L)}}{\partial f^{(L-1)}} \cdot \frac{\partial f^{(L-1)}}{\partial f^{(L-2)}} \cdots \frac{\partial f^{(2)}}{\partial f^{(1)}}\)。</p>
 <div class="callout key">
         <span class="co-tag">🔑 反向传播在做什么</span>
         <p>从输出端出发将导数逐层向前传递，每经过一层便一并算出该层权重的梯度，并共享中间结果——求导代价从指数级降至与正向传播同量级。链式法则的高效实现支撑了整个训练流程。</p>
@@ -641,10 +641,10 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
 <div class="tbl-wrap">
         <table>
             <tr><th>场景</th><th>结果形状</th><th>说明</th></tr>
-            <tr><td>标量 \(y\) 对向量 \(\mathbf{x}\)</td><td>列向量（与 \(\mathbf{x}\) 同形）</td><td>梯度——参数更新的依据</td></tr>
-            <tr><td>向量 \(\mathbf{y}\) 对向量 \(\mathbf{x}\)</td><td>\(n \times m\) 矩阵</td><td>雅可比矩阵——反向传播在层间传递的对象</td></tr>
-            <tr><td>分母布局</td><td>行数由分母 \(\mathbf{x}\) 决定</td><td>教材与本课程采用，梯度与 \(\mathbf{x}\) 同形</td></tr>
-            <tr><td>分子布局</td><td>行数由分子 \(\mathbf{y}\) 决定</td><td>部分文献采用，阅读时注意区分</td></tr>
+            <tr><td>标量 \(y\) 对向量 \(\mathbf{x}\)</td><td>行向量（分子布局）</td><td>梯度——参数更新的依据</td></tr>
+            <tr><td>向量 \(\mathbf{y}\) 对向量 \(\mathbf{x}\)</td><td>\(m \times n\) 矩阵</td><td>雅可比矩阵——反向传播在层间传递的对象</td></tr>
+            <tr><td>分子布局</td><td>行数由分子 \(\mathbf{y}\) 决定</td><td>课程课件与本讲义采用</td></tr>
+            <tr><td>分母布局</td><td>行数由分母 \(\mathbf{x}\) 决定</td><td>部分文献采用，梯度与 \(\mathbf{x}\) 同形</td></tr>
         </table>
     </div>
   </div>
@@ -819,7 +819,7 @@ loss.backward() # 一键反向传播，计算所有梯度</pre>
             <tr><td>特殊矩阵</td><td>对称矩阵可特征分解；正定 ↔ 特征值全正；正交矩阵 \(\mathbf{Q}^\top\mathbf{Q}=\mathbf{I}\)</td></tr>
             <tr><td>向量化</td><td>GPU 并行矩阵运算；用 np.dot 代替 for 循环</td></tr>
             <tr><td>张量</td><td>0~5 维张量与数据的对应关系；批量维度在第 0 维；dtype 与设备一致性</td></tr>
-            <tr><td>矩阵微积分</td><td>梯度 = 偏导列向量；分母布局约定（与教材一致）；雅可比矩阵；链式法则的向量形式</td></tr>
+            <tr><td>矩阵微积分</td><td>梯度 = 偏导行向量；分子布局约定（与课程课件一致）；雅可比矩阵；链式法则的向量形式</td></tr>
             <tr><td>自动微分</td><td>三种微分方式的区别；计算图 DAG；PyTorch 动态图与 backward()</td></tr>
             <tr><td>反向传播</td><td>反向模式为何适合深度学习；逐步推演梯度</td></tr>
         </table>
