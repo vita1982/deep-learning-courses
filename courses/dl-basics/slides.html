@@ -75,6 +75,7 @@
 .slide-body ul, .slide-body ol { margin: 0 0 14px 1.4em; }
 .slide-body table { font-size: 19px; width: 100%; }
 .slide-body img { max-height: 259px !important; }
+.slide-body img.img-tall { max-height: 400px !important; }
 .slide-body .img-caption, .slide-body figcaption { font-size: 16px; }
 .slide-body canvas { display: block; margin: 0 auto; }
 /* 组件字号适配幻灯片基准（course.css 的组件字号是为阅读页定的，需放大） */
@@ -513,18 +514,18 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
 </section>
 <section>
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 5. 矩阵微积分</div>
-  <div class="slide-title">5.2 梯度：把求导推广到向量</div>
+  <div class="slide-title">5.2 梯度：标量对向量求导</div>
   <div class="slide-body">
 <p>先看"全局地图"：\(y\) 和 \(\mathbf{x}\) 各为标量或向量，四种组合对应导数的四种体量——一个数、一排数、一张表：</p>
 <figure>
-        <img src="images/grad_shape_map.jpg" alt="标量与向量四种组合的导数形状对照" loading="lazy">
+        <img src="images/grad_shape_map.jpg" alt="标量与向量四种组合的导数形状对照" loading="lazy" class="img-tall">
         <figcaption>求导想成"挨个试灵敏度"：装不下就排成一排，再不够就铺成一张表。深度学习天天用右上格——损失（标量）对权重（向量）求导，结果就是梯度。</figcaption>
     </figure>
   </div>
 </section>
 <section>
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 5. 矩阵微积分</div>
-  <div class="slide-title">5.2 梯度：把求导推广到向量</div>
+  <div class="slide-title">5.2 梯度：标量对向量求导</div>
   <div class="slide-body">
 <p>当函数的自变量从标量变成向量时，导数也升级为梯度（gradient）：多元函数 \(y = f(\mathbf{x})\) 对每个分量求偏导，排成一行就是梯度——一张完整的"灵敏度清单"：</p>
 <p>\[\mathbf{x} = \begin{bmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{bmatrix}, \qquad \frac{\partial y}{\partial \mathbf{x}} = \left[ \frac{\partial y}{\partial x_1}, \frac{\partial y}{\partial x_2}, \ldots, \frac{\partial y}{\partial x_n} \right]\]</p>
@@ -533,7 +534,7 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
 </section>
 <section>
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 5. 矩阵微积分</div>
-  <div class="slide-title">5.2 梯度：把求导推广到向量</div>
+  <div class="slide-title">5.2 梯度：标量对向量求导</div>
   <div class="slide-body">
 <figure>
         <img src="images/gradient_layout.jpg" alt="分子布局与梯度方向示例" loading="lazy">
@@ -543,7 +544,7 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
 </section>
 <section>
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 5. 矩阵微积分</div>
-  <div class="slide-title">5.3 分子布局与分母布局</div>
+  <div class="slide-title">5.3 向量对标量与两种布局约定</div>
   <div class="slide-body">
 <p>向量求导的结果"横着排还是竖着排"，文献中有两种约定：</p>
 <div class="tbl-wrap">
@@ -561,14 +562,25 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
 </section>
 <section class="slide-short">
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 5. 矩阵微积分</div>
-  <div class="slide-title">5.3 分子布局与分母布局</div>
+  <div class="slide-title">5.3 向量对标量与两种布局约定</div>
   <div class="slide-body">
 <p>亲手摆一遍：\(y = x_1^2 + 2x_2^2\) 的两个偏导是 \(2x_1\) 和 \(4x_2\)。<strong>摆法 A（分子布局，行跟着 \(y\) 走）</strong>：横躺成 \([\,2x_1\ \ 4x_2\,]\)（\(1 \times 2\)）；<strong>摆法 B（分母布局，行跟着 \(\mathbf{x}\) 走）</strong>：竖躺（\(2 \times 1\)）。同一对数字，互为转置——摆法决定后面矩阵乘法能不能做、乘出什么形状。教材用摆法 B 的好处：梯度竖着摆、与 \(\mathbf{w}\) 同形，更新式两边直接对齐。</p>
   </div>
 </section>
 <section>
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 5. 矩阵微积分</div>
-  <div class="slide-title">5.4 常用的向量/矩阵求导公式</div>
+  <div class="slide-title">5.4 雅可比矩阵：向量对向量求导</div>
+  <div class="slide-body">
+<p>\(\mathbf{y}\) 和 \(\mathbf{x}\) 都是向量时，导数是一张 \(m \times n\) 的"导数表"——<strong>雅可比矩阵</strong>：第 \(i\) 行第 \(j\) 列是 \(\partial y_i / \partial x_j\)，两两组合一个不漏。记忆锚点：<strong>行看分子，列看分母</strong>。</p>
+<figure>
+        <img src="images/jacobian_matrix.jpg" alt="雅可比矩阵的构造" loading="lazy" class="img-tall">
+        <figcaption>雅可比矩阵的构造：梯度（5.2）是它的一行，"向量对标量"（5.3）是它的一列；反向传播在层与层之间传递的就是这张表。</figcaption>
+    </figure>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第02讲 深度学习基础 › 5. 矩阵微积分</div>
+  <div class="slide-title">5.5 常用求导公式速查</div>
   <div class="slide-body">
 <p>以下公式在推导线性回归、反向传播时会反复用到（设 \(\mathbf{a}\)、\(\mathbf{A}\) 不是 \(\mathbf{x}\) 的函数）：</p>
 <div class="tbl-wrap">
@@ -586,31 +598,20 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
 </section>
 <section>
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 5. 矩阵微积分</div>
-  <div class="slide-title">5.5 链式法则</div>
+  <div class="slide-title">5.6 链式法则与反向传播</div>
   <div class="slide-body">
 <p>复合函数的求导遵循链式法则，它是整个反向传播的数学基础：</p>
 <p>\[\text{标量：}\; y=f(u),\; u=g(x) \;\Rightarrow\; \frac{dy}{dx} = \frac{dy}{du}\cdot\frac{du}{dx} \qquad\qquad \text{向量：}\; \frac{\partial y}{\partial \mathbf{x}} = \underbrace{\frac{\partial y}{\partial \mathbf{u}}}_{(1,k)} \underbrace{\frac{\partial \mathbf{u}}{\partial \mathbf{x}}}_{(k,n)}\]</p>
-<p>向量版本里，局部导数按矩阵乘法依次相乘，形状必须能匹配。神经网络就是一层层复合起来的超长函数 \(f^{(L)} \circ \cdots \circ f^{(2)} \circ f^{(1)}\)，链式法则让我们能把"损失对第一层参数的导数"拆成一连串简单导数的乘积。</p>
+<p>向量版本里，每个因子都是上一页的雅可比矩阵，按矩阵乘法依次相乘、形状必须能匹配。神经网络就是一层层复合起来的超长函数 \(f^{(L)} \circ \cdots \circ f^{(2)} \circ f^{(1)}\)，链式法则让我们能把"损失对第一层参数的导数"拆成一连串简单导数的乘积。</p>
 <div class="callout key">
         <span class="co-tag">🔑 反向传播在干什么</span>
         <p>从输出端开始把导数逐层往回传，每传一层顺手算出该层权重的梯度，共享中间结果——求导成本从"指数级"降到"和正向计算同量级"。链式法则的高效实现撑起了整个训练流程。</p>
     </div>
   </div>
 </section>
-<section>
-  <div class="slide-breadcrumb">第02讲 深度学习基础 › 5. 矩阵微积分</div>
-  <div class="slide-title">5.5 链式法则：每个因子都是一张"导数表"</div>
-  <div class="slide-body">
-<p>链式法则里相乘的每个因子，都是一张 \(m \times n\) 的<strong>雅可比矩阵</strong>：第 \(i\) 行第 \(j\) 列是 \(\partial y_i / \partial x_j\)，两两组合一个不漏。记忆锚点：<strong>行看分子，列看分母</strong>。</p>
-<figure>
-        <img src="images/jacobian_matrix.jpg" alt="雅可比矩阵的构造" loading="lazy">
-        <figcaption>雅可比矩阵的构造：梯度是它的一行，"向量对标量"是它的一列；反向传播在层与层之间传递的就是这张表。</figcaption>
-    </figure>
-  </div>
-</section>
 <section class="slide-short">
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 5. 矩阵微积分</div>
-  <div class="slide-title">5.5 本章速查卡</div>
+  <div class="slide-title">5.6 本章速查卡与课后思考</div>
   <div class="slide-body">
 <div class="tbl-wrap">
         <table>
@@ -621,6 +622,7 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
             <tr><td>分母布局</td><td>行跟分母 \(\mathbf{x}\) 走</td><td>教材用它，梯度与 \(\mathbf{x}\) 同形</td></tr>
         </table>
     </div>
+<p>课后思考：手算 \(\partial(\mathbf{x}^\top\mathbf{A}\mathbf{x})/\partial\mathbf{x}\)；用公式表验证 \(\partial(\lambda\|\mathbf{w}\|^2)/\partial\mathbf{w} = 2\lambda\mathbf{w}\)；找一份分母布局的资料对比同一个公式差在哪个转置。</p>
   </div>
 </section>
 <section class="section-divider">

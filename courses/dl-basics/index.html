@@ -371,7 +371,7 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
         </table>
     </div>
 
-    <h3><span class="sec-no">5.2</span>梯度：把求导推广到向量</h3>
+    <h3><span class="sec-no">5.2</span>梯度：标量对向量求导</h3>
     <p>在推广之前，先看一张"全局地图"：\(y\) 和 \(\mathbf{x}\) 各自可以是标量或向量，四种组合对应导数的四种"体量"——都是数，导数就是一个数；有一边是向量，导数被拉成一排数；两边都是向量，导数铺开成一张表：</p>
     <figure>
         <img src="images/grad_shape_map.jpg" alt="标量与向量四种组合的导数形状对照" loading="lazy">
@@ -391,7 +391,7 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
     </div>
     <p>再验证一个与 1.3 节的连接：正则化惩罚 \(\lambda\|\mathbf{w}\|^2\) 的梯度是 \(2\lambda\mathbf{w}\)，梯度下降每轮减去它，就是把权重"往 0 推"的数学本体。</p>
 
-    <h3><span class="sec-no">5.3</span>分子布局与分母布局</h3>
+    <h3><span class="sec-no">5.3</span>向量对标量与两种布局约定</h3>
     <p>先补完全局地图的左下格：\(\mathbf{y}\) 是 \(m\) 个分量的向量、\(x\) 是标量时，\(\mathbf{y}\) 的每个分量都对 \(x\) 求导，\(m\) 个结果排成一列，形状与 \(\mathbf{y}\) 相同。而当 \(\mathbf{x}\) 和 \(\mathbf{y}\) 都是向量时，\(\partial \mathbf{y}/\partial \mathbf{x}\) 一共有 \(m \times n\) 个偏导数，排成矩阵时"横着放还是竖着放"有两种约定：</p>
     <div class="tbl-wrap">
         <table>
@@ -413,7 +413,15 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
         <p>不同教材、不同论文约定不同；<strong>同一份材料里必须统一用同一种</strong>——混着用会差一个转置，结果全错。实际建议：不必死记布局名词，查每个公式时确认一句"这个结果是列向量还是行向量"，保持一致即可。本讲义统一采用分子布局。</p>
     </div>
 
-    <h3><span class="sec-no">5.4</span>常用的向量/矩阵求导公式</h3>
+    <h3><span class="sec-no">5.4</span>雅可比矩阵：向量对向量求导</h3>
+    <p>当 \(\mathbf{y}\) 和 \(\mathbf{x}\) 都是向量时，\(\partial \mathbf{y}/\partial \mathbf{x}\) 不再是一排数，而是一张 \(m \times n\) 的"导数表"，称为<strong>雅可比矩阵</strong>（Jacobian matrix）。它的构造分两步：先把 \(\mathbf{y}\) 的某个分量 \(y_i\) 对整个 \(\mathbf{x}\) 求梯度、占一行；再把各行展开——第 \(i\) 行第 \(j\) 列就是 \(\partial y_i/\partial x_j\)，即"\(\mathbf{y}\) 的第 \(i\) 个输出对 \(\mathbf{x}\) 的第 \(j\) 个输入"的偏导，\(m \times n\) 个组合一个不漏。记忆锚点：<strong>行看分子，列看分母</strong>。</p>
+    <figure>
+        <img src="images/jacobian_matrix.jpg" alt="雅可比矩阵的构造" loading="lazy">
+        <figcaption>雅可比矩阵的构造：\(\mathbf{x} \in \mathbb{R}^n\)、\(\mathbf{y} \in \mathbb{R}^m\) 时 \(\partial \mathbf{y}/\partial \mathbf{x} \in \mathbb{R}^{m \times n}\)。5.2 节的梯度是它的一行，5.3 节"向量对标量"的情形是它的一列。</figcaption>
+    </figure>
+    <p>反向传播在层与层之间传递的就是这张表——5.6 节的链式法则，就是把一串这样的矩阵依次相乘。</p>
+
+    <h3><span class="sec-no">5.5</span>常用求导公式速查</h3>
     <p>以下三个公式覆盖了机器学习绝大多数手算场景，推导线性回归、反向传播时会反复用到（设 \(\mathbf{a}\)、\(\mathbf{A}\) 不是 \(\mathbf{x}\) 的函数）：</p>
     <div class="tbl-wrap">
         <table>
@@ -441,15 +449,10 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
         <figcaption>标量 / 向量 / 矩阵九种组合的导数形状总览（含三维、四维张量情形）。这一页看看就好：实际从不手算，框架的自动微分（autograd）会算好——你只需要记住"梯度与权重同形"这一条，加上链式法则，就足以理解反向传播。</figcaption>
     </figure>
 
-    <h3><span class="sec-no">5.5</span>链式法则</h3>
+    <h3><span class="sec-no">5.6</span>链式法则与反向传播</h3>
     <p>复合函数的求导遵循链式法则——"剥洋葱"：先对外层求导，再乘内层的导数。它是整个反向传播的数学基础：</p>
     <p>\[\text{标量：}\; y=f(u),\; u=g(x) \;\Rightarrow\; \frac{dy}{dx} = \frac{dy}{du}\cdot\frac{du}{dx} \qquad\qquad \text{向量：}\; \frac{\partial y}{\partial \mathbf{x}} = \underbrace{\frac{\partial y}{\partial \mathbf{u}}}_{(1,k)} \underbrace{\frac{\partial \mathbf{u}}{\partial \mathbf{x}}}_{(k,n)}\]</p>
-    <p>上式中每个因子都是一张 \(m \times n\) 的"导数表"，称为<strong>雅可比矩阵</strong>（Jacobian matrix）。它的构造分两步：先把 \(\mathbf{y}\) 的某个分量 \(y_i\) 对整个 \(\mathbf{x}\) 求梯度、占一行；再把各行展开——第 \(i\) 行第 \(j\) 列就是 \(\partial y_i/\partial x_j\)，即"\(\mathbf{y}\) 的第 \(i\) 个输出对 \(\mathbf{x}\) 的第 \(j\) 个输入"的偏导，\(m \times n\) 个组合一个不漏。记忆锚点：<strong>行看分子，列看分母</strong>。</p>
-    <figure>
-        <img src="images/jacobian_matrix.jpg" alt="雅可比矩阵的构造" loading="lazy">
-        <figcaption>雅可比矩阵的构造：\(\mathbf{x} \in \mathbb{R}^n\)、\(\mathbf{y} \in \mathbb{R}^m\) 时 \(\partial \mathbf{y}/\partial \mathbf{x} \in \mathbb{R}^{m \times n}\)。5.2 节的梯度是它的一行，5.3 节开头"向量对标量"的情形是它的一列。</figcaption>
-    </figure>
-    <p>向量版本里，局部导数按矩阵乘法依次相乘，形状必须能匹配。神经网络就是一层层复合起来的超长函数 \(f^{(L)} \circ \cdots \circ f^{(2)} \circ f^{(1)}\)，损失对第一层参数的导数可以拆成一连串简单导数的乘积：</p>
+    <p>向量版本里，每个因子都是 5.4 节的雅可比矩阵，局部导数按矩阵乘法依次相乘，形状必须能匹配。神经网络就是一层层复合起来的超长函数 \(f^{(L)} \circ \cdots \circ f^{(2)} \circ f^{(1)}\)，损失对第一层参数的导数可以拆成一连串简单导数的乘积：</p>
     <p>\[\frac{\partial f^{(L)}}{\partial f^{(L-1)}} \cdot \frac{\partial f^{(L-1)}}{\partial f^{(L-2)}} \cdots \frac{\partial f^{(2)}}{\partial f^{(1)}}\]</p>
 <p>这条乘积算出的是损失对第一层<strong>输出</strong>的导数；再乘上各层对自身参数的局部导数 \(\partial f^{(l)}/\partial \mathbf{w}^{(l)}\)，就得到每层权重的梯度。</p>
     <div class="callout key">
@@ -468,7 +471,7 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
     </div>
     <div class="callout try">
         <span class="co-tag">✏️ 课后思考</span>
-        <p>① 手算 \(\partial(\mathbf{x}^\top\mathbf{A}\mathbf{x})/\partial\mathbf{x}\)（提示：展开成二次型逐项求偏导，再对照 5.4 的公式表）；② 用公式表验证 \(\partial(\lambda\|\mathbf{w}\|^2)/\partial\mathbf{w} = 2\lambda\mathbf{w}\)——它就是权重衰减每轮"往 0 推"的数学本体；③ 找一份用分母布局的资料，对比同一个公式在两种布局下差在哪个转置。</p>
+        <p>① 手算 \(\partial(\mathbf{x}^\top\mathbf{A}\mathbf{x})/\partial\mathbf{x}\)（提示：展开成二次型逐项求偏导，再对照 5.5 的公式表）；② 用公式表验证 \(\partial(\lambda\|\mathbf{w}\|^2)/\partial\mathbf{w} = 2\lambda\mathbf{w}\)——它就是权重衰减每轮"往 0 推"的数学本体；③ 找一份用分母布局的资料，对比同一个公式在两种布局下差在哪个转置。</p>
     </div>
 </section>
 
@@ -591,7 +594,7 @@ loss.backward() # 一键反向传播，计算所有梯度</pre>
             <tr><td>特殊矩阵</td><td>对称矩阵可特征分解；正定 ↔ 特征值全正；正交矩阵 \(\mathbf{Q}^\top\mathbf{Q}=\mathbf{I}\)</td></tr>
             <tr><td>向量化</td><td>GPU 并行矩阵运算；用 np.dot 代替 for 循环</td></tr>
             <tr><td>张量</td><td>0~5 维张量与数据的对应关系；批量维度在第 0 维；dtype 与设备一致性</td></tr>
-            <tr><td>矩阵微积分</td><td>梯度 = 偏导向量；分子/分母布局；链式法则的向量形式</td></tr>
+            <tr><td>矩阵微积分</td><td>梯度 = 偏导向量；分子/分母布局；雅可比矩阵"行看分子、列看分母"；链式法则的向量形式</td></tr>
             <tr><td>自动微分</td><td>三种微分方式的区别；计算图 DAG；PyTorch 动态图与 backward()</td></tr>
             <tr><td>反向传播</td><td>反向模式为何适合深度学习；逐步推演梯度</td></tr>
         </table>
