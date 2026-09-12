@@ -502,14 +502,7 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 5. 矩阵微积分</div>
   <div class="slide-title">5.1 标量求导回顾</div>
   <div class="slide-body">
-<table><tr><th>规则</th><th>公式</th></tr><tbody><tr><td>幂函数</td><td>\(\frac{d}{dx} x^n = n x^{n-1}\)</td></tr><tr><td>和/差</td><td>\(\frac{d}{dx}(u \pm v) = \frac{du}{dx} \pm \frac{dv}{dx}\)</td></tr><tr><td>乘积</td><td>\(\frac{d}{dx}(uv) = \frac{du}{dx}v + u\frac{dv}{dx}\)</td></tr><tr><td>商</td><td>\(\frac{d}{dx}\frac{u}{v} = \frac{\frac{du}{dx}v - u\frac{dv}{dx}}{v^2}\)</td></tr><tr><td>三角/指数/对数</td><td>\((\sin x)' = \cos x\)，\((\exp x)' = \exp x\)，\((\log x)' = \frac{1}{x}\)</td></tr></tbody></table>
-  </div>
-</section>
-<section>
-  <div class="slide-breadcrumb">第02讲 深度学习基础 › 5. 矩阵微积分</div>
-  <div class="slide-title">5.1 标量求导回顾</div>
-  <div class="slide-body">
-<table><tr><th>规则</th><th>公式</th></tr><tbody><tr><td>链式法则</td><td>\(y=f(u),\ u=g(x) \Rightarrow \frac{dy}{dx} = \frac{dy}{du}\cdot\frac{du}{dx}\)</td></tr></tbody></table>
+<table><tr><th>规则</th><th>公式</th></tr><tbody><tr><td>幂函数</td><td>\(\frac{d}{dx} x^n = n x^{n-1}\)</td></tr><tr><td>和/差</td><td>\(\frac{d}{dx}(u \pm v) = \frac{du}{dx} \pm \frac{dv}{dx}\)</td></tr><tr><td>乘积</td><td>\(\frac{d}{dx}(uv) = \frac{du}{dx}v + u\frac{dv}{dx}\)</td></tr><tr><td>商</td><td>\(\frac{d}{dx}\frac{u}{v} = \frac{\frac{du}{dx}v - u\frac{dv}{dx}}{v^2}\)</td></tr><tr><td>三角/指数/对数</td><td>\((\sin x)' = \cos x\)，\((\exp x)' = \exp x\)，\((\log x)' = \frac{1}{x}\)</td></tr><tr><td>链式法则</td><td>\(y=f(u),\ u=g(x) \Rightarrow \frac{dy}{dx} = \frac{dy}{du}\cdot\frac{du}{dx}\)</td></tr></tbody></table>
   </div>
 </section>
 <section>
@@ -530,6 +523,7 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
 <p>当函数的自变量从标量变成向量时，导数也升级为梯度（gradient）：多元函数 \(y = f(\mathbf{x})\) 对每个分量求偏导，排成一行就是梯度——一张完整的"灵敏度清单"：</p>
 <p>\[\mathbf{x} = \begin{bmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{bmatrix}, \qquad \frac{\partial y}{\partial \mathbf{x}} = \left[ \frac{\partial y}{\partial x_1}, \frac{\partial y}{\partial x_2}, \ldots, \frac{\partial y}{\partial x_n} \right]\]</p>
 <p>例：\(f = x_1^2 + 2x_2^2\)，则 \(\frac{\partial f}{\partial \mathbf{x}} = [2x_1,\ 4x_2]\)，在 \((3,2)\) 处为 \([6, 8]\)。梯度垂直于等高线、指向上坡最陡方向，所以梯度下降沿<strong>负</strong>梯度走：\(\mathbf{w} \leftarrow \mathbf{w} - \eta\,\nabla f\)。</p>
+<p>与 1.3 节的连接：正则化惩罚 \(\lambda\|\mathbf{w}\|^2\) 的梯度是 \(2\lambda\mathbf{w}\)——梯度下降每轮减去它，就是权重衰减"往 0 推"的数学本体。</p>
   </div>
 </section>
 <section>
@@ -546,7 +540,7 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 5. 矩阵微积分</div>
   <div class="slide-title">5.3 向量对标量与两种布局约定</div>
   <div class="slide-body">
-<p>向量求导的结果"横着排还是竖着排"，文献中有两种约定：</p>
+<p>先补全全局地图的左下格：\(\mathbf{y}\) 是 \(m\) 个分量的向量、\(x\) 是标量时，\(\mathbf{y}\) 的每个分量都对 \(x\) 求导，\(m\) 个结果排成一列，形状与 \(\mathbf{y}\) 相同。而当两边都是向量时，\(m \times n\) 个偏导数"横着排还是竖着排"，文献中有两种约定：</p>
 <div class="tbl-wrap">
         <table>
             <tr><th>布局约定</th><th>含义</th></tr>
@@ -591,9 +585,20 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
             <tr><td>\(\frac{\partial \|\mathbf{x}\|^2}{\partial \mathbf{x}} = 2\mathbf{x}^\top\)</td><td>平方范数的梯度，权重衰减的梯度来源</td></tr>
             <tr><td>\(\frac{\partial \mathbf{A}\mathbf{x}}{\partial \mathbf{x}} = \mathbf{A}\)</td><td>线性变换的导数就是变换矩阵本身</td></tr>
             <tr><td>\(\frac{\partial \mathbf{x}^\top\mathbf{A}}{\partial \mathbf{x}} = \mathbf{A}^\top\)</td><td>行列对调——转置</td></tr>
+            <tr><td>\(\frac{\partial \mathbf{a}}{\partial \mathbf{x}} = \mathbf{0}\)，\(\frac{\partial \mathbf{x}}{\partial \mathbf{x}} = \mathbf{I}\)</td><td>常向量不敏感；每个分量只对自己敏感</td></tr>
         </table>
     </div>
-<p>记忆法：都是"乘法分配律的求导版"。数字验证最后一行：\(\mathbf{A} = \begin{bmatrix} 1 & 2 \\ 3 & 4 \end{bmatrix}\) 时 \(\mathbf{x}^\top\mathbf{A} = [\,x_1+3x_2,\ 2x_1+4x_2\,]\)，四个偏导按"行看 \(y\)、列看 \(\mathbf{x}\)"排成 \(\begin{bmatrix} 1 & 3 \\ 2 & 4 \end{bmatrix} = \mathbf{A}^\top\)。</p>
+<p>记忆法：都是"乘法分配律的求导版"；复合情形也一样——\(\partial(\mathbf{A}\mathbf{u})/\partial\mathbf{x} = \mathbf{A}\,\partial\mathbf{u}/\partial\mathbf{x}\)，加法逐项求导，一条新东西都没有。数字验证：\(\mathbf{A} = \begin{bmatrix} 1 & 2 \\ 3 & 4 \end{bmatrix}\) 时 \(\mathbf{x}^\top\mathbf{A} = [\,x_1+3x_2,\ 2x_1+4x_2\,]\)，四个偏导按"行看 \(y\)、列看 \(\mathbf{x}\)"排成 \(\begin{bmatrix} 1 & 3 \\ 2 & 4 \end{bmatrix} = \mathbf{A}^\top\)。</p>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第02讲 深度学习基础 › 5. 矩阵微积分</div>
+  <div class="slide-title">5.5 推广到矩阵：三维、四维</div>
+  <div class="slide-body">
+<figure>
+        <img src="images/grad_shape_tensor.jpg" alt="标量、向量、矩阵九种组合的导数形状总览" loading="lazy" class="img-tall">
+        <figcaption>九种组合的形状规律一句话：<strong>结果维度数 = 分子维度数 + 分母维度数</strong>。矩阵对矩阵是四维，纸上画不下——实际交给框架的自动微分，你只需记住"梯度与权重同形"。</figcaption>
+    </figure>
   </div>
 </section>
 <section>
@@ -602,7 +607,7 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
   <div class="slide-body">
 <p>复合函数的求导遵循链式法则，它是整个反向传播的数学基础：</p>
 <p>\[\text{标量：}\; y=f(u),\; u=g(x) \;\Rightarrow\; \frac{dy}{dx} = \frac{dy}{du}\cdot\frac{du}{dx} \qquad\qquad \text{向量：}\; \frac{\partial y}{\partial \mathbf{x}} = \underbrace{\frac{\partial y}{\partial \mathbf{u}}}_{(1,k)} \underbrace{\frac{\partial \mathbf{u}}{\partial \mathbf{x}}}_{(k,n)}\]</p>
-<p>向量版本里，每个因子都是上一页的雅可比矩阵，按矩阵乘法依次相乘、形状必须能匹配。神经网络就是一层层复合起来的超长函数 \(f^{(L)} \circ \cdots \circ f^{(2)} \circ f^{(1)}\)，链式法则让我们能把"损失对第一层参数的导数"拆成一连串简单导数的乘积。</p>
+<p>向量版本里，每个因子都是 5.4 节的雅可比矩阵，按矩阵乘法依次相乘、形状必须能匹配。神经网络就是一层层复合起来的超长函数 \(f^{(L)} \circ \cdots \circ f^{(2)} \circ f^{(1)}\)，链式法则让我们能把"损失对第一层参数的导数"拆成一连串简单导数的乘积。</p>
 <div class="callout key">
         <span class="co-tag">🔑 反向传播在干什么</span>
         <p>从输出端开始把导数逐层往回传，每传一层顺手算出该层权重的梯度，共享中间结果——求导成本从"指数级"降到"和正向计算同量级"。链式法则的高效实现撑起了整个训练流程。</p>
