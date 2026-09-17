@@ -168,7 +168,7 @@
 <section>
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 目录</div>
   <div class="slide-title">📋 本讲目录</div>
-  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 线性代数基础：标量与向量</a></li><li><a href="#/9" style="color:#1E40AF;text-decoration:none;">2. 矩阵及其运算</a></li><li><a href="#/17" style="color:#1E40AF;text-decoration:none;">3. GPU 与向量化计算</a></li><li><a href="#/21" style="color:#1E40AF;text-decoration:none;">4. 数据表示与张量</a></li><li><a href="#/28" style="color:#1E40AF;text-decoration:none;">5. 矩阵微积分</a></li><li><a href="#/42" style="color:#1E40AF;text-decoration:none;">6. 自动微分与计算图</a></li><li><a href="#/49" style="color:#1E40AF;text-decoration:none;">7. 正向传播与反向传播</a></li><li><a href="#/55" style="color:#1E40AF;text-decoration:none;">8. 本讲小结与自测</a></li></ol></div>
+  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 线性代数基础：标量与向量</a></li><li><a href="#/9" style="color:#1E40AF;text-decoration:none;">2. 矩阵及其运算</a></li><li><a href="#/17" style="color:#1E40AF;text-decoration:none;">3. GPU 与向量化计算</a></li><li><a href="#/21" style="color:#1E40AF;text-decoration:none;">4. 数据表示与张量</a></li><li><a href="#/29" style="color:#1E40AF;text-decoration:none;">5. 矩阵微积分</a></li><li><a href="#/43" style="color:#1E40AF;text-decoration:none;">6. 自动微分与计算图</a></li><li><a href="#/50" style="color:#1E40AF;text-decoration:none;">7. 正向传播与反向传播</a></li><li><a href="#/56" style="color:#1E40AF;text-decoration:none;">8. 本讲小结与自测</a></li></ol></div>
 </section>
 <section class="section-divider">
   <div class="divider-num">1</div>
@@ -360,6 +360,27 @@
         <span class="co-tag">🔑 初学者理解</span>
         <p>特征向量是变换 \(\mathbf{A}\) 的"主轴方向"——沿着这些方向，变换只拉伸不旋转。对称矩阵总有一组两两正交的实特征向量和实特征值，这是为什么协方差矩阵（对称）可以被特征分解、PCA 才能成立。</p>
     </div>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第02讲 深度学习基础 › 2. 矩阵及其运算</div>
+  <div class="slide-title">2.4 特征值与特征向量：动手算一遍</div>
+  <div class="slide-body">
+<p>以 \(\mathbf{A} = \mathrm{diag}(2, 3)\) 为例——\(\mathrm{diag}\) 即 diagonal（对角）：括号里的数字写在主对角线上，其余位置填 0。它代表平面上的<strong>拉伸变换</strong>：</p>
+<p style="text-align:center;">\[\mathbf{A} = \begin{bmatrix} 2 & 0 \\ 0 & 3 \end{bmatrix}\]</p>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:6px 0;">
+        <div style="border:1px solid #E2E8F0;border-radius:10px;padding:12px 18px;background:#F8FAFC;">
+            <p style="font-size:19px;margin:0 0 4px;"><strong>横轴方向</strong> \(\mathbf{v}_1 = \begin{bmatrix} 1 \\ 0 \end{bmatrix}\)</p>
+            <p style="margin:0;">\[\mathbf{A}\mathbf{v}_1 = \begin{bmatrix} 2 & 0 \\ 0 & 3 \end{bmatrix} \begin{bmatrix} 1 \\ 0 \end{bmatrix} = \begin{bmatrix} 2 \\ 0 \end{bmatrix} = 2 \cdot \begin{bmatrix} 1 \\ 0 \end{bmatrix}\]</p>
+            <p style="font-size:17px;color:#475569;margin:0;">变换后仍在 x 轴所在直线上，长度 ×2——\(\mathbf{v}_1\) 是特征向量，特征值 \(\lambda_1 = 2\)。</p>
+        </div>
+        <div style="border:1px solid #E2E8F0;border-radius:10px;padding:12px 18px;background:#F8FAFC;">
+            <p style="font-size:19px;margin:0 0 4px;"><strong>纵轴方向</strong> \(\mathbf{v}_2 = \begin{bmatrix} 0 \\ 1 \end{bmatrix}\)</p>
+            <p style="margin:0;">\[\mathbf{A}\mathbf{v}_2 = \begin{bmatrix} 2 & 0 \\ 0 & 3 \end{bmatrix} \begin{bmatrix} 0 \\ 1 \end{bmatrix} = \begin{bmatrix} 0 \\ 3 \end{bmatrix} = 3 \cdot \begin{bmatrix} 0 \\ 1 \end{bmatrix}\]</p>
+            <p style="font-size:17px;color:#475569;margin:0;">变换后仍在 y 轴所在直线上，长度 ×3——\(\mathbf{v}_2\) 是特征向量，特征值 \(\lambda_2 = 3\)。</p>
+        </div>
+    </div>
+<p style="margin-top:10px;">✅ 坐标轴方向不变，横轴拉长 2 倍、纵轴拉长 3 倍——两个坐标轴方向正是这个变换的<strong>特征方向</strong>。</p>
   </div>
 </section>
 <section>

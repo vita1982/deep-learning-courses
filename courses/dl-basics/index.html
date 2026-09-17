@@ -222,7 +222,23 @@
     <h3><span class="sec-no">2.4</span>特征值与特征向量</h3>
     <p><strong>一句话：矩阵是一种"变换"，大多数向量被它一转就换了方向；少数"硬骨头"向量方向不变、只是被拉长缩短——这些硬骨头就是特征向量，拉长倍数就是特征值。</strong>对于一个给定的线性变换 \(\mathbf{A}\)，如果某个非零向量 \(\mathbf{v}\) 经过变换后仍然停留在原来的直线上，只是长度或方向被缩放，那么 \(\mathbf{v}\) 就是 \(\mathbf{A}\) 的特征向量，缩放倍数 \(\lambda\) 就是对应的特征值：</p>
     <p>\[\mathbf{A}\mathbf{v} = \lambda \mathbf{v}\]</p>
-    <p>几何直觉：把 \(\mathbf{A}\) 想成对平面的一个"操作"（旋转、拉伸、剪切），任意向量被它作用后通常指向另一个方向；但特征向量方向上<strong>纹丝不动</strong>，只是长度变了 \(\lambda\) 倍——\(\lambda > 1\) 拉伸，\(0 < \lambda < 1\) 压缩，\(\lambda < 0\) 反向再伸缩。例：\(\mathbf{A} = \begin{bmatrix} 2 & 0 \\ 0 & 3 \end{bmatrix}\) 把平面横向拉 2 倍、纵向拉 3 倍，\((1,0)\) 变成 \((2,0) = 2 \times (1,0)\)，\((0,1)\) 变成 \((0,3) = 3 \times (0,1)\)——沿坐标轴的方向没被拧歪，所以 \((1,0)\)、\((0,1)\) 都是特征向量，特征值分别是 2 和 3。</p>
+    <p>几何直觉：把 \(\mathbf{A}\) 想成对平面的一个"操作"（旋转、拉伸、剪切），任意向量被它作用后通常指向另一个方向；但特征向量方向上<strong>纹丝不动</strong>，只是长度变了 \(\lambda\) 倍——\(\lambda > 1\) 拉伸，\(0 < \lambda < 1\) 压缩，\(\lambda < 0\) 反向再伸缩。</p>
+    <p>以 \(\mathbf{A} = \mathrm{diag}(2, 3)\) 为例动手算一遍。\(\mathrm{diag}\) 即 diagonal（对角），括号里的数字写在主对角线上，其余位置填 0：</p>
+    <p>\[\mathbf{A} = \begin{bmatrix} 2 & 0 \\ 0 & 3 \end{bmatrix}\]</p>
+    <p>它代表平面上的拉伸变换。把它分别作用在两个坐标轴方向上，验证"方向不变、只变长度"：</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0;">
+        <div style="border:1px solid #E2E8F0;border-radius:10px;padding:14px 18px;background:#F8FAFC;">
+            <p style="margin:0 0 6px;"><strong>横轴方向</strong> \(\mathbf{v}_1 = \begin{bmatrix} 1 \\ 0 \end{bmatrix}\)</p>
+            <p>\[\mathbf{A}\mathbf{v}_1 = \begin{bmatrix} 2 & 0 \\ 0 & 3 \end{bmatrix} \begin{bmatrix} 1 \\ 0 \end{bmatrix} = \begin{bmatrix} 2 \\ 0 \end{bmatrix} = 2 \cdot \begin{bmatrix} 1 \\ 0 \end{bmatrix}\]</p>
+            <p style="margin:0;color:#475569;">变换后仍在 x 轴所在直线上，长度 ×2——\(\mathbf{v}_1\) 是特征向量，特征值 \(\lambda_1 = 2\)。</p>
+        </div>
+        <div style="border:1px solid #E2E8F0;border-radius:10px;padding:14px 18px;background:#F8FAFC;">
+            <p style="margin:0 0 6px;"><strong>纵轴方向</strong> \(\mathbf{v}_2 = \begin{bmatrix} 0 \\ 1 \end{bmatrix}\)</p>
+            <p>\[\mathbf{A}\mathbf{v}_2 = \begin{bmatrix} 2 & 0 \\ 0 & 3 \end{bmatrix} \begin{bmatrix} 0 \\ 1 \end{bmatrix} = \begin{bmatrix} 0 \\ 3 \end{bmatrix} = 3 \cdot \begin{bmatrix} 0 \\ 1 \end{bmatrix}\]</p>
+            <p style="margin:0;color:#475569;">变换后仍在 y 轴所在直线上，长度 ×3——\(\mathbf{v}_2\) 是特征向量，特征值 \(\lambda_2 = 3\)。</p>
+        </div>
+    </div>
+    <p>✅ 这就是"坐标轴方向不变，横轴拉长 2 倍、纵轴拉长 3 倍"的含义——两个坐标轴方向正是这个变换的特征方向。</p>
     <div class="callout key">
         <span class="co-tag">🔑 初学者理解</span>
         <p>特征向量是变换 \(\mathbf{A}\) 的"主轴方向"——沿着这些方向，变换只拉伸不旋转。一个矩阵有多少个"方向不变的轴"、各自伸缩多少，基本决定了这个变换的全部性格。对称矩阵总有一组两两正交的实特征向量和实特征值，这是为什么协方差矩阵（对称）可以被特征分解、PCA 才能成立——PCA 降维找的就是协方差矩阵特征值最大的那几个特征向量，即数据方差最大的方向。</p>
