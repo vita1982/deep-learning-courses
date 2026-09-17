@@ -477,6 +477,16 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
         <img src="images/grad_shape_tensor.jpg" alt="标量、向量、矩阵九种组合的导数形状总览" loading="lazy">
         <figcaption>标量 / 向量 / 矩阵九种组合的导数形状总览（含三维、四维张量情形）。对此只需概览：实际计算从不手工完成，框架的自动微分（autograd）会自动求出——只需记住"梯度与权重同形"这一要点，再结合链式法则，便足以理解反向传播。</figcaption>
     </figure>
+    <div class="callout key">
+        <span class="co-tag">📐 高阶情形的形状拼接规则（精确版）</span>
+        <p>速记卡"行随分子、列随分母"是二维情形的特例。一般情形只需一条拼接规则，即可读出上表任意组合的形状：<strong>结果形状 = 分子形状（保持原序）⊕ 分母形状（逆序，二维即转置），其中所有长度为 1 的维度省略不写。</strong></p>
+        <ul style="line-height:1.9;margin:4px 0 6px;">
+            <li><strong>分母为标量 \((1,)\)</strong>：逆序仍为 \((1,)\)，省略后不贡献维度——结果与分子同形，如 \(\frac{\partial \mathbf{Y}}{\partial x}\) 的形状为 \((m, l)\)；</li>
+            <li><strong>分母为向量 \((n, 1)\)</strong>：逆序为 \((1, n)\)，省略前导的 1，只贡献一个维度 \(n\)——如 \(\frac{\partial y}{\partial \mathbf{x}}\) 为 \((1, n)\)，\(\frac{\partial \mathbf{Y}}{\partial \mathbf{x}}\) 为 \((m, l, n)\)；</li>
+            <li><strong>分母为矩阵 \((n, k)\)</strong>：逆序为 \((k, n)\)，两个维度都保留——如 \(\frac{\partial y}{\partial \mathbf{X}}\) 为 \((k, n)\)，\(\frac{\partial \mathbf{Y}}{\partial \mathbf{X}}\) 为 \((m, l, k, n)\)（四阶张量）。</li>
+        </ul>
+        <p style="margin-bottom:0;">原则始终不变：<strong>每个"分子分量 × 分母分量"的组合对应一个偏导数</strong>。当结果为二维矩阵时，本规则恰好退化为速记卡的"行数 = 分子分量个数、列数 = 分母分量个数"。</p>
+    </div>
 
     <h3><span class="sec-no">5.6</span>链式法则与反向传播</h3>
     <p>复合函数的求导遵循链式法则：先对外层函数求导，再乘以内层函数的导数。它是整个反向传播的数学基础：</p>
