@@ -420,7 +420,7 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
     </div>
     <div class="callout key">
         <span class="co-tag">📐 分子布局的形状规则（速记）</span>
-        <p>对 \(\frac{\partial \mathbf{F}}{\partial \mathbf{x}}\)，分子布局下结果矩阵的形状不用背，两条规则直接读出：</p>
+        <p>对 \(\frac{\partial \mathbf{F}}{\partial \mathbf{x}}\)（\(\mathbf{F}\) 为被求导的标量或向量值函数，即前述各节中的 \(y\) 或 \(\mathbf{y}\)），分子布局下结果矩阵的形状不用背，两条规则直接读出：</p>
         <ul style="line-height:1.9;margin:4px 0 10px;">
             <li><strong>结果矩阵的行数 = 分子 \(\mathbf{F}\) 的分量个数</strong>（标量视为 1 个，\(m\) 维向量为 \(m\) 个）；</li>
             <li><strong>结果矩阵的列数 = 分母 \(\mathbf{x}\) 的分量个数</strong>（标量视为 1 个，\(n\) 维向量为 \(n\) 个）。</li>
@@ -434,7 +434,7 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
                 <tr><td>5.4 雅可比矩阵</td><td>向量 \(\mathbf{y} \in \mathbb{R}^m\)</td><td>向量 \(\mathbf{x} \in \mathbb{R}^n\)</td><td>\(m \times n\)</td><td>矩阵</td></tr>
             </table>
         </div>
-        <p style="margin-bottom:0;">口诀：<strong>行随分子、列随分母</strong>——分子有多宽，结果就有多少行；分母有多高，结果就有多少列。</p>
+        <p style="margin-bottom:0;">口诀：<strong>行随分子、列随分母</strong>——分子有几个分量，结果就有多少行；分母有几个分量，结果就有多少列。</p>
     </div>
     <div class="callout key">
         <span class="co-tag">🔑 初学者理解</span>
