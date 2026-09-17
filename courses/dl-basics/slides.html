@@ -168,7 +168,7 @@
 <section>
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 目录</div>
   <div class="slide-title">📋 本讲目录</div>
-  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 线性代数基础：标量与向量</a></li><li><a href="#/11" style="color:#1E40AF;text-decoration:none;">2. 矩阵及其运算</a></li><li><a href="#/20" style="color:#1E40AF;text-decoration:none;">3. GPU 与向量化计算</a></li><li><a href="#/24" style="color:#1E40AF;text-decoration:none;">4. 数据表示与张量</a></li><li><a href="#/29" style="color:#1E40AF;text-decoration:none;">5. 矩阵微积分</a></li><li><a href="#/44" style="color:#1E40AF;text-decoration:none;">6. 自动微分与计算图</a></li><li><a href="#/51" style="color:#1E40AF;text-decoration:none;">7. 正向传播与反向传播</a></li><li><a href="#/57" style="color:#1E40AF;text-decoration:none;">8. 本讲小结与自测</a></li></ol></div>
+  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 线性代数基础：标量与向量</a></li><li><a href="#/11" style="color:#1E40AF;text-decoration:none;">2. 矩阵及其运算</a></li><li><a href="#/20" style="color:#1E40AF;text-decoration:none;">3. GPU 与向量化计算</a></li><li><a href="#/24" style="color:#1E40AF;text-decoration:none;">4. 数据表示与张量</a></li><li><a href="#/29" style="color:#1E40AF;text-decoration:none;">5. 矩阵微积分</a></li><li><a href="#/44" style="color:#1E40AF;text-decoration:none;">6. 自动微分与计算图</a></li><li><a href="#/51" style="color:#1E40AF;text-decoration:none;">7. 正向传播与反向传播</a></li><li><a href="#/58" style="color:#1E40AF;text-decoration:none;">8. 本讲小结与自测</a></li></ol></div>
 </section>
 <section class="section-divider">
   <div class="divider-num">1</div>
@@ -882,6 +882,21 @@ loss.backward() # 一键反向传播，计算所有梯度</pre>
         <span class="co-tag">✅ 一句话总结</span>
         <p>反向传播 = 链式法则 + 计算图 + 缓存中间值。它不是神秘的新算法，而是把复合函数求导组织得井井有条的工程实现。</p>
     </div>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第02讲 深度学习基础 › 7. 正向传播与反向传播</div>
+  <div class="slide-title">7.2 更新权重：走完训练迭代的最后一步</div>
+  <div class="slide-body">
+<p>算出梯度只走完一半，另一半是用它更新权重（取学习率 \(\eta = 0.1\)）：</p>
+<p>\[\mathbf{w} \leftarrow \mathbf{w} - \eta\,\frac{\partial z}{\partial \mathbf{w}}:\qquad w_1 = 0.5 - 0.1\times1 = 0.4, \qquad w_2 = 0.5 - 0.1\times2 = 0.3\]</p>
+<p>更新后 \(\mathbf{w} = (0.4,\ 0.3)\)。验证新损失：\(a_{\text{new}} = 0.4\times1 + 0.3\times2 = 1.0\)，\(b_{\text{new}} = 0\)，\(z_{\text{new}} = 0\)——损失由 0.25 降至 0，该样本被恰好拟合。</p>
+<div class="callout key">
+        <span class="co-tag">🔑 两个常见疑问</span>
+        <p><strong>① 为何 \(\partial a/\partial \mathbf{w}\) 恰好等于 \(\mathbf{x}\)：</strong>\(a = w_1x_1 + w_2x_2\) 对 \(w_i\) 求偏导即得 \(x_i\)，按分子布局排成一行就是 \((1,\ 2)\)。</p>
+        <p><strong>② 为何是"减"梯度：</strong>梯度指向损失上升最快的方向，沿其反方向走下降最快；学习率 \(\eta\) 控制步长。</p>
+    </div>
+<p>一次完整的训练迭代 = <strong>前向算损失 → 反向求梯度 → 沿梯度反方向更新权重</strong>，反复迭代直至损失收敛。</p>
   </div>
 </section>
 <section class="section-divider">
