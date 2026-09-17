@@ -608,11 +608,28 @@ loss.backward() # 一键反向传播，计算所有梯度</pre>
     </div>
 
     <h3><span class="sec-no">7.2</span>反向传播逐步推演</h3>
-    <p>仍以上一节的计算图为例，取 \(\mathbf{x} = (1, 2)\)、\(\mathbf{w} = (0.5, 0.5)\)、\(y = 1\)，先看前向数值，再看梯度如何"逆流而上"：</p>
+    <p>用一个完整的例子，把一次训练迭代"<strong>前向算损失 → 反向求梯度 → 沿梯度反方向更新权重</strong>"的全过程逐步走完。模型对单个样本的预测为内积 \(\langle \mathbf{w}, \mathbf{x} \rangle\)，平方损失为 \[z = \big(\langle \mathbf{w}, \mathbf{x} \rangle - y\big)^2\] 已知样本 \(\mathbf{x} = (1, 2)\)、标签 \(y = 1\)、初始权重 \(\mathbf{w} = (0.5, 0.5)\)、学习率 \(\eta = 0.1\)。计算沿依赖链 \(\mathbf{w} \to a \to b \to z\) 进行，定义中间变量：\[a = \langle \mathbf{w}, \mathbf{x} \rangle = w_1x_1 + w_2x_2, \qquad b = a - y, \qquad z = b^2\]</p>
+    <p><strong>① 前向传播——逐节点代入数值求值（并缓存中间结果，反向时要用），算出当前损失：</strong></p>
+    <p>\[a = 0.5 \times 1 + 0.5 \times 2 = 1.5, \qquad b = 1.5 - 1 = 0.5, \qquad z = 0.5^2 = 0.25\]</p>
+    <p>当前损失 \(z = 0.25\)：预测 \(1.5\) 与标签 \(1\) 尚有差距，权重需要更新。</p>
+    <p><strong>② 反向求梯度——从输出端 \(\partial z / \partial z = 1\) 出发，沿链式法则逐步乘以各节点的局部导数：</strong></p>
+    <p>\[\frac{\partial z}{\partial \mathbf{w}} = \frac{\partial z}{\partial b} \cdot \frac{\partial b}{\partial a} \cdot \frac{\partial a}{\partial \mathbf{w}}\]</p>
+    <p>逐个求局部导数：\(z = b^2 \Rightarrow \frac{\partial z}{\partial b} = 2b = 1.0\)；\(b = a - y \Rightarrow \frac{\partial b}{\partial a} = 1\)；\(a = w_1x_1 + w_2x_2\) 对 \(w_1, w_2\) 求偏导分别得 \(x_1 = 1\)、\(x_2 = 2\)，按分子布局排成一行即 \(\frac{\partial a}{\partial \mathbf{w}} = (1,\ 2)\)。三因子相乘：</p>
+    <p>\[\frac{\partial z}{\partial \mathbf{w}} = 1.0 \times 1 \times (1,\ 2) = (1,\ 2)\]</p>
     <figure>
         <img src="images/comp_graph_backprop.png" alt="前向传播数值与反向传播梯度示例" loading="lazy">
         <figcaption>前向（绿色）：a = 0.5×1 + 0.5×2 = 1.5，b = 1.5 − 1 = 0.5，z = 0.25。反向（红色）：从 ∂z/∂z = 1 出发，逐步乘以各节点的局部导数——∂z/∂b = 2b = 1.0，∂z/∂a = ∂z/∂b × ∂b/∂a = 1.0，∂z/∂w = ∂z/∂a × ∂a/∂w = 1.0 × x = (1, 2)。</figcaption>
     </figure>
+    <p><strong>③ 沿梯度反方向更新权重</strong>（梯度下降，学习率 \(\eta = 0.1\)）：</p>
+    <p>\[\mathbf{w} \leftarrow \mathbf{w} - \eta\,\frac{\partial z}{\partial \mathbf{w}}:\qquad w_1 = 0.5 - 0.1 \times 1 = 0.4, \qquad w_2 = 0.5 - 0.1 \times 2 = 0.3\]</p>
+    <p>更新后 \(\mathbf{w} = (0.4,\ 0.3)\)。<strong>④ 验证新损失</strong>——用新权重重新前向一遍：</p>
+    <p>\[a_{\text{new}} = 0.4 \times 1 + 0.3 \times 2 = 1.0, \qquad b_{\text{new}} = 1.0 - 1 = 0, \qquad z_{\text{new}} = 0^2 = 0\]</p>
+    <p>损失由 0.25 降至 0——该样本被恰好拟合。训练就是 ①→②→③ 的不断重复：每轮前向算出损失、反向求出梯度、沿梯度反方向把权重挪动一小步，直至损失收敛。</p>
+    <div class="callout key">
+        <span class="co-tag">🔑 两个常见疑问</span>
+        <p><strong>① 为什么 \(\partial a / \partial \mathbf{w}\) 恰好等于 \(\mathbf{x}\)？</strong>\(a = w_1x_1 + w_2x_2\) 对 \(w_1\) 求偏导得 \(x_1\)，对 \(w_2\) 求偏导得 \(x_2\)；按分子布局排成一行，结果就是 \((1,\ 2)\)。</p>
+        <p><strong>② 为什么是"减"梯度？</strong>梯度指向损失上升最快的方向；沿其反方向（即减去梯度的 \(\eta\) 倍）移动，才是损失下降最快的方向。学习率 \(\eta\) 控制每一步的步长——过大可能震荡发散，过小则收敛缓慢。</p>
+    </div>
     <p>再看一个更小的例子 \(f = (a+b)\times c\)（取 a=2, b=3, c=4），下面这张动图把前向求值和梯度逆流的完整过程连起来演示：</p>
     <figure>
         <img src="images/comp_graph_v2.gif" alt="计算图前向传播与反向传播动图" loading="lazy">
@@ -628,16 +645,6 @@ loss.backward() # 一键反向传播，计算所有梯度</pre>
     <div class="callout try">
         <span class="co-tag">✅ 一句话总结</span>
         <p>反向传播 = 链式法则 + 计算图 + 缓存中间值。它不是神秘的新算法，而是把复合函数求导组织得井井有条的工程实现。</p>
-    </div>
-    <p>算出梯度，训练才走完一半——另一半是用梯度更新权重。把上面的例子走完最后一步（取学习率 \(\eta = 0.1\)）：</p>
-    <p>\[\mathbf{w} \leftarrow \mathbf{w} - \eta\,\frac{\partial z}{\partial \mathbf{w}}:\qquad w_1 = 0.5 - 0.1 \times 1 = 0.4, \qquad w_2 = 0.5 - 0.1 \times 2 = 0.3\]</p>
-    <p>更新后 \(\mathbf{w} = (0.4,\ 0.3)\)。验证新损失：</p>
-    <p>\[a_{\text{new}} = 0.4 \times 1 + 0.3 \times 2 = 1.0, \qquad b_{\text{new}} = 1.0 - 1 = 0, \qquad z_{\text{new}} = 0^2 = 0\]</p>
-    <p>损失由 0.25 降至 0——该样本被恰好拟合。一次完整的训练迭代正是"<strong>前向算损失 → 反向求梯度 → 沿梯度反方向更新权重</strong>"的循环，如此反复，直至损失收敛。</p>
-    <div class="callout key">
-        <span class="co-tag">🔑 两个常见疑问</span>
-        <p><strong>① 为什么 \(\partial a / \partial \mathbf{w}\) 恰好等于 \(\mathbf{x}\)？</strong>\(a = w_1x_1 + w_2x_2\) 对 \(w_1\) 求偏导得 \(x_1\)，对 \(w_2\) 求偏导得 \(x_2\)；按分子布局排成一行，结果就是 \((1,\ 2)\)。</p>
-        <p><strong>② 为什么是"减"梯度？</strong>梯度指向损失上升最快的方向；沿其反方向（即减去梯度的 \(\eta\) 倍）移动，才是损失下降最快的方向。学习率 \(\eta\) 控制每一步的步长——过大可能震荡发散，过小则收敛缓慢。</p>
     </div>
 </section>
 

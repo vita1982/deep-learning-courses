@@ -168,7 +168,7 @@
 <section>
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 目录</div>
   <div class="slide-title">📋 本讲目录</div>
-  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 线性代数基础：标量与向量</a></li><li><a href="#/11" style="color:#1E40AF;text-decoration:none;">2. 矩阵及其运算</a></li><li><a href="#/20" style="color:#1E40AF;text-decoration:none;">3. GPU 与向量化计算</a></li><li><a href="#/24" style="color:#1E40AF;text-decoration:none;">4. 数据表示与张量</a></li><li><a href="#/29" style="color:#1E40AF;text-decoration:none;">5. 矩阵微积分</a></li><li><a href="#/44" style="color:#1E40AF;text-decoration:none;">6. 自动微分与计算图</a></li><li><a href="#/51" style="color:#1E40AF;text-decoration:none;">7. 正向传播与反向传播</a></li><li><a href="#/58" style="color:#1E40AF;text-decoration:none;">8. 本讲小结与自测</a></li></ol></div>
+  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 线性代数基础：标量与向量</a></li><li><a href="#/11" style="color:#1E40AF;text-decoration:none;">2. 矩阵及其运算</a></li><li><a href="#/20" style="color:#1E40AF;text-decoration:none;">3. GPU 与向量化计算</a></li><li><a href="#/24" style="color:#1E40AF;text-decoration:none;">4. 数据表示与张量</a></li><li><a href="#/29" style="color:#1E40AF;text-decoration:none;">5. 矩阵微积分</a></li><li><a href="#/44" style="color:#1E40AF;text-decoration:none;">6. 自动微分与计算图</a></li><li><a href="#/51" style="color:#1E40AF;text-decoration:none;">7. 正向传播与反向传播</a></li><li><a href="#/59" style="color:#1E40AF;text-decoration:none;">8. 本讲小结与自测</a></li></ol></div>
 </section>
 <section class="section-divider">
   <div class="divider-num">1</div>
@@ -847,18 +847,49 @@ loss.backward() # 一键反向传播，计算所有梯度</pre>
 </section>
 <section>
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 7. 正向传播与反向传播</div>
-  <div class="slide-title">7.2 反向传播逐步推演</div>
+  <div class="slide-title">7.2 完整例子：单样本梯度下降 ① 前向算损失</div>
   <div class="slide-body">
-<p>仍以上一节的计算图为例，取 \(\mathbf{x} = (1, 2)\)、\(\mathbf{w} = (0.5, 0.5)\)、\(y = 1\)，先看前向数值，再看梯度如何"逆流而上"：</p>
+<p>用一个完整的例子，把一次训练迭代"<strong>前向算损失 → 反向求梯度 → 沿梯度反方向更新权重</strong>"逐步走完。模型对单个样本的预测为内积 \(\langle \mathbf{w}, \mathbf{x} \rangle\)，平方损失：</p>
+<p>\[z = \big(\langle \mathbf{w}, \mathbf{x} \rangle - y\big)^2\]</p>
+<p>已知样本 \(\mathbf{x} = (1, 2)\)、标签 \(y = 1\)、初始权重 \(\mathbf{w} = (0.5, 0.5)\)、学习率 \(\eta = 0.1\)。计算沿依赖链 \(\mathbf{w} \to a \to b \to z\) 进行，定义中间变量：</p>
+<p>\[a = \langle \mathbf{w}, \mathbf{x} \rangle = w_1x_1 + w_2x_2, \qquad b = a - y, \qquad z = b^2\]</p>
+<p><strong>① 前向传播</strong>——逐节点代入数值求值（并缓存中间结果，反向时要用）：</p>
+<p>\[a = 0.5 \times 1 + 0.5 \times 2 = 1.5, \qquad b = 1.5 - 1 = 0.5, \qquad z = 0.5^2 = 0.25\]</p>
+<p>当前损失 \(z = 0.25\)：预测 \(1.5\) 与标签 \(1\) 尚有差距，权重需要更新。</p>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第02讲 深度学习基础 › 7. 正向传播与反向传播</div>
+  <div class="slide-title">7.2 ② 反向求梯度（链式法则逆流而上）</div>
+  <div class="slide-body">
+<p>从输出端 \(\partial z / \partial z = 1\) 出发，逐步乘以各节点的局部导数：</p>
+<p>\[\frac{\partial z}{\partial \mathbf{w}} = \frac{\partial z}{\partial b} \cdot \frac{\partial b}{\partial a} \cdot \frac{\partial a}{\partial \mathbf{w}} = 1.0 \times 1 \times (1,\ 2) = (1,\ 2)\]</p>
+<p>其中 \(\frac{\partial z}{\partial b} = 2b = 1.0\)，\(\frac{\partial b}{\partial a} = 1\)，\(\frac{\partial a}{\partial \mathbf{w}} = (x_1, x_2) = (1, 2)\)（分子布局排成一行）。</p>
 <figure>
         <img src="images/comp_graph_backprop.png" alt="前向传播数值与反向传播梯度示例" loading="lazy">
-        <figcaption>前向（绿色）：a = 0.5×1 + 0.5×2 = 1.5，b = 1.5 − 1 = 0.5，z = 0.25。反向（红色）：从 ∂z/∂z = 1 出发，逐步乘以各节点的局部导数——∂z/∂b = 2b = 1.0，∂z/∂a = ∂z/∂b × ∂b/∂a = 1.0，∂z/∂w = ∂z/∂a × ∂a/∂w = 1.0 × x = (1, 2)。</figcaption>
+        <figcaption>前向（绿色）：a = 1.5，b = 0.5，z = 0.25。反向（红色）：∂z/∂z = 1 → ∂z/∂b = 1.0 → ∂z/∂a = 1.0 → ∂z/∂w = (1, 2)。</figcaption>
     </figure>
   </div>
 </section>
 <section>
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 7. 正向传播与反向传播</div>
-  <div class="slide-title">7.2 反向传播逐步推演</div>
+  <div class="slide-title">7.2 ③ 沿梯度反方向更新权重 → ④ 验证新损失</div>
+  <div class="slide-body">
+<p><strong>③ 梯度下降更新</strong>（学习率 \(\eta = 0.1\)）：</p>
+<p>\[\mathbf{w} \leftarrow \mathbf{w} - \eta\,\frac{\partial z}{\partial \mathbf{w}}:\qquad w_1 = 0.5 - 0.1\times1 = 0.4, \qquad w_2 = 0.5 - 0.1\times2 = 0.3\]</p>
+<p><strong>④ 验证新损失</strong>——用新权重 \(\mathbf{w} = (0.4, 0.3)\) 重新前向一遍：</p>
+<p>\[a_{\text{new}} = 0.4\times1 + 0.3\times2 = 1.0, \qquad b_{\text{new}} = 0, \qquad z_{\text{new}} = 0\]</p>
+<p>损失由 0.25 降至 0——该样本被恰好拟合。训练就是 ①→②→③ 的不断重复，直至损失收敛。</p>
+<div class="callout key">
+        <span class="co-tag">🔑 两个常见疑问</span>
+        <p><strong>① 为何 \(\partial a/\partial \mathbf{w}\) 恰好等于 \(\mathbf{x}\)：</strong>\(a = w_1x_1 + w_2x_2\) 对 \(w_i\) 求偏导即得 \(x_i\)，按分子布局排成一行就是 \((1,\ 2)\)。</p>
+        <p><strong>② 为何是"减"梯度：</strong>梯度指向损失上升最快的方向，沿其反方向走下降最快；学习率 \(\eta\) 控制步长。</p>
+    </div>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第02讲 深度学习基础 › 7. 正向传播与反向传播</div>
+  <div class="slide-title">7.2 再看一个含分支的例子（动图演示）</div>
   <div class="slide-body">
 <p>再看一个更小的例子 \(f = (a+b)\times c\)（取 a=2, b=3, c=4），下面这张动图把前向求值和梯度逆流的完整过程连起来演示：</p>
 <figure>
@@ -882,21 +913,6 @@ loss.backward() # 一键反向传播，计算所有梯度</pre>
         <span class="co-tag">✅ 一句话总结</span>
         <p>反向传播 = 链式法则 + 计算图 + 缓存中间值。它不是神秘的新算法，而是把复合函数求导组织得井井有条的工程实现。</p>
     </div>
-  </div>
-</section>
-<section>
-  <div class="slide-breadcrumb">第02讲 深度学习基础 › 7. 正向传播与反向传播</div>
-  <div class="slide-title">7.2 更新权重：走完训练迭代的最后一步</div>
-  <div class="slide-body">
-<p>算出梯度只走完一半，另一半是用它更新权重（取学习率 \(\eta = 0.1\)）：</p>
-<p>\[\mathbf{w} \leftarrow \mathbf{w} - \eta\,\frac{\partial z}{\partial \mathbf{w}}:\qquad w_1 = 0.5 - 0.1\times1 = 0.4, \qquad w_2 = 0.5 - 0.1\times2 = 0.3\]</p>
-<p>更新后 \(\mathbf{w} = (0.4,\ 0.3)\)。验证新损失：\(a_{\text{new}} = 0.4\times1 + 0.3\times2 = 1.0\)，\(b_{\text{new}} = 0\)，\(z_{\text{new}} = 0\)——损失由 0.25 降至 0，该样本被恰好拟合。</p>
-<div class="callout key">
-        <span class="co-tag">🔑 两个常见疑问</span>
-        <p><strong>① 为何 \(\partial a/\partial \mathbf{w}\) 恰好等于 \(\mathbf{x}\)：</strong>\(a = w_1x_1 + w_2x_2\) 对 \(w_i\) 求偏导即得 \(x_i\)，按分子布局排成一行就是 \((1,\ 2)\)。</p>
-        <p><strong>② 为何是"减"梯度：</strong>梯度指向损失上升最快的方向，沿其反方向走下降最快；学习率 \(\eta\) 控制步长。</p>
-    </div>
-<p>一次完整的训练迭代 = <strong>前向算损失 → 反向求梯度 → 沿梯度反方向更新权重</strong>，反复迭代直至损失收敛。</p>
   </div>
 </section>
 <section class="section-divider">
