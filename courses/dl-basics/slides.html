@@ -234,7 +234,7 @@
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 1. 线性代数基础：标量与向量</div>
   <div class="slide-title">1.3 深入理解：模型为什么需要范数？</div>
   <div class="slide-body">
-<p>分六步说清楚（"总分"指<strong>目标函数</strong>，注意：分数<strong>越低越好</strong>，像高尔夫球而非考试分）：</p>
+<p>分六步说清楚（"总分"指<strong>目标函数</strong>——它度量的是"模型离正确答案还有多远"，所以分数<strong>越低越好</strong>，而不是越高越好）：</p>
 <ol style="font-size:17.5px;line-height:1.6;margin-left:1.3em;">
         <li><strong>训练就是最小化"一个数"。</strong>梯度下降、反向传播全都为这一个数服务；想让模型具备什么品质，就必须把每种品质换算成分数写进这同一个式子。</li>
         <li><strong>只写"答错的损失"有个毛病。</strong>模型为了全做对可以走两条路：真正学会方法，或者把例题连同里面的巧合一起<strong>背下来</strong>——只看这一项分数，分不出高下。</li>
