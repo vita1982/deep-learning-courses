@@ -168,7 +168,7 @@
 <section>
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 目录</div>
   <div class="slide-title">📋 本讲目录</div>
-  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 线性代数基础：标量与向量</a></li><li><a href="#/9" style="color:#1E40AF;text-decoration:none;">2. 矩阵及其运算</a></li><li><a href="#/17" style="color:#1E40AF;text-decoration:none;">3. GPU 与向量化计算</a></li><li><a href="#/21" style="color:#1E40AF;text-decoration:none;">4. 数据表示与张量</a></li><li><a href="#/26" style="color:#1E40AF;text-decoration:none;">5. 矩阵微积分</a></li><li><a href="#/40" style="color:#1E40AF;text-decoration:none;">6. 自动微分与计算图</a></li><li><a href="#/47" style="color:#1E40AF;text-decoration:none;">7. 正向传播与反向传播</a></li><li><a href="#/53" style="color:#1E40AF;text-decoration:none;">8. 本讲小结与自测</a></li></ol></div>
+  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 线性代数基础：标量与向量</a></li><li><a href="#/9" style="color:#1E40AF;text-decoration:none;">2. 矩阵及其运算</a></li><li><a href="#/17" style="color:#1E40AF;text-decoration:none;">3. GPU 与向量化计算</a></li><li><a href="#/21" style="color:#1E40AF;text-decoration:none;">4. 数据表示与张量</a></li><li><a href="#/28" style="color:#1E40AF;text-decoration:none;">5. 矩阵微积分</a></li><li><a href="#/42" style="color:#1E40AF;text-decoration:none;">6. 自动微分与计算图</a></li><li><a href="#/49" style="color:#1E40AF;text-decoration:none;">7. 正向传播与反向传播</a></li><li><a href="#/55" style="color:#1E40AF;text-decoration:none;">8. 本讲小结与自测</a></li></ol></div>
 </section>
 <section class="section-divider">
   <div class="divider-num">1</div>
@@ -227,6 +227,39 @@
 <div class="callout key">
         <span class="co-tag">💡 提示</span>
         <p>直接使用平方 \(L^2\) 范数 \(\|\mathbf{x}\|_2^2\)（不开根号）求导更干净——导数是 \(2\mathbf{x}\)，没有根号带来的繁琐项，所以损失函数里经常出现"平方 \(L^2\) 范数"。</p>
+    </div>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第02讲 深度学习基础 › 1. 线性代数基础：标量与向量</div>
+  <div class="slide-title">1.3 深入理解：模型为什么需要范数？</div>
+  <div class="slide-body">
+<p>分六步说清楚（"总分"指<strong>目标函数</strong>，注意：分数<strong>越低越好</strong>，像高尔夫球而非考试分）：</p>
+<ol style="font-size:17.5px;line-height:1.6;margin-left:1.3em;">
+        <li><strong>训练就是最小化"一个数"。</strong>梯度下降、反向传播全都为这一个数服务；想让模型具备什么品质，就必须把每种品质换算成分数写进这同一个式子。</li>
+        <li><strong>只写"答错的损失"有个毛病。</strong>模型为了全做对可以走两条路：真正学会方法，或者把例题连同里面的巧合一起<strong>背下来</strong>——只看这一项分数，分不出高下。</li>
+        <li><strong>背答案在考试（新数据）上会露馅。</strong>背答案的模型遇到没见过的题就傻眼，所以要想办法<strong>禁止背答案</strong>。</li>
+        <li><strong>办法是在总分里加一条扣分规矩。</strong>它不是定理，而是<strong>设计出来的规矩</strong>：梯度下降让总分变小，两项就被同时压低，模型被迫在"答得对"和"权重小"之间找平衡。这条扣分规矩叫<strong>惩罚项（正则化）</strong>。</li>
+        <li><strong>为什么"权重小"能防背答案？</strong>权重是每个特征的"投票权"：权重都小，结论要靠<strong>大家一起投</strong>才能定；而背答案恰恰需要"一言堂"——给偶然细节配上巨大权重、靠它一锤定音。把权重限制小，等于剥夺死记硬背的能力，模型只能依赖许多特征共同呈现的稳定规律。</li>
+        <li><strong>\(\lambda\) 是罚单的"松紧度"。</strong>\(\lambda\)（lambda）是<strong>超参数</strong>——训练前由人设定的正数，<strong>不参与训练</strong>、不会被梯度下降更新：\(\lambda = 0\) 等于没立规矩（可能背答案，过拟合）；太大则罚得太狠（欠拟合）。通常在验证集上试出来（如依次试 0.001、0.01、0.1）。</li>
+    </ol>
+<p style="text-align:center;">\[\text{总分} = \underbrace{\text{答错的损失}}_{\text{题要答对}} + \underbrace{\lambda \times \text{权重的"大小"}}_{\text{权重大就扣分}}\]</p>
+<p style="font-size:16.5px;color:#475569;">几百万个权重的"总体大小"必须量化成<strong>一个数</strong>才能写进总分——量"一堆数字总体大小"的尺子就是范数，\(p\) 是事先拨好的"刻度旋钮"。这条规矩对"总分"还有两个硬性要求：<strong>必须可求导</strong>（所以惩罚项偏爱平方 \(L^2\)，导数是干净的 \(2\mathbf{w}\)，没有根号）；<strong>方向要对</strong>——训练题上总分再低，新题不会做也白搭（泛化能力），这正是要加第二项的根本原因。</p>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第02讲 深度学习基础 › 1. 线性代数基础：标量与向量</div>
+  <div class="slide-title">1.3 三把尺子怎么选？</div>
+  <div class="slide-body">
+<p>三把尺子量同一个东西，读数不同，没有对错——<strong>选哪把，取决于想防的是哪种"坏情况"</strong>：</p>
+<ul style="font-size:17.5px;line-height:1.6;margin-left:1.3em;">
+        <li><strong>L1："干活的都要交税" → 没用的权重被清零。</strong>每个非零权重固定贡献一份惩罚，为零就"免税"。恒定的推力把没用的权重<strong>精确压成 0</strong>：100 万个权重可能只剩 10 万个非零——这就是<strong>稀疏</strong>。好处是模型更小更快，还能看出哪些特征真正有用。</li>
+        <li><strong>L2："越大的税率越高" → 大权重被重点压制。</strong>平方让大数字膨胀得不成比例（\(5^2=25\)，\(50^2=2500\)），背答案用的大数字被重罚；同时求导干净（导数是 \(2\mathbf{w}\)，没有根号），训练每轮要算几百万次导数，省掉根号既快又稳。效果是所有权重被温柔压小、但没有谁被精确清零——<strong>全员降薪，不裁员</strong>。这就是权重衰减（weight decay），防过拟合的主力手段。</li>
+        <li><strong>L∞："最狠那一处也不许过线"。</strong>只看最大的那个分量。它的主场不是训练，而是<strong>给图片加扰动骗过 AI</strong> 的对抗样本研究：要求扰动的 \(\|\cdot\|_\infty \le \varepsilon\)，即改动最大的那个像素也不许超过 \(\varepsilon\)。为什么不用 L1 管总量？因为有漏洞——只改三个像素、每个改得夸张，总量照样达标，图上却会冒出三个刺眼噪点。L∞ 把洞堵死：每个像素单独被盯，没有一处能过分。</li>
+    </ul>
+<div class="callout key">
+        <span class="co-tag">📌 一句话收拢</span>
+        <p style="font-size:17.5px;">模型靠调数字学习，只追分会背答案，背答案需要大数字；所以评分时立规矩"数字大就扣分"；而"数字总体多大"必须量化，量化用的尺子就是范数。选 L1、L2 还是 L∞，就是选用哪种定义执行这条规矩，模型于是分别被逼出"清零、压小、限制最坏情况"三种行为。</p>
     </div>
   </div>
 </section>
