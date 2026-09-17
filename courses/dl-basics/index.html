@@ -419,6 +419,24 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
         <p>两种方式数值完全相同、互为转置；排列方式直接决定后续矩阵乘法能否进行及结果的形状。</p>
     </div>
     <div class="callout key">
+        <span class="co-tag">📐 分子布局的形状规则（速记）</span>
+        <p>对 \(\frac{\partial \mathbf{F}}{\partial \mathbf{x}}\)，分子布局下结果矩阵的形状不用背，两条规则直接读出：</p>
+        <ul style="line-height:1.9;margin:4px 0 10px;">
+            <li><strong>结果矩阵的行数 = 分子 \(\mathbf{F}\) 横排的宽度</strong>（标量宽为 1，\(m\) 维向量宽为 \(m\)）；</li>
+            <li><strong>结果矩阵的列数 = 分母 \(\mathbf{x}\) 竖排的高度</strong>（标量高为 1，\(n\) 维向量高为 \(n\)）。</li>
+        </ul>
+        <p>用 5.2~5.4 三种情形逐一验证：</p>
+        <div class="tbl-wrap">
+            <table>
+                <tr><th>情形</th><th>分子</th><th>分母</th><th>行数 × 列数</th><th>结果</th></tr>
+                <tr><td>5.2 梯度</td><td>标量 \(y\)</td><td>向量 \(\mathbf{x} \in \mathbb{R}^n\)</td><td>\(1 \times n\)</td><td>行向量</td></tr>
+                <tr><td>5.3 向量对标量</td><td>向量 \(\mathbf{y} \in \mathbb{R}^m\)</td><td>标量 \(x\)</td><td>\(m \times 1\)</td><td>列向量</td></tr>
+                <tr><td>5.4 雅可比矩阵</td><td>向量 \(\mathbf{y} \in \mathbb{R}^m\)</td><td>向量 \(\mathbf{x} \in \mathbb{R}^n\)</td><td>\(m \times n\)</td><td>矩阵</td></tr>
+            </table>
+        </div>
+        <p style="margin-bottom:0;">口诀：<strong>行随分子、列随分母</strong>——分子有多宽，结果就有多少行；分母有多高，结果就有多少列。</p>
+    </div>
+    <div class="callout key">
         <span class="co-tag">🔑 初学者理解</span>
         <p>两种布局仅是排列方式不同，数值完全一致、互为转置。《动手学深度学习》课程采用分子布局（梯度按行排列），本讲义与课程课件保持一致。阅读其他资料时应先确认其采用的布局约定，以免矩阵求导时转置出错。</p>
     </div>
