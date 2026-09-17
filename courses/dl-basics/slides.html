@@ -620,8 +620,8 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
   <div class="slide-body">
 <p>对 \(\frac{\partial \mathbf{F}}{\partial \mathbf{x}}\)，分子布局下结果矩阵的形状不用背，两条规则直接读出：</p>
 <ul style="font-size:20px;line-height:1.8;">
-        <li><strong>结果矩阵的行数 = 分子 \(\mathbf{F}\) 横排的宽度</strong>（标量宽为 1，\(m\) 维向量宽为 \(m\)）；</li>
-        <li><strong>结果矩阵的列数 = 分母 \(\mathbf{x}\) 竖排的高度</strong>（标量高为 1，\(n\) 维向量高为 \(n\)）。</li>
+        <li><strong>结果矩阵的行数 = 分子 \(\mathbf{F}\) 的分量个数</strong>（标量视为 1 个，\(m\) 维向量为 \(m\) 个）；</li>
+        <li><strong>结果矩阵的列数 = 分母 \(\mathbf{x}\) 的分量个数</strong>（标量视为 1 个，\(n\) 维向量为 \(n\) 个）。</li>
     </ul>
 <div class="tbl-wrap">
         <table>
