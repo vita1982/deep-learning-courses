@@ -764,32 +764,6 @@ loss.backward() # 一键反向传播，计算所有梯度</pre>
 
 </div><!-- /page -->
 
-<!-- DL-SECVIS:BEGIN upto=4 -->
-<script>
-/* 本讲部分开放：仅显示前 4 节，后续小节随课程进度开放（scripts/set_section_visibility.py） */
-(function () {
-    var UPTO = 4;
-    var secs = document.querySelectorAll('section.chapter');
-    var last = null;
-    Array.prototype.forEach.call(secs, function (s) {
-        var numEl = s.querySelector('.chapter-num');
-        var n = numEl ? parseInt(numEl.textContent.trim(), 10) : NaN;
-        if (!isNaN(n) && n > UPTO) { s.parentNode.removeChild(s); }
-        else { last = s; }
-    });
-    if (last) {
-        var card = document.createElement('div');
-        card.style.cssText = 'margin:28px auto 8px;max-width:860px;background:#F1F5F9;border:1px dashed #94A3B8;'
-            + 'border-radius:14px;padding:30px 36px;text-align:center;font-family:Microsoft YaHei,sans-serif;';
-        card.innerHTML = '<div style="font-size:30px;">📘</div>'
-            + '<div style="margin-top:10px;font-size:17px;font-weight:bold;color:#1E293B;">本讲后续章节将随课程进度开放</div>'
-            + '<div style="margin-top:8px;font-size:14px;color:#64748B;line-height:1.8;">'
-            + '目前开放至第 ' + UPTO + ' 节，后续小节将在课堂上讲解后开放，请按课程安排学习。</div>';
-        last.insertAdjacentElement('afterend', card);
-    }
-})();
-</script>
-<!-- DL-SECVIS:END -->
 <script src="../../assets/katex/katex.min.js"></script>
 <script src="../../assets/katex/auto-render.min.js"></script>
 <script>
