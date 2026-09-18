@@ -988,39 +988,6 @@ loss.backward() # 一键反向传播，计算所有梯度</pre>
 </div>
 </div>
 <div class="slide-hint">←→ 翻页 · 双击图片放大 · P 画笔标注 · F 全屏 · Esc 总览</div>
-<!-- DL-SECVIS:BEGIN upto=4 -->
-<script>
-/* 本讲部分开放：仅显示前 4 节的幻灯片（scripts/set_section_visibility.py） */
-(function () {
-    var UPTO = 4;
-    var container = document.querySelector('.reveal .slides');
-    if (!container) return;
-    var cut = false;
-    /* children 是动态集合，先快照成静态数组再遍历删除，否则会跳元素 */
-    var kids = Array.prototype.slice.call(container.children);
-    kids.forEach(function (s) {
-        if (cut) { s.parentNode.removeChild(s); return; }
-        var dn = s.querySelector('.divider-num');
-        if (dn) {
-            var n = parseInt(dn.textContent.trim(), 10);
-            if (!isNaN(n) && n > UPTO) { cut = true; s.parentNode.removeChild(s); }
-        }
-    });
-    Array.prototype.forEach.call(document.querySelectorAll('.toc-list ol li'), function (li) {
-        var m = li.textContent.trim().match(/^(\d+)\s*[.、]/);
-        if (m && parseInt(m[1], 10) > UPTO) { li.parentNode.removeChild(li); }
-    });
-    var notice = document.createElement('section');
-    notice.innerHTML = '<div class="slide-body" style="display:flex;flex-direction:column;'
-        + 'justify-content:center;align-items:center;height:100%;text-align:center;">'
-        + '<div style="font-size:44px;">📘</div>'
-        + '<div style="font-size:32px;margin-top:22px;color:#1E293B;font-weight:bold;">本讲后续章节将随课程进度开放</div>'
-        + '<div style="font-size:20px;margin-top:18px;color:#64748B;">目前开放至第 ' + UPTO
-        + ' 节，后续内容将在课堂上讲解后开放。</div></div>';
-    container.appendChild(notice);
-})();
-</script>
-<!-- DL-SECVIS:END -->
 <script src="../../assets/reveal/reveal.js"></script>
 <script>
 Reveal.initialize({
