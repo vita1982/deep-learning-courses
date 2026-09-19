@@ -168,7 +168,7 @@
 <section>
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 目录</div>
   <div class="slide-title">📋 本讲目录</div>
-  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 线性代数基础：标量与向量</a></li><li><a href="#/11" style="color:#1E40AF;text-decoration:none;">2. 矩阵及其运算</a></li><li><a href="#/20" style="color:#1E40AF;text-decoration:none;">3. GPU 与向量化计算</a></li><li><a href="#/24" style="color:#1E40AF;text-decoration:none;">4. 数据表示与张量</a></li><li><a href="#/29" style="color:#1E40AF;text-decoration:none;">5. 矩阵微积分</a></li><li><a href="#/46" style="color:#1E40AF;text-decoration:none;">6. 自动微分与计算图</a></li><li><a href="#/53" style="color:#1E40AF;text-decoration:none;">7. 正向传播与反向传播</a></li><li><a href="#/61" style="color:#1E40AF;text-decoration:none;">8. 本讲小结与自测</a></li></ol></div>
+  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 线性代数基础：标量与向量</a></li><li><a href="#/11" style="color:#1E40AF;text-decoration:none;">2. 矩阵及其运算</a></li><li><a href="#/20" style="color:#1E40AF;text-decoration:none;">3. GPU 与向量化计算</a></li><li><a href="#/24" style="color:#1E40AF;text-decoration:none;">4. 数据表示与张量</a></li><li><a href="#/29" style="color:#1E40AF;text-decoration:none;">5. 矩阵微积分</a></li><li><a href="#/47" style="color:#1E40AF;text-decoration:none;">6. 自动微分与计算图</a></li><li><a href="#/54" style="color:#1E40AF;text-decoration:none;">7. 正向传播与反向传播</a></li><li><a href="#/62" style="color:#1E40AF;text-decoration:none;">8. 本讲小结与自测</a></li></ol></div>
 </section>
 <section class="section-divider">
   <div class="divider-num">1</div>
@@ -580,6 +580,19 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
         <img src="images/grad_contour_example.jpg" alt="梯度的几何意义：等高线与最陡方向" loading="lazy" class="img-tall">
         <figcaption>梯度的几何意义：\(f = x_1^2 + 2x_2^2\) 的等高线是一圈圈椭圆，在点 \((1,1)\) 处梯度指向 \((2,4)\)——垂直于等高线、指向函数增长最快的方向。</figcaption>
     </figure>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第02讲 深度学习基础 › 5. 矩阵微积分</div>
+  <div class="slide-title">5.2 延伸：L2 正则与权重衰减的推导</div>
+  <div class="slide-body">
+<p>1.3 节的正则惩罚项 \(\lambda\|\mathbf{w}\|^2\) 中，\(\|\mathbf{w}\|^2 = w_1^2 + w_2^2 + \cdots + w_n^2\) 为权重分量的平方和；逐分量求偏导得 \(2\lambda w_i\)，按序排列即梯度 \(2\lambda\mathbf{w}\)（分子布局下为行向量 \(2\lambda\mathbf{w}^\top\)）。</p>
+<p>加入正则后，<strong>完整损失的梯度 = 原损失梯度 + \(2\lambda\mathbf{w}\)</strong>，代入梯度下降更新式并逐步展开：</p>
+<p>\[\mathbf{w} \leftarrow \mathbf{w} - \eta\big(\nabla f + 2\lambda\mathbf{w}\big) \;=\; \mathbf{w} - \eta\,\nabla f - 2\eta\lambda\mathbf{w} \;=\; (1 - 2\eta\lambda)\,\mathbf{w} - \eta\,\nabla f\]</p>
+<div class="callout key">
+        <span class="co-tag">🔑 关键效果</span>
+        <p>每轮更新权重先乘系数 \((1 - 2\eta\lambda) &lt; 1\)——先被向 0 压缩、再沿负梯度下降。这就是<strong>权重衰减</strong>（weight decay）：正则项额外施加一股把权重拉向 0 的"拉力"，权重越小模型越简单，越不易记住训练集噪声，从而抑制过拟合。</p>
+    </div>
   </div>
 </section>
 <section>
