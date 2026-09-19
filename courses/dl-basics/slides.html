@@ -709,6 +709,7 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
         <li><strong>分母为向量 \((n, 1)\)</strong>：逆序 \((1, n)\) 省略前导 1，只贡献 \(n\)——\(\partial y/\partial \mathbf{x}\) 为 \((1, n)\)，\(\partial \mathbf{Y}/\partial \mathbf{x}\) 为 \((m, l, n)\)；</li>
         <li><strong>分母为矩阵 \((n, k)\)</strong>：逆序 \((k, n)\)，两维都保留——\(\partial y/\partial \mathbf{X}\) 为 \((k, n)\)，\(\partial \mathbf{Y}/\partial \mathbf{X}\) 为 \((m, l, k, n)\)。</li>
     </ul>
+<p><strong>举个小例子</strong>：\(\mathbf{Y}\) 为 \(2 \times 3\)、\(\mathbf{X}\) 为 \(4 \times 5\) 时，分子形状 \((2, 3)\) 拼接分母逆序 \((5, 4)\)，结果为 \((2, 3, 5, 4)\)——四阶张量，与总览图右下角一致。</p>
 <p>原则始终不变：<strong>每个"分子分量 × 分母分量"的组合对应一个偏导数</strong>；结果为二维矩阵时即退化为速记卡的两条规则。</p>
   </div>
 </section>
