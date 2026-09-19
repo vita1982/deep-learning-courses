@@ -489,6 +489,7 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
             <li><strong>分母为向量 \((n, 1)\)</strong>：逆序为 \((1, n)\)，省略前导的 1，只贡献一个维度 \(n\)——如 \(\frac{\partial y}{\partial \mathbf{x}}\) 为 \((1, n)\)，\(\frac{\partial \mathbf{Y}}{\partial \mathbf{x}}\) 为 \((m, l, n)\)；</li>
             <li><strong>分母为矩阵 \((n, k)\)</strong>：逆序为 \((k, n)\)，两个维度都保留——如 \(\frac{\partial y}{\partial \mathbf{X}}\) 为 \((k, n)\)，\(\frac{\partial \mathbf{Y}}{\partial \mathbf{X}}\) 为 \((m, l, k, n)\)（四阶张量）。</li>
         </ul>
+        <p><strong>举个小例子</strong>：\(\mathbf{Y}\) 是 \(2 \times 3\) 矩阵（\(m=2\)，\(l=3\)），对 \(\mathbf{X}\)（\(4 \times 5\) 矩阵，\(n=4\)，\(k=5\)）求导——分子形状 \((2, 3)\)，分母原始形状 \((4, 5)\)、逆序后为 \((5, 4)\)，拼接结果为 \((2, 3, 5, 4)\)，即四阶张量，与上方九种组合总览图的右下角一致。</p>
         <p style="margin-bottom:0;">原则始终不变：<strong>每个"分子分量 × 分母分量"的组合对应一个偏导数</strong>。当结果为二维矩阵时，本规则恰好退化为速记卡的"行数 = 分子分量个数、列数 = 分母分量个数"。</p>
     </div>
 
