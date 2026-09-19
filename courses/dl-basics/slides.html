@@ -168,7 +168,7 @@
 <section>
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 目录</div>
   <div class="slide-title">📋 本讲目录</div>
-  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 线性代数基础：标量与向量</a></li><li><a href="#/11" style="color:#1E40AF;text-decoration:none;">2. 矩阵及其运算</a></li><li><a href="#/20" style="color:#1E40AF;text-decoration:none;">3. GPU 与向量化计算</a></li><li><a href="#/24" style="color:#1E40AF;text-decoration:none;">4. 数据表示与张量</a></li><li><a href="#/29" style="color:#1E40AF;text-decoration:none;">5. 矩阵微积分</a></li><li><a href="#/45" style="color:#1E40AF;text-decoration:none;">6. 自动微分与计算图</a></li><li><a href="#/52" style="color:#1E40AF;text-decoration:none;">7. 正向传播与反向传播</a></li><li><a href="#/60" style="color:#1E40AF;text-decoration:none;">8. 本讲小结与自测</a></li></ol></div>
+  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 线性代数基础：标量与向量</a></li><li><a href="#/11" style="color:#1E40AF;text-decoration:none;">2. 矩阵及其运算</a></li><li><a href="#/20" style="color:#1E40AF;text-decoration:none;">3. GPU 与向量化计算</a></li><li><a href="#/24" style="color:#1E40AF;text-decoration:none;">4. 数据表示与张量</a></li><li><a href="#/29" style="color:#1E40AF;text-decoration:none;">5. 矩阵微积分</a></li><li><a href="#/46" style="color:#1E40AF;text-decoration:none;">6. 自动微分与计算图</a></li><li><a href="#/53" style="color:#1E40AF;text-decoration:none;">7. 正向传播与反向传播</a></li><li><a href="#/61" style="color:#1E40AF;text-decoration:none;">8. 本讲小结与自测</a></li></ol></div>
 </section>
 <section class="section-divider">
   <div class="divider-num">1</div>
@@ -520,7 +520,17 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
 <section class="section-divider">
   <div class="divider-num">5</div>
   <div class="divider-title">矩阵微积分</div>
-  
+  <div class="divider-lede"><p class="chapter-lede">本章按"\(y\) 与 \(\mathbf{x}\) 分别为标量或向量"的四种组合依次展开：二者均为标量时，导数仍为标量（5.1）；其中一方为向量时，导数按分量排列成向量（5.2 梯度、5.3）；双方均为向量时，导数构成矩阵（5.4 雅可比矩阵）；随后给出常用的求导公式速查表（5.5）与反向传播的数学核心——链式法则（5.6）。</p></div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第02讲 深度学习基础 › 5. 矩阵微积分</div>
+  <div class="slide-title">本章结构总览</div>
+  <div class="slide-body">
+<figure>
+        <img src="images/grad_shape_map.jpg" alt="标量与向量四种组合的导数形状对照" loading="lazy" class="img-tall">
+        <figcaption>本章的结构总览：横轴为 \(\mathbf{x}\)（求导的自变量），纵轴为 \(y\)（被求导的函数）。求导可以理解为对每个自变量分量逐一进行敏感度分析：\(y\) 含 \(m\) 个分量、\(\mathbf{x}\) 含 \(n\) 个分量时，至多需要计算 \(m \times n\) 个偏导数——结果为单个数值时是标量，多个结果按序排列成向量，进一步增多则组织成矩阵。</figcaption>
+    </figure>
+  </div>
 </section>
 <section>
   <div class="slide-breadcrumb">第02讲 深度学习基础 › 5. 矩阵微积分</div>
