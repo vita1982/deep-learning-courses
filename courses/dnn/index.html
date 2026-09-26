@@ -781,6 +781,8 @@
         draw();
         var runBtn = document.getElementById('gd-run');
         runBtn.disabled = true;
+        etaEl.disabled = true;
+        w0El.disabled = true;
         animTimer = setInterval(function () {
             w = w - eta * grad(w);
             trail.push(w);
@@ -789,6 +791,8 @@
             if (step >= 20 || Math.abs(w) > 1e6) {
                 stopAnim();
                 runBtn.disabled = false;
+                etaEl.disabled = false;
+                w0El.disabled = false;
                 out.innerHTML = status(trail);
             } else {
                 out.innerHTML = '第 <strong>' + step + '</strong> / 20 步：w = <strong style="color:var(--brand);">' + fmt(w) + '</strong>，f(w) = ' + fmt(f(w));
@@ -801,6 +805,8 @@
     document.getElementById('gd-reset').addEventListener('click', function () {
         stopAnim();
         document.getElementById('gd-run').disabled = false;
+        etaEl.disabled = false;
+        w0El.disabled = false;
         trail = [];
         out.textContent = '点击"运行"开始梯度下降。';
         draw();
