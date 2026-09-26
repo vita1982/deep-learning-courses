@@ -138,22 +138,33 @@
     <h3><span class="sec-no">1.5</span>学习参数与封闭解</h3>
     <p>把所有样本的损失取平均，得到训练损失；学习的目标就是找到使训练损失最小的参数：</p>
     <p>\[\ell(\mathbf{w}, b) = \frac{1}{m} \sum_{i=1}^{m} \frac{1}{2}\left( \mathbf{w}^\top \mathbf{x}^{(i)} + b - y^{(i)} \right)^2, \qquad \mathbf{w}^*, b^* = \underset{\mathbf{w}, b}{\arg\min}\; \ell(\mathbf{w}, b)\]</p>
-    <p>直接对 \(\mathbf{w}\)、\(b\) 两组参数求导不方便，先用一个常用技巧<strong>把偏置 \(b\) 吸收进权重向量</strong>：给每条样本的特征向量末尾追加一个恒为 1 的分量，\(\mathbf{x} \leftarrow [\mathbf{x}, 1]\)；权重向量末尾放入偏置，\(\mathbf{w} \leftarrow [\mathbf{w}, b]\)。此时内积 \(\mathbf{w}^\top\mathbf{x}\) 自动带上 \(+b\)，偏置不再单独存在。把全部 \(m\) 个样本按行堆成样本矩阵 \(\mathbf{X} \in \mathbb{R}^{m \times (d+1)}\)（一行一个样本，最后一列全为 1），标签记为列向量 \(\mathbf{y} \in \mathbb{R}^{m \times 1}\)，合并后的权重 \(\mathbf{w} \in \mathbb{R}^{(d+1) \times 1}\) 的最后一个元素就是原来的 \(b\)；全部样本的预测可一次性写成 \(\hat{\mathbf{y}} = \mathbf{X}\mathbf{w}\)。</p>
-    <p>利用范数平方的矩阵写法 \(\|\mathbf{v}\|^2 = \mathbf{v}^\top\mathbf{v}\)，训练损失可写成紧凑的矩阵形式（\(\frac{1}{m}\) 表示对样本取平均，\(\frac{1}{2}\) 专为求导时消去平方系数而设）：</p>
+    <p>直接对 \(\mathbf{w}\)、\(b\) 两组参数求导不方便，先用一个常用技巧<strong>把偏置 \(b\) 吸收进权重向量</strong>：给每条样本的特征向量末尾追加一个恒为 1 的分量，\(\mathbf{x} \leftarrow [\mathbf{x}, 1]\)；权重向量末尾放入偏置，\(\mathbf{w} \leftarrow [\mathbf{w}, b]\)。此时内积自动带上偏置：</p>
+    <p>\[\mathbf{w}^\top\mathbf{x} = w_1 x_1 + w_2 x_2 + \cdots + w_d x_d + b \cdot 1\]</p>
+    <p>前 \(d\) 项是原来的内积，最后一项正是偏置——偏置不再单独存在，这种合并是无损的。把全部 \(m\) 个样本按行堆成样本矩阵 \(\mathbf{X} \in \mathbb{R}^{m \times (d+1)}\)（一行一个样本，最后一列全为 1），标签记为列向量 \(\mathbf{y} \in \mathbb{R}^{m \times 1}\)，合并后的权重 \(\mathbf{w} \in \mathbb{R}^{(d+1) \times 1}\) 的最后一个元素就是原来的 \(b\)；全部样本的预测可一次性写成 \(\hat{\mathbf{y}} = \mathbf{X}\mathbf{w}\)。</p>
+    <p>\(\mathbf{y} - \mathbf{X}\mathbf{w}\) 是<strong>误差向量</strong>（真实值 − 预测值），其 L2 范数平方衡量全部样本预测与真实的总体偏差。利用范数平方的矩阵写法 \(\|\mathbf{v}\|^2 = \mathbf{v}^\top\mathbf{v}\)，训练损失可写成紧凑的矩阵形式（\(\frac{1}{m}\) 表示对样本取平均，\(\frac{1}{2}\) 专为求导时消去平方系数而设）：</p>
     <p>\[\ell(\mathbf{w}) = \frac{1}{2m}\,\|\mathbf{y} - \mathbf{X}\mathbf{w}\|^2 = \frac{1}{2m}\,(\mathbf{y} - \mathbf{X}\mathbf{w})^\top(\mathbf{y} - \mathbf{X}\mathbf{w})\]</p>
-    <p><strong>第一步：展开。</strong>利用转置的性质 \((\mathbf{A}-\mathbf{B})^\top = \mathbf{A}^\top - \mathbf{B}^\top\) 与 \((\mathbf{A}\mathbf{B})^\top = \mathbf{B}^\top\mathbf{A}^\top\)，分配展开乘积：</p>
-    <p>\[(\mathbf{y} - \mathbf{X}\mathbf{w})^\top(\mathbf{y} - \mathbf{X}\mathbf{w}) = \mathbf{y}^\top\mathbf{y} - \mathbf{y}^\top\mathbf{X}\mathbf{w} - \mathbf{w}^\top\mathbf{X}^\top\mathbf{y} + \mathbf{w}^\top\mathbf{X}^\top\mathbf{X}\mathbf{w}\]</p>
-    <p>注意中间两项互为转置、且各自都是标量（标量的转置等于自身），故 \(\mathbf{y}^\top\mathbf{X}\mathbf{w} = \mathbf{w}^\top\mathbf{X}^\top\mathbf{y}\)，两项合并为 \(-2\,\mathbf{y}^\top\mathbf{X}\mathbf{w}\)。</p>
+    <p><strong>第一步：展开。</strong>把 \(\mathbf{y} - \mathbf{X}\mathbf{w}\) 看成一个整体向量，先按分配律把两个因子分别乘开：</p>
+    <p>\[(\mathbf{y} - \mathbf{X}\mathbf{w})^\top(\mathbf{y} - \mathbf{X}\mathbf{w}) = \mathbf{y}^\top(\mathbf{y} - \mathbf{X}\mathbf{w}) - (\mathbf{X}\mathbf{w})^\top(\mathbf{y} - \mathbf{X}\mathbf{w})\]</p>
+    <p>再利用转置性质 \((\mathbf{A}\mathbf{B})^\top = \mathbf{B}^\top\mathbf{A}^\top\)，即 \((\mathbf{X}\mathbf{w})^\top = \mathbf{w}^\top\mathbf{X}^\top\)，逐项带回并乘开，得到四项矩阵多项式：</p>
+    <p>\[\ell(\mathbf{w}) = \frac{1}{2m}\left( \mathbf{y}^\top\mathbf{y} - \mathbf{y}^\top\mathbf{X}\mathbf{w} - \mathbf{w}^\top\mathbf{X}^\top\mathbf{y} + \mathbf{w}^\top\mathbf{X}^\top\mathbf{X}\mathbf{w} \right)\]</p>
+    <p>注意中间两项 \(\mathbf{y}^\top\mathbf{X}\mathbf{w}\) 与 \(\mathbf{w}^\top\mathbf{X}^\top\mathbf{y}\) 互为转置、且各自都是标量（标量的转置等于自身），其实是同一个标量——记住这一点，下一步求导时两项会自然合并。</p>
     <p><strong>第二步：逐项求梯度</strong>（标量对向量求导，分子布局，结果为行向量）：</p>
-    <ul>
-        <li>\(\mathbf{y}^\top\mathbf{y}\) 不含 \(\mathbf{w}\)，导数为 \(0\)；</li>
-        <li>\(-2\,\mathbf{y}^\top\mathbf{X}\mathbf{w}\) 是"常数行向量 × 自变量向量"的线性型，梯度为 \(-2\,\mathbf{y}^\top\mathbf{X}\)；</li>
-        <li>\(\mathbf{w}^\top\mathbf{X}^\top\mathbf{X}\mathbf{w}\) 是二次型（\(\mathbf{X}^\top\mathbf{X}\) 为对称矩阵），梯度为 \(2\,\mathbf{w}^\top\mathbf{X}^\top\mathbf{X}\)。</li>
-    </ul>
-    <p><strong>第三步：合并。</strong>提取公因子即得梯度公式；形状核验：\(\mathbf{X}\mathbf{w}-\mathbf{y}\) 是 \(m \times 1\) 列向量，转置后为 \(1 \times m\)，再乘 \(\mathbf{X}\)（\(m \times (d+1)\)）得 \(1 \times (d+1)\) 行向量，与分子布局的约定一致 ✓：</p>
-    <p>\[\nabla_{\mathbf{w}}\, \ell(\mathbf{w}) = \frac{1}{2m}\left( -2\,\mathbf{y}^\top\mathbf{X} + 2\,\mathbf{w}^\top\mathbf{X}^\top\mathbf{X} \right) = \frac{1}{m}\,(\mathbf{X}\mathbf{w} - \mathbf{y})^\top \mathbf{X}\]</p>
-    <p><strong>第四步：令梯度为零。</strong>MSE 损失是凸函数（图像如一只碗，没有局部极小），最优点处梯度必为零。\(\frac{1}{m} \neq 0\) 可直接消去；两边取转置（零向量的转置仍是零向量）化为列向量方程，展开整理后两边左乘 \((\mathbf{X}^\top\mathbf{X})^{-1}\)（要求 \(\mathbf{X}^\top\mathbf{X}\) 可逆）：</p>
-    <p>\[(\mathbf{X}\mathbf{w} - \mathbf{y})^\top \mathbf{X} = \mathbf{0} \;\Longleftrightarrow\; \mathbf{X}^\top(\mathbf{X}\mathbf{w} - \mathbf{y}) = \mathbf{0} \;\Longleftrightarrow\; \mathbf{X}^\top\mathbf{X}\,\mathbf{w} = \mathbf{X}^\top\mathbf{y} \;\Longleftrightarrow\; \mathbf{w}^* = (\mathbf{X}^\top\mathbf{X})^{-1} \mathbf{X}^\top \mathbf{y}\]</p>
+    <ol>
+        <li>\(\mathbf{y}^\top\mathbf{y}\)：不含 \(\mathbf{w}\)，导数为 \(0\)；</li>
+        <li>\(-\mathbf{y}^\top\mathbf{X}\mathbf{w}\)："常数行向量 × 自变量向量"的线性型，梯度为 \(-\mathbf{y}^\top\mathbf{X}\)；</li>
+        <li>\(-\mathbf{w}^\top\mathbf{X}^\top\mathbf{y}\)：把 \(\mathbf{X}^\top\mathbf{y}\) 看作常数列向量，仍是线性型，梯度为 \(-(\mathbf{X}^\top\mathbf{y})^\top = -\mathbf{y}^\top\mathbf{X}\)——与第 2 项结果相同（两项本就是同一个标量）；</li>
+        <li>\(\mathbf{w}^\top\mathbf{X}^\top\mathbf{X}\mathbf{w}\)：二次型（\(\mathbf{X}^\top\mathbf{X}\) 为对称矩阵），梯度为 \(2\,\mathbf{w}^\top\mathbf{X}^\top\mathbf{X}\)。</li>
+    </ol>
+    <p><strong>第三步：合并。</strong>四项梯度相加，第 2、3 两项合成 \(-2\,\mathbf{y}^\top\mathbf{X}\)，再提取公因子；形状核验：\(\mathbf{X}\mathbf{w}-\mathbf{y}\) 是 \(m \times 1\) 列向量，转置后为 \(1 \times m\)，再乘 \(\mathbf{X}\)（\(m \times (d+1)\)）得 \(1 \times (d+1)\) 行向量，与分子布局的约定一致 ✓：</p>
+    <p>\[\nabla_{\mathbf{w}}\, \ell(\mathbf{w}) = \frac{1}{2m}\left( 0 - \mathbf{y}^\top\mathbf{X} - \mathbf{y}^\top\mathbf{X} + 2\,\mathbf{w}^\top\mathbf{X}^\top\mathbf{X} \right) = \frac{1}{m}\left( \mathbf{w}^\top\mathbf{X}^\top\mathbf{X} - \mathbf{y}^\top\mathbf{X} \right) = \frac{1}{m}\,(\mathbf{X}\mathbf{w} - \mathbf{y})^\top \mathbf{X}\]</p>
+    <p><strong>第四步：令梯度为零。</strong>MSE 损失是凸函数（图像如一只碗，没有局部极小），最优点处梯度必为零：</p>
+    <p>\[\frac{1}{m}\,(\mathbf{X}\mathbf{w} - \mathbf{y})^\top \mathbf{X} = \mathbf{0}\]</p>
+    <p>\(\frac{1}{m} \neq 0\)，直接消去。接下来的关键一步是<strong>把行向量方程转成列向量方程</strong>：由转置性质 \((\mathbf{A}\mathbf{B})^\top = \mathbf{B}^\top\mathbf{A}^\top\)，有</p>
+    <p>\[(\mathbf{X}\mathbf{w} - \mathbf{y})^\top \mathbf{X} = \left[ \mathbf{X}^\top (\mathbf{X}\mathbf{w} - \mathbf{y}) \right]^\top = \mathbf{0}\]</p>
+    <p>零向量的转置仍是零向量，故上式等价于列向量方程 \(\mathbf{X}^\top(\mathbf{X}\mathbf{w} - \mathbf{y}) = \mathbf{0}\)。分配展开并移项：</p>
+    <p>\[\mathbf{X}^\top\mathbf{X}\,\mathbf{w} - \mathbf{X}^\top\mathbf{y} = \mathbf{0} \;\Longrightarrow\; \mathbf{X}^\top\mathbf{X}\,\mathbf{w} = \mathbf{X}^\top\mathbf{y}\]</p>
+    <p>两边左乘 \((\mathbf{X}^\top\mathbf{X})^{-1}\)（要求 \(\mathbf{X}^\top\mathbf{X}\) 可逆），一步解出最优参数：</p>
+    <p>\[\mathbf{w}^* = (\mathbf{X}^\top\mathbf{X})^{-1} \mathbf{X}^\top \mathbf{y}\]</p>
     <p>所得 \(\mathbf{w}^*\) 内部已包含原来的偏置 \(b\)。这个一步解出最优参数的公式称为<strong>正规方程</strong>（Normal Equation），即线性回归的封闭解（解析解）。</p>
     <div class="callout warn">
         <span class="co-tag">⚠️ 布局对照</span>
