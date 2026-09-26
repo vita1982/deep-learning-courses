@@ -185,7 +185,7 @@
 <section>
   <div class="slide-breadcrumb">第03讲 深度神经网络 › 目录</div>
   <div class="slide-title">📋 本讲目录</div>
-  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 线性回归：从房价预测开始</a></li><li><a href="#/12" style="color:#1E40AF;text-decoration:none;">2. 基础优化：梯度下降</a></li><li><a href="#/19" style="color:#1E40AF;text-decoration:none;">3. softmax 回归：从回归到分类</a></li><li><a href="#/32" style="color:#1E40AF;text-decoration:none;">4. 感知机与多层感知机</a></li><li><a href="#/47" style="color:#1E40AF;text-decoration:none;">5. 模型选择与泛化</a></li><li><a href="#/55" style="color:#1E40AF;text-decoration:none;">6. 正则化：权重衰减与丢弃法</a></li><li><a href="#/60" style="color:#1E40AF;text-decoration:none;">7. 正反向传播与数值稳定性</a></li><li><a href="#/69" style="color:#1E40AF;text-decoration:none;">8. 综合案例与本讲小结</a></li></ol></div>
+  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 线性回归：从房价预测开始</a></li><li><a href="#/13" style="color:#1E40AF;text-decoration:none;">2. 基础优化：梯度下降</a></li><li><a href="#/20" style="color:#1E40AF;text-decoration:none;">3. softmax 回归：从回归到分类</a></li><li><a href="#/33" style="color:#1E40AF;text-decoration:none;">4. 感知机与多层感知机</a></li><li><a href="#/48" style="color:#1E40AF;text-decoration:none;">5. 模型选择与泛化</a></li><li><a href="#/56" style="color:#1E40AF;text-decoration:none;">6. 正则化：权重衰减与丢弃法</a></li><li><a href="#/61" style="color:#1E40AF;text-decoration:none;">7. 正反向传播与数值稳定性</a></li><li><a href="#/70" style="color:#1E40AF;text-decoration:none;">8. 综合案例与本讲小结</a></li></ol></div>
 </section>
 <section class="section-divider">
   <div class="divider-num">1</div>
@@ -250,40 +250,53 @@
   <div class="slide-body">
 <p>把所有样本的损失取平均，得到训练损失；学习的目标就是找到使训练损失最小的参数：</p>
 <p>\[\ell(\mathbf{w}, b) = \frac{1}{m} \sum_{i=1}^{m} \frac{1}{2}\left( \mathbf{w}^\top \mathbf{x}^{(i)} + b - y^{(i)} \right)^2, \qquad \mathbf{w}^*, b^* = \underset{\mathbf{w}, b}{\arg\min}\; \ell(\mathbf{w}, b)\]</p>
-<p>对 \(\mathbf{w}\)、\(b\) 两组参数分别求导不方便，先用技巧<strong>把偏置 \(b\) 吸收进权重向量</strong>：样本特征末尾追加恒为 1 的分量 \(\mathbf{x} \leftarrow [\mathbf{x}, 1]\)，权重末尾放入偏置 \(\mathbf{w} \leftarrow [\mathbf{w}, b]\)，内积 \(\mathbf{w}^\top\mathbf{x}\) 便自动带上 \(+b\)。</p>
-<p>全部 \(m\) 个样本按行堆成样本矩阵 \(\mathbf{X} \in \mathbb{R}^{m \times (d+1)}\)（最后一列全为 1），标签为列向量 \(\mathbf{y}\)，全部预测一次性写成 \(\hat{\mathbf{y}} = \mathbf{X}\mathbf{w}\)。</p>
+<p>对 \(\mathbf{w}\)、\(b\) 两组参数分别求导不方便，先用技巧<strong>把偏置 \(b\) 吸收进权重向量</strong>：特征末尾追加恒为 1 的分量 \(\mathbf{x} \leftarrow [\mathbf{x}, 1]\)，权重末尾放入偏置 \(\mathbf{w} \leftarrow [\mathbf{w}, b]\)，此时内积自动带上偏置：</p>
+<p>\[\mathbf{w}^\top\mathbf{x} = w_1 x_1 + \cdots + w_d x_d + b \cdot 1\]</p>
+<p>前 \(d\) 项是原来的内积，最后一项正是偏置。全部 \(m\) 个样本按行堆成样本矩阵 \(\mathbf{X} \in \mathbb{R}^{m \times (d+1)}\)（最后一列全为 1），全部预测一次性写成 \(\hat{\mathbf{y}} = \mathbf{X}\mathbf{w}\)。</p>
   </div>
 </section>
 <section>
   <div class="slide-breadcrumb">第03讲 深度神经网络 › 1. 线性回归：从房价预测开始</div>
-  <div class="slide-title">1.5 矩阵形式损失与展开</div>
+  <div class="slide-title">1.5 构造矩阵形式损失</div>
   <div class="slide-body">
-<p>用范数平方的矩阵写法 \(\|\mathbf{v}\|^2 = \mathbf{v}^\top\mathbf{v}\)（\(\frac{1}{m}\) 为样本平均，\(\frac{1}{2}\) 专为求导消去平方系数）：</p>
+<p>\(\mathbf{y} - \mathbf{X}\mathbf{w}\) 是<strong>误差向量</strong>（真实值 − 预测值），用 L2 范数平方 \(\|\mathbf{v}\|^2 = \mathbf{v}^\top\mathbf{v}\) 衡量全部样本的总体偏差：</p>
 <p>\[\ell(\mathbf{w}) = \frac{1}{2m}\,\|\mathbf{y} - \mathbf{X}\mathbf{w}\|^2 = \frac{1}{2m}\,(\mathbf{y} - \mathbf{X}\mathbf{w})^\top(\mathbf{y} - \mathbf{X}\mathbf{w})\]</p>
-<p><strong>展开</strong>（转置性质 \((\mathbf{A}-\mathbf{B})^\top = \mathbf{A}^\top-\mathbf{B}^\top\)、\((\mathbf{A}\mathbf{B})^\top = \mathbf{B}^\top\mathbf{A}^\top\)）：</p>
-<p>\[= \frac{1}{2m}\left( \mathbf{y}^\top\mathbf{y} - \mathbf{y}^\top\mathbf{X}\mathbf{w} - \mathbf{w}^\top\mathbf{X}^\top\mathbf{y} + \mathbf{w}^\top\mathbf{X}^\top\mathbf{X}\mathbf{w} \right)\]</p>
-<p>中间两项互为转置且都是标量，标量转置等于自身，故合并为 \(-2\,\mathbf{y}^\top\mathbf{X}\mathbf{w}\)。</p>
+<p>系数 \(\frac{1}{2m}\) 的两层含义：\(\frac{1}{m}\) 对 \(m\) 个样本取平均；\(\frac{1}{2}\) 专为求导而设——平方求导带出的系数 2 恰好被它抵消。</p>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第03讲 深度神经网络 › 1. 线性回归：从房价预测开始</div>
+  <div class="slide-title">1.5 展开损失函数</div>
+  <div class="slide-body">
+<p><strong>第一步：展开。</strong>先按分配律把两个因子分别乘开：</p>
+<p>\[(\mathbf{y} - \mathbf{X}\mathbf{w})^\top(\mathbf{y} - \mathbf{X}\mathbf{w}) = \mathbf{y}^\top(\mathbf{y} - \mathbf{X}\mathbf{w}) - (\mathbf{X}\mathbf{w})^\top(\mathbf{y} - \mathbf{X}\mathbf{w})\]</p>
+<p>再用转置性质 \((\mathbf{X}\mathbf{w})^\top = \mathbf{w}^\top\mathbf{X}^\top\) 逐项带回，得四项矩阵多项式：</p>
+<p>\[\ell(\mathbf{w}) = \frac{1}{2m}\left( \mathbf{y}^\top\mathbf{y} - \mathbf{y}^\top\mathbf{X}\mathbf{w} - \mathbf{w}^\top\mathbf{X}^\top\mathbf{y} + \mathbf{w}^\top\mathbf{X}^\top\mathbf{X}\mathbf{w} \right)\]</p>
+<p>中间两项互为转置且各自都是标量（标量转置等于自身），其实是同一个标量——下一步求导时会自然合并。</p>
   </div>
 </section>
 <section>
   <div class="slide-breadcrumb">第03讲 深度神经网络 › 1. 线性回归：从房价预测开始</div>
   <div class="slide-title">1.5 逐项求梯度并合并</div>
   <div class="slide-body">
-<p><strong>逐项求梯度</strong>（标量对向量求导，分子布局，结果为行向量）：</p>
-<ul>
-        <li>\(\mathbf{y}^\top\mathbf{y}\) 不含 \(\mathbf{w}\)，导数为 \(0\)；</li>
-        <li>\(-2\,\mathbf{y}^\top\mathbf{X}\mathbf{w}\) 为线性型，梯度 \(-2\,\mathbf{y}^\top\mathbf{X}\)；</li>
-        <li>\(\mathbf{w}^\top\mathbf{X}^\top\mathbf{X}\mathbf{w}\) 为二次型（\(\mathbf{X}^\top\mathbf{X}\) 对称），梯度 \(2\,\mathbf{w}^\top\mathbf{X}^\top\mathbf{X}\)。</li>
-    </ul>
-<p><strong>合并</strong>并做形状核验（\((\mathbf{X}\mathbf{w}-\mathbf{y})^\top\)：\(1 \times m\)；乘 \(\mathbf{X}\)：\(m \times (d+1)\)；结果 \(1 \times (d+1)\) 行向量 ✓）：</p>
-<p>\[\nabla_{\mathbf{w}}\, \ell(\mathbf{w}) = \frac{1}{2m}\left( -2\,\mathbf{y}^\top\mathbf{X} + 2\,\mathbf{w}^\top\mathbf{X}^\top\mathbf{X} \right) = \frac{1}{m}\,(\mathbf{X}\mathbf{w} - \mathbf{y})^\top \mathbf{X}\]</p>
+<p><strong>第二步：逐项求梯度</strong>（标量对向量求导，分子布局，结果为行向量）：</p>
+<ol>
+        <li>\(\mathbf{y}^\top\mathbf{y}\)：不含 \(\mathbf{w}\)，导数为 \(0\)；</li>
+        <li>\(-\mathbf{y}^\top\mathbf{X}\mathbf{w}\)：线性型，梯度 \(-\mathbf{y}^\top\mathbf{X}\)；</li>
+        <li>\(-\mathbf{w}^\top\mathbf{X}^\top\mathbf{y}\)：梯度 \(-(\mathbf{X}^\top\mathbf{y})^\top = -\mathbf{y}^\top\mathbf{X}\)，与第 2 项相同（两项本是同一标量）；</li>
+        <li>\(\mathbf{w}^\top\mathbf{X}^\top\mathbf{X}\mathbf{w}\)：二次型（\(\mathbf{X}^\top\mathbf{X}\) 对称），梯度 \(2\,\mathbf{w}^\top\mathbf{X}^\top\mathbf{X}\)。</li>
+    </ol>
+<p><strong>第三步：合并</strong>，第 2、3 项合成 \(-2\,\mathbf{y}^\top\mathbf{X}\)；形状核验：\((\mathbf{X}\mathbf{w}-\mathbf{y})^\top\) 为 \(1 \times m\)，乘 \(\mathbf{X}\)（\(m \times (d+1)\)）得 \(1 \times (d+1)\) 行向量 ✓：</p>
+<p>\[\nabla_{\mathbf{w}}\, \ell(\mathbf{w}) = \frac{1}{2m}\left( 0 - \mathbf{y}^\top\mathbf{X} - \mathbf{y}^\top\mathbf{X} + 2\,\mathbf{w}^\top\mathbf{X}^\top\mathbf{X} \right) = \frac{1}{m}\,(\mathbf{X}\mathbf{w} - \mathbf{y})^\top \mathbf{X}\]</p>
   </div>
 </section>
 <section>
   <div class="slide-breadcrumb">第03讲 深度神经网络 › 1. 线性回归：从房价预测开始</div>
   <div class="slide-title">1.5 正规方程：令梯度为零</div>
   <div class="slide-body">
-<p>MSE 损失是凸函数（无局部极小），最优点处梯度必为零。消去 \(\frac{1}{m}\)，两边取转置化为列向量方程，展开后左乘 \((\mathbf{X}^\top\mathbf{X})^{-1}\)（要求可逆）：</p>
+<p><strong>第四步：令梯度为零。</strong>MSE 损失是凸函数（无局部极小），最优点处梯度必为零。消去 \(\frac{1}{m}\) 后，关键一步是<strong>把行向量方程转成列向量方程</strong>——由 \((\mathbf{A}\mathbf{B})^\top = \mathbf{B}^\top\mathbf{A}^\top\)：</p>
+<p>\[(\mathbf{X}\mathbf{w} - \mathbf{y})^\top \mathbf{X} = \left[ \mathbf{X}^\top (\mathbf{X}\mathbf{w} - \mathbf{y}) \right]^\top = \mathbf{0} \;\Longleftrightarrow\; \mathbf{X}^\top(\mathbf{X}\mathbf{w} - \mathbf{y}) = \mathbf{0}\]</p>
+<p>（零向量的转置仍是零向量。）展开移项，再左乘 \((\mathbf{X}^\top\mathbf{X})^{-1}\)（要求可逆）：</p>
 <p>\[\mathbf{X}^\top\mathbf{X}\,\mathbf{w} = \mathbf{X}^\top\mathbf{y} \;\Longleftrightarrow\; \mathbf{w}^* = (\mathbf{X}^\top\mathbf{X})^{-1} \mathbf{X}^\top \mathbf{y}\]</p>
 <p>所得 \(\mathbf{w}^*\) 内部已包含原来的偏置 \(b\)——这就是<strong>正规方程</strong>（Normal Equation），线性回归的封闭解。</p>
 <div class="callout warn">
