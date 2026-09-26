@@ -1048,9 +1048,9 @@
   <div class="slide-breadcrumb">第03讲 深度神经网络 › 7. 正反向传播与数值稳定性</div>
   <div class="slide-title">7.4 Xavier 初始化：方差为什么取 1/n</div>
   <div class="slide-body">
-<p>设输入 \(x_i\) 零均值、方差相同、相互独立，权重 \(w_i\) 零均值独立采样，则加权和的方差可逐项拆开：</p>
-<p>\[\mathrm{Var}(z) = \sum_{i=1}^{n} \mathrm{Var}(w_i x_i) = n\, \mathrm{Var}(w_i)\, \mathrm{Var}(x_i)\]</p>
-<p>要让输出方差等于输入方差，需 \(n\,\mathrm{Var}(w_i) = 1\)，即 \(\mathrm{Var}(w_i) = \frac{1}{n_{t-1}}\)。反向传播同理要求 \(\frac{1}{n_t}\)，两者难以兼得时取折中 \(\frac{2}{n_{t-1}+n_t}\)。前提是激活函数在 0 附近近似线性（tanh 满足）；ReLU 砍掉一半信号、方差减半，故 He 初始化加倍为 \(\frac{2}{n_{t-1}}\)。</p>
+<p>一个直观的尺度估算：\(z = w_1 x_1 + \cdots + w_n x_n\) 是 \(n\) 个零均值随机项之和。\(n\) 个随机数相加，典型幅度不是放大 \(n\) 倍、而是 \(\sqrt{n}\) 倍（各项正负抵消，像随机游走）。</p>
+<p>要让 \(z\) 与输入保持同一量级，权重的典型幅度按 \(1/\sqrt{n}\) 缩小即可——即采样方差取 \(\frac{1}{n_{t-1}}\)（\(n_{t-1}\) 为输入维度）。</p>
+<p>反向传播时梯度同样逐层传播，要求方差 \(\frac{1}{n_t}\)；前向、反向难以兼得时取折中 \(\frac{2}{n_{t-1}+n_t}\)。ReLU 会置零约一半信号、幅度减弱，故 He 初始化加倍为 \(\frac{2}{n_{t-1}}\)。</p>
   </div>
 </section>
 <section>
