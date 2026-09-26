@@ -222,7 +222,7 @@
             <span class="lab-badge">互动实验</span>
             <div class="lab-title">学习率实验器</div>
             <div class="lab-sub">在 f(w) = w² 上做梯度下降：η = 1 是临界值</div>
-            <div class="lab-hint">调大学习率直到发散，亲身体验"太小""合适""太大"三种情形；点击"运行 20 步"看轨迹</div>
+            <div class="lab-hint">调大学习率直到发散，亲身体验"太小""合适""太大"三种情形；点击"运行 20 步"观看轨迹逐步动起来（每 0.35 秒走一步）</div>
         </div>
         <div class="lab-body">
             <div class="ctl-row">
@@ -768,21 +768,39 @@
         return msg;
     }
 
+    var animTimer = null;
+    function fmt(v) { return Math.abs(v) > 1e4 ? v.toExponential(2) : v.toFixed(4); }
+    function stopAnim() { if (animTimer !== null) { clearInterval(animTimer); animTimer = null; } }
+
     function run() {
+        stopAnim();
         var eta = parseFloat(etaEl.value), w = parseFloat(w0El.value);
+        var step = 0;
         trail = [w];
-        for (var i = 0; i < 20; i++) {
+        out.innerHTML = '起点 w₀ = ' + fmt(w) + '，f(w₀) = ' + fmt(f(w)) + '，开始逐步迭代…';
+        draw();
+        var runBtn = document.getElementById('gd-run');
+        runBtn.disabled = true;
+        animTimer = setInterval(function () {
             w = w - eta * grad(w);
             trail.push(w);
-            if (Math.abs(w) > 1e6) break;
-        }
-        out.innerHTML = status(trail);
-        draw();
+            step++;
+            draw();
+            if (step >= 20 || Math.abs(w) > 1e6) {
+                stopAnim();
+                runBtn.disabled = false;
+                out.innerHTML = status(trail);
+            } else {
+                out.innerHTML = '第 <strong>' + step + '</strong> / 20 步：w = <strong style="color:var(--brand);">' + fmt(w) + '</strong>，f(w) = ' + fmt(f(w));
+            }
+        }, 350);
     }
     etaEl.addEventListener('input', function () { etaV.textContent = parseFloat(etaEl.value).toFixed(2); });
     w0El.addEventListener('input', function () { w0V.textContent = parseFloat(w0El.value).toFixed(1); });
     document.getElementById('gd-run').addEventListener('click', run);
     document.getElementById('gd-reset').addEventListener('click', function () {
+        stopAnim();
+        document.getElementById('gd-run').disabled = false;
         trail = [];
         out.textContent = '点击"运行"开始梯度下降。';
         draw();
