@@ -582,8 +582,8 @@
             <tr><td>别名</td><td>对向量是 \(L^2\) 范数正则化；对权重矩阵则是 Frobenius 范数正则化</td></tr>
         </table>
     </div>
-    <p>对带正则项的目标函数求梯度并代入梯度下降，更新规则变为：</p>
-    <p>\[\mathbf{w}_{t+1} = (1 - \eta\lambda)\, \mathbf{w}_t - \eta\, \nabla_{\mathbf{w}}\, \ell(\mathbf{w}_t, b)\]</p>
+    <p>对带正则项的目标函数求梯度：正则项 \(\frac{\lambda}{2}\|\mathbf{w}\|^2\) 对 \(\mathbf{w}\) 的梯度是 \(\lambda\mathbf{w}\)（逐分量看，\(\frac{\partial}{\partial w_i}\frac{\lambda}{2}\sum_j w_j^2 = \lambda w_i\)）。代入梯度下降更新式（\(\eta\) 为学习率），并合并含 \(\mathbf{w}_t\) 的两项：</p>
+    <p>\[\mathbf{w}_{t+1} = \mathbf{w}_t - \eta\left( \nabla_{\mathbf{w}}\, \ell(\mathbf{w}_t, b) + \lambda\, \mathbf{w}_t \right) = \underbrace{(1 - \eta\lambda)}_{\text{先按比例缩小}}\, \mathbf{w}_t - \eta\, \nabla_{\mathbf{w}}\, \ell(\mathbf{w}_t, b)\]</p>
     <div class="callout key">
         <span class="co-tag">🔑 为什么叫"权重衰减"？</span>
         <p>通常 \(\eta\lambda &lt; 1\)，于是每步更新前权重先乘上一个小于 1 的系数——权重在每一步都被按比例缩小，这就是"衰减"（weight decay）名字的由来。</p>
@@ -591,8 +591,10 @@
 
     <h3><span class="sec-no">6.2</span>丢弃法（dropout）：把噪声注入隐藏层</h3>
     <p>正则化的另一个思路来自"稳健性"：一个好模型在输入发生适度扰动时，输出应该保持稳定。理论表明，给输入加噪声训练等价于 Tikhonov 正则化。丢弃法更进一步——把噪声直接注入内部隐藏层：</p>
-    <p><strong>训练时的 dropout</strong>：以概率 \(p\) 把隐藏层的某些神经元输出随机置 0，其余神经元的输出除以 \((1-p)\) 放大，保证加噪后的期望不变（"没有偏差的噪音"）：\(E[h'] = h\)。这样任何神经元都不能依赖某个特定同伴的存在，网络被迫学到更冗余、更稳健的表示。通常用在全连接层的输出上。</p>
-    <p><strong>推断（预测）时的 dropout</strong>：正则化只在训练时使用。推断阶段关闭 dropout，直接使用完整的确定性网络 \(h' = \operatorname{dropout}(h)\)（恒等输出），保证结果是确定的、可复现的。</p>
+    <p><strong>训练时的 dropout</strong>：对隐藏层的每个神经元输出 \(h_i\)，以概率 \(p\) 随机置 0、以概率 \(1-p\) 保留并除以 \((1-p)\) 放大。写成公式：引入随机变量 \(\xi_i\)（以 \(1-p\) 概率取 1、\(p\) 概率取 0 的伯努利变量），则</p>
+    <p>\[h'_i = \frac{\xi_i}{1 - p}\, h_i \qquad\Longrightarrow\qquad E[h'_i] = (1-p)\cdot\frac{h_i}{1-p} + p \cdot 0 = h_i\]</p>
+    <p>期望不变，所以注入的是"没有偏差的噪声"。于是任何神经元都不能依赖某个特定同伴的存在，网络被迫学到更冗余、更稳健的表示。这种"训练时除以 \(1-p\)、推断时不动"的做法称为 <strong>inverted dropout</strong>（早期写法是训练时不放大、测试时统一乘以 \(1-p\)，二者等价，但前者让推断阶段完全无需改动）。dropout 通常用在全连接层的输出上：隐藏层常用 \(p = 0.5\)，靠近输入层则取更小的 \(p\)。</p>
+    <p><strong>推断（预测）时</strong>：正则化只在训练时使用。推断阶段关闭 dropout，上式退化为恒等映射 \(h' = h\)，即直接使用完整的确定性网络，保证结果是确定的、可复现的。</p>
     <div class="callout try">
         <span class="co-tag">✅ 一句话总结</span>
         <p>权重衰减从"参数大小"上压缩模型容量，dropout 从"网络结构"上随机扰动增强稳健性——两者都是对抗过拟合的常用武器，经常同时使用。</p>
@@ -617,6 +619,13 @@
         <img src="images/comp_graph_sigmoid_gate.jpg" alt="含 sigmoid 门的计算图与反向传播" loading="lazy">
         <figcaption>前向（绿）与反向（红）在一图：sigmoid 门的局部导数有简洁公式 \(\frac{d\sigma}{dx} = (1-\sigma)\sigma = 0.73 \times 0.27 \approx 0.2\)，上游梯度 1.0 经过 sigmoid 门后变为 0.20，再逐节点向前分配。看懂这张图，就看懂了反向传播的全部机制。</figcaption>
     </figure>
+    <p>把这张图读细：<strong>绿色数字是前向传播算出的值，红色数字是反向传播回流的梯度</strong>。前向时，左侧各门依次算出 \(w_0 x_0 + w_1 x_1 + w_2 = 2\times(-1) + (-3)\times(-2) + (-3) = 1\)，sigmoid 输出 \(\sigma(1) = \frac{1}{1+e^{-1}} \approx 0.73\)。反向时从最右端出发（损失对自身的梯度为 1.0），每经过一个门都做"局部导数 × 上游梯度"：</p>
+    <ul>
+        <li><strong>sigmoid 门</strong>：局部导数有简洁公式 \(\frac{d\sigma}{dx} = (1-\sigma)\,\sigma\)（对 \(\sigma(x) = \frac{1}{1+e^{-x}}\) 直接求导、通分整理即得），代入得 \(0.73 \times 0.27 \approx 0.2\)，上游梯度 \(1.0\) 穿过此门变为 \(1.0 \times 0.2 = 0.20\)；</li>
+        <li><strong>加法门</strong>：把上游梯度原样分发给每个输入——\(w_0 x_0\)、\(w_1 x_1\)、\(w_2\) 三项各得 0.20；</li>
+        <li><strong>乘法门</strong>：两个输入"交换取值"再乘以上游梯度——\(w_0\) 收到 \(x_0 \times 0.20 = -0.20\)，\(x_0\) 收到 \(w_0 \times 0.20 = 0.40\)（\(w_1\)、\(x_1\) 同理）。</li>
+    </ul>
+    <p>三条规则——加法门分发、乘法门交换、sigmoid 门用 \((1-\sigma)\sigma\)——就是反向传播在任意计算图上的全部机制；真实网络只是节点更多，玩法完全一样。</p>
 
     <h3><span class="sec-no">7.2</span>层视角的前向与反向传播</h3>
     <p>把粒度从"单个算子"提升到"整个层"，一个 \(L\) 层网络的训练可以概括为：</p>
@@ -656,7 +665,9 @@
         <li><strong>归一化</strong>：批量归一化（BatchNorm）、梯度修剪（gradient clipping）；</li>
         <li><strong>合理的权重初始化 + 激活函数搭配</strong>。</li>
     </ol>
-    <p>第三点里最经典的是 Xavier 初始化。对加权和 \(z = w_1 x_1 + w_2 x_2 + \cdots + w_n x_n\)，若想让输出的方差与输入一致（不放大也不缩小），权重应从均值为 0、方差为 \(\frac{1}{n_{t-1}}\) 的分布中采样（\(n_{t-1}\) 为输入维度）：</p>
+    <p>第三点里最经典的是 Xavier 初始化，它要回答的问题是：每层的权重应该从什么分布采样，才能让信号逐层传播时既不放大也不缩小？设某层的加权和 \(z = w_1 x_1 + w_2 x_2 + \cdots + w_n x_n\)（\(n = n_{t-1}\) 为该层输入维度），假设输入 \(x_i\) 零均值、方差相同且相互独立，权重 \(w_i\) 零均值、独立采样，则方差可以逐项拆开：</p>
+    <p>\[\mathrm{Var}(z) = \sum_{i=1}^{n} \mathrm{Var}(w_i\, x_i) = n\, \mathrm{Var}(w_i)\, \mathrm{Var}(x_i)\]</p>
+    <p>要让输出的方差与输入一致（\(\mathrm{Var}(z) = \mathrm{Var}(x_i)\)，不放大也不缩小），就需要 \(n\, \mathrm{Var}(w_i) = 1\)，即权重应从均值为 0、方差为 \(\frac{1}{n_{t-1}}\) 的分布中采样（正态分布或均匀分布均可，Xavier 原文给出的是均匀分布形式）。反向传播对梯度方差有同样的要求，对应方差 \(\frac{1}{n_t}\)（\(n_t\) 为该层输出维度）；前向、反向两个条件难以同时满足，折中即为 \(\frac{2}{n_{t-1} + n_t}\)。注意这套推导的前提是激活函数在 0 附近近似线性（tanh 满足）；ReLU 会把约一半信号置零、方差减半，所以 He 初始化把方差加倍作补偿：</p>
     <div class="tbl-wrap">
         <table>
             <tr><th>激活函数</th><th>推荐初始化方差</th></tr>
