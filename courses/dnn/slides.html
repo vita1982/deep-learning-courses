@@ -185,7 +185,7 @@
 <section>
   <div class="slide-breadcrumb">第03讲 深度神经网络 › 目录</div>
   <div class="slide-title">📋 本讲目录</div>
-  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 线性回归：从房价预测开始</a></li><li><a href="#/13" style="color:#1E40AF;text-decoration:none;">2. 基础优化：梯度下降</a></li><li><a href="#/20" style="color:#1E40AF;text-decoration:none;">3. softmax 回归：从回归到分类</a></li><li><a href="#/36" style="color:#1E40AF;text-decoration:none;">4. 感知机与多层感知机</a></li><li><a href="#/51" style="color:#1E40AF;text-decoration:none;">5. 模型选择与泛化</a></li><li><a href="#/59" style="color:#1E40AF;text-decoration:none;">6. 正则化：权重衰减与丢弃法</a></li><li><a href="#/64" style="color:#1E40AF;text-decoration:none;">7. 正反向传播与数值稳定性</a></li><li><a href="#/73" style="color:#1E40AF;text-decoration:none;">8. 综合案例与本讲小结</a></li></ol></div>
+  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 线性回归：从房价预测开始</a></li><li><a href="#/13" style="color:#1E40AF;text-decoration:none;">2. 基础优化：梯度下降</a></li><li><a href="#/20" style="color:#1E40AF;text-decoration:none;">3. softmax 回归：从回归到分类</a></li><li><a href="#/36" style="color:#1E40AF;text-decoration:none;">4. 感知机与多层感知机</a></li><li><a href="#/52" style="color:#1E40AF;text-decoration:none;">5. 模型选择与泛化</a></li><li><a href="#/60" style="color:#1E40AF;text-decoration:none;">6. 正则化：权重衰减与丢弃法</a></li><li><a href="#/65" style="color:#1E40AF;text-decoration:none;">7. 正反向传播与数值稳定性</a></li><li><a href="#/74" style="color:#1E40AF;text-decoration:none;">8. 综合案例与本讲小结</a></li></ol></div>
 </section>
 <section class="section-divider">
   <div class="divider-num">1</div>
@@ -670,6 +670,17 @@
   <div class="slide-title">4.3 多层感知机：加一层就能学 XOR</div>
   <div class="slide-body">
 <p>XOR 可以分解为简单逻辑运算的组合：\(y = (x_1\ \text{AND}\ (\text{NOT}\ x_2))\ \text{OR}\ ((\text{NOT}\ x_1)\ \text{AND}\ x_2)\)。每个 NOT / AND / OR 都可以由一个感知机实现——把几个感知机分层连接，让第一层的输出作为第二层的输入，XOR 就迎刃而解。这就是多层感知机（MLP, Multi-Layer Perceptron）的思想来源。</p>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第03讲 深度神经网络 › 4. 感知机与多层感知机</div>
+  <div class="slide-title">4.3 几何视角：两条线组合出 XOR</div>
+  <div class="slide-body">
+<p>隐藏单元 1 画竖线（左侧记 +），隐藏单元 2 画横线（上侧记 +）；两符号<strong>相乘</strong>得 + − − +，乘积为 + 的恰好只有正类点（1、4 号），输出层再对乘积做一次线性分割即可。乘积是非线性运算——这正是 4.5 节"为什么必须是非线性激活函数"的伏笔。</p>
+<figure>
+        <img src="images/xor_mlp_learning.png" alt="多层感知机学习 XOR 的几何示意" loading="lazy">
+        <figcaption>学习 XOR（引自《动手学深度学习》课件）：两条分割线对应两个隐藏单元；符号表的乘积行 + − − + 恰好分出正类；右下为 2-2-1 网络结构。</figcaption>
+    </figure>
   </div>
 </section>
 <section>
