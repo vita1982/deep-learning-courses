@@ -185,7 +185,7 @@
 <section>
   <div class="slide-breadcrumb">第03讲 深度神经网络 › 目录</div>
   <div class="slide-title">📋 本讲目录</div>
-  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 线性回归：从房价预测开始</a></li><li><a href="#/13" style="color:#1E40AF;text-decoration:none;">2. 基础优化：梯度下降</a></li><li><a href="#/20" style="color:#1E40AF;text-decoration:none;">3. softmax 回归：从回归到分类</a></li><li><a href="#/36" style="color:#1E40AF;text-decoration:none;">4. 感知机与多层感知机</a></li><li><a href="#/52" style="color:#1E40AF;text-decoration:none;">5. 模型选择与泛化</a></li><li><a href="#/60" style="color:#1E40AF;text-decoration:none;">6. 正则化：权重衰减与丢弃法</a></li><li><a href="#/65" style="color:#1E40AF;text-decoration:none;">7. 正反向传播与数值稳定性</a></li><li><a href="#/74" style="color:#1E40AF;text-decoration:none;">8. 综合案例与本讲小结</a></li></ol></div>
+  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 线性回归：从房价预测开始</a></li><li><a href="#/13" style="color:#1E40AF;text-decoration:none;">2. 基础优化：梯度下降</a></li><li><a href="#/20" style="color:#1E40AF;text-decoration:none;">3. softmax 回归：从回归到分类</a></li><li><a href="#/36" style="color:#1E40AF;text-decoration:none;">4. 感知机与多层感知机</a></li><li><a href="#/52" style="color:#1E40AF;text-decoration:none;">5. 模型选择与泛化</a></li><li><a href="#/60" style="color:#1E40AF;text-decoration:none;">6. 正则化：权重衰减与丢弃法</a></li><li><a href="#/65" style="color:#1E40AF;text-decoration:none;">7. 正反向传播与数值稳定性</a></li><li><a href="#/76" style="color:#1E40AF;text-decoration:none;">8. 综合案例与本讲小结</a></li></ol></div>
 </section>
 <section class="section-divider">
   <div class="divider-num">1</div>
@@ -914,7 +914,7 @@
             <tr><td>别名</td><td>对向量是 \(L^2\) 范数正则化；对权重矩阵则是 Frobenius 范数正则化</td></tr>
         </table>
     </div>
-<p>对带正则项的目标函数求梯度并代入梯度下降，更新规则变为：</p>
+<p>正则项 \(\frac{\lambda}{2}\|\mathbf{w}\|^2\) 的梯度是 \(\lambda\mathbf{w}\)，代入梯度下降 \(\mathbf{w}_{t+1} = \mathbf{w}_t - \eta(\nabla\ell + \lambda\mathbf{w}_t)\)（\(\eta\) 为学习率），合并含 \(\mathbf{w}_t\) 的项即得：</p>
 <p>\[\mathbf{w}_{t+1} = (1 - \eta\lambda)\, \mathbf{w}_t - \eta\, \nabla_{\mathbf{w}}\, \ell(\mathbf{w}_t, b)\]</p>
   </div>
 </section>
@@ -933,8 +933,8 @@
   <div class="slide-title">6.2 丢弃法（dropout）：把噪声注入隐藏层</div>
   <div class="slide-body">
 <p>正则化的另一个思路来自"稳健性"：一个好模型在输入发生适度扰动时，输出应该保持稳定。理论表明，给输入加噪声训练等价于 Tikhonov 正则化。丢弃法更进一步——把噪声直接注入内部隐藏层：</p>
-<p><strong>训练时的 dropout</strong>：以概率 \(p\) 把隐藏层的某些神经元输出随机置 0，其余神经元的输出除以 \((1-p)\) 放大，保证加噪后的期望不变（"没有偏差的噪音"）：\(E[h'] = h\)。这样任何神经元都不能依赖某个特定同伴的存在，网络被迫学到更冗余、更稳健的表示。通常用在全连接层的输出上。</p>
-<p><strong>推断（预测）时的 dropout</strong>：正则化只在训练时使用。推断阶段关闭 dropout，直接使用完整的确定性网络 \(h' = \operatorname{dropout}(h)\)（恒等输出），保证结果是确定的、可复现的。</p>
+<p><strong>训练时的 dropout</strong>：每个隐藏单元输出 \(h_i\) 以概率 \(p\) 置 0、以概率 \(1-p\) 保留并除以 \((1-p)\) 放大：\(h'_i = \frac{\xi_i}{1-p}h_i\)（\(\xi_i\) 以 \(1-p\) 概率取 1），故 \(E[h'_i] = h_i\)——期望不变，是"无偏噪声"。这称为 <strong>inverted dropout</strong>，推断时无需改动。任何神经元都不能依赖特定同伴，网络被迫学到更稳健的表示。隐藏层常用 \(p = 0.5\)。</p>
+<p><strong>推断（预测）时</strong>：关闭 dropout，上式退化为恒等映射 \(h' = h\)，使用完整的确定性网络，保证结果确定、可复现。</p>
 <div class="callout try">
         <span class="co-tag">✅ 一句话总结</span>
         <p>权重衰减从"参数大小"上压缩模型容量，dropout 从"网络结构"上随机扰动增强稳健性——两者都是对抗过拟合的常用武器，经常同时使用。</p>
@@ -966,6 +966,18 @@
         <img src="images/comp_graph_sigmoid_gate.jpg" alt="含 sigmoid 门的计算图与反向传播" loading="lazy">
         <figcaption>前向（绿）与反向（红）在一图：sigmoid 门的局部导数有简洁公式 \(\frac{d\sigma}{dx} = (1-\sigma)\sigma = 0.73 \times 0.27 \approx 0.2\)，上游梯度 1.0 经过 sigmoid 门后变为 0.20，再逐节点向前分配。看懂这张图，就看懂了反向传播的全部机制。</figcaption>
     </figure>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第03讲 深度神经网络 › 7. 正反向传播与数值稳定性</div>
+  <div class="slide-title">7.1 逐节点走一遍：梯度怎么回流</div>
+  <div class="slide-body">
+<p>读图约定：<strong>绿色数字 = 前向值，红色数字 = 反向梯度</strong>。前向：\(w_0 x_0 + w_1 x_1 + w_2 = 2\times(-1)+(-3)\times(-2)+(-3) = 1\)，sigmoid 输出 \(\sigma(1) \approx 0.73\)。反向从最右端梯度 1.0 出发，每过一个门都做"局部导数 × 上游梯度"：</p>
+<ul>
+        <li><strong>sigmoid 门</strong>：\(\frac{d\sigma}{dx} = (1-\sigma)\sigma = 0.73 \times 0.27 \approx 0.2\)，梯度 \(1.0 \to 0.20\)；</li>
+        <li><strong>加法门</strong>：梯度原样分发，\(w_0 x_0\)、\(w_1 x_1\)、\(w_2\) 各得 0.20；</li>
+        <li><strong>乘法门</strong>：输入交换取值再乘上游梯度——\(w_0\) 收 \(x_0 \times 0.20 = -0.20\)，\(x_0\) 收 \(w_0 \times 0.20 = 0.40\)。</li>
+    </ul>
   </div>
 </section>
 <section>
@@ -1030,6 +1042,15 @@
         <li><strong>合理的权重初始化 + 激活函数搭配</strong>。</li>
     </ol>
 <p>第三点里最经典的是 Xavier 初始化。对加权和 \(z = w_1 x_1 + w_2 x_2 + \cdots + w_n x_n\)，若想让输出的方差与输入一致（不放大也不缩小），权重应从均值为 0、方差为 \(\frac{1}{n_{t-1}}\) 的分布中采样（\(n_{t-1}\) 为输入维度）：</p>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第03讲 深度神经网络 › 7. 正反向传播与数值稳定性</div>
+  <div class="slide-title">7.4 Xavier 初始化：方差为什么取 1/n</div>
+  <div class="slide-body">
+<p>设输入 \(x_i\) 零均值、方差相同、相互独立，权重 \(w_i\) 零均值独立采样，则加权和的方差可逐项拆开：</p>
+<p>\[\mathrm{Var}(z) = \sum_{i=1}^{n} \mathrm{Var}(w_i x_i) = n\, \mathrm{Var}(w_i)\, \mathrm{Var}(x_i)\]</p>
+<p>要让输出方差等于输入方差，需 \(n\,\mathrm{Var}(w_i) = 1\)，即 \(\mathrm{Var}(w_i) = \frac{1}{n_{t-1}}\)。反向传播同理要求 \(\frac{1}{n_t}\)，两者难以兼得时取折中 \(\frac{2}{n_{t-1}+n_t}\)。前提是激活函数在 0 附近近似线性（tanh 满足）；ReLU 砍掉一半信号、方差减半，故 He 初始化加倍为 \(\frac{2}{n_{t-1}}\)。</p>
   </div>
 </section>
 <section>
