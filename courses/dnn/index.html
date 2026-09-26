@@ -111,8 +111,8 @@
     <p><strong>假设 2：售价是关键因素的加权总和</strong>——估计价格 \(\hat{y} = w_1 x_1 + w_2 x_2 + w_3 x_3 + b\)，其中权重 \(w_1, w_2, w_3\) 和偏差 \(b\) 稍后通过数据确定。权重为正表示该因素抬升房价，权重越大影响越强。</p>
 
     <h3><span class="sec-no">1.2</span>线性方法就是一个单层神经网络</h3>
-    <p>把上面的模型推广到 \(n\) 维输入：线性方法有 \(n\) 个权重和一个偏差，输出是输入的加权总和：</p>
-    <p>\[\mathbf{x} = [x_1, x_2, \ldots, x_n]^\top, \quad \mathbf{w} = [w_1, w_2, \ldots, w_n]^\top, \quad \hat{y} = w_1 x_1 + w_2 x_2 + \cdots + w_n x_n + b = \mathbf{w}^\top \mathbf{x} + b\]</p>
+    <p>把上面的模型推广到 \(d\) 维输入：线性方法有 \(d\) 个权重和一个偏差，输出是输入的加权总和：</p>
+    <p>\[\mathbf{x} = [x_1, x_2, \ldots, x_d]^\top, \quad \mathbf{w} = [w_1, w_2, \ldots, w_d]^\top, \quad \hat{y} = w_1 x_1 + w_2 x_2 + \cdots + w_d x_d + b = \mathbf{w}^\top \mathbf{x} + b\]</p>
     <p>把这个计算画成网络图，你会发现它就是一个单层神经网络：</p>
     <figure>
         <img src="images/single_layer_nn.jpg" alt="线性回归等价于单层神经网络" loading="lazy">
