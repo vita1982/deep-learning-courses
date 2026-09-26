@@ -352,10 +352,18 @@
     <h3><span class="sec-no">3.6</span>逻辑回归：二分类的特例</h3>
     <p>逻辑回归（Logistic Regression）是 softmax 回归在二分类下的特例：用 sigmoid 函数把线性输出压缩到 \((0, 1)\) 区间，解释为"属于正类的概率"，再用交叉熵（对数损失）训练：</p>
     <p>\[z = \mathbf{w}^\top \mathbf{x} + b, \qquad \hat{y} = \sigma(z) = \frac{1}{1 + e^{-z}}, \qquad \ell(y, \hat{y}) = -\left[ y \log \hat{y} + (1-y) \log (1 - \hat{y}) \right]\]</p>
+    <p>三个部件各司其职：线性得分 \(z\) 与线性回归完全一样，是权重与特征的加权求和，可取任意实数；sigmoid 函数把任意实数压缩到 \((0, 1)\)，输出 \(\hat{y}\) 解释为样本属于正类的<strong>概率</strong>——\(\hat{y} > 0.5\) 判为正类，\(\hat{y} < 0.5\) 判为负类；二元交叉熵衡量预测概率与真实标签 \(y\)（取值 0 或 1）的差距，训练目标就是最小化它。</p>
     <figure>
         <img src="images/logistic_neuron.jpg" alt="逻辑回归神经元结构" loading="lazy">
         <figcaption>逻辑回归的计算单元：输入加权和 \(z = \mathbf{w}^\top\mathbf{x} + b\)，再经 sigmoid 得到概率输出 \(a = \hat{y}\)。名字里虽有"回归"，它做的却是分类。</figcaption>
     </figure>
+    <p><strong>一个数值例子：肿瘤良恶性判断。</strong>特征 \(\mathbf{x} = [x_1, x_2]\)（\(x_1\) 为肿瘤大小，\(x_2\) 为细胞密度），标签 \(y=1\) 表示恶性、\(y=0\) 表示良性。设已学到权重 \(\mathbf{w} = [0.3, 0.5]\)、偏置 \(b = -4\)，看三个样本：</p>
+    <ul>
+        <li><strong>样本 1（恶性，\(y=1\)）</strong>：\(\mathbf{x} = [10, 4]\)。线性得分 \(z = 0.3 \times 10 + 0.5 \times 4 - 4 = 1\)；sigmoid 得概率 \(\hat{y} = \sigma(1) = \frac{1}{1 + e^{-1}} \approx 0.731\)，即 73.1% 概率为恶性，判为正类 ✓；损失 \(\ell = -\log(0.731) \approx 0.313\)，损失很小，预测准确。</li>
+        <li><strong>样本 2（良性，\(y=0\)）</strong>：\(\mathbf{x} = [2, 1]\)。\(z = 0.3 \times 2 + 0.5 \times 1 - 4 = -2.9\)；\(\hat{y} = \sigma(-2.9) = \frac{1}{1 + e^{2.9}} \approx 0.052\)，仅 5.2% 概率为恶性，判为负类 ✓；损失 \(\ell = -\log(1 - 0.052) \approx 0.053\)，同样很小。</li>
+        <li><strong>坏预测对照</strong>：若某良性样本（\(y=0\)）被算出 \(\hat{y} = 0.8\)，则 \(\ell = -\log(1 - 0.8) = -\log(0.2) \approx 1.609\)——损失明显变大。这正是交叉熵的特点：<strong>预测越自信地错，惩罚越重</strong>。</li>
+    </ul>
+    <p><strong>要点总结</strong>：① 线性得分 \(z\) 取值范围不限，sigmoid 把它压缩到 \((0, 1)\) 并解释为概率；② 分类判定阈值通常取 0.5；③ 不用平方损失而用交叉熵损失，配合梯度下降训练 \(\mathbf{w}, b\)；④ 逻辑回归属于广义线性模型，其多分类推广就是 softmax 回归。与上一节对照：线性回归输出实数、用平方损失、做回归预测；逻辑回归把线性输出过 sigmoid 得到概率、用交叉熵损失、做二分类。此外，1.5 节的"吸收偏置"技巧在这里同样适用：特征向量末尾追加 1、把 \(b\) 并入 \(\mathbf{w}\)，\(z\) 即可写成纯矩阵内积 \(\mathbf{w}^\top\mathbf{x}\)。</p>
 </section>
 <!-- ==================== 第四章 ==================== -->
 <section class="chapter" id="ch4">
