@@ -681,31 +681,10 @@
 <section class="chapter" id="ch8">
     <div class="chapter-head">
         <span class="chapter-num">8</span>
-        <h2>综合案例与本讲小结</h2>
+        <h2>本讲小结与综合案例</h2>
     </div>
 
-    <h3><span class="sec-no">8.1</span>综合案例：用两隐藏层网络识别 MNIST 手写数字</h3>
-    <figure>
-        <img src="images/mnist_grid.jpg" alt="MNIST 手写数字样本网格" loading="lazy">
-        <figcaption>MNIST 数据集：70,000 张 28×28 灰度手写数字图像，训练/测试按 60,000 : 10,000 划分（Yann LeCun 等收集，深度学习领域的标准基准）。</figcaption>
-    </figure>
-    <p>把本讲的所有零件组装起来：</p>
-    <div class="tbl-wrap">
-        <table>
-            <tr><th>组件</th><th>本案例中的选择</th></tr>
-            <tr><td>输入</td><td>图像展平为 \(\mathbf{X} = [x_1, x_2, \ldots, x_{784}]\)（28 × 28 = 784 维）</td></tr>
-            <tr><td>网络结构</td><td>\(\mathbf{h}_1 = \max(\mathbf{X}\mathbf{W}_1 + \mathbf{b}_1, 0)\)，\(\mathbf{h}_2 = \max(\mathbf{h}_1\mathbf{W}_2 + \mathbf{b}_2, 0)\)，\(\mathbf{h}_3 = \mathbf{h}_2\mathbf{W}_3 + \mathbf{b}_3\)——两个 ReLU 隐藏层 + 线性输出层</td></tr>
-            <tr><td>输出与类别</td><td>10 维输出经 softmax 得概率，\(\hat{y} = \arg\max\)，类别 \(Y \in \{0, 1, \ldots, 9\}\)</td></tr>
-            <tr><td>损失函数</td><td>交叉熵 \(\operatorname{loss} = -\log(\text{真实类别的 softmax 概率})\)</td></tr>
-            <tr><td>优化器</td><td>小批量随机梯度下降（SGD）</td></tr>
-        </table>
-    </div>
-    <div class="callout key">
-        <span class="co-tag">💡 预告</span>
-        <p>这个完整案例将在下次实验课上动手实现——从加载数据、搭建网络到训练评估，全程使用 PyTorch。</p>
-    </div>
-
-    <h3><span class="sec-no">8.2</span>知识要点回顾</h3>
+    <h3><span class="sec-no">8.1</span>知识要点回顾</h3>
     <div class="tbl-wrap">
         <table>
             <tr><th>主题</th><th>必须掌握的内容</th></tr>
@@ -719,7 +698,7 @@
         </table>
     </div>
 
-    <h3><span class="sec-no">8.3</span>课堂自测</h3>
+    <h3><span class="sec-no">8.2</span>课堂自测</h3>
     <div class="quiz">
         <div class="q">Q1. softmax 输出为 [0.05, 0.90, 0.05]，真实类别是第 2 类（独热编码 [0,1,0]）。交叉熵损失是多少？如果模型把 0.90 的概率押在了第 1 类上，损失又会怎样？</div>
         <div class="a">✅ 答案：损失 = \(-\log 0.90 \approx 0.105\)，很小。若押错（真实类概率仅 0.05），损失 = \(-\log 0.05 \approx 3.0\)，是前者的近 30 倍。交叉熵对"自信地犯错"的惩罚极其严厉。</div>
@@ -737,10 +716,111 @@
         <div class="a">✅ 答案：梯度消失——sigmoid 导数最大仅 0.25，50 层连乘后梯度小到浮点数无法有效表示（16 位浮点下即视为 0）。改进：① 换用 ReLU 激活（正区间导数恒为 1）；② 使用 Xavier/He 初始化；③ 加入批量归一化；④ 使用 ResNet 式残差连接，把乘法路径改为加法路径。</div>
     </div>
 
-    <h3><span class="sec-no">8.4</span>下讲预告</h3>
+    <h3><span class="sec-no">8.3</span>下讲预告</h3>
     <div class="callout try">
         <span class="co-tag">📖 下讲预告</span>
         <p>第 04 讲：卷积神经网络（CNN）——为什么全连接网络处理图像会参数爆炸？卷积运算、填充与步幅、多通道、池化层如何让图像识别脱胎换骨。请先复习本讲的隐藏层与反向传播。</p>
+    </div>
+
+    <h3><span class="sec-no">8.4</span>综合案例：用两隐藏层网络识别 MNIST 手写数字</h3>
+    <figure>
+        <img src="images/mnist_grid.jpg" alt="MNIST 手写数字样本网格" loading="lazy">
+        <figcaption>MNIST 数据集：70,000 张 28×28 灰度手写数字图像，训练/测试按 60,000 : 10,000 划分（Yann LeCun 等收集，深度学习领域的标准基准）。</figcaption>
+    </figure>
+    <p>把本讲的所有零件组装起来，完整地走一遍"从数据到模型"的全过程：</p>
+    <div class="tbl-wrap">
+        <table>
+            <tr><th>组件</th><th>本案例中的选择</th></tr>
+            <tr><td>输入</td><td>图像展平为 \(\mathbf{X} = [x_1, x_2, \ldots, x_{784}]\)（28 × 28 = 784 维）</td></tr>
+            <tr><td>网络结构</td><td>\(\mathbf{h}_1 = \max(\mathbf{X}\mathbf{W}_1 + \mathbf{b}_1, 0)\)，\(\mathbf{h}_2 = \max(\mathbf{h}_1\mathbf{W}_2 + \mathbf{b}_2, 0)\)，\(\mathbf{h}_3 = \mathbf{h}_2\mathbf{W}_3 + \mathbf{b}_3\)——两个 ReLU 隐藏层 + 线性输出层</td></tr>
+            <tr><td>输出与类别</td><td>10 维输出经 softmax 得概率，\(\hat{y} = \arg\max\)，类别 \(Y \in \{0, 1, \ldots, 9\}\)</td></tr>
+            <tr><td>损失函数</td><td>交叉熵 \(\operatorname{loss} = -\log(\text{真实类别的 softmax 概率})\)</td></tr>
+            <tr><td>优化器</td><td>小批量随机梯度下降（SGD）</td></tr>
+        </table>
+    </div>
+    <p><strong>实验步骤</strong>（与下面源代码的五个段落一一对应）：</p>
+    <ol>
+        <li><strong>加载并预处理数据</strong>：下载 MNIST，像素值缩放到 \([0,1]\) 再标准化，按小批量打包；</li>
+        <li><strong>搭建网络</strong>：784 → 256（ReLU）→ 128（ReLU）→ 10 的两隐藏层 MLP；</li>
+        <li><strong>定义损失与优化器</strong>：交叉熵损失 + 小批量 SGD；</li>
+        <li><strong>训练循环</strong>：前向传播 → 计算损失 → 清空梯度 → 反向传播 → 更新参数，完整训练集重复 5 轮；</li>
+        <li><strong>测试评估</strong>：在 10,000 张训练时从未见过的图像上计算准确率。</li>
+    </ol>
+    <div class="codecard">
+        <div class="code-label">完整源代码（PyTorch，逐行注释）</div>
+        <pre>import torch
+from torch import nn
+from torch.utils.data import DataLoader
+from torchvision import datasets, transforms
+
+# ===== 第 1 步：加载并预处理数据 =====
+# ToTensor：把 28×28 灰度图转成张量，像素值从 [0,255] 缩放到 [0,1]
+# Normalize：按 MNIST 全数据集的均值 0.1307、标准差 0.3081 做标准化，
+#            让输入以 0 为中心——配合 He 初始化，信号逐层传播不放大不缩小（7.4 节）
+transform = transforms.Compose([
+    transforms.ToTensor(),
+    transforms.Normalize((0.1307,), (0.3081,))
+])
+
+# 首次运行会自动把 MNIST 下载到 ./data 目录
+train_set = datasets.MNIST(root='./data', train=True,  download=True, transform=transform)
+test_set  = datasets.MNIST(root='./data', train=False, download=True, transform=transform)
+
+# DataLoader 按小批量喂数据：训练集每批 64 张、每轮打乱顺序；测试集不需要打乱
+train_loader = DataLoader(train_set, batch_size=64, shuffle=True)
+test_loader  = DataLoader(test_set,  batch_size=256, shuffle=False)
+
+# ===== 第 2 步：搭建两隐藏层网络 =====
+# 结构：784(输入) → 256(ReLU) → 128(ReLU) → 10(各类别分数)
+net = nn.Sequential(
+    nn.Flatten(),                 # 把 28×28 的图像展平成 784 维向量
+    nn.Linear(784, 256),          # 第 1 个全连接层：h1 = W1 x + b1
+    nn.ReLU(),                    # 非线性激活——没有它，多层复合退化为单层（4.5 节）
+    nn.Linear(256, 128),          # 第 2 个全连接层
+    nn.ReLU(),
+    nn.Linear(128, 10)            # 输出层：10 个类别各一个分数（logits）
+)
+# PyTorch 的 Linear 层默认使用 He(Kaiming) 初始化，正好呼应 7.4 节
+
+# ===== 第 3 步：损失函数与优化器 =====
+loss_fn = nn.CrossEntropyLoss()                    # 交叉熵：内部已含 softmax，直接接收 logits
+optimizer = torch.optim.SGD(net.parameters(), lr=0.1)  # 小批量 SGD，学习率 0.1
+
+# ===== 第 4 步：训练循环 =====
+for epoch in range(5):                  # 把 60,000 张训练图完整过 5 遍
+    net.train()                         # 训练模式（本例无 dropout/BN，但应养成习惯）
+    for X, y in train_loader:           # 每轮取一个 batch：X 为 [64,1,28,28]，y 为 [64]
+        y_hat = net(X)                  # ① 前向传播：得 64×10 的分数矩阵
+        loss = loss_fn(y_hat, y)        # ② 交叉熵损失（标量）
+        optimizer.zero_grad()           # ③ 清空上一步累积的梯度（PyTorch 默认累加！）
+        loss.backward()                 # ④ 反向传播：autograd 沿计算图自动求全部梯度（7.1 节）
+        optimizer.step()                # ⑤ 按梯度下降规则更新全部参数
+    print(f'第 {epoch+1} 轮，最后一个 batch 的损失 = {loss.item():.4f}')
+
+# ===== 第 5 步：在测试集上评估 =====
+net.eval()                              # 评估模式
+correct = 0
+with torch.no_grad():                   # 评估不需要梯度，关闭 autograd 省内存、省时间
+    for X, y in test_loader:
+        pred = net(X).argmax(dim=1)     # 取 10 个分数中最大者的下标作为预测类别
+        correct += (pred == y).sum().item()
+print(f'测试准确率 = {correct / len(test_set):.2%}')</pre>
+    </div>
+    <p><strong>逐段解读</strong>——每段代码背后的处理过程与课程知识点的对应关系：</p>
+    <ul>
+        <li><strong>数据预处理</strong>：ToTensor() 把像素从 \([0,255]\) 缩放到 \([0,1]\)；Normalize(0.1307, 0.3081) 按 MNIST 全数据集的统计值做标准化，使输入近似零均值——这正是 7.4 节 Xavier/He 初始化推导的前提假设，两者配合才能保证信号逐层传播时幅度稳定。</li>
+        <li><strong>网络结构</strong>：nn.Flatten() 完成 28×28 → 784 的展平；每个 nn.Linear 就是 4.4 节的矩阵运算 \(\mathbf{W}^\top\mathbf{x} + \mathbf{b}\)。参数量可用 5.5 节的公式顺手核对：\((784+1)\times 256 + (256+1)\times 128 + (128+1)\times 10 = 235{,}146\) 个。</li>
+        <li><strong>交叉熵损失</strong>：nn.CrossEntropyLoss() 内部已包含 softmax 运算（LogSoftmax + NLLLoss），所以网络输出直接给出未归一化的分数（logits）即可，<strong>不要再手动添加 softmax</strong>——合在一起计算在数值上更稳定（3.4 节）。</li>
+        <li><strong>训练循环五件套</strong>：每个 batch 严格按 前向 net(X) → 损失 loss_fn(...) → 清零 optimizer.zero_grad() → 反向 loss.backward() → 更新 optimizer.step() 的顺序执行。其中 zero_grad() 最容易被初学者遗漏：PyTorch 默认把新梯度<strong>累加</strong>到 .grad 上，不清零就会把上一步的梯度混在一起。loss.backward() 就是 7.1 节计算图反向传播的自动化——autograd 沿图逐门执行"局部导数 × 上游梯度"。</li>
+        <li><strong>评估</strong>：net.eval() 切换为评估模式，torch.no_grad() 关闭梯度记录；argmax(dim=1) 取 10 个分数中最大者的下标作为预测类别，与真实标签逐一比对计数，准确率 = 预测正确的张数 / 测试集总张数。</li>
+    </ul>
+    <div class="callout key">
+        <span class="co-tag">📊 预期结果</span>
+        <p>训练 5 轮后，测试准确率通常在 97%–98% 之间，训练损失应逐轮明显下降。若结果远低于此，优先排查三处：是否忘记 zero_grad()、学习率是否过大或过小、训练集是否忘记 shuffle。</p>
+    </div>
+    <div class="callout try">
+        <span class="co-tag">🧪 动手试试</span>
+        <p>在实验课或课后尝试：① 把学习率改为 0.01 / 1.0，观察收敛速度与震荡（呼应 2.1 节的学习率实验器）；② 在两个 ReLU 之后各加一个 nn.Dropout(0.2)，观察训练与测试准确率的差距如何变化（呼应 6.2 节）；③ 把网络改成 1 个或 3 个隐藏层，用 5.5 节的公式先算参数量，再比较准确率。</p>
     </div>
 </section>
 
