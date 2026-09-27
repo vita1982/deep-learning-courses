@@ -1069,55 +1069,26 @@
 </section>
 <section class="section-divider">
   <div class="divider-num">8</div>
-  <div class="divider-title">综合案例与本讲小结</div>
+  <div class="divider-title">本讲小结与综合案例</div>
   
 </section>
 <section>
-  <div class="slide-breadcrumb">第03讲 深度神经网络 › 8. 综合案例与本讲小结</div>
-  <div class="slide-title">8.1 综合案例：用两隐藏层网络识别 MNIST 手写数字</div>
-  <div class="slide-body">
-<figure>
-        <img src="images/mnist_grid.jpg" alt="MNIST 手写数字样本网格" loading="lazy">
-        <figcaption>MNIST 数据集：70,000 张 28×28 灰度手写数字图像，训练/测试按 60,000 : 10,000 划分（Yann LeCun 等收集，深度学习领域的标准基准）。</figcaption>
-    </figure>
-<p>把本讲的所有零件组装起来：</p>
-  </div>
-</section>
-<section>
-  <div class="slide-breadcrumb">第03讲 深度神经网络 › 8. 综合案例与本讲小结</div>
-  <div class="slide-title">8.1 综合案例：用两隐藏层网络识别 MNIST 手写数字</div>
-  <div class="slide-body">
-<table><tr><th>组件</th><th>本案例中的选择</th></tr><tbody><tr><td>输入</td><td>图像展平为 \(\mathbf{X} = [x_1, x_2, \ldots, x_{784}]\)（28 × 28 = 784 维）</td></tr><tr><td>网络结构</td><td>\(\mathbf{h}_1 = \max(\mathbf{X}\mathbf{W}_1 + \mathbf{b}_1, 0)\)，\(\mathbf{h}_2 = \max(\mathbf{h}_1\mathbf{W}_2 + \mathbf{b}_2, 0)\)，\(\mathbf{h}_3 = \mathbf{h}_2\mathbf{W}_3 + \mathbf{b}_3\)——两个 ReLU 隐藏层 + 线性输出层</td></tr><tr><td>输出与类别</td><td>10 维输出经 softmax 得概率，\(\hat{y} = \arg\max\)，类别 \(Y \in \{0, 1, \ldots, 9\}\)</td></tr></tbody></table>
-  </div>
-</section>
-<section>
-  <div class="slide-breadcrumb">第03讲 深度神经网络 › 8. 综合案例与本讲小结</div>
-  <div class="slide-title">8.1 综合案例：用两隐藏层网络识别 MNIST 手写数字</div>
-  <div class="slide-body">
-<table><tr><th>组件</th><th>本案例中的选择</th></tr><tbody><tr><td>损失函数</td><td>交叉熵 \(\operatorname{loss} = -\log(\text{真实类别的 softmax 概率})\)</td></tr><tr><td>优化器</td><td>小批量随机梯度下降（SGD）</td></tr></tbody></table>
-<div class="callout key">
-        <span class="co-tag">💡 预告</span>
-        <p>这个完整案例将在下次实验课上动手实现——从加载数据、搭建网络到训练评估，全程使用 PyTorch。</p>
-    </div>
-  </div>
-</section>
-<section>
-  <div class="slide-breadcrumb">第03讲 深度神经网络 › 8. 综合案例与本讲小结</div>
-  <div class="slide-title">8.2 知识要点回顾</div>
+  <div class="slide-breadcrumb">第03讲 深度神经网络 › 8. 本讲小结与综合案例</div>
+  <div class="slide-title">8.1 知识要点回顾</div>
   <div class="slide-body">
 <table><tr><th>主题</th><th>必须掌握的内容</th></tr><tbody><tr><td>线性回归</td><td>模型 \(\hat{y} = \mathbf{w}^\top\mathbf{x} + b\)；平方损失；封闭解 \((\mathbf{X}^\top\mathbf{X})^{-1}\mathbf{X}^\top\mathbf{y}\)</td></tr><tr><td>优化</td><td>梯度下降公式；学习率与批量大小的权衡；小批量 SGD</td></tr><tr><td>softmax 回归</td><td>softmax 归一化；独热编码；交叉熵为何优于平方损失；逻辑回归是二分类特例</td></tr><tr><td>MLP</td><td>XOR 问题；隐藏层 + 非线性激活的必要性；sigmoid / tanh / ReLU 的特点</td></tr><tr><td>模型选择</td><td>训练误差 vs 泛化误差；验证集纪律；K 折交叉验证；欠拟合/过拟合与模型复杂度</td></tr></tbody></table>
   </div>
 </section>
 <section>
-  <div class="slide-breadcrumb">第03讲 深度神经网络 › 8. 综合案例与本讲小结</div>
-  <div class="slide-title">8.2 知识要点回顾</div>
+  <div class="slide-breadcrumb">第03讲 深度神经网络 › 8. 本讲小结与综合案例</div>
+  <div class="slide-title">8.1 知识要点回顾</div>
   <div class="slide-body">
 <table><tr><th>主题</th><th>必须掌握的内容</th></tr><tbody><tr><td>正则化</td><td>权重衰减的软约束形式与更新规则；dropout 训练开、推断关</td></tr><tr><td>数值稳定性</td><td>梯度爆炸/消失的成因（矩阵连乘）；sigmoid 导数 ≤ 0.25；Xavier/He 初始化</td></tr></tbody></table>
   </div>
 </section>
 <section>
-  <div class="slide-breadcrumb">第03讲 深度神经网络 › 8. 综合案例与本讲小结</div>
-  <div class="slide-title">8.3 课堂自测</div>
+  <div class="slide-breadcrumb">第03讲 深度神经网络 › 8. 本讲小结与综合案例</div>
+  <div class="slide-title">8.2 课堂自测</div>
   <div class="slide-body">
 <div class="quiz">
         <div class="q">Q1. softmax 输出为 [0.05, 0.90, 0.05]，真实类别是第 2 类（独热编码 [0,1,0]）。交叉熵损失是多少？如果模型把 0.90 的概率押在了第 1 类上，损失又会怎样？</div>
@@ -1130,8 +1101,8 @@
   </div>
 </section>
 <section>
-  <div class="slide-breadcrumb">第03讲 深度神经网络 › 8. 综合案例与本讲小结</div>
-  <div class="slide-title">8.3 课堂自测</div>
+  <div class="slide-breadcrumb">第03讲 深度神经网络 › 8. 本讲小结与综合案例</div>
+  <div class="slide-title">8.2 课堂自测</div>
   <div class="slide-body">
 <div class="quiz">
         <div class="q">Q3. 一位同学在训练过程中反复用测试集评估模型并挑选"在测试集上表现最好"的超参数，最后报告了非常漂亮的测试准确率。这个流程错在哪里？</div>
@@ -1144,12 +1115,127 @@
   </div>
 </section>
 <section class="slide-short">
-  <div class="slide-breadcrumb">第03讲 深度神经网络 › 8. 综合案例与本讲小结</div>
-  <div class="slide-title">8.4 下讲预告</div>
+  <div class="slide-breadcrumb">第03讲 深度神经网络 › 8. 本讲小结与综合案例</div>
+  <div class="slide-title">8.3 下讲预告</div>
   <div class="slide-body">
 <div class="callout try">
         <span class="co-tag">📖 下讲预告</span>
         <p>第 04 讲：卷积神经网络（CNN）——为什么全连接网络处理图像会参数爆炸？卷积运算、填充与步幅、多通道、池化层如何让图像识别脱胎换骨。请先复习本讲的隐藏层与反向传播。</p>
+    </div>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第03讲 深度神经网络 › 8. 本讲小结与综合案例</div>
+  <div class="slide-title">8.4 综合案例：两隐藏层网络识别 MNIST</div>
+  <div class="slide-body">
+<figure>
+        <img src="images/mnist_grid.jpg" alt="MNIST 手写数字样本网格" loading="lazy">
+        <figcaption>MNIST 数据集：70,000 张 28×28 灰度手写数字图像，训练/测试按 60,000 : 10,000 划分（Yann LeCun 等收集，深度学习领域的标准基准）。</figcaption>
+    </figure>
+<p>把本讲的所有零件组装起来，完整走一遍"从数据到模型"：</p>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第03讲 深度神经网络 › 8. 本讲小结与综合案例</div>
+  <div class="slide-title">8.4 综合案例：两隐藏层网络识别 MNIST</div>
+  <div class="slide-body">
+<table><tr><th>组件</th><th>本案例中的选择</th></tr><tbody><tr><td>输入</td><td>图像展平为 \(\mathbf{X} = [x_1, x_2, \ldots, x_{784}]\)（28 × 28 = 784 维）</td></tr><tr><td>网络结构</td><td>\(\mathbf{h}_1 = \max(\mathbf{X}\mathbf{W}_1 + \mathbf{b}_1, 0)\)，\(\mathbf{h}_2 = \max(\mathbf{h}_1\mathbf{W}_2 + \mathbf{b}_2, 0)\)，\(\mathbf{h}_3 = \mathbf{h}_2\mathbf{W}_3 + \mathbf{b}_3\)——两个 ReLU 隐藏层 + 线性输出层</td></tr><tr><td>输出与类别</td><td>10 维输出经 softmax 得概率，\(\hat{y} = \arg\max\)，类别 \(Y \in \{0, 1, \ldots, 9\}\)</td></tr></tbody></table>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第03讲 深度神经网络 › 8. 本讲小结与综合案例</div>
+  <div class="slide-title">8.4 综合案例：两隐藏层网络识别 MNIST</div>
+  <div class="slide-body">
+<table><tr><th>组件</th><th>本案例中的选择</th></tr><tbody><tr><td>损失函数</td><td>交叉熵 \(\operatorname{loss} = -\log(\text{真实类别的 softmax 概率})\)</td></tr><tr><td>优化器</td><td>小批量随机梯度下降（SGD）</td></tr></tbody></table>
+<div class="callout key">
+        <span class="co-tag">📊 预期结果</span>
+        <p>训练 5 轮后测试准确率通常在 97%–98%；若不达标，优先排查：忘记 zero_grad()、学习率过大/过小、训练集忘 shuffle。</p>
+    </div>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第03讲 深度神经网络 › 8. 本讲小结与综合案例</div>
+  <div class="slide-title">8.4 实验步骤：五步走完从数据到模型</div>
+  <div class="slide-body">
+<ol>
+        <li><strong>加载并预处理数据</strong>：下载 MNIST，像素缩放到 [0,1] 再标准化，按小批量打包；</li>
+        <li><strong>搭建网络</strong>：784 → 256(ReLU) → 128(ReLU) → 10 的两隐藏层 MLP；</li>
+        <li><strong>定义损失与优化器</strong>：交叉熵损失 + 小批量 SGD；</li>
+        <li><strong>训练循环</strong>：前向 → 损失 → 清梯度 → 反向传播 → 更新参数，共 5 轮；</li>
+        <li><strong>测试评估</strong>：在 10,000 张未见过的图像上计算准确率。</li>
+    </ol>
+<p>参数量顺手核对（5.5 节公式）：\((784{+}1)\times 256 + (256{+}1)\times 128 + (128{+}1)\times 10 = 235{,}146\) 个。</p>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第03讲 深度神经网络 › 8. 本讲小结与综合案例</div>
+  <div class="slide-title">8.4 源代码（上）：数据与网络</div>
+  <div class="slide-body">
+<div class="codecard">
+        <div class="code-label">第 1-2 步：加载数据、搭建网络（PyTorch）</div>
+        <pre>import torch
+from torch import nn
+from torch.utils.data import DataLoader
+from torchvision import datasets, transforms
+
+transform = transforms.Compose([
+    transforms.ToTensor(),                  # 像素 [0,255] → [0,1]
+    transforms.Normalize((0.1307,), (0.3081,))])  # 标准化（MNIST 统计值）
+train_set = datasets.MNIST('./data', train=True,  download=True, transform=transform)
+test_set  = datasets.MNIST('./data', train=False, download=True, transform=transform)
+train_loader = DataLoader(train_set, batch_size=64, shuffle=True)  # 每批64张、打乱
+test_loader  = DataLoader(test_set,  batch_size=256)
+
+net = nn.Sequential(
+    nn.Flatten(),                     # 28×28 → 784 维向量
+    nn.Linear(784, 256), nn.ReLU(),   # 隐藏层 1（Linear 默认 He 初始化）
+    nn.Linear(256, 128), nn.ReLU(),   # 隐藏层 2
+    nn.Linear(128, 10))               # 输出 10 类分数（logits）</pre>
+    </div>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第03讲 深度神经网络 › 8. 本讲小结与综合案例</div>
+  <div class="slide-title">8.4 源代码（下）：训练与评估</div>
+  <div class="slide-body">
+<div class="codecard">
+        <div class="code-label">第 3-5 步：损失、优化器、训练循环、评估</div>
+        <pre>loss_fn = nn.CrossEntropyLoss()   # 内含 softmax，直接接收 logits
+optimizer = torch.optim.SGD(net.parameters(), lr=0.1)
+
+for epoch in range(5):            # 训练集完整过 5 遍
+    net.train()
+    for X, y in train_loader:     # 取一个 batch
+        y_hat = net(X)            # ① 前向传播
+        loss = loss_fn(y_hat, y)  # ② 交叉熵损失
+        optimizer.zero_grad()     # ③ 清梯度（PyTorch 默认累加！）
+        loss.backward()           # ④ 反向传播（autograd 自动求梯度）
+        optimizer.step()          # ⑤ 更新全部参数
+    print(f'第 {epoch+1} 轮, loss = {loss.item():.4f}')
+
+net.eval()
+correct = 0
+with torch.no_grad():             # 评估时关闭梯度记录
+    for X, y in test_loader:
+        correct += (net(X).argmax(dim=1) == y).sum().item()
+print(f'测试准确率 = {correct/len(test_set):.2%}')   # 预期 97%~98%</pre>
+    </div>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第03讲 深度神经网络 › 8. 本讲小结与综合案例</div>
+  <div class="slide-title">8.4 逐段解读：代码背后的知识点</div>
+  <div class="slide-body">
+<ul>
+        <li><strong>预处理</strong>：Normalize 使输入近似零均值——正是 Xavier/He 初始化（7.4 节）的前提；</li>
+        <li><strong>网络</strong>：每个 nn.Linear 就是 4.4 节的 \( \mathbf{W}^\top\mathbf{x} + \mathbf{b} \)；ReLU 提供非线性（4.5 节）；</li>
+        <li><strong>损失</strong>：CrossEntropyLoss 内含 softmax，不要再手动加 softmax，数值更稳定（3.4 节）；</li>
+        <li><strong>训练五件套</strong>：前向 → 损失 → zero_grad → backward → step；backward() 就是 7.1 节计算图反向传播的自动化；</li>
+        <li><strong>评估</strong>：eval() + no_grad() + argmax 取最大分数类别。</li>
+    </ul>
+<div class="callout try">
+        <span class="co-tag">🧪 动手试试</span>
+        <p>① 学习率改 0.01 / 1.0 看收敛与震荡；② ReLU 后加 nn.Dropout(0.2) 看训练/测试差距变化；③ 改隐藏层数，先算参数量再比准确率。</p>
     </div>
   </div>
 </section>
