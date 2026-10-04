@@ -1096,7 +1096,7 @@
   <div class="slide-body">
 <ul>
         <li><strong>网络加深</strong>：VGG16 → VGG19 → MSRANet，并与增强模块路线集成为 ResNet；</li>
-        <li><strong>增强卷积模块功能</strong>：NIN → GoogLeNet → Inception V3/V4；</li>
+        <li><strong>增强卷积模块功能</strong>：NiN → GoogLeNet → Inception V3/V4；</li>
         <li><strong>从分类任务到检测任务</strong>：SPP-Net / R-CNN → Fast R-CNN → Faster R-CNN；</li>
         <li><strong>增加新的功能单元</strong>：Inception V2（BN）、FCN、STNet、CNN+RNN/LSTM。</li>
     </ul>
@@ -1231,7 +1231,7 @@
   <div class="slide-body">
 <figure>
         <img src="images/alexnet_conv1_calc.jpg" alt="AlexNet 首层输出尺寸与参数量核算" loading="lazy">
-        <figcaption>首层核算：\((227-11)/4+1=55\) → 96 个 55×55 特征图；参数量 \((11\times 11\times 3+1)\times 96=35\text{K}\)——填充与步幅公式的实战。</figcaption>
+        <figcaption>首层核算：\((227-11)/4+1=55\) → 96 个 55×55 特征图；参数量 \((11\times 11\times 3+1)\times 96=35\text{K}\)——填充与步幅公式的实战（原论文图标 224，按 227 才能对上 55，此处按 227 核算）。</figcaption>
     </figure>
   </div>
 </section>
@@ -1273,7 +1273,7 @@
 </section>
 <section>
   <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 10. 代表性卷积神经网络</div>
-  <div class="slide-title">10.4 VGG（2014）：用重复的「块」做深网络</div>
+  <div class="slide-title">10.4 VGG（2014）：用重复的"块"做深网络</div>
   <div class="slide-body">
 <p>1 个 7×7 卷积 ≡ 3 个 3×3 卷积（感受野相同），参数量 \(49C^2 \to 27C^2\)，还多两次 ReLU 非线性：</p>
 <figure>
@@ -1284,7 +1284,7 @@
 </section>
 <section>
   <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 10. 代表性卷积神经网络</div>
-  <div class="slide-title">10.4 VGG（2014）：用重复的「块」做深网络</div>
+  <div class="slide-title">10.4 VGG（2014）：用重复的"块"做深网络</div>
   <div class="slide-body">
 <figure>
         <img src="images/vgg_3d.jpg" alt="VGG 网络的 3D 结构图" loading="lazy">
@@ -1341,7 +1341,7 @@
         <img src="images/resnet_block.jpg" alt="残差块：含与不含 1×1 卷积捷径的两种形式，H(x)=F(x)+x" loading="lazy">
         <figcaption>残差块：输入 \(x\) 经跳跃连接与 \(F(x)\) 相加，\(H(x)=F(x)+x\)。</figcaption>
     </figure>
-<p>更深的 ResNet 用 Bottleneck（瓶颈）结构优化残差映射：原始两层 3×3×256×256 卷积，改为 1×1×256×64 → 3×3×64×64 → 1×1×64×256——先用 1×1 卷积降维、再升维，计算量相近但深度大增（用于 ResNet-50/101/152）：</p>
+<p>更深的 ResNet 用 Bottleneck（瓶颈）结构优化残差映射：原始两层 3×3×256×256 卷积，改为 1×1×256×64 → 3×3×64×64 → 1×1×64×256——先用 1×1 卷积降维、再升维——单块计算量大降，整网计算量与浅层普通网络相当而深度大增（用于 ResNet-50/101/152）：</p>
   </div>
 </section>
 <section>
