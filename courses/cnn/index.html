@@ -70,7 +70,7 @@
         d.id = 'dl-chapter-lock';
         d.style.cssText = 'position:fixed;inset:0;z-index:999999;background:#F1F5F9;'
             + 'display:flex;align-items:center;justify-content:center;font-family:Microsoft YaHei,sans-serif;';
-        d.innerHTML = '<div style="background:#fff;border-radius:16px;padding:48px 44px;max-width:520px;width:88vw;box-sizing:border-box;text-align:center;box-shadow:0 10px 40px rgba(15,23,42,.12);"><div style="font-size:44px;">🔒</div><h1 style="margin:14px 0 8px;font-size:22px;color:#1E293B;">第04讲 · 卷积神经网络（CNN）</h1><p style="margin:0 0 8px;font-size:16px;color:#2563EB;font-weight:bold;">本讲尚未开放</p><p style="margin:0 0 24px;font-size:14px;color:#64748B;line-height:1.8;">本讲内容将随课程进度开放，开放前暂时无法阅读。<br>已上过的章节会完整开放，请按课程安排学习。</p><a href="../../index.html" style="display:inline-block;padding:10px 28px;background:#2563EB;color:#fff;text-decoration:none;border-radius:8px;font-size:15px;">返回课程首页</a></div>';
+        d.innerHTML = '<div style="background:#fff;border-radius:16px;padding:48px 44px;max-width:520px;width:88vw;box-sizing:border-box;text-align:center;box-shadow:0 10px 40px rgba(15,23,42,.12);"><div style="font-size:44px;">🔒</div><h1 style="margin:14px 0 8px;font-size:22px;color:#1E293B;">第04讲 · 卷积神经网络</h1><p style="margin:0 0 8px;font-size:16px;color:#2563EB;font-weight:bold;">本讲尚未开放</p><p style="margin:0 0 24px;font-size:14px;color:#64748B;line-height:1.8;">本讲内容将随课程进度开放，开放前暂时无法阅读。<br>已上过的章节会完整开放，请按课程安排学习。</p><a href="../../index.html" style="display:inline-block;padding:10px 28px;background:#2563EB;color:#fff;text-decoration:none;border-radius:8px;font-size:15px;">返回课程首页</a></div>';
         document.body.appendChild(d);
         document.body.style.overflow = 'hidden';
         document.body.style.visibility = 'visible';
@@ -751,8 +751,17 @@
         <li><strong>增加新的功能单元</strong>：Inception V2（BN）、FCN、STNet、CNN+RNN/LSTM。</li>
     </ul>
 
+    <figure>
+        <img src="images/cnn_evolution_tree.jpg" alt="CNN 演化谱系树" loading="lazy">
+        <figcaption>CNN 演化谱系树：从 Hubel &amp; Wiesel、Neocognitron、LeCun1989 到 LeNet 的早期积累，2012 年 AlexNet 实现历史突破后，沿「网络加深」「增强卷积模块」「从分类到检测」「增加新功能单元」四条主线开枝散叶——可与上面的时间轴对照阅读。</figcaption>
+    </figure>
+
     <h3><span class="sec-no">10.2</span>LeNet（1998）：第一个实用的 CNN</h3>
     <p>LeNet 由 Yann LeCun 等人于 1998 年提出（LeCun, Bottou, Bengio, Haffner：Gradient-based learning applied to document recognition），最早成功应用于手写数字识别——邮政编码和银行支票金额的自动读取。它使用的 MNIST 数据集包含居中缩放后的 28×28 灰度图像：60,000 个训练样本、10,000 个测试样本、共 10 类。</p>
+    <figure>
+        <img src="images/mnist_samples.jpg" alt="MNIST 手写数字样本网格" loading="lazy">
+        <figcaption>MNIST 真实样本：居中缩放后的 28×28 灰度手写数字，书写风格差异很大——正是这类「同一类内千差万别」的数据，让手写识别成为早期神经网络的试金石。</figcaption>
+    </figure>
     <figure>
         <img src="images/lenet_arch.jpg" alt="LeNet 架构：卷积-池化-卷积-池化-全连接" loading="lazy">
         <figcaption>LeNet 架构：C1 卷积（6@28×28）→ S2 池化（6@14×14）→ C3 卷积（16@10×10）→ S4 池化（16@5×5）→ 全连接（120 → 84）→ 输出（10）。图中输入按 MNIST 原图 28×28 绘制；经典论文输入为补边后的 32×32（下表按 32×32 核算，两者仅差一圈补边）。</figcaption>
@@ -765,6 +774,10 @@
     <figure>
         <img src="images/lenet_demo.jpg" alt="AT&T LeNet-5 手写数字实时识别演示" loading="lazy">
         <figcaption>AT&amp;T 实验室的 LeNet-5 实时识别演示：左侧为各层特征图，网络对手写数字 "0" 给出正确答案。</figcaption>
+    </figure>
+    <figure>
+        <img src="images/lenet_applications.jpg" alt="LeNet 的真实应用：手写邮编信封与银行支票" loading="lazy">
+        <figcaption>LeNet 的真实商用场景：美国邮政的手写邮编信封自动分拣（左）与银行手写支票金额读取（右）——上世纪 90 年代，全美大量支票经由 LeNet 类系统处理，这是深度学习第一次大规模商业落地。</figcaption>
     </figure>
 
     <h3><span class="sec-no">10.3</span>AlexNet（2012）：引爆深度学习革命</h3>
@@ -780,9 +793,22 @@
         <li><strong>丢弃法（Dropout）</strong>：在两个隐含层之后应用，正则化效果更好、训练更稳定；</li>
         <li><strong>数据增强</strong>：扩充训练数据，提升泛化。</li>
     </ul>
+
+    <figure>
+        <img src="images/data_augmentation.jpg" alt="数据增强示例：随机裁剪、亮度与色调扰动" loading="lazy">
+        <figcaption>数据增强实例：对原图（左上）做随机裁剪（右上）、亮度扰动（左下）、色调扰动（右下）——同一只猫「变」出更多训练样本，让网络见多识广、不过度依赖记忆具体像素。</figcaption>
+    </figure>
+    <figure>
+        <img src="images/alexnet_original.jpg" alt="AlexNet 原始论文的双 GPU 分支架构" loading="lazy">
+        <figcaption>AlexNet 原始论文架构图：输入 224×224×3 后分两路（当年单块 GPU 显存不足，只得用两块 GTX 580 各算一半），经 5 个卷积层（部分层之间跨卡交换信息）后汇合，再接 3 层全连接输出 1000 类。今天的单张显卡即可完整训练，但「分而治之」的工程思想影响深远。</figcaption>
+    </figure>
     <figure>
         <img src="images/alexnet_vs_lenet.jpg" alt="AlexNet 与 LeNet 首层结构对比" loading="lazy">
         <figcaption>输入从 32×32 灰度图变为 3×224×224 彩色图；首层从 5×5 Conv(6) 变为 11×11 Conv(96) stride 4，池化从 2×2 平均池化变为 3×3 最大池化。</figcaption>
+    </figure>
+    <figure>
+        <img src="images/alexnet_conv1_calc.jpg" alt="AlexNet 首层输出尺寸与参数量核算" loading="lazy">
+        <figcaption>首层核算示例：输入 227×227×3，由 \((227-11)/4+1=55\) 得 96 个 55×55 特征图；参数量 \((11\times 11\times 3+1)\times 96=35\text{K}\)——第 5 章填充与步幅公式在真实大网络上的一次实战。</figcaption>
     </figure>
     <p>代价是计算量与参数量的飙升——这也解释了为什么 AlexNet 必须依靠 GPU 训练：</p>
     <figure>
@@ -806,25 +832,64 @@
         <figcaption>VGG（左）用规整的块式结构取代了 AlexNet（右）逐层手工设计的卷积配置。</figcaption>
     </figure>
 
+    <p>为什么坚持 3×3？因为<strong>大核可以分解为小核的堆叠</strong>：1 个 7×7 卷积与 3 个 3×3 卷积的感受野完全相同，但后者的参数量只有 \(3\times(3\times 3)C^2=27C^2\)，远少于前者的 \(7\times 7 C^2=49C^2\)（\(C\) 为通道数），还额外多出两次 ReLU 非线性——更深、更省、表达能力更强：</p>
+    <figure>
+        <img src="images/vgg_kernel_decomp.jpg" alt="大卷积核分解：一个 7x7 等效三个 3x3" loading="lazy">
+        <figcaption>大核分解示意：3 个 3×3 卷积逐层堆叠，感受野与 1 个 7×7 卷积相同（逐层向外各扩 1 像素，共 7 像素），参数量 49\(C^2\) → 27\(C^2\)，ImageNet-2014 亚军的这一设计此后成为网络改造的首选范式。</figcaption>
+    </figure>
+    <figure>
+        <img src="images/vgg_3d.jpg" alt="VGG 网络的 3D 结构图" loading="lazy">
+        <figcaption>VGG 的 3D 结构总览：224×224×3 输入逐块推进，分辨率每块减半（224→112→…→7）、通道数每块翻倍（64→128→256→512→512），最后展平接两层 4096 全连接与 1000 类 softmax——「半分辨率、倍通道」的规整节奏一目了然。</figcaption>
+    </figure>
+
     <h3><span class="sec-no">10.5</span>ResNet（2015）：残差连接驯服超深网络</h3>
     <p>网络继续加深会遇到两个障碍：梯度爆炸/消失，以及网络退化（degradation）——层数增加，训练误差不降反升。ResNet 的核心组件是跳跃连接（Skip / shortcut connection）：</p>
     <ul>
         <li><strong>普通网络（Plain net）</strong>：直接拟合目标映射 \(H(x)\)；</li>
         <li><strong>残差网络（Residual net）</strong>：改为拟合残差映射 \(F(x)\)，令 \(H(x) = F(x) + x\)——学"变化量"比学"完整映射"容易得多，恒等映射只需让 \(F(x)\) 趋近 0。</li>
     </ul>
+
+    <figure>
+        <img src="images/resnet_function_class.jpg" alt="嵌套函数类：加深网络不退化的原理" loading="lazy">
+        <figcaption>从函数类视角看「为什么加深可能变坏」：左图各层函数类互不包含，更大的网络反而可能离最优解 \(f^*\) 更远；右图函数类层层嵌套（\(F_1\subset F_2\subset\cdots\)），加深只会扩大搜索空间、单调逼近 \(f^*\)。残差连接把恒等映射装进函数类，正是让网络满足「嵌套」性质的关键。</figcaption>
+    </figure>
+    <figure>
+        <img src="images/resnet_degradation.jpg" alt="网络退化实验：56层普通网络训练与测试误差均高于20层" loading="lazy">
+        <figcaption>退化现象的铁证（CIFAR-10，普通网络）：56 层的<strong>训练误差</strong>（左）与<strong>测试误差</strong>（右）都高于 20 层——训练误差也高，说明这不是过拟合，而是深层网络本身更难优化。</figcaption>
+    </figure>
+    <figure>
+        <img src="images/resnet_cifar_curves.jpg" alt="ResNet 在 CIFAR-10 上越深越好" loading="lazy">
+        <figcaption>换上残差连接之后：ResNet-20/32/44/56/110 在 CIFAR-10 上误差随深度持续下降（实线训练、虚线测试）——同样的优化器，只是加了跳跃连接，深度就从「负担」变回「红利」。</figcaption>
+    </figure>
     <figure>
         <img src="images/resnet_block.jpg" alt="残差块：含与不含 1×1 卷积捷径的两种形式，H(x)=F(x)+x" loading="lazy">
         <figcaption>残差块：输入 \(x\) 经跳跃连接与 \(F(x)\) 相加，\(H(x)=F(x)+x\)。</figcaption>
+    </figure>
+    <figure>
+        <img src="images/resnet_vs_plain34.jpg" alt="VGG-19、34层普通网络与34层残差网络结构对比" loading="lazy">
+        <figcaption>ResNet 论文经典对比：VGG-19（左）、34 层普通网络（中）、34 层残差网络（右）——主体都是 3×3 卷积堆叠，残差版只多了两种捷径：实线表示恒等捷径（尺寸不变），虚线表示升维捷径（分辨率减半、通道翻倍时用 1×1 卷积对齐）。</figcaption>
     </figure>
     <p>更深的 ResNet 用 Bottleneck（瓶颈）结构优化残差映射：原始两层 3×3×256×256 卷积，改为 1×1×256×64 → 3×3×64×64 → 1×1×64×256——先用 1×1 卷积降维、再升维，计算量相近但深度大增（用于 ResNet-50/101/152）：</p>
     <figure>
         <img src="images/resnet_bottleneck.jpg" alt="all-3x3 与 bottleneck 残差块对比" loading="lazy">
         <figcaption>左：普通残差块（all-3x3）；右：瓶颈块（bottleneck），1×1 卷积负责降维/升维。</figcaption>
     </figure>
+    <figure>
+        <img src="images/resnet_family.jpg" alt="ResNet 家族配置表：18/34/50/101/152 层" loading="lazy">
+        <figcaption>ResNet 家族配置表：18/34/50/101/152 层在 conv2_x～conv5_x 各阶段的块结构与重复次数（如 ResNet-101 的 conv4_x 重复 23 次），输出尺寸从 112×112 降到 7×7，FLOPs 从 1.8G 到 11.3G——50 层以上全部换用瓶颈块控制计算量。</figcaption>
+    </figure>
     <p>残差连接让网络深度从十几层跃升到上百层。讲义给出的典型 CNN 对比一览：</p>
     <figure>
         <img src="images/cnn_comparison.jpg" alt="典型CNN对比表：AlexNet、VGG、GoogLeNet、ResNet" loading="lazy">
         <figcaption>AlexNet（2012，8 层，Top-5 错误率 16.4%）→ VGG（2014，19 层，7.3%）→ GoogLeNet v1（2014，22 层，6.7%）→ ResNet（2015，152 层，3.57%）。</figcaption>
+    </figure>
+    <figure>
+        <img src="images/cnn_full_comparison.jpg" alt="四大经典网络全维度对比表" loading="lazy">
+        <figcaption>四大网络全维度对比：时间、层数、Top-5 错误率之外，还有数据增强、1×1 卷积（NIN）、卷积核大小、全连接层配置、Dropout、LRN、批量归一化（BN）等设计选择的逐项对照——很多「标配」（ReLU、BN、小卷积核）正是在这轮竞赛中被确立的。</figcaption>
+    </figure>
+    <figure>
+        <img src="images/cnn_accuracy_efficiency.jpg" alt="精度与效率气泡图" loading="lazy">
+        <figcaption>精度—效率权衡气泡图：横轴为计算量（G-Ops）、纵轴为 Top-1 精度、气泡大小为参数量。VGG 精度尚可但又重又慢；ResNet 系列以适中的计算量取得最高精度——选网络不能只看精度，还要看部署成本。</figcaption>
     </figure>
 
     <h3><span class="sec-no">10.6</span>NiN：网络中的网络</h3>
@@ -833,6 +898,15 @@
         <li><strong>关键理念</strong>：丢弃末尾的一个或几个稠密层；卷积和池化逐步降低分辨率（如步幅 2 降 4 倍），同时增加通道数量；</li>
         <li><strong>为什么用 1×1 卷积</strong>：具有 n 个通道的极端情况相当于"1×1 图像"——在每个像素位置上施加一个 MLP，正好充当稠密层；推理时池化还能增强平移稳定性。</li>
     </ul>
+
+    <figure>
+        <img src="images/nin_mlpconv.jpg" alt="mlpconv：在卷积特征图上接微型 MLP" loading="lazy">
+        <figcaption>mlpconv 思想图解：普通卷积只做线性加权，NiN 在每个空间位置上再接一个带非线性激活的微型多层感知机，做跨通道的非线性映射——这个「微型 MLP」用 1×1 卷积即可实现。</figcaption>
+    </figure>
+    <figure>
+        <img src="images/conv1x1_mechanism.jpg" alt="1x1 卷积的跨通道加权机制" loading="lazy">
+        <figcaption>1×1 卷积的计算机制：输入每个像素位置是一个 \(C\) 维向量，1×1 卷积核对它做加权和并输出到新通道——空间尺寸完全不变，只重组通道信息。这就是「在像素位置上做全连接」，也是 NiN 能用它替代稠密层的原因。</figcaption>
+    </figure>
     <figure>
         <img src="images/nin_block.jpg" alt="NiN 块：卷积层加两个 1x1 卷积层" loading="lazy">
         <figcaption>NiN 块：1 个普通卷积层（核大小、步幅、填充为超参数）+ 2 个 1×1 卷积层（步幅 1、无填充、输出通道与第一层相同，充当稠密层）。</figcaption>
