@@ -746,7 +746,7 @@
     <p>AlexNet 之后，CNN 沿四条主线发展：</p>
     <ul>
         <li><strong>网络加深</strong>：VGG16 → VGG19 → MSRANet，并与增强模块路线集成为 ResNet；</li>
-        <li><strong>增强卷积模块功能</strong>：NIN → GoogLeNet → Inception V3/V4；</li>
+        <li><strong>增强卷积模块功能</strong>：NiN → GoogLeNet → Inception V3/V4；</li>
         <li><strong>从分类任务到检测任务</strong>：SPP-Net / R-CNN → Fast R-CNN → Faster R-CNN；</li>
         <li><strong>增加新的功能单元</strong>：Inception V2（BN）、FCN、STNet、CNN+RNN/LSTM。</li>
     </ul>
@@ -808,7 +808,7 @@
     </figure>
     <figure>
         <img src="images/alexnet_conv1_calc.jpg" alt="AlexNet 首层输出尺寸与参数量核算" loading="lazy">
-        <figcaption>首层核算示例：输入 227×227×3，由 \((227-11)/4+1=55\) 得 96 个 55×55 特征图；参数量 \((11\times 11\times 3+1)\times 96=35\text{K}\)——第 5 章填充与步幅公式在真实大网络上的一次实战。</figcaption>
+        <figcaption>首层核算示例：输入 227×227×3，由 \((227-11)/4+1=55\) 得 96 个 55×55 特征图；参数量 \((11\times 11\times 3+1)\times 96=35\text{K}\)——第 5 章填充与步幅公式在真实大网络上的一次实战（原论文图中输入标注为 224，但按 227 才能算出 55，此处按 227 核算）。</figcaption>
     </figure>
     <p>代价是计算量与参数量的飙升——这也解释了为什么 AlexNet 必须依靠 GPU 训练：</p>
     <figure>
@@ -869,7 +869,7 @@
         <img src="images/resnet_vs_plain34.jpg" alt="VGG-19、34层普通网络与34层残差网络结构对比" loading="lazy">
         <figcaption>ResNet 论文经典对比：VGG-19（左）、34 层普通网络（中）、34 层残差网络（右）——主体都是 3×3 卷积堆叠，残差版只多了两种捷径：实线表示恒等捷径（尺寸不变），虚线表示升维捷径（分辨率减半、通道翻倍时用 1×1 卷积对齐）。</figcaption>
     </figure>
-    <p>更深的 ResNet 用 Bottleneck（瓶颈）结构优化残差映射：原始两层 3×3×256×256 卷积，改为 1×1×256×64 → 3×3×64×64 → 1×1×64×256——先用 1×1 卷积降维、再升维，计算量相近但深度大增（用于 ResNet-50/101/152）：</p>
+    <p>更深的 ResNet 用 Bottleneck（瓶颈）结构优化残差映射：原始两层 3×3×256×256 卷积，改为 1×1×256×64 → 3×3×64×64 → 1×1×64×256——先用 1×1 卷积降维、再升维——单块计算量大降，整网计算量与浅层普通网络相当而深度大增（用于 ResNet-50/101/152）：</p>
     <figure>
         <img src="images/resnet_bottleneck.jpg" alt="all-3x3 与 bottleneck 残差块对比" loading="lazy">
         <figcaption>左：普通残差块（all-3x3）；右：瓶颈块（bottleneck），1×1 卷积负责降维/升维。</figcaption>
