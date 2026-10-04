@@ -186,7 +186,7 @@
     document.addEventListener('DOMContentLoaded', function () {
         document.body.innerHTML = '<div style="min-height:100vh;display:flex;align-items:center;'
             + 'justify-content:center;background:#F1F5F9;font-family:Microsoft YaHei,sans-serif;visibility:visible;">'
-            + '<div style="background:#fff;border-radius:16px;padding:48px 44px;max-width:520px;width:88vw;box-sizing:border-box;text-align:center;box-shadow:0 10px 40px rgba(15,23,42,.12);"><div style="font-size:44px;">🔒</div><h1 style="margin:14px 0 8px;font-size:22px;color:#1E293B;">第04讲 · 卷积神经网络（CNN）</h1><p style="margin:0 0 8px;font-size:16px;color:#2563EB;font-weight:bold;">本讲尚未开放</p><p style="margin:0 0 24px;font-size:14px;color:#64748B;line-height:1.8;">本讲内容将随课程进度开放，开放前暂时无法阅读。<br>已上过的章节会完整开放，请按课程安排学习。</p><a href="../../index.html" style="display:inline-block;padding:10px 28px;background:#2563EB;color:#fff;text-decoration:none;border-radius:8px;font-size:15px;">返回课程首页</a></div></div>';
+            + '<div style="background:#fff;border-radius:16px;padding:48px 44px;max-width:520px;width:88vw;box-sizing:border-box;text-align:center;box-shadow:0 10px 40px rgba(15,23,42,.12);"><div style="font-size:44px;">🔒</div><h1 style="margin:14px 0 8px;font-size:22px;color:#1E293B;">第04讲 · 卷积神经网络</h1><p style="margin:0 0 8px;font-size:16px;color:#2563EB;font-weight:bold;">本讲尚未开放</p><p style="margin:0 0 24px;font-size:14px;color:#64748B;line-height:1.8;">本讲内容将随课程进度开放，开放前暂时无法阅读。<br>已上过的章节会完整开放，请按课程安排学习。</p><a href="../../index.html" style="display:inline-block;padding:10px 28px;background:#2563EB;color:#fff;text-decoration:none;border-radius:8px;font-size:15px;">返回课程首页</a></div></div>';
         document.body.style.visibility = 'visible';
     });
 })();
@@ -204,7 +204,7 @@
 <section>
   <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 目录</div>
   <div class="slide-title">📋 本讲目录</div>
-  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 回顾：单隐含层网络</a></li><li><a href="#/8" style="color:#1E40AF;text-decoration:none;">2. 卷积神经网络概述</a></li><li><a href="#/13" style="color:#1E40AF;text-decoration:none;">3. 卷积运算基础</a></li><li><a href="#/24" style="color:#1E40AF;text-decoration:none;">4. 二维卷积层</a></li><li><a href="#/27" style="color:#1E40AF;text-decoration:none;">5. 填充与步幅</a></li><li><a href="#/37" style="color:#1E40AF;text-decoration:none;">6. 多输入输出通道</a></li><li><a href="#/45" style="color:#1E40AF;text-decoration:none;">7. 1×1 卷积层</a></li><li><a href="#/50" style="color:#1E40AF;text-decoration:none;">8. 池化层</a></li><li><a href="#/59" style="color:#1E40AF;text-decoration:none;">9. Why CNN？—— 卷积神经网络的核心优势</a></li><li><a href="#/65" style="color:#1E40AF;text-decoration:none;">10. 代表性卷积神经网络</a></li><li><a href="#/85" style="color:#1E40AF;text-decoration:none;">11. 核心公式速查</a></li><li><a href="#/88" style="color:#1E40AF;text-decoration:none;">12. 总结与思考</a></li></ol></div>
+  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 回顾：单隐含层网络</a></li><li><a href="#/8" style="color:#1E40AF;text-decoration:none;">2. 卷积神经网络概述</a></li><li><a href="#/13" style="color:#1E40AF;text-decoration:none;">3. 卷积运算基础</a></li><li><a href="#/24" style="color:#1E40AF;text-decoration:none;">4. 二维卷积层</a></li><li><a href="#/27" style="color:#1E40AF;text-decoration:none;">5. 填充与步幅</a></li><li><a href="#/37" style="color:#1E40AF;text-decoration:none;">6. 多输入输出通道</a></li><li><a href="#/45" style="color:#1E40AF;text-decoration:none;">7. 1×1 卷积层</a></li><li><a href="#/50" style="color:#1E40AF;text-decoration:none;">8. 池化层</a></li><li><a href="#/59" style="color:#1E40AF;text-decoration:none;">9. Why CNN？—— 卷积神经网络的核心优势</a></li><li><a href="#/65" style="color:#1E40AF;text-decoration:none;">10. 代表性卷积神经网络</a></li><li><a href="#/102" style="color:#1E40AF;text-decoration:none;">11. 核心公式速查</a></li><li><a href="#/105" style="color:#1E40AF;text-decoration:none;">12. 总结与思考</a></li></ol></div>
 </section>
 <section class="section-divider">
   <div class="divider-num">1</div>
@@ -1102,11 +1102,31 @@
     </ul>
   </div>
 </section>
+<section>
+  <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 10. 代表性卷积神经网络</div>
+  <div class="slide-title">10.1 CNN 的演化脉络</div>
+  <div class="slide-body">
+<figure>
+        <img src="images/cnn_evolution_tree.jpg" alt="CNN 演化谱系树" loading="lazy">
+        <figcaption>演化谱系树：早期积累（Hubel &amp; Wiesel → Neocognitron → LeCun1989 → LeNet）→ 2012 年 AlexNet 历史突破 → 沿「加深 / 增强模块 / 检测 / 新单元」四条主线开枝散叶。</figcaption>
+    </figure>
+  </div>
+</section>
 <section class="slide-short">
   <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 10. 代表性卷积神经网络</div>
   <div class="slide-title">10.2 LeNet（1998）：第一个实用的 CNN</div>
   <div class="slide-body">
 <p>LeNet 由 Yann LeCun 等人于 1998 年提出（LeCun, Bottou, Bengio, Haffner：Gradient-based learning applied to document recognition），最早成功应用于手写数字识别——邮政编码和银行支票金额的自动读取。它使用的 MNIST 数据集包含居中缩放后的 28×28 灰度图像：60,000 个训练样本、10,000 个测试样本、共 10 类。</p>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 10. 代表性卷积神经网络</div>
+  <div class="slide-title">10.2 LeNet（1998）：第一个实用的 CNN</div>
+  <div class="slide-body">
+<figure>
+        <img src="images/mnist_samples.jpg" alt="MNIST 手写数字样本网格" loading="lazy">
+        <figcaption>MNIST 真实样本：28×28 灰度手写数字，书写风格千差万别——手写识别由此成为早期神经网络的试金石。</figcaption>
+    </figure>
   </div>
 </section>
 <section>
@@ -1142,6 +1162,16 @@
 </section>
 <section>
   <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 10. 代表性卷积神经网络</div>
+  <div class="slide-title">10.2 LeNet（1998）：第一个实用的 CNN</div>
+  <div class="slide-body">
+<figure>
+        <img src="images/lenet_applications.jpg" alt="LeNet 的真实应用：手写邮编信封与银行支票" loading="lazy">
+        <figcaption>LeNet 的真实商用场景：手写邮编信封自动分拣（左）与银行支票金额读取（右）——上世纪 90 年代深度学习第一次大规模商业落地。</figcaption>
+    </figure>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 10. 代表性卷积神经网络</div>
   <div class="slide-title">10.3 AlexNet（2012）：引爆深度学习革命</div>
   <div class="slide-body">
 <p>2012 年，AlexNet 以巨大优势赢得 ImageNet 竞赛，让全世界重新认识了深度学习。它面对的 ImageNet 数据集（2010）比 MNIST 大了好几个数量级：</p>
@@ -1169,10 +1199,40 @@
   <div class="slide-title">10.3 AlexNet（2012）：引爆深度学习革命</div>
   <div class="slide-body">
 <figure>
+        <img src="images/data_augmentation.jpg" alt="数据增强示例：随机裁剪、亮度与色调扰动" loading="lazy">
+        <figcaption>数据增强：原图（左上）经随机裁剪（右上）、亮度扰动（左下）、色调扰动（右下）「变」出更多样本，提升泛化。</figcaption>
+    </figure>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 10. 代表性卷积神经网络</div>
+  <div class="slide-title">10.3 AlexNet（2012）：引爆深度学习革命</div>
+  <div class="slide-body">
+<figure>
         <img src="images/alexnet_vs_lenet.jpg" alt="AlexNet 与 LeNet 首层结构对比" loading="lazy">
         <figcaption>输入从 32×32 灰度图变为 3×224×224 彩色图；首层从 5×5 Conv(6) 变为 11×11 Conv(96) stride 4，池化从 2×2 平均池化变为 3×3 最大池化。</figcaption>
     </figure>
 <p>代价是计算量与参数量的飙升——这也解释了为什么 AlexNet 必须依靠 GPU 训练：</p>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 10. 代表性卷积神经网络</div>
+  <div class="slide-title">10.3 AlexNet（2012）：引爆深度学习革命</div>
+  <div class="slide-body">
+<figure>
+        <img src="images/alexnet_original.jpg" alt="AlexNet 原始论文的双 GPU 分支架构" loading="lazy">
+        <figcaption>AlexNet 原版架构：输入 224×224×3 分两路（当年单卡显存不足，两块 GTX 580 各算一半），5 个卷积层后汇合，再接 3 层全连接输出 1000 类。</figcaption>
+    </figure>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 10. 代表性卷积神经网络</div>
+  <div class="slide-title">10.3 AlexNet（2012）：引爆深度学习革命</div>
+  <div class="slide-body">
+<figure>
+        <img src="images/alexnet_conv1_calc.jpg" alt="AlexNet 首层输出尺寸与参数量核算" loading="lazy">
+        <figcaption>首层核算：\((227-11)/4+1=55\) → 96 个 55×55 特征图；参数量 \((11\times 11\times 3+1)\times 96=35\text{K}\)——填充与步幅公式的实战。</figcaption>
+    </figure>
   </div>
 </section>
 <section>
@@ -1211,6 +1271,27 @@
     </figure>
   </div>
 </section>
+<section>
+  <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 10. 代表性卷积神经网络</div>
+  <div class="slide-title">10.4 VGG（2014）：用重复的「块」做深网络</div>
+  <div class="slide-body">
+<p>1 个 7×7 卷积 ≡ 3 个 3×3 卷积（感受野相同），参数量 \(49C^2 \to 27C^2\)，还多两次 ReLU 非线性：</p>
+<figure>
+        <img src="images/vgg_kernel_decomp.jpg" alt="大卷积核分解：一个 7x7 等效三个 3x3" loading="lazy">
+        <figcaption>大核分解：3 个 3×3 卷积堆叠的感受野与 1 个 7×7 相同——更深、更省、表达能力更强，此后成为网络改造的首选范式。</figcaption>
+    </figure>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 10. 代表性卷积神经网络</div>
+  <div class="slide-title">10.4 VGG（2014）：用重复的「块」做深网络</div>
+  <div class="slide-body">
+<figure>
+        <img src="images/vgg_3d.jpg" alt="VGG 网络的 3D 结构图" loading="lazy">
+        <figcaption>VGG 3D 结构总览：分辨率每块减半（224→…→7）、通道数每块翻倍（64→…→512），最后接全连接输出 1000 类——「半分辨率、倍通道」节奏规整。</figcaption>
+    </figure>
+  </div>
+</section>
 <section class="slide-short">
   <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 10. 代表性卷积神经网络</div>
   <div class="slide-title">10.5 ResNet（2015）：残差连接驯服超深网络</div>
@@ -1220,6 +1301,36 @@
         <li><strong>普通网络（Plain net）</strong>：直接拟合目标映射 \(H(x)\)；</li>
         <li><strong>残差网络（Residual net）</strong>：改为拟合残差映射 \(F(x)\)，令 \(H(x) = F(x) + x\)——学"变化量"比学"完整映射"容易得多，恒等映射只需让 \(F(x)\) 趋近 0。</li>
     </ul>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 10. 代表性卷积神经网络</div>
+  <div class="slide-title">10.5 ResNet（2015）：残差连接驯服超深网络</div>
+  <div class="slide-body">
+<figure>
+        <img src="images/resnet_function_class.jpg" alt="嵌套函数类：加深网络不退化的原理" loading="lazy">
+        <figcaption>为什么加深可能变坏：左图函数类互不包含，更深反而可能离 \(f^*\) 更远；右图层层嵌套（\(F_1\subset F_2\subset\cdots\)），加深单调逼近 \(f^*\)。残差连接让网络满足「嵌套」性质。</figcaption>
+    </figure>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 10. 代表性卷积神经网络</div>
+  <div class="slide-title">10.5 ResNet（2015）：残差连接驯服超深网络</div>
+  <div class="slide-body">
+<figure>
+        <img src="images/resnet_degradation.jpg" alt="网络退化实验：56层普通网络训练与测试误差均高于20层" loading="lazy">
+        <figcaption>退化的铁证（CIFAR-10，普通网络）：56 层训练误差（左）与测试误差（右）都高于 20 层——不是过拟合，而是深层网络更难优化。</figcaption>
+    </figure>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 10. 代表性卷积神经网络</div>
+  <div class="slide-title">10.5 ResNet（2015）：残差连接驯服超深网络</div>
+  <div class="slide-body">
+<figure>
+        <img src="images/resnet_cifar_curves.jpg" alt="ResNet 在 CIFAR-10 上越深越好" loading="lazy">
+        <figcaption>加了残差连接：ResNet-20→110 误差随深度持续下降（实线训练、虚线测试）——深度从「负担」变回「红利」。</figcaption>
+    </figure>
   </div>
 </section>
 <section>
@@ -1238,10 +1349,30 @@
   <div class="slide-title">10.5 ResNet（2015）：残差连接驯服超深网络</div>
   <div class="slide-body">
 <figure>
+        <img src="images/resnet_vs_plain34.jpg" alt="VGG-19、34层普通网络与34层残差网络结构对比" loading="lazy">
+        <figcaption>VGG-19（左）/ 34 层普通网络（中）/ 34 层残差网络（右）：同样的 3×3 卷积骨架，只加实线（恒等）与虚线（升维）两种捷径。</figcaption>
+    </figure>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 10. 代表性卷积神经网络</div>
+  <div class="slide-title">10.5 ResNet（2015）：残差连接驯服超深网络</div>
+  <div class="slide-body">
+<figure>
         <img src="images/resnet_bottleneck.jpg" alt="all-3x3 与 bottleneck 残差块对比" loading="lazy">
         <figcaption>左：普通残差块（all-3x3）；右：瓶颈块（bottleneck），1×1 卷积负责降维/升维。</figcaption>
     </figure>
 <p>残差连接让网络深度从十几层跃升到上百层。讲义给出的典型 CNN 对比一览：</p>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 10. 代表性卷积神经网络</div>
+  <div class="slide-title">10.5 ResNet（2015）：残差连接驯服超深网络</div>
+  <div class="slide-body">
+<figure>
+        <img src="images/resnet_family.jpg" alt="ResNet 家族配置表：18/34/50/101/152 层" loading="lazy">
+        <figcaption>ResNet 家族：18/34/50/101/152 层各阶段块数与 FLOPs（1.8G~11.3G）；50 层以上全部换用瓶颈块控制计算量。</figcaption>
+    </figure>
   </div>
 </section>
 <section>
@@ -1254,6 +1385,26 @@
     </figure>
   </div>
 </section>
+<section>
+  <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 10. 代表性卷积神经网络</div>
+  <div class="slide-title">10.5 ResNet（2015）：残差连接驯服超深网络</div>
+  <div class="slide-body">
+<figure>
+        <img src="images/cnn_full_comparison.jpg" alt="四大经典网络全维度对比表" loading="lazy">
+        <figcaption>全维度对比：层数、Top-5 错误率、数据增强、1×1 卷积、卷积核大小、全连接配置、Dropout、LRN、BN——许多「标配」正是在这轮竞赛中确立的。</figcaption>
+    </figure>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 10. 代表性卷积神经网络</div>
+  <div class="slide-title">10.5 ResNet（2015）：残差连接驯服超深网络</div>
+  <div class="slide-body">
+<figure>
+        <img src="images/cnn_accuracy_efficiency.jpg" alt="精度与效率气泡图" loading="lazy">
+        <figcaption>精度—效率权衡：横轴计算量、纵轴 Top-1 精度、气泡大小为参数量。VGG 又重又慢，ResNet 以适中算力取得最高精度——选型还要看部署成本。</figcaption>
+    </figure>
+  </div>
+</section>
 <section class="slide-short">
   <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 10. 代表性卷积神经网络</div>
   <div class="slide-title">10.6 NiN：网络中的网络</div>
@@ -1263,6 +1414,26 @@
         <li><strong>关键理念</strong>：丢弃末尾的一个或几个稠密层；卷积和池化逐步降低分辨率（如步幅 2 降 4 倍），同时增加通道数量；</li>
         <li><strong>为什么用 1×1 卷积</strong>：具有 n 个通道的极端情况相当于"1×1 图像"——在每个像素位置上施加一个 MLP，正好充当稠密层；推理时池化还能增强平移稳定性。</li>
     </ul>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 10. 代表性卷积神经网络</div>
+  <div class="slide-title">10.6 NiN：网络中的网络</div>
+  <div class="slide-body">
+<figure>
+        <img src="images/nin_mlpconv.jpg" alt="mlpconv：在卷积特征图上接微型 MLP" loading="lazy">
+        <figcaption>mlpconv：普通卷积只做线性加权，NiN 在每个空间位置再接一个带非线性的微型 MLP 做跨通道非线性映射——用 1×1 卷积即可实现。</figcaption>
+    </figure>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 10. 代表性卷积神经网络</div>
+  <div class="slide-title">10.6 NiN：网络中的网络</div>
+  <div class="slide-body">
+<figure>
+        <img src="images/conv1x1_mechanism.jpg" alt="1x1 卷积的跨通道加权机制" loading="lazy">
+        <figcaption>1×1 卷积机制：每个像素位置的 \(C\) 维向量做加权和输出到新通道——空间尺寸不变，只重组通道信息，即「在像素位置上做全连接」。</figcaption>
+    </figure>
   </div>
 </section>
 <section>
