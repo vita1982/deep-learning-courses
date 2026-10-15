@@ -1151,7 +1151,7 @@ test_loader  = DataLoader(test_set,  batch_size=256)
 
 net = nn.Sequential(
     nn.Flatten(),                     # 28×28 → 784 维向量
-    nn.Linear(784, 256), nn.ReLU(),   # 隐藏层 1（Linear 默认 He 初始化）
+    nn.Linear(784, 256), nn.ReLU(),   # 隐藏层 1
     nn.Linear(256, 128), nn.ReLU(),   # 隐藏层 2
     nn.Linear(128, 10))               # 输出 10 类分数（logits）</pre>
     </div>
@@ -1205,11 +1205,11 @@ print(f'测试准确率 = {correct/len(test_set):.2%}')   # 预期 97%~98%</pre>
 </div>
 </div>
 <div class="slide-hint">←→ 翻页 · 双击图片放大 · P 画笔标注 · F 全屏 · Esc 总览</div>
-<!-- DL-SECVIS:BEGIN upto=4 -->
+<!-- DL-SECVIS:BEGIN upto=8 -->
 <script>
-/* 本讲部分开放：仅显示前 4 节的幻灯片（scripts/set_section_visibility.py） */
+/* 本讲部分开放：仅显示前 8 节的幻灯片（scripts/set_section_visibility.py） */
 (function () {
-    var UPTO = 4;
+    var UPTO = 8;
     var container = document.querySelector('.reveal .slides');
     if (!container) return;
     var cut = false;
