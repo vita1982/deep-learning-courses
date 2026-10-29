@@ -665,12 +665,25 @@
     </div>
 
     <h3><span class="sec-no">8.4</span>平均池化（Average Pooling）</h3>
+    <p>平均池化与最大池化是同一框架下的两种选择：<strong>窗口、步幅、填充、通道的规则完全相同</strong>，唯一区别是把窗口内的聚合方式从"取最大"换成"取平均"。它同样没有任何可学习参数。</p>
+    <p>用 8.2 节的同一个 2×2 窗口亲手算一遍，对比两种池化的结果：</p>
+    <div class="tbl-wrap">
+        <table>
+            <tr><th>窗口内容</th><th>最大池化</th><th>平均池化</th></tr>
+            <tr><td style="font-family:Consolas,monospace;">0&nbsp;&nbsp;1<br>3&nbsp;&nbsp;4</td><td>max(0, 1, 3, 4) = <strong>4</strong></td><td>(0+1+3+4) ÷ 4 = <strong>2.0</strong></td></tr>
+        </table>
+    </div>
+    <p>同一个窗口，最大池化只保留最强信号 4，平均池化给出整体水平 2.0——这就是两者"性格"的差异：</p>
     <div class="tbl-wrap">
         <table>
             <tr><th>池化类型</th><th>操作</th><th>特点</th></tr>
-            <tr><td>最大池化</td><td>取窗口最大值</td><td>保留最强模式信号，更常用</td></tr>
-            <tr><td>平均池化</td><td>取窗口平均值</td><td>更平滑，保留整体分布信息</td></tr>
+            <tr><td>最大池化</td><td>取窗口最大值</td><td>突出边缘、纹理等最强信号，分类任务中最常用</td></tr>
+            <tr><td>平均池化</td><td>取窗口平均值</td><td>更平滑，保留整体强度分布，适合需要全局信息的场合</td></tr>
         </table>
+    </div>
+    <div class="callout key">
+        <span class="co-tag">🔑 极端形式：全局平均池化</span>
+        <p>把窗口放大到整张特征图，每个通道取一个平均值——每个通道只剩 1 个数。第 10 章的 NiN 网络正是用全局平均池化替代庞大的全连接层，直接输出各类别分数。上面的互动实验勾选"平均池化"，可以亲手对比同一输入下两种池化的差异。</p>
     </div>
 </section>
 
