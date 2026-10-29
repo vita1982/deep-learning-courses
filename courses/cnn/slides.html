@@ -204,7 +204,7 @@
 <section>
   <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 目录</div>
   <div class="slide-title">📋 本讲目录</div>
-  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 回顾：单隐含层网络</a></li><li><a href="#/8" style="color:#1E40AF;text-decoration:none;">2. 卷积神经网络概述</a></li><li><a href="#/13" style="color:#1E40AF;text-decoration:none;">3. 卷积运算基础</a></li><li><a href="#/24" style="color:#1E40AF;text-decoration:none;">4. 二维卷积层</a></li><li><a href="#/27" style="color:#1E40AF;text-decoration:none;">5. 填充与步幅</a></li><li><a href="#/37" style="color:#1E40AF;text-decoration:none;">6. 多输入输出通道</a></li><li><a href="#/45" style="color:#1E40AF;text-decoration:none;">7. 1×1 卷积层</a></li><li><a href="#/50" style="color:#1E40AF;text-decoration:none;">8. 池化层</a></li><li><a href="#/62" style="color:#1E40AF;text-decoration:none;">9. Why CNN？—— 卷积神经网络的核心优势</a></li><li><a href="#/68" style="color:#1E40AF;text-decoration:none;">10. 代表性卷积神经网络</a></li><li><a href="#/76" style="color:#1E40AF;text-decoration:none;">11. 核心公式速查</a></li><li><a href="#/79" style="color:#1E40AF;text-decoration:none;">12. 总结与思考</a></li></ol></div>
+  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 回顾：单隐含层网络</a></li><li><a href="#/8" style="color:#1E40AF;text-decoration:none;">2. 卷积神经网络概述</a></li><li><a href="#/13" style="color:#1E40AF;text-decoration:none;">3. 卷积运算基础</a></li><li><a href="#/24" style="color:#1E40AF;text-decoration:none;">4. 二维卷积层</a></li><li><a href="#/27" style="color:#1E40AF;text-decoration:none;">5. 填充与步幅</a></li><li><a href="#/37" style="color:#1E40AF;text-decoration:none;">6. 多输入输出通道</a></li><li><a href="#/45" style="color:#1E40AF;text-decoration:none;">7. 1×1 卷积层</a></li><li><a href="#/50" style="color:#1E40AF;text-decoration:none;">8. 池化层</a></li><li><a href="#/61" style="color:#1E40AF;text-decoration:none;">9. Why CNN？—— 卷积神经网络的核心优势</a></li><li><a href="#/67" style="color:#1E40AF;text-decoration:none;">10. 代表性卷积神经网络</a></li><li><a href="#/75" style="color:#1E40AF;text-decoration:none;">11. 核心公式速查</a></li><li><a href="#/78" style="color:#1E40AF;text-decoration:none;">12. 总结与思考</a></li></ol></div>
 </section>
 <section class="section-divider">
   <div class="divider-num">1</div>
@@ -879,22 +879,18 @@
 </section>
 <section>
   <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 8. 池化层</div>
-  <div class="slide-title">8.1 课件示例：移位前</div>
+  <div class="slide-title">8.1 课件示例：移位前 vs 移位后</div>
   <div class="slide-body">
-<figure>
-        <img src="images/p29_24.jpeg" alt="池化动机-X" loading="lazy">
-        <figcaption>课件示例·移位前：竖线在窗口内，卷积输出非零（检测到了边缘）</figcaption>
-    </figure>
-  </div>
-</section>
-<section>
-  <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 8. 池化层</div>
-  <div class="slide-title">8.1 课件示例：移位后</div>
-  <div class="slide-body">
-<figure>
-        <img src="images/p29_25.jpeg" alt="池化动机-Y" loading="lazy">
-        <figcaption>课件示例·移位后：同一根竖线右移 1 像素、离开窗口，卷积输出变成 0（图中矩阵是输入，"输出"指卷积结果）</figcaption>
-    </figure>
+<div style="display:flex;gap:18px;align-items:flex-start;">
+        <figure style="flex:1;margin:0;">
+            <img src="images/p29_24.jpeg" alt="池化动机-X" loading="lazy">
+            <figcaption>移位前：竖线在窗口内，卷积输出非零（检测到了边缘）</figcaption>
+        </figure>
+        <figure style="flex:1;margin:0;">
+            <img src="images/p29_25.jpeg" alt="池化动机-Y" loading="lazy">
+            <figcaption>移位后：同一根竖线右移 1 像素、离开窗口，卷积输出变成 0（图中矩阵是输入，"输出"指卷积结果）</figcaption>
+        </figure>
+    </div>
 <ul>
         <li>同一物体的照片，可能因为拍摄角度、光照、位置变化而不同</li>
         <li>卷积核检测垂直边缘时，1 像素的移位可能使输出从非 0 变为 0（或反之）——输出对位置非常敏感</li>
