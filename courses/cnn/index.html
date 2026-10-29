@@ -569,22 +569,33 @@
     <p class="chapter-lede">卷积对位置太敏感——池化层用"取窗口之最"的方式，换来平移不变性。</p>
 
     <h3><span class="sec-no">8.1</span>为什么需要池化层？</h3>
-    <p>卷积层对位置是敏感的——输入图像的微小偏移可能导致输出显著变化。</p>
-    <figure>
-        <img src="images/p29_24.jpeg" alt="池化动机-X" loading="lazy">
-        <figcaption>X（原图检测）：竖线在窗口内，输出非零</figcaption>
-    </figure>
-    <figure>
-        <img src="images/p29_25.jpeg" alt="池化动机-Y" loading="lazy">
-        <figcaption>Y（1 像素移位后）：同一根竖线移出窗口，输出变成 0</figcaption>
-    </figure>
+    <p>卷积层对位置是敏感的——输入图像的微小偏移可能导致输出显著变化。这句话到底什么意思？用一个可以亲手验算的小例子，把每一步看清楚。</p>
+    <p><strong>实验设定</strong>：输入 \(\mathbf{X}\) 是一幅 4×5 的"图像"，前两列为 1（表示一条竖线），其余为 0；卷积核 \(\mathbf{K} = [1,\ -1]\)（1×2，检测"由亮变暗"的垂直边缘）。所谓<strong>窗口</strong>，就是卷积核每次在输入上覆盖的那一小片区域（这里是相邻的两格）；窗口每次向右滑动 1 格，对窗口内的两个数做互相关：\(Y_{i,j} = X_{i,j}\times 1 + X_{i,j+1}\times(-1)\)。</p>
+    <div class="tbl-wrap">
+        <table>
+            <tr><th style="width:130px;"></th><th>输入（4×5，竖线 = 两列 1）</th><th>卷积输出（4×4）</th></tr>
+            <tr><td><strong>移位前</strong></td><td><div style="font-family:Consolas,monospace;font-size:14.5px;line-height:1.7;text-align:center;">1&nbsp;&nbsp;1&nbsp;&nbsp;0&nbsp;&nbsp;0&nbsp;&nbsp;0<br>1&nbsp;&nbsp;1&nbsp;&nbsp;0&nbsp;&nbsp;0&nbsp;&nbsp;0<br>1&nbsp;&nbsp;1&nbsp;&nbsp;0&nbsp;&nbsp;0&nbsp;&nbsp;0<br>1&nbsp;&nbsp;1&nbsp;&nbsp;0&nbsp;&nbsp;0&nbsp;&nbsp;0</div></td><td><div style="font-family:Consolas,monospace;font-size:14.5px;line-height:1.7;text-align:center;">0&nbsp;&nbsp;<strong style="color:#DC2626;">1</strong>&nbsp;&nbsp;0&nbsp;&nbsp;0<br>0&nbsp;&nbsp;<strong style="color:#DC2626;">1</strong>&nbsp;&nbsp;0&nbsp;&nbsp;0<br>0&nbsp;&nbsp;<strong style="color:#DC2626;">1</strong>&nbsp;&nbsp;0&nbsp;&nbsp;0<br>0&nbsp;&nbsp;<strong style="color:#DC2626;">1</strong>&nbsp;&nbsp;0&nbsp;&nbsp;0</div></td></tr>
+            <tr><td><strong>右移 1 像素</strong></td><td><div style="font-family:Consolas,monospace;font-size:14.5px;line-height:1.7;text-align:center;">0&nbsp;&nbsp;1&nbsp;&nbsp;1&nbsp;&nbsp;0&nbsp;&nbsp;0<br>0&nbsp;&nbsp;1&nbsp;&nbsp;1&nbsp;&nbsp;0&nbsp;&nbsp;0<br>0&nbsp;&nbsp;1&nbsp;&nbsp;1&nbsp;&nbsp;0&nbsp;&nbsp;0<br>0&nbsp;&nbsp;1&nbsp;&nbsp;1&nbsp;&nbsp;0&nbsp;&nbsp;0</div></td><td><div style="font-family:Consolas,monospace;font-size:14.5px;line-height:1.7;text-align:center;"><strong style="color:#DC2626;">−1</strong>&nbsp;&nbsp;0&nbsp;&nbsp;<strong style="color:#DC2626;">1</strong>&nbsp;&nbsp;0<br><strong style="color:#DC2626;">−1</strong>&nbsp;&nbsp;0&nbsp;&nbsp;<strong style="color:#DC2626;">1</strong>&nbsp;&nbsp;0<br><strong style="color:#DC2626;">−1</strong>&nbsp;&nbsp;0&nbsp;&nbsp;<strong style="color:#DC2626;">1</strong>&nbsp;&nbsp;0<br><strong style="color:#DC2626;">−1</strong>&nbsp;&nbsp;0&nbsp;&nbsp;<strong style="color:#DC2626;">1</strong>&nbsp;&nbsp;0</div></td></tr>
+        </table>
+    </div>
+    <p><strong>逐格验算</strong>（以移位前为例）：窗口盖住前两格 (1, 1) 时 \(1\times1+1\times(-1)=0\)；盖住第 2、3 列 (1, 0) 时 \(1\times1+0\times(-1)=1\)——输出的第 2 列亮起，含义是"这里检测到一条竖线"。而竖线仅仅右移 1 像素，输出就面目全非（响应跑到了别的列）；若移位更大、竖线彻底离开卷积核覆盖的区域，输出甚至变成全 0——下面课件示例展示的正是这种更极端的情况（注意：图中矩阵是<strong>输入</strong>，图注里的"输出"指卷积结果）。</p>
+    <div style="display:flex;flex-wrap:wrap;gap:20px;">
+        <figure style="flex:1 1 300px;margin:0;">
+            <img src="images/p29_24.jpeg" alt="池化动机-X" loading="lazy">
+            <figcaption>课件示例·移位前：竖线在窗口内，卷积输出非零（检测到了边缘）</figcaption>
+        </figure>
+        <figure style="flex:1 1 300px;margin:0;">
+            <img src="images/p29_25.jpeg" alt="池化动机-Y" loading="lazy">
+            <figcaption>课件示例·移位后：同一根竖线右移 1 像素、离开窗口，卷积输出变成 0（什么也没检测到）</figcaption>
+        </figure>
+    </div>
     <ul>
-        <li>同一物体的照片，可能因为拍摄角度、光照、位置变化而不同</li>
-        <li>卷积核检测垂直边缘时，1 像素的移位可能使输出从非 0 变为 0（或反之）——输出对位置非常敏感</li>
+        <li>同一物体的照片，可能因为拍摄角度、光照、位置变化而不同；</li>
+        <li>卷积核检测垂直边缘时，1 像素的移位可能使输出从非 0 变为 0（或反之）——输出对位置非常敏感。</li>
     </ul>
     <div class="callout warn">
         <span class="co-tag">⚠️ 核心需求</span>
-        <p>需要一定程度的平移不变性——让网络对小幅度的位置变化不敏感。<strong>解决方案：池化层（Pooling Layer）。</strong></p>
+        <p>实际应用中，我们关心的是图像里<strong>有没有</strong>这条竖线，而不是它在第几列——这就需要一定程度的平移不变性。<strong>解决方案：池化层（Pooling Layer）</strong>：把特征图分成一个个小窗口，每个窗口只保留最显著的响应（如取最大值），竖线挪一两格，池化结果保持不变。</p>
     </div>
 
     <h3><span class="sec-no">8.2</span>2-D 最大池化（Max Pooling）</h3>
