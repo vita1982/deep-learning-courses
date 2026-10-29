@@ -204,7 +204,7 @@
 <section>
   <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 目录</div>
   <div class="slide-title">📋 本讲目录</div>
-  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 回顾：单隐含层网络</a></li><li><a href="#/8" style="color:#1E40AF;text-decoration:none;">2. 卷积神经网络概述</a></li><li><a href="#/13" style="color:#1E40AF;text-decoration:none;">3. 卷积运算基础</a></li><li><a href="#/24" style="color:#1E40AF;text-decoration:none;">4. 二维卷积层</a></li><li><a href="#/27" style="color:#1E40AF;text-decoration:none;">5. 填充与步幅</a></li><li><a href="#/37" style="color:#1E40AF;text-decoration:none;">6. 多输入输出通道</a></li><li><a href="#/45" style="color:#1E40AF;text-decoration:none;">7. 1×1 卷积层</a></li><li><a href="#/50" style="color:#1E40AF;text-decoration:none;">8. 池化层</a></li><li><a href="#/60" style="color:#1E40AF;text-decoration:none;">9. Why CNN？—— 卷积神经网络的核心优势</a></li><li><a href="#/66" style="color:#1E40AF;text-decoration:none;">10. 代表性卷积神经网络</a></li><li><a href="#/103" style="color:#1E40AF;text-decoration:none;">11. 核心公式速查</a></li><li><a href="#/106" style="color:#1E40AF;text-decoration:none;">12. 总结与思考</a></li></ol></div>
+  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 回顾：单隐含层网络</a></li><li><a href="#/8" style="color:#1E40AF;text-decoration:none;">2. 卷积神经网络概述</a></li><li><a href="#/13" style="color:#1E40AF;text-decoration:none;">3. 卷积运算基础</a></li><li><a href="#/24" style="color:#1E40AF;text-decoration:none;">4. 二维卷积层</a></li><li><a href="#/27" style="color:#1E40AF;text-decoration:none;">5. 填充与步幅</a></li><li><a href="#/37" style="color:#1E40AF;text-decoration:none;">6. 多输入输出通道</a></li><li><a href="#/45" style="color:#1E40AF;text-decoration:none;">7. 1×1 卷积层</a></li><li><a href="#/50" style="color:#1E40AF;text-decoration:none;">8. 池化层</a></li><li><a href="#/61" style="color:#1E40AF;text-decoration:none;">9. Why CNN？—— 卷积神经网络的核心优势</a></li><li><a href="#/67" style="color:#1E40AF;text-decoration:none;">10. 代表性卷积神经网络</a></li><li><a href="#/104" style="color:#1E40AF;text-decoration:none;">11. 核心公式速查</a></li><li><a href="#/107" style="color:#1E40AF;text-decoration:none;">12. 总结与思考</a></li></ol></div>
 </section>
 <section class="section-divider">
   <div class="divider-num">1</div>
@@ -901,7 +901,7 @@
 </section>
 <section>
   <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 8. 池化层</div>
-  <div class="slide-title">8.2 2-D 最大池化（Max Pooling）</div>
+  <div class="slide-title">8.2 最大池化（Max Pooling）</div>
   <div class="slide-body">
 <p>最大池化返回滑动窗口中的最大值：</p>
 <figure>
@@ -916,7 +916,7 @@
 </section>
 <section>
   <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 8. 池化层</div>
-  <div class="slide-title">8.2 2-D 最大池化（Max Pooling）</div>
+  <div class="slide-title">8.2 最大池化（Max Pooling）</div>
   <div class="slide-body">
 <figure>
         <img src="images/max_pooling_v2.gif" alt="最大池化动图演示" loading="lazy">
@@ -930,9 +930,30 @@
     </ul>
   </div>
 </section>
+<section>
+  <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 8. 池化层</div>
+  <div class="slide-title">8.2 平均池化（Average Pooling）</div>
+  <div class="slide-body">
+<p>与最大池化同一框架：窗口/步幅/填充/通道的规则完全相同，唯一区别是窗口内<strong>取平均</strong>而非取最大，同样无可学习参数。</p>
+<div class="tbl-wrap">
+        <table>
+            <tr><th>窗口内容</th><th>最大池化</th><th>平均池化</th></tr>
+            <tr><td style="font-family:Consolas,monospace;">0&nbsp;&nbsp;1<br>3&nbsp;&nbsp;4</td><td>max(0, 1, 3, 4) = <strong>4</strong></td><td>(0+1+3+4) ÷ 4 = <strong>2.0</strong></td></tr>
+        </table>
+    </div>
+<p>同一窗口：最大池化只保留最强信号 4，平均池化给出整体水平 2.0。</p>
+<div class="tbl-wrap">
+        <table>
+            <tr><th>池化类型</th><th>操作</th><th>特点</th></tr>
+            <tr><td>最大池化</td><td>取窗口最大值</td><td>突出最强信号，分类任务最常用</td></tr>
+            <tr><td>平均池化</td><td>取窗口平均值</td><td>更平滑，保留整体分布信息</td></tr>
+        </table>
+    </div>
+  </div>
+</section>
 <section class="slide-short">
   <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 8. 池化层</div>
-  <div class="slide-title">8.2 2-D 最大池化（Max Pooling）</div>
+  <div class="slide-title">8.2 互动实验：最大池化 vs 平均池化</div>
   <div class="slide-body">
 <div class="lab">
         <div class="lab-head">
@@ -990,19 +1011,16 @@
     </div>
   </div>
 </section>
-<section>
+<section class="slide-short">
   <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 8. 池化层</div>
-  <div class="slide-title">8.4 平均池化（Average Pooling）</div>
+  <div class="slide-title">8.4 全局平均池化（Global Average Pooling）</div>
   <div class="slide-body">
-<p>规则与最大池化完全相同（窗口/步幅/填充/通道），唯一区别：窗口内<strong>取平均</strong>而非取最大，同样无可学习参数。同一窗口手算对比：max(0,1,3,4) = 4，平均 = (0+1+3+4)÷4 = 2.0。</p>
-<div class="tbl-wrap">
-        <table>
-            <tr><th>池化类型</th><th>操作</th><th>特点</th></tr>
-            <tr><td>最大池化</td><td>取窗口最大值</td><td>突出最强信号，分类任务最常用</td></tr>
-            <tr><td>平均池化</td><td>取窗口平均值</td><td>更平滑，保留整体分布信息</td></tr>
-        </table>
+<p>把池化窗口放大到整张特征图：对每个通道取一个平均值，\(C \times H \times W \to C \times 1 \times 1\)，每个通道只剩 1 个数。</p>
+<p>该数值即对应特征在整幅图像上的平均响应强度——空间信息被完全压缩。</p>
+<div class="callout key">
+        <span class="co-tag">🔑 用途预告</span>
+        <p>NiN（第 10 章）用全局平均池化替代庞大的全连接层：输出通道数设为类别数，每个通道的全局平均值直接作为该类别分数，参数量大幅减少。</p>
     </div>
-<p>极端形式：<strong>全局平均池化</strong>——整张特征图取平均，每个通道只剩 1 个数；NiN（第 10 章）用它替代全连接层直接输出类别分数。</p>
   </div>
 </section>
 <section class="section-divider">
