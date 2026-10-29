@@ -994,13 +994,15 @@
   <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 8. 池化层</div>
   <div class="slide-title">8.4 平均池化（Average Pooling）</div>
   <div class="slide-body">
+<p>规则与最大池化完全相同（窗口/步幅/填充/通道），唯一区别：窗口内<strong>取平均</strong>而非取最大，同样无可学习参数。同一窗口手算对比：max(0,1,3,4) = 4，平均 = (0+1+3+4)÷4 = 2.0。</p>
 <div class="tbl-wrap">
         <table>
             <tr><th>池化类型</th><th>操作</th><th>特点</th></tr>
-            <tr><td>最大池化</td><td>取窗口最大值</td><td>保留最强模式信号，更常用</td></tr>
+            <tr><td>最大池化</td><td>取窗口最大值</td><td>突出最强信号，分类任务最常用</td></tr>
             <tr><td>平均池化</td><td>取窗口平均值</td><td>更平滑，保留整体分布信息</td></tr>
         </table>
     </div>
+<p>极端形式：<strong>全局平均池化</strong>——整张特征图取平均，每个通道只剩 1 个数；NiN（第 10 章）用它替代全连接层直接输出类别分数。</p>
   </div>
 </section>
 <section class="section-divider">
