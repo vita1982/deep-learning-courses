@@ -185,7 +185,19 @@
 <section>
   <div class="slide-breadcrumb">第05讲 循环神经网络（RNN） › 目录</div>
   <div class="slide-title">📋 本讲目录</div>
-  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 从序列数据到循环神经网络</a></li><li><a href="#/12" style="color:#1E40AF;text-decoration:none;">2. 语言模型与困惑度</a></li><li><a href="#/16" style="color:#1E40AF;text-decoration:none;">3. 实现 RNN 语言模型</a></li><li><a href="#/24" style="color:#1E40AF;text-decoration:none;">4. 通过时间反向传播（BPTT）</a></li><li><a href="#/33" style="color:#1E40AF;text-decoration:none;">5. 门控循环单元（GRU）</a></li><li><a href="#/40" style="color:#1E40AF;text-decoration:none;">6. 长短期记忆网络（LSTM）</a></li><li><a href="#/49" style="color:#1E40AF;text-decoration:none;">7. 双向与深度循环神经网络</a></li><li><a href="#/53" style="color:#1E40AF;text-decoration:none;">8. 本讲小结与自测</a></li></ol></div>
+  <div class="slide-body toc-list"><ol><li><a href="#/3" style="color:#1E40AF;text-decoration:none;">1. 从序列数据到循环神经网络</a></li><li><a href="#/13" style="color:#1E40AF;text-decoration:none;">2. 语言模型与困惑度</a></li><li><a href="#/17" style="color:#1E40AF;text-decoration:none;">3. 实现 RNN 语言模型</a></li><li><a href="#/25" style="color:#1E40AF;text-decoration:none;">4. 通过时间反向传播（BPTT）</a></li><li><a href="#/34" style="color:#1E40AF;text-decoration:none;">5. 门控循环单元（GRU）</a></li><li><a href="#/41" style="color:#1E40AF;text-decoration:none;">6. 长短期记忆网络（LSTM）</a></li><li><a href="#/50" style="color:#1E40AF;text-decoration:none;">7. 双向与深度循环神经网络</a></li><li><a href="#/54" style="color:#1E40AF;text-decoration:none;">8. 本讲小结与自测</a></li></ol></div>
+</section>
+<section class="slide-short">
+  <div class="slide-breadcrumb">第05讲 循环神经网络（RNN） › 课前导入</div>
+  <div class="slide-title">🎬 课前导入：从 CNN 到序列问题</div>
+  <div class="slide-body">
+<p>上一讲的 CNN 处理图像：一张图片进、一个类别出，法宝是<strong>局部连接</strong>与<strong>参数共享</strong>——目标出现在左上角还是右下角，同一套卷积核都能识别。</p>
+<p>但序列数据完全不同：<strong>"我打他"和"他打我"</strong>，字完全一样，顺序一变意思全反；判断"这部电影真是太难看了"是差评，必须<strong>记住前文</strong>出现过的"难看"。</p>
+<div class="callout key">
+        <span class="co-tag">🔑 本讲核心</span>
+        <p>图像里"平移不改变含义"，序列里"顺序就是意义"。处理序列需要一种全新能力——<strong>记忆</strong>：边读边把过去压缩保存。这正是循环神经网络（RNN）的出发点。</p>
+    </div>
+  </div>
 </section>
 <section class="section-divider">
   <div class="divider-num">1</div>
