@@ -167,7 +167,7 @@
     document.addEventListener('DOMContentLoaded', function () {
         document.body.innerHTML = '<div style="min-height:100vh;display:flex;align-items:center;'
             + 'justify-content:center;background:#F1F5F9;font-family:Microsoft YaHei,sans-serif;visibility:visible;">'
-            + '<div style="background:#fff;border-radius:16px;padding:48px 44px;max-width:520px;width:88vw;box-sizing:border-box;text-align:center;box-shadow:0 10px 40px rgba(15,23,42,.12);"><div style="font-size:44px;">🔒</div><h1 style="margin:14px 0 8px;font-size:22px;color:#1E293B;">第05讲 · 循环神经网络（RNN）</h1><p style="margin:0 0 8px;font-size:16px;color:#2563EB;font-weight:bold;">本讲尚未开放</p><p style="margin:0 0 24px;font-size:14px;color:#64748B;line-height:1.8;">本讲内容将随课程进度开放，开放前暂时无法阅读。<br>已上过的章节会完整开放，请按课程安排学习。</p><a href="../../index.html" style="display:inline-block;padding:10px 28px;background:#2563EB;color:#fff;text-decoration:none;border-radius:8px;font-size:15px;">返回课程首页</a></div></div>';
+            + '<div style="background:#fff;border-radius:16px;padding:48px 44px;max-width:520px;width:88vw;box-sizing:border-box;text-align:center;box-shadow:0 10px 40px rgba(15,23,42,.12);"><div style="font-size:44px;">🔒</div><h1 style="margin:14px 0 8px;font-size:22px;color:#1E293B;">第05讲 · 循环神经网络</h1><p style="margin:0 0 8px;font-size:16px;color:#2563EB;font-weight:bold;">本讲尚未开放</p><p style="margin:0 0 24px;font-size:14px;color:#64748B;line-height:1.8;">本讲内容将随课程进度开放，开放前暂时无法阅读。<br>已上过的章节会完整开放，请按课程安排学习。</p><a href="../../index.html" style="display:inline-block;padding:10px 28px;background:#2563EB;color:#fff;text-decoration:none;border-radius:8px;font-size:15px;">返回课程首页</a></div></div>';
         document.body.style.visibility = 'visible';
     });
 })();
@@ -218,7 +218,7 @@
         <img src="images/seq_examples.jpg" alt="序列数据的典型应用：语音、音乐、情感、DNA、翻译、视频" loading="lazy">
         <figcaption>序列数据的典型应用：语音波形、乐谱、文本、DNA、视频帧——它们的共同点是一个样本内部有先后顺序，打乱顺序就失去意义。</figcaption>
     </figure>
-<p>这类任务有两个新特点：第一，输入（甚至输出）的长度不固定，全连接网络要求输入维度固定，无法直接套用；第二，当前时刻的判断需要参考历史信息——听懂一句话的最后一个词，需要记住前面的词。</p>
+<p>这类任务有两个新特点：第一，输入（甚至输出）的长度不固定，全连接网络要求输入维度固定，无法直接套用（把序列拼成长向量硬喂 MLP，参数量随长度膨胀且无法泛化到新长度）；第二，当前时刻的判断需要参考历史信息——听懂一句话的最后一个词，需要记住前面的词。</p>
 <div class="callout key">
         <span class="co-tag">🔑 初学者理解</span>
         <p>处理序列的关键是"记忆"。网络需要一边读入新内容，一边把过去看到的东西压缩保存在某个地方——这个地方就是下面要讲的隐含状态。</p>
@@ -392,6 +392,7 @@
   <div class="slide-body">
 <p>one-hot 有两个硬伤：维度太高（词表动辄几万）且稀疏；更重要的是它不含语义——从向量上看不出"猫"和"狗"比"猫"和"卡车"更相似。解决办法是乘一个可学习的嵌入矩阵 \(W_e\)（\(V \times d\)，\(d\) 通常几十到几百），把稀疏的 one-hot 压成稠密向量：</p>
 <p>\(\text{embedding}(x) = W_e^\top \cdot \text{onehot}(x)\)</p>
+<p>本质是"查表"：one-hot 只有第 \(k\) 位是 1，乘矩阵就是取出第 \(k\) 行——嵌入矩阵即一张可学习的"查词表"。</p>
   </div>
 </section>
 <section>
@@ -434,7 +435,7 @@
         <img src="images/output_decoding.jpg" alt="隐含状态经解码矩阵得到输出向量" loading="lazy">
         <figcaption>输出解码是输入编码的逆过程：上方输出向量 \(o\) 经解码矩阵 \(W'\) 映射回词表大小的向量，再经 softmax 单热解码为词。</figcaption>
     </figure>
-<p>训练时用交叉熵损失让"正确词"的概率越来越大；生成时可以从分布中采样，也可以每步取概率最大的词（贪心解码）。</p>
+<p>训练时用交叉熵损失让"正确词"的概率越来越大；生成时可以从分布中采样，也可以每步取概率最大的词（贪心解码）——大语言模型的 temperature 参数调节的正是采样分布的"尖锐"程度。</p>
   </div>
 </section>
 <section class="slide-short">
@@ -472,7 +473,7 @@
   <div class="slide-body">
 <figure>
         <img src="images/rnn_compgraph.jpg" alt="RNN 的计算图" loading="lazy">
-        <figcaption>RNN 的计算图：\(x_t\)、\(h_t\)、\(o_t\) 是变量节点，阴影块是共享参数。梯度要沿 \(h_t \to h_{t-1} \to \cdots\) 一路回传到序列开头。</figcaption>
+        <figcaption>RNN 的计算图：\(x_t\)、\(h_t\)、\(o_t\) 是变量节点，阴影块是共享参数。梯度要沿 \(h_t \to h_{t-1} \to \cdots\) 一路回传到序列开头；同一参数的梯度是其全部时间步贡献之和。</figcaption>
     </figure>
   </div>
 </section>
@@ -606,7 +607,7 @@
 <p>\(\odot\) 是逐元素乘法。当 \(R_t \to 0\) 时，上一时刻的记忆被"重置"掉，\(\tilde{h}_t\) 几乎只看当前输入（相当于从头开始记）；当 \(R_t \to 1\) 时，就是普通 RNN 的算法。</p>
 <p>更新门负责在新旧记忆之间做"加权平均"：</p>
 <p>\(h_t = Z_t \odot h_{t-1} + (1 - Z_t) \odot \tilde{h}_t\)</p>
-<p>当 \(Z_t \to 1\)：完全保留旧记忆，当前输入被忽略（"这里不重要，跳过去"）；当 \(Z_t \to 0\)：完全采用新的候选状态。正是这种"按元素插值"的设计，让 GRU 能把某些重要信息原封不动地保存很多步，缓解了梯度消失。</p>
+<p>当 \(Z_t \to 1\)：完全保留旧记忆，当前输入被忽略（"这里不重要，跳过去"）；当 \(Z_t \to 0\)：完全采用新的候选状态。正是这种"按元素插值"的设计，让 GRU 能把某些重要信息原封不动地保存很多步——\(Z \to 1\) 的通道让回传因子接近 1，梯度消失的衰减链被绕开。</p>
   </div>
 </section>
 <section>
@@ -696,7 +697,7 @@
   <div class="slide-body">
 <p>然后记忆细胞做"选择性遗忘 + 选择性写入"：</p>
 <p>\(C_t = F_t \odot C_{t-1} + I_t \odot \tilde{C}_t\)</p>
-<p>这又是一个按元素插值：遗忘门决定旧记忆留多少，输入门决定新内容写多少。只要遗忘门保持接近 1，早期信息就能沿记忆细胞几乎无损地传很远——这条"高速公路"是 LSTM 抗梯度消失的核心设计。</p>
+<p>这又是一个按元素插值：遗忘门决定旧记忆留多少，输入门决定新内容写多少。只要遗忘门保持接近 1，早期信息就能沿记忆细胞几乎无损地传很远——这条"高速公路"是 LSTM 抗梯度消失的核心设计（\(C_t\) 专职记忆、不直接对外，比 GRU 的通道更纯粹）。</p>
   </div>
 </section>
 <section>
@@ -763,10 +764,10 @@
 <p>看这三道填空题：</p>
 <ul>
         <li>我 _____ 。</li>
-        <li>我 _____ 非常饿。</li>
-        <li>我 _____ 非常饿，我可以吃下一只猪。</li>
+        <li>我 _____ 饿了。</li>
+        <li>我 _____ 饿了，我可以吃下一头猪。</li>
     </ul>
-<p>合适的填词可能是"饿""不饿/不是很饿""非常"。同一个空，答案完全取决于后文——可是到目前为止的 RNN 只能看到"上文"，读到空位时后文还没出现。很多任务（词性标注、实体识别、语音识别）都需要同时利用两个方向的上下文，这就是双向循环神经网络（Bidirectional RNN）的动机。</p>
+<p>合适的填词可能是"饿""不""非常"——分别得到"我饿""我不饿了""我非常饿了"。同一个空，答案完全取决于后文——可是到目前为止的 RNN 只能看到"上文"，读到空位时后文还没出现。很多任务（词性标注、实体识别、语音识别）都需要同时利用两个方向的上下文，这就是双向循环神经网络（Bidirectional RNN）的动机。</p>
   </div>
 </section>
 <section>
