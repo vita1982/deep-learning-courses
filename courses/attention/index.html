@@ -98,6 +98,10 @@
     <p class="meta">基于《动手学深度学习》课程 · 互动讲义版</p>
 </header>
 
+<div class="callout key" style="margin:26px 0 8px;">
+    <span class="co-tag">🎬 课前导入：从 RNN 的瓶颈到注意力</span>
+    <p>上一讲的 RNN 家族（基本 RNN、GRU、LSTM）用"隐含状态"解决了序列的记忆问题，但仍有两个与生俱来的限制：一是<strong>必须按顺序逐词处理</strong>，第 100 个词要等前 99 个算完，并行能力用不上；二是<strong>长距离依赖依然吃力</strong>，第 1 个词的信息要传到第 100 个位置需经过 99 次传递、一路衰减。而我们读"动物没有过河，因为它太累了"时，理解"它"是直接把目光跳回"动物"的——<strong>一眼扫过全句、自动聚焦相关位置</strong>，这种能力就是"注意力"。本讲将把这个直觉变成数学：从查询、键、值三个角色出发，一路走到彻底取代循环的 Transformer 与开启预训练时代的 BERT。</p>
+</div>
 <!-- ==================== 第一章 ==================== -->
 <section class="chapter" id="ch1">
     <div class="chapter-head">
