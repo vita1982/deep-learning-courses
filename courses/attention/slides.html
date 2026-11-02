@@ -185,7 +185,19 @@
 <section>
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 目录</div>
   <div class="slide-title">📋 本讲目录</div>
-  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 注意力机制：从心理学到机器学习</a></li><li><a href="#/7" style="color:#1E40AF;text-decoration:none;">2. 注意力池化：从非参数到参数化</a></li><li><a href="#/14" style="color:#1E40AF;text-decoration:none;">3. Seq2Seq 中的注意力</a></li><li><a href="#/20" style="color:#1E40AF;text-decoration:none;">4. 自注意力（Self-Attention）</a></li><li><a href="#/26" style="color:#1E40AF;text-decoration:none;">5. Transformer：完全建立在注意力上的架构</a></li><li><a href="#/40" style="color:#1E40AF;text-decoration:none;">6. BERT：预训练时代的开幕</a></li><li><a href="#/44" style="color:#1E40AF;text-decoration:none;">7. 本讲小结与自测</a></li></ol></div>
+  <div class="slide-body toc-list"><ol><li><a href="#/3" style="color:#1E40AF;text-decoration:none;">1. 注意力机制：从心理学到机器学习</a></li><li><a href="#/8" style="color:#1E40AF;text-decoration:none;">2. 注意力池化：从非参数到参数化</a></li><li><a href="#/15" style="color:#1E40AF;text-decoration:none;">3. Seq2Seq 中的注意力</a></li><li><a href="#/21" style="color:#1E40AF;text-decoration:none;">4. 自注意力（Self-Attention）</a></li><li><a href="#/27" style="color:#1E40AF;text-decoration:none;">5. Transformer：完全建立在注意力上的架构</a></li><li><a href="#/41" style="color:#1E40AF;text-decoration:none;">6. BERT：预训练时代的开幕</a></li><li><a href="#/45" style="color:#1E40AF;text-decoration:none;">7. 本讲小结与自测</a></li></ol></div>
+</section>
+<section class="slide-short">
+  <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 课前导入</div>
+  <div class="slide-title">🎬 课前导入：从 RNN 的瓶颈到注意力</div>
+  <div class="slide-body">
+<p>上一讲的 RNN 家族用"隐含状态"解决了记忆问题，但仍有两个瓶颈：<strong>必须逐词串行</strong>（第 100 个词要等前 99 个算完）、<strong>长距离依赖衰减</strong>（信息要一站一站传递）。</p>
+<p>而我们读"动物没有过河，因为它太累了"时，理解"它"是直接跳回"动物"的——<strong>一眼扫过全句、自动聚焦相关位置</strong>。</p>
+<div class="callout key">
+        <span class="co-tag">🔑 本讲核心</span>
+        <p>把"聚焦"变成数学：查询（query）、键（key）、值（value）三角色 + 加权汇聚。从注意力一路走到彻底抛弃循环的 <strong>Transformer</strong> 与开启预训练时代的 <strong>BERT</strong>。</p>
+    </div>
+  </div>
 </section>
 <section class="section-divider">
   <div class="divider-num">1</div>
