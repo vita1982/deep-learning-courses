@@ -186,7 +186,19 @@
 <section>
   <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 目录</div>
   <div class="slide-title">📋 本讲目录</div>
-  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 回顾：单隐含层网络</a></li><li><a href="#/8" style="color:#1E40AF;text-decoration:none;">2. 卷积神经网络概述</a></li><li><a href="#/13" style="color:#1E40AF;text-decoration:none;">3. 卷积运算基础</a></li><li><a href="#/24" style="color:#1E40AF;text-decoration:none;">4. 二维卷积层</a></li><li><a href="#/27" style="color:#1E40AF;text-decoration:none;">5. 填充与步幅</a></li><li><a href="#/37" style="color:#1E40AF;text-decoration:none;">6. 多输入输出通道</a></li><li><a href="#/45" style="color:#1E40AF;text-decoration:none;">7. 1×1 卷积层</a></li><li><a href="#/50" style="color:#1E40AF;text-decoration:none;">8. 池化层</a></li><li><a href="#/61" style="color:#1E40AF;text-decoration:none;">9. Why CNN？—— 卷积神经网络的核心优势</a></li><li><a href="#/67" style="color:#1E40AF;text-decoration:none;">10. 代表性卷积神经网络</a></li><li><a href="#/75" style="color:#1E40AF;text-decoration:none;">11. 核心公式速查</a></li><li><a href="#/78" style="color:#1E40AF;text-decoration:none;">12. 总结与思考</a></li></ol></div>
+  <div class="slide-body toc-list"><ol><li><a href="#/3" style="color:#1E40AF;text-decoration:none;">1. 回顾：单隐含层网络</a></li><li><a href="#/9" style="color:#1E40AF;text-decoration:none;">2. 卷积神经网络概述</a></li><li><a href="#/14" style="color:#1E40AF;text-decoration:none;">3. 卷积运算基础</a></li><li><a href="#/25" style="color:#1E40AF;text-decoration:none;">4. 二维卷积层</a></li><li><a href="#/28" style="color:#1E40AF;text-decoration:none;">5. 填充与步幅</a></li><li><a href="#/38" style="color:#1E40AF;text-decoration:none;">6. 多输入输出通道</a></li><li><a href="#/46" style="color:#1E40AF;text-decoration:none;">7. 1×1 卷积层</a></li><li><a href="#/51" style="color:#1E40AF;text-decoration:none;">8. 池化层</a></li><li><a href="#/62" style="color:#1E40AF;text-decoration:none;">9. Why CNN？—— 卷积神经网络的核心优势</a></li><li><a href="#/68" style="color:#1E40AF;text-decoration:none;">10. 代表性卷积神经网络</a></li><li><a href="#/76" style="color:#1E40AF;text-decoration:none;">11. 核心公式速查</a></li><li><a href="#/79" style="color:#1E40AF;text-decoration:none;">12. 总结与思考</a></li></ol></div>
+</section>
+<section class="slide-short">
+  <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 课前导入</div>
+  <div class="slide-title">🎬 课前导入：从"看"说起</div>
+  <div class="slide-body">
+<p>人眼看世界：先看<strong>边缘轮廓</strong>，再看<strong>部件</strong>（眼睛、鼻子），最后认出<strong>整体</strong>——从局部到整体、从简单到复杂。</p>
+<p>而 MLP 只吃一维向量：图片必须先"拍扁"，空间结构全部丢失。</p>
+<div class="callout key">
+        <span class="co-tag">🔑 本讲核心</span>
+        <p>只要<strong>尊重图像的二维结构</strong>，再加上<strong>局部连接</strong>与<strong>权值共享</strong>两个设计，就催生了计算机视觉的革命——卷积神经网络（CNN）。</p>
+    </div>
+  </div>
 </section>
 <section class="section-divider">
   <div class="divider-num">1</div>
