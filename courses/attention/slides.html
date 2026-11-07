@@ -185,7 +185,7 @@
 <section>
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 目录</div>
   <div class="slide-title">📋 本讲目录</div>
-  <div class="slide-body toc-list"><ol><li><a href="#/3" style="color:#1E40AF;text-decoration:none;">1. 注意力机制：从心理学到机器学习</a></li><li><a href="#/8" style="color:#1E40AF;text-decoration:none;">2. 注意力池化：从非参数到参数化</a></li><li><a href="#/16" style="color:#1E40AF;text-decoration:none;">3. Seq2Seq 中的注意力</a></li><li><a href="#/22" style="color:#1E40AF;text-decoration:none;">4. 自注意力（Self-Attention）</a></li><li><a href="#/28" style="color:#1E40AF;text-decoration:none;">5. Transformer：完全建立在注意力上的架构</a></li><li><a href="#/42" style="color:#1E40AF;text-decoration:none;">6. BERT：预训练时代的开幕</a></li><li><a href="#/46" style="color:#1E40AF;text-decoration:none;">7. 本讲小结与自测</a></li></ol></div>
+  <div class="slide-body toc-list"><ol><li><a href="#/3" style="color:#1E40AF;text-decoration:none;">1. 注意力机制：从心理学到机器学习</a></li><li><a href="#/8" style="color:#1E40AF;text-decoration:none;">2. 注意力池化：从非参数到参数化</a></li><li><a href="#/17" style="color:#1E40AF;text-decoration:none;">3. Seq2Seq 中的注意力</a></li><li><a href="#/23" style="color:#1E40AF;text-decoration:none;">4. 自注意力（Self-Attention）</a></li><li><a href="#/29" style="color:#1E40AF;text-decoration:none;">5. Transformer：完全建立在注意力上的架构</a></li><li><a href="#/43" style="color:#1E40AF;text-decoration:none;">6. BERT：预训练时代的开幕</a></li><li><a href="#/47" style="color:#1E40AF;text-decoration:none;">7. 本讲小结与自测</a></li></ol></div>
 </section>
 <section class="slide-short">
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 课前导入</div>
@@ -359,6 +359,18 @@
         </div>
         <div class="lab-note" id="softmax-note"></div>
     </div>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 2. 注意力池化：从非参数到参数化</div>
+  <div class="slide-title">2.3 实验解读：缩放点积注意力实验室</div>
+  <div class="slide-body">
+<ul>
+        <li><strong>实验在做什么</strong>：滑块设定原始分数 q·kᵢ，softmax 归一化成权重，输出 = 三个 value（猫 (1,0)、狗 (0,1)、汽车 (1,1)）的加权组合。</li>
+        <li><strong>结果怎么读</strong>：分数 2.6 / 1.0 / 0.0、dₖ = 32、不缩放 → e<sup>2.6</sup>≈13.46、e<sup>1</sup>≈2.72、e<sup>0</sup>=1 → 权重 0.784 / 0.158 / 0.058，输出 (0.842, 0.216)——"主要是猫，带一点狗和汽车"。</li>
+        <li><strong>打开缩放对比</strong>：分数先除以 √32 ≈ 5.66 → 0.46 / 0.18 / 0 → 权重平缓为约 0.42 / 0.32 / 0.26，不再赢家通吃。</li>
+        <li><strong>两个性质</strong>：权重和恒为 1，输出是 value 的凸组合，不会凭空创造内容；softmax 是"软"argmax——分数差距越大越接近"只取最高分"。</li>
+    </ul>
   </div>
 </section>
 <section class="section-divider">
