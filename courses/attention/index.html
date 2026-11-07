@@ -176,13 +176,23 @@
             </tbody>
         </table>
     </div>
+    <p><strong>缩放点积注意力逐条拆解</strong>（表中第二行，Transformer 原版采用的方案）：</p>
+    <ol>
+        <li><strong>只需一次矩阵乘法，快</strong>：相似度直接由向量点积给出，GPU 对矩阵乘法高度优化，计算效率很高，Transformer 原版即采用它。相比之下，加法注意力要先做两次线性映射、相加、过 tanh、再做一次线性投影，计算步骤更多。</li>
+        <li><strong>要求 q、k 同维</strong>：点积 \(\mathbf{q}^\top \mathbf{k}\) 在数学上要求两个向量维数相同，否则无法相乘；加法注意力没有此限制——q、k 先各自乘 \(W_q\)、\(W_k\) 投影到同一维度再相加，维度可以不同。</li>
+        <li><strong>除以 \(\sqrt{d_k}\) 防止 softmax 饱和</strong>：\(d_k\) 是 query / key 的向量维度。维度越高，点积 \(\mathbf{q}^\top \mathbf{k}\) 的方差越大（各分量独立、零均值、单位方差时，点积方差正比于 \(d_k\)），分数量级随之增大；softmax 输入差距过大时输出逼近 0/1 的饱和区，梯度几乎消失，训练难以收敛。除以 \(\sqrt{d_k}\) 相当于做方差归一化，把分数方差拉回 1 附近，稳住 softmax 的梯度。</li>
+    </ol>
+    <div class="callout key">
+        <span class="co-tag">🔑 一句话总结</span>
+        <p>缩放点积注意力用点积衡量 q 与 k 的相似度，辅以缩放因子稳住 softmax 梯度——胜在速度，代价是要求 q、k 维度一致。</p>
+    </div>
     <figure>
         <img src="images/attention_score.jpg" alt="注意力分数与注意力权重的计算" loading="lazy">
         <figcaption>注意力分数 → softmax → 注意力权重 → 对值加权求和。Transformer 采用的就是右侧的缩放点积方案。</figcaption>
     </figure>
     <div class="callout warn">
         <span class="co-tag">⚠️ 常见误区</span>
-        <p>为什么除以 \(\sqrt{d_k}\)？维度 \(d_k\) 越大，点积的量级越大，softmax 会被推到接近 0/1 的饱和区，梯度趋近 0。除以 \(\sqrt{d_k}\) 把分数的方差拉回 1 附近，训练才稳定。这个小细节是 Transformer 能训练起来的关键之一。</p>
+        <p>不要以为除以 \(\sqrt{d_k}\) 是拍脑袋的经验技巧——它有明确的方差分析依据（各分量独立、零均值、单位方差时，点积方差正比于 \(d_k\)）。这个小细节是 Transformer 能训练起来的关键之一。</p>
     </div>
 
     <div class="lab" id="lab-softmax">
