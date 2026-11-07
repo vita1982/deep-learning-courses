@@ -296,7 +296,7 @@
         <table>
             <thead><tr><th>分数函数</th><th>公式</th><th>特点</th></tr></thead>
             <tbody>
-                <tr><td><strong>加性注意力</strong></td><td>\(a(\mathbf{q}, \mathbf{k}) = \mathbf{w}_v^\top \tanh(W_q \mathbf{q} + W_k \mathbf{k})\)</td><td>query 和 key 维度可以不同；有一个小 MLP，表达力强</td></tr>
+                <tr><td><strong>加法注意力</strong>（Bahdanau）</td><td>\(a(\mathbf{q}, \mathbf{k}) = \mathbf{w}_v^\top \tanh(W_q \mathbf{q} + W_k \mathbf{k})\)</td><td>query 和 key 维度可以不同；有一个小 MLP，表达力强</td></tr>
                 <tr><td><strong>缩放点积注意力</strong></td><td>\(a(\mathbf{q}, \mathbf{k}) = \mathbf{q}^\top \mathbf{k} / \sqrt{d_k}\)</td><td>只需一次矩阵乘法，快；要求 q、k 同维；除以 \(\sqrt{d_k}\) 防止 softmax 饱和</td></tr>
             </tbody>
         </table>
@@ -753,7 +753,7 @@
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 7. 本讲小结与自测</div>
   <div class="slide-title">7.1 知识要点回顾</div>
   <div class="slide-body">
-<table><thead><tr><th>主题</th><th>必须掌握的内容</th></tr></thead><tbody><tr><td><strong>注意力的三个角色</strong></td><td>query（随意线索）、key（比对标签）、value（内容）；注意力 = 加权汇聚</td></tr><tr><td><strong>注意力池化</strong></td><td>Nadaraya-Watson 核回归是最早的非参数注意力；参数化引入可学习 \(w\)</td></tr><tr><td><strong>分数函数</strong></td><td>加性注意力（可不同维）vs 缩放点积（快，除以 \(\sqrt{d_k}\) 防饱和）</td></tr><tr><td><strong>seq2seq+注意力</strong></td><td>编码器每步输出作 key/value，解码器状态作 query；解决固定向量瓶颈与对齐</td></tr><tr><td><strong>自注意力</strong></td><td>同一序列充当 q/k/v；任意位置一步直达、全并行；复杂度 \(O(n^2 d)\)</td></tr></tbody></table>
+<table><thead><tr><th>主题</th><th>必须掌握的内容</th></tr></thead><tbody><tr><td><strong>注意力的三个角色</strong></td><td>query（随意线索）、key（比对标签）、value（内容）；注意力 = 加权汇聚</td></tr><tr><td><strong>注意力池化</strong></td><td>Nadaraya-Watson 核回归是最早的非参数注意力；参数化引入可学习 \(w\)</td></tr><tr><td><strong>分数函数</strong></td><td>加法注意力（可不同维）vs 缩放点积（快，除以 \(\sqrt{d_k}\) 防饱和）</td></tr><tr><td><strong>seq2seq+注意力</strong></td><td>编码器每步输出作 key/value，解码器状态作 query；解决固定向量瓶颈与对齐</td></tr><tr><td><strong>自注意力</strong></td><td>同一序列充当 q/k/v；任意位置一步直达、全并行；复杂度 \(O(n^2 d)\)</td></tr></tbody></table>
   </div>
 </section>
 <section>
