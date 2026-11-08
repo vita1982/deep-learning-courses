@@ -320,6 +320,18 @@
         <img src="images/self_attention.jpg" alt="自注意力结构" loading="lazy">
         <figcaption>自注意力：keys、values、queries 全部来自同一序列，每个位置的输出都是对全序列加权汇聚的结果。所有位置两两计算，可以完全并行——不必像 RNN 那样逐词等待。</figcaption>
     </figure>
+    <p><strong>把上面的定义、公式和结构图对照起来，逐层拆开看：</strong></p>
+    <ol>
+        <li><strong>为什么每个位置要复制成三份？</strong>因为同一个向量 \(\mathbf{x}_i\) 要在不同时刻扮演三种角色：计算第 \(i\) 个输出时，它充当 <strong>query</strong>——主动发问"全句中谁和我最相关？"；计算其他位置的输出时，它充当 <strong>key</strong>——挂出自己的"标签"供逐一比对；它的内容本身充当 <strong>value</strong>——被权重加权后汇入其他位置的新表示。每个位置既是"查询者"又是"被查询者"——这就是"自"（self）的含义。</li>
+        <li><strong>公式怎么读</strong>：\(f\) 的第一个参数 \(\mathbf{x}_i\) 是 query；后面 \(n\) 个括号 \((\mathbf{x}_1,\mathbf{x}_1),\ldots,(\mathbf{x}_n,\mathbf{x}_n)\) 是 \(n\) 个 (key, value) 对——每个位置都把自己的副本挂进"记忆库"。\(f\) 的内部就是 1.2 节的三步：query 与每个 key 算分数 → softmax 归一化成权重 → 对所有 value 加权求和，得到 \(\mathbf{y}_i\)。\(i\) 从 1 到 \(n\) 各算一遍，\(n\) 个新表示就齐了。</li>
+        <li><strong>对照结构图</strong>：下方三个方框是同一序列相邻位置（\(t-1, t, t+1\)）的输入向量；每个输入分叉出 3 根向上的箭头，就是"复制成 keys、values、queries 三份"；蓝色块内部完成所有位置两两之间的打分与加权（共 \(n \times n\) 次比对）；上方每个方框是对应位置融合全句信息后的新表示。</li>
+        <li><strong>用"它"走一遍</strong>：query = "它"的词向量 → 与全句 9 个位置的 key 逐一比对 → "动物"的 key 得分最高 → softmax 后"动物"的 value 占最大权重 → "它"的新表示中融入了"动物"的语义信息，指代关系自动建立。其他每个位置也同时完成同样的更新。</li>
+        <li><strong>和 3.2 节的注意力有何不同？</strong>3.2 节是<em>两个序列之间</em>的注意力——query 来自解码器、key/value 来自编码器（可称"交叉注意力"）；本节是<em>同一序列内部</em>的注意力，q、k、v 三份材料同源，所以叫"自"注意力。</li>
+    </ol>
+    <div class="callout key">
+        <span class="co-tag">🔑 预告</span>
+        <p>实际模型（第 5 章 Transformer）中，三份副本不会原样上阵，而是先各自乘一个可学习矩阵 \(W_q, W_k, W_v\) 投影到合适的表示空间——"复制三份"定结构，"什么算相关"交给训练去学。</p>
+    </div>
 
     <div class="lab" id="lab-selfattn">
         <div class="lab-head">
