@@ -479,7 +479,15 @@
     </figure>
 
     <h3><span class="sec-no">5.5</span>添加与归一化（Add &amp; Norm）</h3>
-    <p>每个子层外面都包着"Add &amp; Norm"：<strong>残差连接</strong>（输出 = 子层输出 + 原始输入，保证深层堆叠时梯度畅通）加<strong>层归一化（Layer Norm）</strong>。层规范类似于批量规范（Batch Norm），区别在于：</p>
+    <p>每个子层（注意力、FFN）外面都包着一个"Add &amp; Norm"：<strong>Add = 残差连接</strong>，<strong>Norm = 层归一化</strong>——两者各解决一个问题，分别来看。</p>
+    <p><strong>先认识 Add——残差连接</strong>（第 04 讲 ResNet 的跳跃连接）：</p>
+    <ul>
+        <li><strong>做法</strong>：\(y = x + F(x)\)——子层 \(F\)（注意力或 FFN）只学对输入的"修正量"，输入 \(x\) 沿旁路原样加回来（结构图中绕过蓝色子层、汇入 ⊕ 的那根弯箭头）；</li>
+        <li><strong>为什么需要 · ① 防退化</strong>：没有捷径时几十层堆叠，训练误差不降反升——网络连"恒等映射"都学不动；让子层只学残差，最差也能学成"什么都不改"（ResNet 的核心发现）；</li>
+        <li><strong>为什么需要 · ② 梯度高速通道</strong>：反向传播时 \(\partial y/\partial x = I + \partial F/\partial x\)，恒等项 \(I\) 给梯度开了一条不衰减的直达通道——这是 Transformer 能堆几十上百个块的关键之一；</li>
+        <li><strong>次序</strong>：先 Add（残差相加）再 Norm（层归一化），即 输出 = LayerNorm(\(x\) + 子层(\(x\)))。</li>
+    </ul>
+    <p><strong>再认识 Norm——层归一化（Layer Norm）</strong>。它类似于批量归一化（Batch Norm），区别在于：</p>
     <ul>
         <li>平均值和方差是<strong>沿最后一个维度</strong>计算的：<code>X.mean(axis=-1)</code>；</li>
         <li>而批量归一化是沿第一个批次维度计算的：<code>X.mean(axis=0)</code>。</li>
