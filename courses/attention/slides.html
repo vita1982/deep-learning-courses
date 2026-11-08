@@ -185,7 +185,7 @@
 <section>
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 目录</div>
   <div class="slide-title">📋 本讲目录</div>
-  <div class="slide-body toc-list"><ol><li><a href="#/3" style="color:#1E40AF;text-decoration:none;">1. 注意力机制：从心理学到机器学习</a></li><li><a href="#/8" style="color:#1E40AF;text-decoration:none;">2. 注意力池化：从非参数到参数化</a></li><li><a href="#/17" style="color:#1E40AF;text-decoration:none;">3. Seq2Seq 中的注意力</a></li><li><a href="#/25" style="color:#1E40AF;text-decoration:none;">4. 自注意力（Self-Attention）</a></li><li><a href="#/31" style="color:#1E40AF;text-decoration:none;">5. Transformer：完全建立在注意力上的架构</a></li><li><a href="#/45" style="color:#1E40AF;text-decoration:none;">6. BERT：预训练时代的开幕</a></li><li><a href="#/49" style="color:#1E40AF;text-decoration:none;">7. 本讲小结与自测</a></li></ol></div>
+  <div class="slide-body toc-list"><ol><li><a href="#/3" style="color:#1E40AF;text-decoration:none;">1. 注意力机制：从心理学到机器学习</a></li><li><a href="#/8" style="color:#1E40AF;text-decoration:none;">2. 注意力池化：从非参数到参数化</a></li><li><a href="#/17" style="color:#1E40AF;text-decoration:none;">3. Seq2Seq 中的注意力</a></li><li><a href="#/25" style="color:#1E40AF;text-decoration:none;">4. 自注意力（Self-Attention）</a></li><li><a href="#/32" style="color:#1E40AF;text-decoration:none;">5. Transformer：完全建立在注意力上的架构</a></li><li><a href="#/46" style="color:#1E40AF;text-decoration:none;">6. BERT：预训练时代的开幕</a></li><li><a href="#/50" style="color:#1E40AF;text-decoration:none;">7. 本讲小结与自测</a></li></ol></div>
 </section>
 <section class="slide-short">
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 课前导入</div>
@@ -492,7 +492,8 @@
   <div class="slide-title">4.1 自己关注自己</div>
   <div class="slide-body">
 <p>注意力不一定是"一个序列查询另一个序列"。自注意力中，给定序列 \(\mathbf{x}_1, \ldots, \mathbf{x}_n\)，输出等长的 \(\mathbf{y}_1, \ldots, \mathbf{y}_n\)：</p>
-<p>每个 \(\mathbf{y}_i\) 都融合了全序列与 \(\mathbf{x}_i\) 最相关的信息。例如句子"动物没有过河，因为它太累了"中，"它"的表示可以从"动物"处获得大权重——<strong>指代关系被自动建立</strong>。</p>
+$$\mathbf{y}_i = f\big(\mathbf{x}_i,\ (\mathbf{x}_1, \mathbf{x}_1), \ldots, (\mathbf{x}_n, \mathbf{x}_n)\big) \in \mathbb{R}^{d}$$
+<p><strong>为什么每个位置要复制成三份？</strong>同一向量 \(\mathbf{x}_i\) 在不同时刻扮演三种角色：算自己的输出时当 <strong>query</strong>（发问"全句谁和我最相关？"）；别人算输出时当 <strong>key</strong>（挂出"标签"供比对）；内容本身当 <strong>value</strong>（被加权汇入别人的新表示）。每个位置既是查询者又是被查询者——这就是"自"的含义。每个 \(\mathbf{y}_i\) 都融合了全序列与 \(\mathbf{x}_i\) 最相关的信息。</p>
   </div>
 </section>
 <section>
@@ -503,6 +504,18 @@
         <img src="images/self_attention.jpg" alt="自注意力结构" loading="lazy">
         <figcaption>自注意力：keys、values、queries 全部来自同一序列，每个位置的输出都是对全序列加权汇聚的结果。所有位置两两计算，可以完全并行——不必像 RNN 那样逐词等待。</figcaption>
     </figure>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 4. 自注意力（Self-Attention）</div>
+  <div class="slide-title">4.1 图解与例子：一个位置如何更新</div>
+  <div class="slide-body">
+<p><strong>对照上一页结构图</strong>：下方每个方框是序列中一个位置的输入向量；分叉出的 3 根箭头 = 复制成 keys、values、queries 三份；蓝色块内完成所有位置两两比对（共 n×n 次）与加权求和；上方输出框是各位置融合全句信息后的新表示 \(\mathbf{y}_i\)。</p>
+<p><strong>用"它"走一遍</strong>：query = "它"的词向量 → 与全句 9 个 key 逐一比对 → "动物"得分最高 → softmax 后"动物"的 value 占最大权重 → "它"的新表示融入"动物"的语义——<strong>指代关系被自动建立</strong>。所有位置同时完成同样的更新，完全并行。</p>
+<div class="callout key">
+        <span class="co-tag">🔑 与 3.2 节的区别 + 预告</span>
+        <p>3.2 节是<em>两个序列之间</em>的交叉注意力（query 来自解码器，key/value 来自编码器）；自注意力是<em>同一序列内部</em>，q、k、v 同源。第 5 章起，三份副本先乘可学习矩阵 \(W_q, W_k, W_v\) 再使用。</p>
+    </div>
   </div>
 </section>
 <section class="slide-short">
