@@ -185,7 +185,7 @@
 <section>
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 目录</div>
   <div class="slide-title">📋 本讲目录</div>
-  <div class="slide-body toc-list"><ol><li><a href="#/3" style="color:#1E40AF;text-decoration:none;">1. 注意力机制：从心理学到机器学习</a></li><li><a href="#/8" style="color:#1E40AF;text-decoration:none;">2. 注意力池化：从非参数到参数化</a></li><li><a href="#/17" style="color:#1E40AF;text-decoration:none;">3. Seq2Seq 中的注意力</a></li><li><a href="#/24" style="color:#1E40AF;text-decoration:none;">4. 自注意力（Self-Attention）</a></li><li><a href="#/30" style="color:#1E40AF;text-decoration:none;">5. Transformer：完全建立在注意力上的架构</a></li><li><a href="#/44" style="color:#1E40AF;text-decoration:none;">6. BERT：预训练时代的开幕</a></li><li><a href="#/48" style="color:#1E40AF;text-decoration:none;">7. 本讲小结与自测</a></li></ol></div>
+  <div class="slide-body toc-list"><ol><li><a href="#/3" style="color:#1E40AF;text-decoration:none;">1. 注意力机制：从心理学到机器学习</a></li><li><a href="#/8" style="color:#1E40AF;text-decoration:none;">2. 注意力池化：从非参数到参数化</a></li><li><a href="#/17" style="color:#1E40AF;text-decoration:none;">3. Seq2Seq 中的注意力</a></li><li><a href="#/25" style="color:#1E40AF;text-decoration:none;">4. 自注意力（Self-Attention）</a></li><li><a href="#/31" style="color:#1E40AF;text-decoration:none;">5. Transformer：完全建立在注意力上的架构</a></li><li><a href="#/45" style="color:#1E40AF;text-decoration:none;">6. BERT：预训练时代的开幕</a></li><li><a href="#/49" style="color:#1E40AF;text-decoration:none;">7. 本讲小结与自测</a></li></ol></div>
 </section>
 <section class="slide-short">
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 课前导入</div>
@@ -421,12 +421,32 @@
 </section>
 <section>
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 3. Seq2Seq 中的注意力</div>
+  <div class="slide-title">3.2 图解：注意力"外挂"在哪里</div>
+  <div class="slide-body">
+<p>对照上一页的架构图，逐块看信息怎么流动：</p>
+<ol>
+        <li><strong>左侧编码器</strong>：Sources → Embedding → Recurrent layer（n× = n 层堆叠），逐词读入源句；</li>
+        <li><strong>中间蓝色 Attention 块是新增"外挂"</strong>，两个输入：编码器各时间步的输出（key/value，记忆库）＋ 解码器上一时刻隐含状态（query，图中从解码器弯回来的箭头）；</li>
+        <li><strong>Attention 输出</strong>（检索到的上下文向量）与当前目标词嵌入<strong>拼接</strong>，一起送入解码器循环层；</li>
+        <li><strong>右侧解码器</strong>：Targets → Embedding → Recurrent layer（×n）→ FC 全连接层，输出词表上的概率分布；</li>
+        <li><strong>与 3.1 对比</strong>：没有注意力时只有 hidden state 一根线；现在每个解码步都能拿自己的 query 重查记忆库——"回头看"的通路打通了。</li>
+    </ol>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 3. Seq2Seq 中的注意力</div>
   <div class="slide-title">3.2 加入注意力的 seq2seq</div>
   <div class="slide-body">
 <figure>
         <img src="images/enc_dec_attention.jpg" alt="编码器—解码器上的注意力细节" loading="lazy">
         <figcaption>实现细节：注意力使用编码器最后一个循环层的输出；注意力输出与嵌入拼接后送入解码器的第一个循环层。每个解码步骤都有自己的注意力权重分布——这就是"对齐"。</figcaption>
     </figure>
+<ul>
+        <li><strong>用哪一层做记忆库</strong>：编码器 n 层堆叠，注意力只取<strong>最后一个循环层</strong>的输出（最高层上下文最完整）；</li>
+        <li><strong>注意力结果送到哪</strong>：与目标词嵌入拼接后送入解码器<strong>第一个</strong>循环层（图中从 Attention 弯到右侧底部的箭头），顶端 Dense 输出词表概率；</li>
+        <li><strong>编码器最终状态仍有用</strong>：中间横向箭头 = 用它初始化解码器对应层——全局概览靠初始化，细节检索靠注意力；</li>
+        <li><strong>每个解码步骤都有自己的权重分布</strong>——这就是"对齐"。</li>
+    </ul>
   </div>
 </section>
 <section class="slide-short">
