@@ -273,13 +273,14 @@
         <img src="images/enc_dec_attention.jpg" alt="编码器—解码器上的注意力细节" loading="lazy">
         <figcaption>实现细节：注意力使用编码器最后一个循环层的输出；注意力输出与嵌入拼接后送入解码器的第一个循环层。每个解码步骤都有自己的注意力权重分布——这就是"对齐"。</figcaption>
     </figure>
-    <p><strong>对照上图（实现细节），还有几个要点：</strong></p>
+    <p><strong>先看懂图中四类箭头各是什么含义：</strong></p>
     <ol>
-        <li><strong>用哪一层做记忆库</strong>：编码器是 n 层循环层的堆叠（左侧大括号 n），注意力只取<strong>最后一个循环层</strong>的输出作为 key/value——最高层包含最完整的上下文信息；</li>
-        <li><strong>注意力结果送到哪</strong>：注意力输出与目标词嵌入拼接后，送入解码器的<strong>第一个</strong>循环层（图中从 Attention 弯到右侧底部的那根箭头），上面各层照常堆叠，顶端 Dense 输出词表概率；</li>
-        <li><strong>编码器最终状态仍有用</strong>：中间的横向箭头表示编码器各层的最终隐含状态用于初始化解码器对应层——全局概览靠初始化，细节检索靠注意力，两条通路各司其职；</li>
-        <li><strong>每个解码步骤都有自己的注意力权重分布</strong>——这就是"对齐"：生成哪个词，就能看到它在看源句的哪些词。</li>
+        <li><strong>编码器顶层循环层 → Attention</strong>（向上的箭头）：编码器最后一个循环层在<strong>所有时间步</strong>的输出送入 Attention，充当 key 和 value——这就是"记忆库"。取最高层，是因为它包含最完整的上下文信息；</li>
+        <li><strong>解码器顶层循环层 → Attention</strong>（从右上弯回来的那根）：解码器当前的隐含状态送入 Attention 充当 query——含义是"我正准备生成下一个词，该看源句的哪里？"。Attention 拿它与记忆库中每个 key 算相似度、softmax 归一化成权重、对 value 加权求和，得到上下文向量；</li>
+        <li><strong>Attention → 解码器第一个循环层</strong>（从 Attention 弯到右侧底部的那根）：检索出的上下文向量与当前目标词的嵌入<strong>拼接</strong>后送入——解码器每生成一个词，输入里既有"刚生成的词"，又有"刚从源句检索到的相关内容"。上面各层照常堆叠，顶端 Dense 输出词表概率；</li>
+        <li><strong>编码器各层 → 解码器各层</strong>（每层中间的横向箭头）：编码器读完整句后，各层的<strong>最终隐含状态用于初始化解码器对应层</strong>——这是一次性传递的"全局概览"，与注意力"每步按需检索细节"的通路互补，各司其职。</li>
     </ol>
+    <p><strong>串成一个时间步看</strong>（以生成 "le" 为例）：解码器上一时刻的状态作为 query 进入 Attention（箭头②）→ 查询记忆库（箭头①提供的数据），权重大概率压在 "world" 上 → 加权得到上下文向量 → 与 "bonjour" 的嵌入拼接（箭头③）→ 逐层向上经 Dense 输出概率 → 挑出 "le"。<strong>每个解码步骤都重新走一遍这个过程，各有各的权重分布——这就是"对齐"。</strong></p>
 
     <div class="lab" id="lab-align">
         <div class="lab-head">
