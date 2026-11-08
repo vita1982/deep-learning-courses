@@ -261,10 +261,25 @@
         <img src="images/seq2seq_attention.jpg" alt="加入注意力机制的 seq2seq" loading="lazy">
         <figcaption>加入注意力的 seq2seq：编码器各时刻输出存入"记忆库"，注意力层用解码器的 query 去检索，检索结果与词嵌入一起送入解码器。</figcaption>
     </figure>
+    <p><strong>对照上图，逐块看信息怎么流动：</strong></p>
+    <ol>
+        <li><strong>左侧编码器</strong>：Sources（源句）→ Embedding（词嵌入）→ Recurrent layer（n× 表示 n 层循环层堆叠），逐词读入源句；</li>
+        <li><strong>中间蓝色 Attention 块是新增的"外挂"</strong>：它有两个输入——① 编码器循环层各时间步的输出（充当 key 和 value，即"记忆库"）；② 解码器上一时刻的隐含状态（充当 query，即图中从解码器一侧弯回来的箭头）；</li>
+        <li><strong>Attention 的输出</strong>（检索到的上下文向量）与当前目标词的嵌入<strong>拼接</strong>，一起送入解码器循环层；</li>
+        <li><strong>右侧解码器</strong>：Targets → Embedding → Recurrent layer（×n）→ FC 全连接层，输出词表上的概率分布，挑出下一个词；</li>
+        <li><strong>与 3.1 的图对比</strong>：没有注意力时，编码器到解码器只有 hidden state 一根线；现在每个解码步都能拿着自己的 query 重新查询记忆库——"回头看"的通路打通了。</li>
+    </ol>
     <figure>
         <img src="images/enc_dec_attention.jpg" alt="编码器—解码器上的注意力细节" loading="lazy">
         <figcaption>实现细节：注意力使用编码器最后一个循环层的输出；注意力输出与嵌入拼接后送入解码器的第一个循环层。每个解码步骤都有自己的注意力权重分布——这就是"对齐"。</figcaption>
     </figure>
+    <p><strong>下图（实现细节）进一步规定了三件事：</strong></p>
+    <ol>
+        <li><strong>用哪一层做记忆库</strong>：编码器是 n 层循环层的堆叠（左侧大括号 n），注意力只取<strong>最后一个循环层</strong>的输出作为 key/value——最高层包含最完整的上下文信息；</li>
+        <li><strong>注意力结果送到哪</strong>：注意力输出与目标词嵌入拼接后，送入解码器的<strong>第一个</strong>循环层（图中从 Attention 弯到右侧底部的那根箭头），上面各层照常堆叠，顶端 Dense 输出词表概率；</li>
+        <li><strong>编码器最终状态仍有用</strong>：中间的横向箭头表示编码器各层的最终隐含状态用于初始化解码器对应层——全局概览靠初始化，细节检索靠注意力，两条通路各司其职；</li>
+        <li><strong>每个解码步骤都有自己的注意力权重分布</strong>——这就是"对齐"：生成哪个词，就能看到它在看源句的哪些词。</li>
+    </ol>
 
     <div class="lab" id="lab-align">
         <div class="lab-head">
