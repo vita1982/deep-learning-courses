@@ -693,7 +693,7 @@ $$\mathbf{y}_i = f\big(\mathbf{x}_i,\ (\mathbf{x}_1, \mathbf{x}_1), \ldots, (\ma
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 5. Transformer：完全建立在注意力上的架构</div>
   <div class="slide-title">5.5 添加与归一化（Add &amp; Norm）</div>
   <div class="slide-body">
-<p>每个子层外面都包着"Add &amp; Norm"：<strong>残差连接</strong>（输出 = 子层输出 + 原始输入，保证深层堆叠时梯度畅通）加<strong>层归一化（Layer Norm）</strong>。层规范类似于批量规范（Batch Norm），区别在于：</p>
+<p>每个子层外面都包着"Add &amp; Norm"：<strong>残差连接</strong>（输出 = 子层输出 + 原始输入，保证深层堆叠时梯度畅通）加<strong>层归一化（Layer Norm）</strong>。层归一化类似于批量归一化（Batch Norm），区别在于：</p>
 <ul>
         <li>平均值和方差是<strong>沿最后一个维度</strong>计算的：<code>X.mean(axis=-1)</code>；</li>
         <li>而批量归一化是沿第一个批次维度计算的：<code>X.mean(axis=0)</code>。</li>
