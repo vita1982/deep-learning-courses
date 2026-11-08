@@ -241,6 +241,14 @@
         <img src="images/seq2seq.jpg" alt="seq2seq 机器翻译示例" loading="lazy">
         <figcaption>seq2seq 翻译：编码器逐词读入，解码器逐词生成。没有注意力时，解码器每一步只能依赖同一个固定向量，长句信息被严重压缩。</figcaption>
     </figure>
+    <p><strong>对照这张图，把"问题到底出在哪"讲清楚：</strong></p>
+    <ol>
+        <li><strong>左半部分（编码）</strong>：编码器 RNN 逐词读入 hello → world → .，每读一个词就把隐含状态更新一次。整句读完后，源句的全部信息被压缩进<strong>那一个 hidden state</strong>（固定向量）。</li>
+        <li><strong>中间的箭头是唯一的通道</strong>：编码器与解码器之间只有 hidden state 这一根线——解码器能拿到的源句信息，全部、也仅仅只有这个向量。</li>
+        <li><strong>右半部分（解码）</strong>：解码器从 &lt;bos&gt; 开始逐词生成 bonjour → le → monde → . → &lt;eos&gt;。关键问题在于：生成 "bonjour" 时它看到的是这个向量，生成 "monde" 时看到的<strong>还是同一个向量</strong>——从头到尾没有任何变化。</li>
+        <li><strong>由此产生两个硬伤</strong>：① <strong>信息瓶颈</strong>——句子越长，一个固定向量装不下的细节越多，且句首 "hello" 的信息经过 world、. 的逐步更新后已经衰减（这正是上一讲 RNN 长距离依赖问题在翻译任务上的表现）；② <strong>无法对齐</strong>——生成 "monde" 时模型本应专门回头看 "world"，但图中没有任何结构支持这一点，每个输出词对源句各词的"接触"完全均匀（都只能经由同一个向量间接获取）。</li>
+    </ol>
+    <p>注意力机制正好补上这一课：让解码器每生成一个词，都能直接"回头看"源句的每个词并自动对焦——这就是 3.2 节的方案。</p>
 
     <h3><span class="sec-no">3.2</span>加入注意力的 seq2seq</h3>
     <p>Bahdanau 等人 2014 年的经典方案：</p>
