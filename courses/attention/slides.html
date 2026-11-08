@@ -185,7 +185,7 @@
 <section>
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 目录</div>
   <div class="slide-title">📋 本讲目录</div>
-  <div class="slide-body toc-list"><ol><li><a href="#/3" style="color:#1E40AF;text-decoration:none;">1. 注意力机制：从心理学到机器学习</a></li><li><a href="#/8" style="color:#1E40AF;text-decoration:none;">2. 注意力池化：从非参数到参数化</a></li><li><a href="#/17" style="color:#1E40AF;text-decoration:none;">3. Seq2Seq 中的注意力</a></li><li><a href="#/23" style="color:#1E40AF;text-decoration:none;">4. 自注意力（Self-Attention）</a></li><li><a href="#/29" style="color:#1E40AF;text-decoration:none;">5. Transformer：完全建立在注意力上的架构</a></li><li><a href="#/43" style="color:#1E40AF;text-decoration:none;">6. BERT：预训练时代的开幕</a></li><li><a href="#/47" style="color:#1E40AF;text-decoration:none;">7. 本讲小结与自测</a></li></ol></div>
+  <div class="slide-body toc-list"><ol><li><a href="#/3" style="color:#1E40AF;text-decoration:none;">1. 注意力机制：从心理学到机器学习</a></li><li><a href="#/8" style="color:#1E40AF;text-decoration:none;">2. 注意力池化：从非参数到参数化</a></li><li><a href="#/17" style="color:#1E40AF;text-decoration:none;">3. Seq2Seq 中的注意力</a></li><li><a href="#/24" style="color:#1E40AF;text-decoration:none;">4. 自注意力（Self-Attention）</a></li><li><a href="#/30" style="color:#1E40AF;text-decoration:none;">5. Transformer：完全建立在注意力上的架构</a></li><li><a href="#/44" style="color:#1E40AF;text-decoration:none;">6. BERT：预训练时代的开幕</a></li><li><a href="#/48" style="color:#1E40AF;text-decoration:none;">7. 本讲小结与自测</a></li></ol></div>
 </section>
 <section class="slide-short">
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 课前导入</div>
@@ -387,6 +387,20 @@
         <img src="images/seq2seq.jpg" alt="seq2seq 机器翻译示例" loading="lazy">
         <figcaption>seq2seq 翻译：编码器逐词读入，解码器逐词生成。没有注意力时，解码器每一步只能依赖同一个固定向量，长句信息被严重压缩。</figcaption>
     </figure>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 3. Seq2Seq 中的注意力</div>
+  <div class="slide-title">3.1 动机：没有注意力，问题出在哪？</div>
+  <div class="slide-body">
+<p>对照上一页的 seq2seq 翻译图（hello world → bonjour le monde），把问题讲清楚：</p>
+<ol>
+        <li><strong>左侧（编码）</strong>：编码器逐词读入 hello → world → .，整句信息被压缩进<strong>同一个 hidden state</strong>（固定向量）；</li>
+        <li><strong>中间</strong>：hidden state 这根箭头是编码器与解码器之间<strong>唯一的通道</strong>——解码器能拿到的源句信息全部在此；</li>
+        <li><strong>右侧（解码）</strong>：生成 bonjour、le、monde 时，解码器看到的<strong>始终是同一个向量</strong>，从头到尾没有变化；</li>
+        <li><strong>两个硬伤</strong>：① <strong>信息瓶颈</strong>——句子越长，一个向量装不下的细节越多，句首 "hello" 的信息经逐步更新后衰减；② <strong>无法对齐</strong>——生成 "monde" 时本该专门回头看 "world"，但图中没有任何结构支持这一点。</li>
+    </ol>
+<p>注意力机制正好补上这一课：让解码器每生成一个词，都能直接"回头看"源句的每个词并自动对焦——这就是 3.2 节的方案。</p>
   </div>
 </section>
 <section>
