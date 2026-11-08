@@ -185,7 +185,7 @@
 <section>
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 目录</div>
   <div class="slide-title">📋 本讲目录</div>
-  <div class="slide-body toc-list"><ol><li><a href="#/3" style="color:#1E40AF;text-decoration:none;">1. 注意力机制：从心理学到机器学习</a></li><li><a href="#/8" style="color:#1E40AF;text-decoration:none;">2. 注意力池化：从非参数到参数化</a></li><li><a href="#/17" style="color:#1E40AF;text-decoration:none;">3. Seq2Seq 中的注意力</a></li><li><a href="#/25" style="color:#1E40AF;text-decoration:none;">4. 自注意力（Self-Attention）</a></li><li><a href="#/33" style="color:#1E40AF;text-decoration:none;">5. Transformer：完全建立在注意力上的架构</a></li><li><a href="#/48" style="color:#1E40AF;text-decoration:none;">6. BERT：预训练时代的开幕</a></li><li><a href="#/52" style="color:#1E40AF;text-decoration:none;">7. 本讲小结与自测</a></li></ol></div>
+  <div class="slide-body toc-list"><ol><li><a href="#/3" style="color:#1E40AF;text-decoration:none;">1. 注意力机制：从心理学到机器学习</a></li><li><a href="#/8" style="color:#1E40AF;text-decoration:none;">2. 注意力池化：从非参数到参数化</a></li><li><a href="#/17" style="color:#1E40AF;text-decoration:none;">3. Seq2Seq 中的注意力</a></li><li><a href="#/25" style="color:#1E40AF;text-decoration:none;">4. 自注意力（Self-Attention）</a></li><li><a href="#/33" style="color:#1E40AF;text-decoration:none;">5. Transformer：完全建立在注意力上的架构</a></li><li><a href="#/49" style="color:#1E40AF;text-decoration:none;">6. BERT：预训练时代的开幕</a></li><li><a href="#/53" style="color:#1E40AF;text-decoration:none;">7. 本讲小结与自测</a></li></ol></div>
 </section>
 <section class="slide-short">
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 课前导入</div>
@@ -674,6 +674,19 @@ $$\mathbf{y}_i = f\big(\mathbf{x}_i,\ (\mathbf{x}_1, \mathbf{x}_1), \ldots, (\ma
         <img src="images/ffn_highlight.jpg" alt="变换器块中的位置前馈网络（高亮）" loading="lazy">
         <figcaption>橙色高亮即 Position-wise FFN：注意力负责"混合"位置间的信息，FFN 负责在每个位置上独立做非线性变换——两者分工明确。</figcaption>
     </figure>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 5. Transformer：完全建立在注意力上的架构</div>
+  <div class="slide-title">5.4 逐位置 MLP：拆开来看</div>
+  <div class="slide-body">
+<ul>
+        <li><strong>名字</strong>：position-wise = 逐位置——同一个两层 MLP 对每个位置独立作用，位置间不交换信息；</li>
+        <li><strong>为什么重新整形</strong>：（批量, 序列长, d）合并前两维 → 每行是一个位置的 d 维向量，MLP 逐行独立作用，完事再折回三维；</li>
+        <li><strong>结构</strong>：FFN(x) = ReLU(xW₁+b₁)W₂+b₂——d 维 → 扩到 \(d_{ff}\)（常取 4d，如 768→3072）→ 压回 d 维；ReLU 提供非线性，维度不变块才能堆叠；</li>
+        <li><strong>为什么等价于两个 1×1 卷积</strong>：1×1 卷积只看当前位置、只混合通道维 = 每位置独立线性变换；两个串联（夹 ReLU）即逐位置两层 MLP；</li>
+        <li><strong>为什么需要它</strong>：注意力对 value 只是加权平均（线性），表达力有限；FFN 补非线性。<strong>分工：注意力管跨位置交流，FFN 管位置内加工。</strong></li>
+    </ul>
   </div>
 </section>
 <section>
