@@ -185,7 +185,7 @@
 <section>
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 目录</div>
   <div class="slide-title">📋 本讲目录</div>
-  <div class="slide-body toc-list"><ol><li><a href="#/3" style="color:#1E40AF;text-decoration:none;">1. 注意力机制：从心理学到机器学习</a></li><li><a href="#/8" style="color:#1E40AF;text-decoration:none;">2. 注意力池化：从非参数到参数化</a></li><li><a href="#/17" style="color:#1E40AF;text-decoration:none;">3. Seq2Seq 中的注意力</a></li><li><a href="#/25" style="color:#1E40AF;text-decoration:none;">4. 自注意力（Self-Attention）</a></li><li><a href="#/32" style="color:#1E40AF;text-decoration:none;">5. Transformer：完全建立在注意力上的架构</a></li><li><a href="#/46" style="color:#1E40AF;text-decoration:none;">6. BERT：预训练时代的开幕</a></li><li><a href="#/50" style="color:#1E40AF;text-decoration:none;">7. 本讲小结与自测</a></li></ol></div>
+  <div class="slide-body toc-list"><ol><li><a href="#/3" style="color:#1E40AF;text-decoration:none;">1. 注意力机制：从心理学到机器学习</a></li><li><a href="#/8" style="color:#1E40AF;text-decoration:none;">2. 注意力池化：从非参数到参数化</a></li><li><a href="#/17" style="color:#1E40AF;text-decoration:none;">3. Seq2Seq 中的注意力</a></li><li><a href="#/25" style="color:#1E40AF;text-decoration:none;">4. 自注意力（Self-Attention）</a></li><li><a href="#/33" style="color:#1E40AF;text-decoration:none;">5. Transformer：完全建立在注意力上的架构</a></li><li><a href="#/47" style="color:#1E40AF;text-decoration:none;">6. BERT：预训练时代的开幕</a></li><li><a href="#/51" style="color:#1E40AF;text-decoration:none;">7. 本讲小结与自测</a></li></ol></div>
 </section>
 <section class="slide-short">
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 课前导入</div>
@@ -566,6 +566,18 @@ $$\mathbf{y}_i = f\big(\mathbf{x}_i,\ (\mathbf{x}_1, \mathbf{x}_1), \ldots, (\ma
         <span class="co-tag">🔑 初学者理解</span>
         <p>RNN 像排队传话，队尾的话要一个一个传过来；自注意力像开会，每个人直接和所有人对话——效率高了，但人太多（序列太长）时会场也会拥挤。</p>
     </div>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 4. 自注意力（Self-Attention）</div>
+  <div class="slide-title">4.2 对比表逐格解读（n=序列长度，d=向量维度，k=核宽）</div>
+  <div class="slide-body">
+<ul>
+        <li><strong>计算复杂度</strong>：CNN \(O(knd^2)\) = 每位置宽 \(k\) 卷积、\(d\) 通道到 \(d\) 通道，乘 \(n\) 个位置；RNN \(O(nd^2)\) = 每步矩阵乘向量 \(d^2\)，乘 \(n\) 步；自注意力 \(O(n^2d)\) = \(n\) 个 query × \(n\) 个 key 的 \(d\) 维点积——<strong>平方项来自"两两比对"</strong>。</li>
+        <li><strong>并行度</strong>：CNN 与自注意力各位置互不依赖，\(O(n)\) 同时算；RNN 第 \(t\) 步必须等第 \(t-1\) 步的隐状态，\(O(1)\) 串行是结构宿命。</li>
+        <li><strong>最长路径</strong>：CNN 一层只看约 \(k\) 个邻居，跨句信息要堆 \(O(n/k)\) 层；RNN 沿链条最多 \(n-1\) 步；自注意力任意两位置直连，\(O(1)\) 一步直达。</li>
+        <li><strong>谁更贵看 \(n\) 与 \(d\)</strong>：\(d\) 大 \(n\) 短时三者相当；序列上万时 \(n^2\) 项使自注意力最贵——换来的是"一步直达 + 全并行"。</li>
+    </ul>
   </div>
 </section>
 <section class="section-divider">
