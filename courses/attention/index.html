@@ -273,7 +273,7 @@
         <img src="images/enc_dec_attention.jpg" alt="编码器—解码器上的注意力细节" loading="lazy">
         <figcaption>实现细节：注意力使用编码器最后一个循环层的输出；注意力输出与嵌入拼接后送入解码器的第一个循环层。每个解码步骤都有自己的注意力权重分布——这就是"对齐"。</figcaption>
     </figure>
-    <p><strong>下图（实现细节）进一步规定了三件事：</strong></p>
+    <p><strong>对照上图（实现细节），还有几个要点：</strong></p>
     <ol>
         <li><strong>用哪一层做记忆库</strong>：编码器是 n 层循环层的堆叠（左侧大括号 n），注意力只取<strong>最后一个循环层</strong>的输出作为 key/value——最高层包含最完整的上下文信息；</li>
         <li><strong>注意力结果送到哪</strong>：注意力输出与目标词嵌入拼接后，送入解码器的<strong>第一个</strong>循环层（图中从 Attention 弯到右侧底部的那根箭头），上面各层照常堆叠，顶端 Dense 输出词表概率；</li>
