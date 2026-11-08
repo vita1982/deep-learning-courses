@@ -465,6 +465,14 @@
         <li>再<strong>转换回 3-D 形态</strong>；</li>
         <li>这<strong>等价于应用两个 \(1 \times 1\) 卷积层</strong>。</li>
     </ul>
+    <p><strong>把这段话逐句拆开：</strong></p>
+    <ol>
+        <li><strong>名字的意思</strong>：position-wise = "逐位置"——同一个 MLP 对每个位置<strong>独立</strong>作用，位置之间不交换信息；FFN = 前馈网络，就是一个两层 MLP。</li>
+        <li><strong>为什么要重新整形</strong>：输入是三维张量（批量, 序列长度, 特征维 d）。把前两维合并成行后，每一行就是"某个样本某个位置"的 d 维向量，MLP 逐行独立作用——这正是"逐位置"的实现方式；变换完再折回三维，后续子层照常接手。</li>
+        <li><strong>两层 MLP 的结构</strong>：\(\mathrm{FFN}(\mathbf{x}) = \mathrm{ReLU}(\mathbf{x} W_1 + b_1) W_2 + b_2\)——先把 d 维扩到更大的隐含维 \(d_{ff}\)（通常取 4d，如 768 → 3072），经 ReLU 非线性，再压回 d 维。输入输出维度相同，变换器块才能原样堆叠。</li>
+        <li><strong>为什么等价于两个 1×1 卷积</strong>：1×1 卷积在序列维上只看当前位置、只混合特征（通道）维——恰好就是"每个位置独立的线性变换"；两个 1×1 卷积串联（中间夹 ReLU）就是逐位置的两层 MLP。第 04 讲卷积中 1×1 卷积"升维降维、不动位置"的用法，正是同一件事。</li>
+        <li><strong>为什么注意力之外还需要它</strong>：注意力对 value 只是<strong>加权平均</strong>——对输入是线性操作，表达力有限；FFN 补上逐位置的非线性加工。<strong>分工：注意力管"跨位置交流信息"，FFN 管"位置内部加工特征"。</strong></li>
+    </ol>
     <figure>
         <img src="images/ffn_highlight.jpg" alt="变换器块中的位置前馈网络（高亮）" loading="lazy">
         <figcaption>橙色高亮即 Position-wise FFN：注意力负责"混合"位置间的信息，FFN 负责在每个位置上独立做非线性变换——两者分工明确。</figcaption>
