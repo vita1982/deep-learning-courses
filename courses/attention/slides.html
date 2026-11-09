@@ -185,7 +185,7 @@
 <section>
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 目录</div>
   <div class="slide-title">📋 本讲目录</div>
-  <div class="slide-body toc-list"><ol><li><a href="#/3" style="color:#1E40AF;text-decoration:none;">1. 注意力机制：从心理学到机器学习</a></li><li><a href="#/8" style="color:#1E40AF;text-decoration:none;">2. 注意力池化：从非参数到参数化</a></li><li><a href="#/17" style="color:#1E40AF;text-decoration:none;">3. Seq2Seq 中的注意力</a></li><li><a href="#/25" style="color:#1E40AF;text-decoration:none;">4. 自注意力（Self-Attention）</a></li><li><a href="#/33" style="color:#1E40AF;text-decoration:none;">5. Transformer：完全建立在注意力上的架构</a></li><li><a href="#/50" style="color:#1E40AF;text-decoration:none;">6. BERT：预训练时代的开幕</a></li><li><a href="#/54" style="color:#1E40AF;text-decoration:none;">7. 本讲小结与自测</a></li></ol></div>
+  <div class="slide-body toc-list"><ol><li><a href="#/3" style="color:#1E40AF;text-decoration:none;">1. 注意力机制：从心理学到机器学习</a></li><li><a href="#/8" style="color:#1E40AF;text-decoration:none;">2. 注意力池化：从非参数到参数化</a></li><li><a href="#/17" style="color:#1E40AF;text-decoration:none;">3. Seq2Seq 中的注意力</a></li><li><a href="#/25" style="color:#1E40AF;text-decoration:none;">4. 自注意力（Self-Attention）</a></li><li><a href="#/33" style="color:#1E40AF;text-decoration:none;">5. Transformer：完全建立在注意力上的架构</a></li><li><a href="#/51" style="color:#1E40AF;text-decoration:none;">6. BERT：预训练时代的开幕</a></li><li><a href="#/55" style="color:#1E40AF;text-decoration:none;">7. 本讲小结与自测</a></li></ol></div>
 </section>
 <section class="slide-short">
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 课前导入</div>
@@ -689,31 +689,39 @@ $$\mathbf{y}_i = f\big(\mathbf{x}_i,\ (\mathbf{x}_1, \mathbf{x}_1), \ldots, (\ma
     </ul>
   </div>
 </section>
-<section>
+<section class="slide-short">
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 5. Transformer：完全建立在注意力上的架构</div>
   <div class="slide-title">5.5 添加与归一化（Add &amp; Norm）</div>
   <div class="slide-body">
-<p>每个子层外面都包着"Add &amp; Norm"：<strong>残差连接</strong>（输出 = 子层输出 + 原始输入，保证深层堆叠时梯度畅通）加<strong>层归一化（Layer Norm）</strong>。层归一化类似于批量归一化（Batch Norm），区别在于：</p>
+<p>它包裹在<strong>每一个子层</strong>（多头注意力、位置前馈 FFN）外面，是能堆几十层 Transformer 的关键。两个组件分工明确：<strong>Add = 残差连接</strong>，<strong>Norm = 层归一化（Layer Normalization）</strong>。</p>
+$$y = \mathrm{LayerNorm}\big(x + F(x)\big)$$
+<p>\(F(x)\) 就是子层（注意力模块 / FFN 模块）；次序是<strong>先残差相加、再做 LayerNorm</strong>（Post-LN 结构，原始论文版本）。</p>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 5. Transformer：完全建立在注意力上的架构</div>
+  <div class="slide-title">5.5 一、Add：残差连接（呼应第04讲 ResNet）</div>
+  <div class="slide-body">
 <ul>
-        <li>平均值和方差是<strong>沿最后一个维度</strong>计算的：<code>X.mean(axis=-1)</code>；</li>
-        <li>而批量归一化是沿第一个批次维度计算的：<code>X.mean(axis=0)</code>。</li>
+        <li><strong>公式</strong>：\(y = x + F(x)\)——\(x\) 是子层原始输入，\(F(x)\) 是子层学到的变换，只负责学<strong>修正量</strong>；输入 \(x\) 走一条直路直接绕回来，和子层输出相加（结构图中绕过蓝色子层、汇入 ⊕ 的弯箭头）；</li>
+        <li><strong>作用 ① 防梯度消失与退化</strong>：网络很深时，子层直接学恒等映射很难；残差让子层只学"差量"——最坏情况 \(F(x) \to 0\)，模型等价于 \(y = x\)，<strong>至少不会变坏</strong>；</li>
+        <li><strong>作用 ② 给梯度开高速通道</strong>：\(\partial y/\partial x = I + \partial F/\partial x\)——单位矩阵 \(I\) 是一条不衰减的直连通路，梯度顺直路回传、不会越乘越小。Transformer 能堆几十层的核心原因之一。</li>
+    </ul>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 5. Transformer：完全建立在注意力上的架构</div>
+  <div class="slide-title">5.5 二、Norm：层归一化 vs 批量归一化</div>
+  <div class="slide-body">
+<ul>
+        <li><strong>LayerNorm（Transformer 用的）</strong>：沿<strong>最后一维（特征维）</strong>算均值方差——<code>X.mean(axis=-1)</code>，对单个样本、单个位置的特征向量独立归一；序列长短、批量大小怎么变都稳定；</li>
+        <li><strong>BatchNorm</strong>：沿<strong>批次维</strong>统计——<code>X.mean(axis=0)</code>，跨样本计算；句子长度变化、batch 很小时统计不稳定，NLP 很少用；</li>
+        <li><strong>一句话理解 LayerNorm</strong>：把这一个位置的所有特征拉到均值 0、方差 1 的分布，稳住每层数值范围——加速训练、稳定数值。</li>
     </ul>
 <figure>
         <img src="images/layernorm.jpg" alt="Add & Norm：残差连接加层归一化" loading="lazy">
         <figcaption>Add &amp; Norm：Block（子层）输出与输入相加（⊕）后再做 Layer norm。对每个样本沿特征维独立归一，序列长度和批量大小变化时都稳定。</figcaption>
     </figure>
-  </div>
-</section>
-<section>
-  <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 5. Transformer：完全建立在注意力上的架构</div>
-  <div class="slide-title">5.5 先认识 Add：残差连接（呼应第04讲 ResNet）</div>
-  <div class="slide-body">
-<ul>
-        <li><strong>做法</strong>：\(y = x + F(x)\)——子层 \(F\)（注意力或 FFN）只学"修正量"，输入 \(x\) 沿旁路原样加回（结构图中绕过蓝色子层、汇入 ⊕ 的弯箭头）；</li>
-        <li><strong>为什么 ① 防退化</strong>：没有捷径时几十层堆叠，训练误差不降反升——网络连"恒等映射"都学不动；只学残差，最差也能学成"什么都不改"；</li>
-        <li><strong>为什么 ② 梯度高速通道</strong>：\(\partial y/\partial x = I + \partial F/\partial x\)，恒等项 \(I\) 保证梯度不衰减——Transformer 能堆几十上百块的关键之一；</li>
-        <li><strong>次序</strong>：先 Add 再 Norm——输出 = LayerNorm(\(x\) + 子层(\(x\)))。</li>
-    </ul>
   </div>
 </section>
 <section>
