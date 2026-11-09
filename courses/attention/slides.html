@@ -185,7 +185,7 @@
 <section>
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 目录</div>
   <div class="slide-title">📋 本讲目录</div>
-  <div class="slide-body toc-list"><ol><li><a href="#/3" style="color:#1E40AF;text-decoration:none;">1. 注意力机制：从心理学到机器学习</a></li><li><a href="#/8" style="color:#1E40AF;text-decoration:none;">2. 注意力池化：从非参数到参数化</a></li><li><a href="#/17" style="color:#1E40AF;text-decoration:none;">3. Seq2Seq 中的注意力</a></li><li><a href="#/25" style="color:#1E40AF;text-decoration:none;">4. 自注意力（Self-Attention）</a></li><li><a href="#/33" style="color:#1E40AF;text-decoration:none;">5. Transformer：完全建立在注意力上的架构</a></li><li><a href="#/51" style="color:#1E40AF;text-decoration:none;">6. BERT：预训练时代的开幕</a></li><li><a href="#/55" style="color:#1E40AF;text-decoration:none;">7. 本讲小结与自测</a></li></ol></div>
+  <div class="slide-body toc-list"><ol><li><a href="#/3" style="color:#1E40AF;text-decoration:none;">1. 注意力机制：从心理学到机器学习</a></li><li><a href="#/8" style="color:#1E40AF;text-decoration:none;">2. 注意力池化：从非参数到参数化</a></li><li><a href="#/17" style="color:#1E40AF;text-decoration:none;">3. Seq2Seq 中的注意力</a></li><li><a href="#/25" style="color:#1E40AF;text-decoration:none;">4. 自注意力（Self-Attention）</a></li><li><a href="#/33" style="color:#1E40AF;text-decoration:none;">5. Transformer：完全建立在注意力上的架构</a></li><li><a href="#/52" style="color:#1E40AF;text-decoration:none;">6. BERT：预训练时代的开幕</a></li><li><a href="#/56" style="color:#1E40AF;text-decoration:none;">7. 本讲小结与自测</a></li></ol></div>
 </section>
 <section class="slide-short">
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 课前导入</div>
@@ -722,6 +722,20 @@ $$y = \mathrm{LayerNorm}\big(x + F(x)\big)$$
         <img src="images/layernorm.jpg" alt="Add & Norm：残差连接加层归一化" loading="lazy">
         <figcaption>Add &amp; Norm：Block（子层）输出与输入相加（⊕）后再做 Layer norm。对每个样本沿特征维独立归一，序列长度和批量大小变化时都稳定。</figcaption>
     </figure>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 5. Transformer：完全建立在注意力上的架构</div>
+  <div class="slide-title">5.5 三、知识拓展：四种归一化对比（BN / LN / IN / GN）</div>
+  <div class="slide-body">
+<p>区别只在"哪些像素一起算 μ、σ"。立方体三轴：\(N\)（批次/样本）、\(C\)（通道）、\(H\cdot W\)（空间像素）；<strong>蓝色 = 共用同一套 μ、σ 的像素</strong>。</p>
+<figure>
+        <img src="images/norm_compare.jpg" alt="BN/LN/IN/GN 四种归一化统计范围对比" loading="lazy">
+    </figure>
+<ul>
+        <li><strong>BN</strong> 同一通道、跨全部样本统计 → CNN 大批量训练；<strong>LN</strong> 同一样本、全部通道统计 → Transformer / NLP 标配；</li>
+        <li><strong>IN</strong> 同一样本、同一通道内统计 → 图像风格迁移；<strong>GN</strong> 同一样本、通道分组统计 → 小批量检测 / 分割。</li>
+    </ul>
   </div>
 </section>
 <section>
