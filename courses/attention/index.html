@@ -556,16 +556,20 @@
     </div>
 
     <h3><span class="sec-no">5.7</span>预测：带掩码的自注意力</h3>
-    <p>在时刻 \(t\) 预测时有个陷阱：如果自注意力能看到整个目标序列，第 \(t\) 个位置就能"偷看"答案本身——模型学会抄答案而非预测。解决办法是<strong>掩码</strong>（mask）：</p>
+    <p><strong>为什么需要掩码？</strong>先看生成任务是怎么工作的：文本生成（比如 GPT 续写句子）是<strong>一个词一个词往外蹦</strong>——先猜第 1 个词，再猜第 2 个、第 3 个……这里有个陷阱：如果不加限制，模型预测第 \(t\) 个词时，自注意力会直接看到后面第 \(t+1\)、第 \(t+2\)……的词——<strong>相当于考试时直接偷看后面的答案</strong>，模型根本不用学怎么预测。</p>
+    <p><strong>解决办法：因果掩码（causal mask）</strong>，规则三条：</p>
     <ul>
-        <li>用<strong>之前输入的键和值</strong>（位置 \(1 \sim t-1\)）；</li>
-        <li>时刻 \(t\) 的输入作为<strong>查询（以及键和值）</strong>，来预测输出；</li>
-        <li>未来位置的注意力分数被置为 \(-\infty\)，softmax 后权重为 0。</li>
+        <li>预测第 \(t\) 个位置的词时，只能看位置 \(1 \sim t-1\) 这些<strong>已经生成的历史词</strong>；</li>
+        <li>当前第 \(t\) 个位置的输入作为 <strong>query</strong>（查询）去匹配历史词；</li>
+        <li>未来位置的注意力分数<strong>强行设为 \(-\infty\)</strong>——经过 softmax 后 \(-\infty\) 变成 0，即<strong>未来词的权重 = 0，完全看不见</strong>。</li>
     </ul>
+    <p>这就是 GPT 等大语言模型使用的<strong>因果自注意力</strong>：保证"顺序生成、绝不偷看未来"。</p>
+    <p><strong>示意图怎么读</strong>：蓝色框是 self-attention 计算。<strong>keys 和 values 来自位置 \(1, 2, \dots, t-1\)</strong> 这些已经存在的词；<strong>query 是当前第 \(t\) 个词</strong>。含义：用现在这个词去查询、关注前面已经生成的历史词——右边的未来是空的、看不见。一句话：预测第 \(t\) 个位置的输出，只拿 \(t\) 之前的 K、V 来计算。</p>
     <figure>
         <img src="images/masked_attention.jpg" alt="带掩码的自注意力预测" loading="lazy">
         <figcaption>带掩码的自注意力：预测时刻 \(t\) 的输出时，只能使用 \(t\) 及之前的键和值。这就是 GPT 类生成模型的"因果掩码"。</figcaption>
     </figure>
+    <p><strong>互动实验预告：KV 缓存——生成下一个词时怎么少算、变快</strong>。先看没有缓存的"笨办法"：每生成一个新词，就把所有词之间的注意力分数<strong>全部重算一遍</strong>——已有 2 个词时全算是 \(2\times2=4\) 个分数，3 个词时就要重算 \(9\) 个，越来越浪费。再看有 <strong>KV 缓存（KV Cache）</strong>的聪明办法：历史词的 K、V 算完之后<strong>直接存起来、不再重算</strong>；每生成一个新词，只需拿<strong>新词的 query</strong> 去对所有已存好的历史 key 算<strong>一行</strong>新分数——生成第 3 个词只需新算 3 个分数，而不是重算 9 个。下面动手点一点验证：</p>
 
     <div class="lab" id="lab-mask">
         <div class="lab-head">
@@ -588,6 +592,22 @@
             </div>
         </div>
         <div class="lab-note">新 token 只贡献<b>一行</b>新分数：它的 query 对每一个历史 key。形成这一行需要所有历史 k，把它变成输出需要所有历史 v——所以把它们<b>缓存</b>起来，什么都不必重算。</div>
+    </div>
+
+    <div class="tbl-wrap">
+        <table>
+            <thead><tr><th>对比项</th><th>普通自注意力（编码器用）</th><th>带掩码的因果自注意力（解码器 / GPT 用）</th></tr></thead>
+            <tbody>
+                <tr><td><strong>方向</strong></td><td>双向：所有词互相看</td><td>单向：只能看左边历史</td></tr>
+                <tr><td><strong>掩码</strong></td><td>无 mask</td><td>未来位置分数置 \(-\infty\)</td></tr>
+                <tr><td><strong>适合任务</strong></td><td>理解句子（翻译、分类）</td><td>一句一句生成文本</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="callout key">
+        <span class="co-tag">💡 极简比喻</span>
+        <p>你写作文，写到第 5 个字：<strong>普通自注意力</strong> = 直接看到整篇作文（包括还没写的第 6、7 个字）→ 作弊；<strong>带掩码的自注意力</strong> = 只能看前面 1~4 个字、后面一片空白 → 正常往下写；<strong>KV 缓存</strong> = 前面 1~4 个字已经想好、记在草稿纸上，写新字时不必把前面的内容重新想一遍。</p>
     </div>
 </section>
 
