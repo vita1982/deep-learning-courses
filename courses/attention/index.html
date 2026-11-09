@@ -494,6 +494,18 @@
         <li><strong>BatchNorm</strong>：沿<strong>批次维</strong>算均值方差——<code>X.mean(axis=0)</code>，是跨样本统计；句子长度变化、batch 很小时统计不稳定，NLP 很少用；</li>
         <li><strong>一句话理解 LayerNorm</strong>：把这一个位置的所有特征拉到均值 0、方差 1 的分布，稳住每层的数值范围——加速训练、稳定数值。</li>
     </ul>
+    <p><strong>推广：四种归一化方法一览</strong>。LN 与 BN 的对比只是冰山一角——归一化方法共有四种主流，区别只在<strong>"哪些像素一起算均值 μ、方差 σ"</strong>。把特征张量看成一个立方体，三个轴分别是 \(N\)（批次/样本）、\(C\)（通道）、\(H\cdot W\)（空间像素，合并为一个方向）；下图中<strong>蓝色 = 一起计算同一套 μ、σ 的所有像素</strong>：</p>
+    <figure>
+        <img src="images/norm_compare.jpg" alt="BN/LN/IN/GN 四种归一化统计范围对比" loading="lazy">
+        <figcaption>四种归一化的统计范围对比（仿何恺明 Group Normalization 论文经典图示，白底重绘）。</figcaption>
+    </figure>
+    <ul>
+        <li><strong>BN（批量归一化）</strong>：固定一个通道，统计范围纵向贯穿全部 \(N\) 个样本和全部空间像素——<strong>同一个通道，跨所有样本算均值方差</strong>。适合 CNN 大批量训练；batch 太小则统计不稳定；</li>
+        <li><strong>LN（层归一化）</strong>：固定一个样本，统计范围横向铺满全部通道和全部空间像素——<strong>同一个样本，所有通道一起算</strong>。与批量大小、序列长度无关，是 Transformer / NLP 的标配；</li>
+        <li><strong>IN（实例归一化）</strong>：固定一个样本和一个通道，只在 \(H\cdot W\) 空间像素内统计——<strong>一张图、一个通道内部归一化</strong>。会抹掉单张图像自身的对比度风格，典型应用是图像风格迁移；</li>
+        <li><strong>GN（组归一化）</strong>：固定一个样本，把通道切成若干组，组内通道与空间像素一起统计——<strong>IN 与 LN 之间的折中</strong>。不依赖批量大小，典型应用是小批量的检测、分割任务。</li>
+    </ul>
+    <p>记忆线索：蓝色块越大，统计范围越大——从 IN 到 GN 到 LN，蓝色在一个样本内部逐渐扩大，BN 则是"跨样本"的另一个极端。回到本讲主题：<strong>Transformer 用的是 LN</strong>——每个 token 独立归一化，无论批量与序列长度如何变化，行为都一致。</p>
     <figure>
         <img src="images/layernorm.jpg" alt="Add & Norm：残差连接加层归一化" loading="lazy">
         <figcaption>Add &amp; Norm：Block（子层）输出与输入相加（⊕）后再做 Layer norm。对每个样本沿特征维独立归一，序列长度和批量大小变化时都稳定。</figcaption>
