@@ -484,9 +484,9 @@
     <p>其中 \(F(x)\) 就是子层（注意力模块 / FFN 模块）；次序是<strong>先残差相加、再做 LayerNorm</strong>（Post-LN 结构，原始论文版本）。</p>
     <p><strong>一、Add：残差连接</strong>（第 04 讲 ResNet 的跳跃连接），公式 \(y = x + F(x)\)：</p>
     <ul>
-        <li>\(x\) 是子层的原始输入，\(F(x)\) 是注意力或 FFN 学到的变换——它只负责学<strong>修正量</strong>。直观理解：输入 \(x\) 走一条直路直接绕回来，和子层输出加在一起（结构图中绕过蓝色子层、汇入 ⊕ 的弯箭头）；</li>
+        <li>\(x\) 是子层的原始输入，\(F(x)\) 是注意力或 FFN 学到的变换——它只负责学<strong>修正量</strong>。直观理解：输入 \(x\) 经恒等旁路原样传回，与子层输出相加（结构图中绕过蓝色子层、汇入 ⊕ 的弯箭头）；</li>
         <li><strong>作用 ① 防止梯度消失与退化</strong>：网络很深时，让子层直接学恒等映射很难；残差让子层只需学"差量"——最坏情况子层学不到东西，\(F(x) \to 0\)，模型等价于 \(y = x\)，<strong>至少不会变坏</strong>；</li>
-        <li><strong>作用 ② 给梯度开高速通道</strong>：求导 \(\partial y/\partial x = I + \partial F(x)/\partial x\)——单位矩阵 \(I\) 就是一条<strong>不衰减的直连梯度通路</strong>，反向传播时梯度顺着直路直接回传，不会在多层堆叠后越乘越小。这就是 Transformer 可以堆叠几十层的核心原因之一。</li>
+        <li><strong>作用 ② 梯度直连通路</strong>：求导 \(\partial y/\partial x = I + \partial F(x)/\partial x\)——单位矩阵 \(I\) 就是一条<strong>不衰减的直连梯度通路</strong>，反向传播时梯度沿该通路直接回传，不会因多层堆叠而逐层衰减。这就是 Transformer 可以堆叠几十层的核心原因之一。</li>
     </ul>
     <p><strong>二、Norm：层归一化（LayerNorm）</strong>。和已学过的 BatchNorm 对比来看：</p>
     <ul>
