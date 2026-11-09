@@ -623,7 +623,7 @@ $$\mathbf{y}_i = f\big(\mathbf{x}_i,\ (\mathbf{x}_1, \mathbf{x}_1), \ldots, (\ma
 <ol>
         <li><strong>左图 = 第 3 章 seq2seq+注意力</strong>：主体仍是循环层（n× 堆叠），注意力只是中间的外挂检索层；</li>
         <li><strong>右图 = Transformer</strong>：循环层整个消失，编码器（×n）与解码器（×n）全由两类蓝色子层堆成——多头注意力 + 位置前馈网络，每个子层外包 Add &amp; Norm；</li>
-        <li><strong>三处注意力的位置</strong>：编码器块底部 = 编码器自注意力；解码器块底部 = 解码器自注意力（带掩码）；解码器块<em>中部</em> = 编码器—解码器注意力——key/value 由 "State" 横线从编码器顶端引来，送入解码器<em>每一块</em>；</li>
+        <li><strong>三处注意力的位置</strong>：编码器块底部 = 编码器自注意力；解码器块底部 = 解码器自注意力（带掩码）；解码器块<em>中部</em> = 编码器—解码器注意力——key/value 由 "State" 横线从编码器顶端引来，送入解码器<em>每一块</em>。<strong>箭头读法</strong>：注意力框下方三根箭头 = Q、K、V——中间直箭头是 query（来自下方解码器），左右弯箭头是 K、V（同一条 State 线到框前分成两个箭头，因 K、V 同源）；</li>
         <li><strong>底部 Positional Encoding</strong>：两侧嵌入之后叠加位置编码，注入顺序（补 5.1 的欠账，5.6 细讲）；</li>
         <li><strong>数据流</strong>：源句从编码器底部逐块向上；解码器逐块向上、顶端 Dense 输出词表概率。</li>
     </ol>
