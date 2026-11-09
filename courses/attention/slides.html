@@ -185,7 +185,7 @@
 <section>
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 目录</div>
   <div class="slide-title">📋 本讲目录</div>
-  <div class="slide-body toc-list"><ol><li><a href="#/3" style="color:#1E40AF;text-decoration:none;">1. 注意力机制：从心理学到机器学习</a></li><li><a href="#/8" style="color:#1E40AF;text-decoration:none;">2. 注意力池化：从非参数到参数化</a></li><li><a href="#/17" style="color:#1E40AF;text-decoration:none;">3. Seq2Seq 中的注意力</a></li><li><a href="#/25" style="color:#1E40AF;text-decoration:none;">4. 自注意力（Self-Attention）</a></li><li><a href="#/33" style="color:#1E40AF;text-decoration:none;">5. Transformer：完全建立在注意力上的架构</a></li><li><a href="#/54" style="color:#1E40AF;text-decoration:none;">6. BERT：预训练时代的开幕</a></li><li><a href="#/58" style="color:#1E40AF;text-decoration:none;">7. 本讲小结与自测</a></li></ol></div>
+  <div class="slide-body toc-list"><ol><li><a href="#/3" style="color:#1E40AF;text-decoration:none;">1. 注意力机制：从心理学到机器学习</a></li><li><a href="#/8" style="color:#1E40AF;text-decoration:none;">2. 注意力池化：从非参数到参数化</a></li><li><a href="#/17" style="color:#1E40AF;text-decoration:none;">3. Seq2Seq 中的注意力</a></li><li><a href="#/25" style="color:#1E40AF;text-decoration:none;">4. 自注意力（Self-Attention）</a></li><li><a href="#/33" style="color:#1E40AF;text-decoration:none;">5. Transformer：完全建立在注意力上的架构</a></li><li><a href="#/53" style="color:#1E40AF;text-decoration:none;">6. BERT：预训练时代的开幕</a></li><li><a href="#/57" style="color:#1E40AF;text-decoration:none;">7. 本讲小结与自测</a></li></ol></div>
 </section>
 <section class="slide-short">
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 课前导入</div>
@@ -750,38 +750,27 @@ $$y = \mathrm{LayerNorm}\big(x + F(x)\big)$$
 </section>
 <section>
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 5. Transformer：完全建立在注意力上的架构</div>
-  <div class="slide-title">5.6 为什么需要位置编码：自注意力"看不见"顺序</div>
+  <div class="slide-title">5.6 为什么需要位置编码：自注意力"不认顺序"</div>
   <div class="slide-body">
 <ul>
-        <li><strong>问题</strong>：自注意力是"集合操作"——输出 \(\sum_i \alpha_i v_i\) 的权重只由内容相似度决定、与位置无关；打乱词序，输出只是跟着词走（置换不变性）；</li>
-        <li><strong>反例</strong>："我打他"与"他打我"用词完全相同、意思完全相反——顺序必须手工补回来；</li>
-        <li><strong>朴素方案为何不行</strong>：直接编号 0,1,2,… 数值无界、大编号淹没词义；归一化 \(i/l\) 随句长漂移（位置 2 在 4 词句是 0.5、百词句是 0.02）；二进制编码跳变不可微（7→8 时 0111→1000 四位全翻）；</li>
-        <li><strong>出路</strong>：正弦编码 = "连续版二进制"——sin/cos 天然有界 \([-1,1]\)、平滑可微、周期变化，且每个位置的频率组合互不相同（唯一指纹）。设计目标：唯一、有界、与句长无关、能表达相对位置、无需训练可外推。</li>
+        <li><strong>例子</strong>："小猫追小狗" = [小猫, 追, 小狗]——自注意力只看词与词的相关性做向量加权；换成 [小狗, 追, 小猫]，它分不清两句话有什么不一样：在它眼里只是三个词，没有先后概念；</li>
+        <li><strong>麻烦</strong>：语言是有顺序的，顺序一变意思就变——必须给每个词贴标签：你是第 1 个词、第 2 个词……这个标签就是<strong>位置编码</strong>；</li>
+        <li><strong>做法</strong>：每个位置生成一个与词向量<strong>一样长</strong>的"指纹"向量（词向量 128 维 → 指纹也是 128 个数字），每个位置的指纹都不一样；</li>
+        <li><strong>注入</strong>：词向量 + 位置指纹<strong>直接相加</strong>——相加后同时包含"这个词是什么"（词嵌入负责）与"在第几个位置"（位置编码负责）：输出 = \(X + P\)。</li>
     </ul>
   </div>
 </section>
 <section>
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 5. Transformer：完全建立在注意力上的架构</div>
-  <div class="slide-title">5.6 正弦位置编码：公式解读与数值例子</div>
+  <div class="slide-title">5.6 为什么用 sin/cos 做指纹，而不是直接写 [0,1,2,3]</div>
   <div class="slide-body">
+<ul>
+        <li><strong>直接编号的两个缺点</strong>：① 数字越来越大，模型难学；② 表达不了"两个词离得近"这种关系；</li>
+        <li><strong>改用不同频率的波浪线（sin/cos 曲线）生成指纹</strong>：高频抖得快——位置稍变数值就变，区分紧挨着的词（位置 3 与 4）；低频抖得慢——走很远才变一点，区分隔得远的词（位置 3 与 40）；</li>
+        <li>偶数维取 sin、奇数维取 cos，一对一对搭配——下面公式干的全部事情，就是批量算出这一串"波浪数字"：</li>
+    </ul>
 $$P_{i,\,2j} = \sin\!\big(i / 10000^{2j/d}\big), \qquad P_{i,\,2j+1} = \cos\!\big(i / 10000^{2j/d}\big)$$
-<ul>
-        <li>\(i\) = 位置；偶数维 \(2j\) 用 sin、奇数维 \(2j{+}1\) 用 cos；角频率 \(\omega_j = 10000^{-2j/d}\) 随维度指数减小，波长从 \(2\pi\) 拉长到约 \(2\pi\times10^4\)；</li>
-        <li><strong>钟表类比</strong>：低维像秒针（转得快，细分邻近位置）、高维像时针（转得慢，标记长距离）——"时、分、秒"唯一确定时刻，频率组合唯一确定位置；</li>
-        <li><strong>数值例子（\(d{=}8\)）</strong>：位置 1 的编码 ≈ [0.841, 0.540, 0.100, 0.995, 0.010, 1.000, 0.001, 1.000]；位置 1→2 时低维 cos 从 0.54 跌到 −0.42，高维几乎钉在 \((0,1)\) 附近——指纹明显不同且平滑连续。</li>
-    </ul>
-  </div>
-</section>
-<section>
-  <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 5. Transformer：完全建立在注意力上的架构</div>
-  <div class="slide-title">5.6 精妙之处：相对位置线性可读 · 为何相加不拼接</div>
-  <div class="slide-body">
-<ul>
-        <li><strong>sin/cos 为何成对</strong>：\(\sin\omega(i{+}k)=\sin\omega i\cos\omega k+\cos\omega i\sin\omega k\)、\(\cos\omega(i{+}k)=\cos\omega i\cos\omega k-\sin\omega i\sin\omega k\)——位置 \(i{+}k\) 的编码对 = 位置 \(i\) 的编码对 × 一个<strong>只依赖偏移 \(k\)</strong> 的二维旋转矩阵；</li>
-        <li><strong>含义</strong>："相对距离 \(k\)"对模型是现成的——一次线性变换即可从 \(P_i\) 读出 \(P_{i+k}\)，而线性变换正是神经网络最擅长的操作；</li>
-        <li><strong>为何相加不拼接</strong>：\(X+P\) 维度不变、零参数（拼接 \(d\to2d\) 会放大后续所有矩阵）；\(W(x{+}p)=Wx+Wp\)，后续层可分头提取词义与位置；</li>
-        <li><strong>定位</strong>：词向量回答"我是谁"、位置编码回答"我在哪"；编码为手工固定值、不参与训练（原版做法；BERT 起亦有可学习位置编码）。</li>
-    </ul>
+<p>\(i\) = 位置（第几个词）；\(2j, 2j{+}1\) = 维度下标；\(d\) = 词向量维度；\(10000^{2j/d}\) 控制频率——维度越高、频率越低、抖得越慢。</p>
   </div>
 </section>
 <section>
@@ -796,11 +785,16 @@ $$P_{i,\,2j} = \sin\!\big(i / 10000^{2j/d}\big), \qquad P_{i,\,2j+1} = \cos\!\bi
 </section>
 <section>
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 5. Transformer：完全建立在注意力上的架构</div>
-  <div class="slide-title">5.6 位置编码：把顺序"注入"模型</div>
+  <div class="slide-title">5.6 热力图怎么读（重点）</div>
   <div class="slide-body">
+<ul>
+        <li>横轴 = 位置（第 1~50 个词）；纵轴 = 指纹里的每一条波浪（每个维度）；颜色 = 该位置在这条波浪上的取值（蓝正红负）；</li>
+        <li>低维（底部）条纹密密麻麻 = 抖得快（高频）；高维（顶部）横条平缓 = 抖得慢（低频）；</li>
+        <li><strong>固定一个位置，竖着看一根竖线</strong>（如第 10 个词）：颜色组合独一无二 = 该位置的专属"二维码"——模型一看便知"这是第 10 号位置"。</li>
+    </ul>
 <figure>
         <img src="images/positional_encoding.png" alt="正余弦位置编码热力图" loading="lazy">
-        <figcaption>位置编码热力图（50 个位置 × 128 维）：横轴是序列位置，纵轴是嵌入维度。低维（底部）波纹细密、高维（顶部）平缓——每个位置因此拥有独一无二的"指纹"。</figcaption>
+        <figcaption>位置编码热力图（50 个位置 × 128 维）。</figcaption>
     </figure>
   </div>
 </section>
