@@ -527,7 +527,8 @@
         <li><strong>钟表类比</strong>：低维像秒针，转得快，细分邻近位置；高维像时针，转得慢，标记长距离。正如"时、分、秒"三种转速唯一确定一天中的时刻，一组不同频率的 sin/cos 值唯一确定一个位置。</li>
     </ul>
     <p><strong>四、一个位置编码向量到底长什么样</strong>（取 \(d=8\)，对比位置 1 与位置 2）：</p>
-    <table>
+    <div class="tbl-wrap">
+        <table>
         <thead><tr><th>维度</th><th>函数</th><th>角频率 \(\omega_j\)</th><th>位置 1</th><th>位置 2</th></tr></thead>
         <tbody>
             <tr><td>0</td><td>sin</td><td>1</td><td>0.841</td><td>0.909</td></tr>
@@ -539,7 +540,8 @@
             <tr><td>6</td><td>sin</td><td>0.001</td><td>0.0010</td><td>0.0020</td></tr>
             <tr><td>7</td><td>cos</td><td>0.001</td><td>0.9999995</td><td>0.9999980</td></tr>
         </tbody>
-    </table>
+        </table>
+    </div>
     <p>读这张表：低维（\(\omega=1\)）变化剧烈——位置 1→2，cos 项从 0.540 跌到 −0.416；高维（\(\omega=0.001\)）几乎钉在 \((0,1)\) 附近缓慢漂移。任意两个位置的"指纹"因此明显不同，且差异平滑连续、模型容易学习。</p>
     <p><strong>五、最精妙的一点：相对位置可以线性读出</strong>。sin/cos 为什么成对出现？看三角恒等式：</p>
     $$\sin\omega(i{+}k) = \sin\omega i\,\cos\omega k + \cos\omega i\,\sin\omega k, \qquad \cos\omega(i{+}k) = \cos\omega i\,\cos\omega k - \sin\omega i\,\sin\omega k$$
