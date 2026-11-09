@@ -703,9 +703,9 @@ $$y = \mathrm{LayerNorm}\big(x + F(x)\big)$$
   <div class="slide-title">5.5 一、Add：残差连接（呼应第04讲 ResNet）</div>
   <div class="slide-body">
 <ul>
-        <li><strong>公式</strong>：\(y = x + F(x)\)——\(x\) 是子层原始输入，\(F(x)\) 是子层学到的变换，只负责学<strong>修正量</strong>；输入 \(x\) 走一条直路直接绕回来，和子层输出相加（结构图中绕过蓝色子层、汇入 ⊕ 的弯箭头）；</li>
+        <li><strong>公式</strong>：\(y = x + F(x)\)——\(x\) 是子层原始输入，\(F(x)\) 是子层学到的变换，只负责学<strong>修正量</strong>；输入 \(x\) 经恒等旁路原样传回，与子层输出相加（结构图中绕过蓝色子层、汇入 ⊕ 的弯箭头）；</li>
         <li><strong>作用 ① 防梯度消失与退化</strong>：网络很深时，子层直接学恒等映射很难；残差让子层只学"差量"——最坏情况 \(F(x) \to 0\)，模型等价于 \(y = x\)，<strong>至少不会变坏</strong>；</li>
-        <li><strong>作用 ② 给梯度开高速通道</strong>：\(\partial y/\partial x = I + \partial F/\partial x\)——单位矩阵 \(I\) 是一条不衰减的直连通路，梯度顺直路回传、不会越乘越小。Transformer 能堆几十层的核心原因之一。</li>
+        <li><strong>作用 ② 梯度直连通路</strong>：\(\partial y/\partial x = I + \partial F/\partial x\)——单位矩阵 \(I\) 是一条不衰减的直连通路，梯度沿该通路回传、不会逐层衰减。Transformer 能堆几十层的核心原因之一。</li>
     </ul>
   </div>
 </section>
