@@ -479,18 +479,20 @@
     </figure>
 
     <h3><span class="sec-no">5.5</span>添加与归一化（Add &amp; Norm）</h3>
-    <p>每个子层（注意力、FFN）外面都包着一个"Add &amp; Norm"：<strong>Add = 残差连接</strong>，<strong>Norm = 层归一化</strong>——两者各解决一个问题，分别来看。</p>
-    <p><strong>先认识 Add——残差连接</strong>（第 04 讲 ResNet 的跳跃连接）：</p>
+    <p>它包裹在<strong>每一个子层</strong>（多头注意力、位置前馈 FFN）外面，是能堆几十层 Transformer 的关键。两个组件分工明确：<strong>Add = 残差连接</strong>，<strong>Norm = 层归一化（Layer Normalization）</strong>。</p>
+    $$y = \mathrm{LayerNorm}\big(x + F(x)\big)$$
+    <p>其中 \(F(x)\) 就是子层（注意力模块 / FFN 模块）；次序是<strong>先残差相加、再做 LayerNorm</strong>（Post-LN 结构，原始论文版本）。</p>
+    <p><strong>一、Add：残差连接</strong>（第 04 讲 ResNet 的跳跃连接），公式 \(y = x + F(x)\)：</p>
     <ul>
-        <li><strong>做法</strong>：\(y = x + F(x)\)——子层 \(F\)（注意力或 FFN）只学对输入的"修正量"，输入 \(x\) 沿旁路原样加回来（结构图中绕过蓝色子层、汇入 ⊕ 的那根弯箭头）；</li>
-        <li><strong>为什么需要 · ① 防退化</strong>：没有捷径时几十层堆叠，训练误差不降反升——网络连"恒等映射"都学不动；让子层只学残差，最差也能学成"什么都不改"（ResNet 的核心发现）；</li>
-        <li><strong>为什么需要 · ② 梯度高速通道</strong>：反向传播时 \(\partial y/\partial x = I + \partial F/\partial x\)，恒等项 \(I\) 给梯度开了一条不衰减的直达通道——这是 Transformer 能堆几十上百个块的关键之一；</li>
-        <li><strong>次序</strong>：先 Add（残差相加）再 Norm（层归一化），即 输出 = LayerNorm(\(x\) + 子层(\(x\)))。</li>
+        <li>\(x\) 是子层的原始输入，\(F(x)\) 是注意力或 FFN 学到的变换——它只负责学<strong>修正量</strong>。直观理解：输入 \(x\) 走一条直路直接绕回来，和子层输出加在一起（结构图中绕过蓝色子层、汇入 ⊕ 的弯箭头）；</li>
+        <li><strong>作用 ① 防止梯度消失与退化</strong>：网络很深时，让子层直接学恒等映射很难；残差让子层只需学"差量"——最坏情况子层学不到东西，\(F(x) \to 0\)，模型等价于 \(y = x\)，<strong>至少不会变坏</strong>；</li>
+        <li><strong>作用 ② 给梯度开高速通道</strong>：求导 \(\partial y/\partial x = I + \partial F(x)/\partial x\)——单位矩阵 \(I\) 就是一条<strong>不衰减的直连梯度通路</strong>，反向传播时梯度顺着直路直接回传，不会在多层堆叠后越乘越小。这就是 Transformer 可以堆叠几十层的核心原因之一。</li>
     </ul>
-    <p><strong>再认识 Norm——层归一化（Layer Norm）</strong>。它类似于批量归一化（Batch Norm），区别在于：</p>
+    <p><strong>二、Norm：层归一化（LayerNorm）</strong>。和已学过的 BatchNorm 对比来看：</p>
     <ul>
-        <li>平均值和方差是<strong>沿最后一个维度</strong>计算的：<code>X.mean(axis=-1)</code>；</li>
-        <li>而批量归一化是沿第一个批次维度计算的：<code>X.mean(axis=0)</code>。</li>
+        <li><strong>LayerNorm（Transformer 用的）</strong>：沿<strong>最后一维（特征维）</strong>算均值、方差——<code>X.mean(axis=-1)</code>，对单独一个样本、单独一个位置的特征向量做归一化；不管序列长短、批量大小怎么变都稳定；</li>
+        <li><strong>BatchNorm</strong>：沿<strong>批次维</strong>算均值方差——<code>X.mean(axis=0)</code>，是跨样本统计；句子长度变化、batch 很小时统计不稳定，NLP 很少用；</li>
+        <li><strong>一句话理解 LayerNorm</strong>：把这一个位置的所有特征拉到均值 0、方差 1 的分布，稳住每层的数值范围——加速训练、稳定数值。</li>
     </ul>
     <figure>
         <img src="images/layernorm.jpg" alt="Add & Norm：残差连接加层归一化" loading="lazy">
