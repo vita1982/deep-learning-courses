@@ -185,7 +185,7 @@
 <section>
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 目录</div>
   <div class="slide-title">📋 本讲目录</div>
-  <div class="slide-body toc-list"><ol><li><a href="#/3" style="color:#1E40AF;text-decoration:none;">1. 注意力机制：从心理学到机器学习</a></li><li><a href="#/8" style="color:#1E40AF;text-decoration:none;">2. 注意力池化：从非参数到参数化</a></li><li><a href="#/17" style="color:#1E40AF;text-decoration:none;">3. Seq2Seq 中的注意力</a></li><li><a href="#/25" style="color:#1E40AF;text-decoration:none;">4. 自注意力（Self-Attention）</a></li><li><a href="#/33" style="color:#1E40AF;text-decoration:none;">5. Transformer：完全建立在注意力上的架构</a></li><li><a href="#/53" style="color:#1E40AF;text-decoration:none;">6. BERT：预训练时代的开幕</a></li><li><a href="#/57" style="color:#1E40AF;text-decoration:none;">7. 本讲小结与自测</a></li></ol></div>
+  <div class="slide-body toc-list"><ol><li><a href="#/3" style="color:#1E40AF;text-decoration:none;">1. 注意力机制：从心理学到机器学习</a></li><li><a href="#/8" style="color:#1E40AF;text-decoration:none;">2. 注意力池化：从非参数到参数化</a></li><li><a href="#/17" style="color:#1E40AF;text-decoration:none;">3. Seq2Seq 中的注意力</a></li><li><a href="#/25" style="color:#1E40AF;text-decoration:none;">4. 自注意力（Self-Attention）</a></li><li><a href="#/33" style="color:#1E40AF;text-decoration:none;">5. Transformer：完全建立在注意力上的架构</a></li><li><a href="#/56" style="color:#1E40AF;text-decoration:none;">6. BERT：预训练时代的开幕</a></li><li><a href="#/60" style="color:#1E40AF;text-decoration:none;">7. 本讲小结与自测</a></li></ol></div>
 </section>
 <section class="slide-short">
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 课前导入</div>
@@ -824,18 +824,40 @@ $$P_{i,\,2j} = \sin\!\big(i / 10000^{2j/d}\big), \qquad P_{i,\,2j+1} = \cos\!\bi
 </section>
 <section>
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 5. Transformer：完全建立在注意力上的架构</div>
-  <div class="slide-title">5.7 预测：带掩码的自注意力</div>
+  <div class="slide-title">5.7 为什么需要掩码：预测时不能"偷看答案"</div>
   <div class="slide-body">
-<p>在时刻 \(t\) 预测时有个陷阱：如果自注意力能看到整个目标序列，第 \(t\) 个位置就能"偷看"答案本身——模型学会抄答案而非预测。解决办法是<strong>掩码</strong>（mask）：</p>
 <ul>
-        <li>用<strong>之前输入的键和值</strong>（位置 \(1 \sim t-1\)）；</li>
-        <li>时刻 \(t\) 的输入作为<strong>查询（以及键和值）</strong>，来预测输出；</li>
-        <li>未来位置的注意力分数被置为 \(-\infty\)，softmax 后权重为 0。</li>
+        <li><strong>生成任务怎么工作</strong>：文本生成（如 GPT 续写）是一个词一个词往外蹦——先猜第 1 个词、再猜第 2 个……；</li>
+        <li><strong>陷阱</strong>：不加限制时，预测第 \(t\) 个词的自注意力会直接看到第 \(t{+}1, t{+}2, \dots\) 的词——相当于考试时偷看后面的答案，模型根本不用学预测；</li>
+        <li><strong>解决办法：因果掩码（causal mask）</strong>——① 预测第 \(t\) 个位置只能看 \(1 \sim t-1\) 的已生成历史词；② 当前第 \(t\) 个位置的输入作为 query 去查询；③ 未来位置的注意力分数强行设为 \(-\infty\)，softmax 后权重 = 0，<strong>未来完全看不见</strong>；</li>
+        <li>这就是 GPT 等大语言模型用的<strong>因果自注意力</strong>：保证"顺序生成、绝不偷看未来"。</li>
+    </ul>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 5. Transformer：完全建立在注意力上的架构</div>
+  <div class="slide-title">5.7 示意图怎么读：预测第 t 个词只看历史</div>
+  <div class="slide-body">
+<ul>
+        <li>蓝框 = self-attention 计算；<strong>keys / values 来自位置 \(1, 2, \dots, t-1\)</strong> 这些已经存在的词；</li>
+        <li><strong>query = 当前第 \(t\) 个词</strong>——用现在这个词去查询、关注前面的历史词；右边的未来是空的、看不见；</li>
+        <li>一句话：预测第 \(t\) 个位置的输出，只拿 \(t\) 之前的 K、V 来计算。</li>
     </ul>
 <figure>
         <img src="images/masked_attention.jpg" alt="带掩码的自注意力预测" loading="lazy">
-        <figcaption>带掩码的自注意力：预测时刻 \(t\) 的输出时，只能使用 \(t\) 及之前的键和值。这就是 GPT 类生成模型的"因果掩码"。</figcaption>
+        <figcaption>带掩码的自注意力：预测时刻 \(t\) 的输出时，只能使用 \(t\) 及之前的键和值。</figcaption>
     </figure>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 5. Transformer：完全建立在注意力上的架构</div>
+  <div class="slide-title">5.7 KV 缓存：生成下一个词，怎么少算、变快</div>
+  <div class="slide-body">
+<ul>
+        <li><strong>笨办法</strong>：每生成一个新词，把所有词之间的注意力分数全部重算一遍——已有 2 个词时全算 \(2\times2=4\) 个分数，3 个词时就要重算 9 个，越来越浪费；</li>
+        <li><strong>聪明办法（KV Cache）</strong>：历史词的 K、V 算完直接存起来；每生成一个新词，只拿<strong>新词的 query</strong> 对所有已存的历史 key 算<strong>一行</strong>新分数——第 3 个词只需新算 3 个，而不是重算 9 个；</li>
+        <li><strong>效果</strong>：推理成本从 \(O(T^2)\) 降为 \(O(T)\)——大模型逐字输出的流畅感靠的就是它。下一页动手验证。</li>
+    </ul>
   </div>
 </section>
 <section class="slide-short">
@@ -864,6 +886,17 @@ $$P_{i,\,2j} = \sin\!\big(i / 10000^{2j/d}\big), \qquad P_{i,\,2j+1} = \cos\!\bi
         </div>
         <div class="lab-note">新 token 只贡献<b>一行</b>新分数：它的 query 对每一个历史 key。形成这一行需要所有历史 k，把它变成输出需要所有历史 v——所以把它们<b>缓存</b>起来，什么都不必重算。</div>
     </div>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 5. Transformer：完全建立在注意力上的架构</div>
+  <div class="slide-title">5.7 两种自注意力对比 + 一个比喻</div>
+  <div class="slide-body">
+<ul>
+        <li><strong>普通自注意力（编码器用）</strong>：双向，所有词互相看、没有 mask——适合理解句子（翻译、分类）；</li>
+        <li><strong>带掩码的因果自注意力（解码器 / GPT 用）</strong>：单向，只能看左边历史、看不到右边未来——适合一句一句生成文本；</li>
+        <li>💡 <strong>写作文比喻</strong>：写到第 5 个字时，普通自注意力像直接看到整篇作文（包括没写的第 6、7 个字）= 作弊；带掩码的自注意力只看前 1~4 个字、后面空白 = 正常往下写；KV 缓存 = 前面想好的字记在草稿纸上，写新字时不必重想一遍。</li>
+    </ul>
   </div>
 </section>
 <section class="section-divider">
