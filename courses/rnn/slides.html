@@ -155,6 +155,26 @@
 @media print { #anno-canvas, #anno-toggle, #anno-bar { display: none !important; } }
 </style>
     
+<style id="merge-layout-css">
+/* ===== 图文同页合并布局：图与其讲解文字同页 ===== */
+.slide-body.merge-h { display: flex; gap: 26px; align-items: flex-start; }
+.slide-body.merge-h > figure { flex: 0 0 44%; margin: 0; text-align: center; }
+.slide-body.merge-h > figure img { max-height: 440px !important; }
+.slide-body.merge-h > figure figcaption { text-align: left; }
+.slide-body.merge-h .merge-text { flex: 1; min-width: 0; font-size: 19px; line-height: 1.62; }
+.slide-body.merge-h .merge-text p { margin: 0 0 10px; }
+.slide-body.merge-h .merge-text ul, .slide-body.merge-h .merge-text ol { margin: 0 0 10px 1.25em; }
+.slide-body.merge-h .merge-text table { font-size: 16px; }
+.slide-body.merge-h .merge-text .callout { font-size: 16px; margin: 10px 0; }
+.slide-body.merge-h .merge-text .callout p { font-size: 16px; }
+.slide-body.merge-h.dense .merge-text { font-size: 18px; line-height: 1.55; }
+.slide-body.merge-v > figure { margin: 0 0 14px; }
+.slide-body.merge-v > figure img { max-height: 250px !important; }
+.slide-body.merge-v > .fig-row { display: flex; gap: 24px; justify-content: center; align-items: flex-start; margin: 0 0 14px; }
+.slide-body.merge-v > .fig-row figure { flex: 1; margin: 0; }
+.slide-body.merge-v > .fig-row figure img { max-height: 250px !important; }
+.slide-body.merge-v.tight > figure img { max-height: 170px !important; } .slide-body.merge-v.tight table { font-size: 15px; } .slide-body.merge-v.tight figcaption { font-size: 14px; } .slide-body.merge-v.tight > figure { margin-bottom: 8px; }
+</style>
 <!-- DL-LOCK:BEGIN -->
 <script src="../../assets/progress.js"></script>
 <script>
@@ -185,7 +205,7 @@
 <section>
   <div class="slide-breadcrumb">第05讲 循环神经网络（RNN） › 目录</div>
   <div class="slide-title">📋 本讲目录</div>
-  <div class="slide-body toc-list"><ol><li><a href="#/3" style="color:#1E40AF;text-decoration:none;">1. 从序列数据到循环神经网络</a></li><li><a href="#/13" style="color:#1E40AF;text-decoration:none;">2. 语言模型与困惑度</a></li><li><a href="#/17" style="color:#1E40AF;text-decoration:none;">3. 实现 RNN 语言模型</a></li><li><a href="#/25" style="color:#1E40AF;text-decoration:none;">4. 通过时间反向传播（BPTT）</a></li><li><a href="#/34" style="color:#1E40AF;text-decoration:none;">5. 门控循环单元（GRU）</a></li><li><a href="#/41" style="color:#1E40AF;text-decoration:none;">6. 长短期记忆网络（LSTM）</a></li><li><a href="#/50" style="color:#1E40AF;text-decoration:none;">7. 双向与深度循环神经网络</a></li><li><a href="#/54" style="color:#1E40AF;text-decoration:none;">8. 本讲小结与自测</a></li></ol></div>
+  <div class="slide-body toc-list"><ol><li><a href="#/3" style="color:#1E40AF;text-decoration:none;">1. 从序列数据到循环神经网络</a></li><li><a href="#/10" style="color:#1E40AF;text-decoration:none;">2. 语言模型与困惑度</a></li><li><a href="#/14" style="color:#1E40AF;text-decoration:none;">3. 实现 RNN 语言模型</a></li><li><a href="#/20" style="color:#1E40AF;text-decoration:none;">4. 通过时间反向传播（BPTT）</a></li><li><a href="#/28" style="color:#1E40AF;text-decoration:none;">5. 门控循环单元（GRU）</a></li><li><a href="#/33" style="color:#1E40AF;text-decoration:none;">6. 长短期记忆网络（LSTM）</a></li><li><a href="#/40" style="color:#1E40AF;text-decoration:none;">7. 双向与深度循环神经网络</a></li><li><a href="#/44" style="color:#1E40AF;text-decoration:none;">8. 本讲小结与自测</a></li></ol></div>
 </section>
 <section class="slide-short">
   <div class="slide-breadcrumb">第05讲 循环神经网络（RNN） › 课前导入</div>
@@ -237,10 +257,14 @@
     </div>
   </div>
 </section>
-<section class="slide-short">
+<section>
   <div class="slide-breadcrumb">第05讲 循环神经网络（RNN） › 1. 从序列数据到循环神经网络</div>
   <div class="slide-title">1.2 隐变量模型：用隐含状态总结过去</div>
-  <div class="slide-body">
+  <div class="slide-body merge-v">
+<figure>
+        <img src="images/hidden_state_flow.jpg" alt="隐含状态沿时间接力传递" loading="lazy">
+        <figcaption>隐含状态的"接力"：\(h_1\) 综合第一段输入，\(h_2\) 在 \(h_1\) 基础上综合第二段……信息沿时间向后传递，网络据此逐步"理解"并给出"回应"。</figcaption>
+    </figure>
 <p>要让模型拥有"记忆"，一个自然的想法是：引入一个隐含状态（hidden state）\(h_t\)，它在每个时刻把"目前为止看到的一切"总结成一个向量：</p>
 <p>\(h_t = f(h_{t-1},\, x_{t-1})\)</p>
 <p>第 \(t\) 时刻的隐含状态由上一时刻的隐含状态 \(h_{t-1}\) 和上一时刻的输入 \(x_{t-1}\) 共同决定。这样，信息就像接力棒一样沿时间一棒一棒传下去——\(h_t\) 里压缩着 \(x_1, x_2, \ldots, x_{t-1}\) 的全部相关历史。</p>
@@ -248,18 +272,13 @@
 </section>
 <section>
   <div class="slide-breadcrumb">第05讲 循环神经网络（RNN） › 1. 从序列数据到循环神经网络</div>
-  <div class="slide-title">1.2 隐变量模型：用隐含状态总结过去</div>
-  <div class="slide-body">
-<figure>
-        <img src="images/hidden_state_flow.jpg" alt="隐含状态沿时间接力传递" loading="lazy">
-        <figcaption>隐含状态的"接力"：\(h_1\) 综合第一段输入，\(h_2\) 在 \(h_1\) 基础上综合第二段……信息沿时间向后传递，网络据此逐步"理解"并给出"回应"。</figcaption>
-    </figure>
-  </div>
-</section>
-<section>
-  <div class="slide-breadcrumb">第05讲 循环神经网络（RNN） › 1. 从序列数据到循环神经网络</div>
   <div class="slide-title">1.3 循环神经网络的基本结构</div>
-  <div class="slide-body">
+  <div class="slide-body merge-h dense">
+<figure>
+        <img src="images/rnn_structure.jpg" alt="RNN 结构：输入、隐含状态、输出三层" loading="lazy">
+        <figcaption>RNN 的结构：输入 \(x\) 经嵌入后与上一时刻的隐含状态拼接，乘权重矩阵得到新的隐含状态 \(h_t\)，再向上得到输出。所有时间步共享同一组权重——这是 RNN 能处理任意长度序列的关键。</figcaption>
+    </figure>
+<div class="merge-text">
 <p>把上面的想法加上可学习的参数，就是循环神经网络（Recurrent Neural Network，RNN）。每个时间步做两件事：</p>
 <p><strong>RNN 的两个更新</strong></p>
 <p>① 隐含状态更新（记忆）：</p>
@@ -267,21 +286,13 @@
 <p>② 输出更新（观察）：</p>
 <p>\(o_t = W_{ho}\, h_t + b_o\)</p>
 <p>其中 \(\phi\) 是非线性激活函数（常用 tanh）。注意 \(W_{hh} h_{t-1}\) 这一项——它把上一时刻的记忆带了进来；去掉它，网络就退化成普通的 MLP。</p>
-  </div>
-</section>
-<section>
-  <div class="slide-breadcrumb">第05讲 循环神经网络（RNN） › 1. 从序列数据到循环神经网络</div>
-  <div class="slide-title">1.3 循环神经网络的基本结构</div>
-  <div class="slide-body">
 <p class="muted">注：本节沿用"用 \(t-1\) 时刻输入更新 \(t\) 时刻状态"的下标约定；第三章起与多数教材一致，把当前输入记为 \(x_t\)。两者仅下标平移，含义相同。</p>
-<figure>
-        <img src="images/rnn_structure.jpg" alt="RNN 结构：输入、隐含状态、输出三层" loading="lazy">
-        <figcaption>RNN 的结构：输入 \(x\) 经嵌入后与上一时刻的隐含状态拼接，乘权重矩阵得到新的隐含状态 \(h_t\)，再向上得到输出。所有时间步共享同一组权重——这是 RNN 能处理任意长度序列的关键。</figcaption>
-    </figure>
+
 <div class="callout try">
         <span class="co-tag">✅ 一句话总结</span>
         <p>RNN = MLP + 一条"自己连自己"的循环边。循环边让网络有了记忆，参数共享让它能处理任意长度。</p>
     </div>
+</div>
   </div>
 </section>
 <section>
@@ -312,7 +323,11 @@
 <section>
   <div class="slide-breadcrumb">第05讲 循环神经网络（RNN） › 1. 从序列数据到循环神经网络</div>
   <div class="slide-title">1.4 RNN 的五种类型</div>
-  <div class="slide-body">
+  <div class="slide-body merge-v tight">
+<figure>
+        <img src="images/rnn_types.jpg" alt="RNN 的五种输入输出结构" loading="lazy">
+        <figcaption>RNN 的五种结构：从左到右依次是一对一、一对多（文本生成）、多对一（文本分类）、异步多对多（机器翻译）、同步多对多（序列标注）。粉色是输入，绿色是隐含状态，蓝色是输出。</figcaption>
+    </figure>
 <p>输入和输出都可以是"一个"或"一串"，组合出五种典型结构：</p>
 <div class="tbl-wrap">
         <table>
@@ -324,16 +339,6 @@
             <tr><td>many to many（不等长）</td><td>多对多（异步）</td><td>机器翻译：先读完整个句子，再逐词生成译文</td></tr>
         </table>
     </div>
-  </div>
-</section>
-<section>
-  <div class="slide-breadcrumb">第05讲 循环神经网络（RNN） › 1. 从序列数据到循环神经网络</div>
-  <div class="slide-title">1.4 RNN 的五种类型</div>
-  <div class="slide-body">
-<figure>
-        <img src="images/rnn_types.jpg" alt="RNN 的五种输入输出结构" loading="lazy">
-        <figcaption>RNN 的五种结构：从左到右依次是一对一、一对多（文本生成）、多对一（文本分类）、异步多对多（机器翻译）、同步多对多（序列标注）。粉色是输入，绿色是隐含状态，蓝色是输出。</figcaption>
-    </figure>
   </div>
 </section>
 <section class="section-divider">
@@ -398,27 +403,23 @@
 <p>选择编码颗粒度时要权衡：按词切分词表大但语义完整；按字符切分词表小（英文仅几十个字母）但单字符没有语义。中文还可以按字或按词（分词）处理。</p>
   </div>
 </section>
-<section class="slide-short">
-  <div class="slide-breadcrumb">第05讲 循环神经网络（RNN） › 3. 实现 RNN 语言模型</div>
-  <div class="slide-title">3.2 词嵌入：把稀疏向量变稠密</div>
-  <div class="slide-body">
-<p>one-hot 有两个硬伤：维度太高（词表动辄几万）且稀疏；更重要的是它不含语义——从向量上看不出"猫"和"狗"比"猫"和"卡车"更相似。解决办法是乘一个可学习的嵌入矩阵 \(W_e\)（\(V \times d\)，\(d\) 通常几十到几百），把稀疏的 one-hot 压成稠密向量：</p>
-<p>\(\text{embedding}(x) = W_e^\top \cdot \text{onehot}(x)\)</p>
-<p>本质是"查表"：one-hot 只有第 \(k\) 位是 1，乘矩阵就是取出第 \(k\) 行——嵌入矩阵即一张可学习的"查词表"。</p>
-  </div>
-</section>
 <section>
   <div class="slide-breadcrumb">第05讲 循环神经网络（RNN） › 3. 实现 RNN 语言模型</div>
   <div class="slide-title">3.2 词嵌入：把稀疏向量变稠密</div>
-  <div class="slide-body">
+  <div class="slide-body merge-h">
 <figure>
         <img src="images/embedding_matrix.jpg" alt="one-hot 经嵌入矩阵得到稠密嵌入向量" loading="lazy">
         <figcaption>嵌入矩阵的作用：每个字符（如 "THE_TIME"）的稀疏 one-hot 向量（简洁向量 \(v\)）乘嵌入矩阵 \(W\) 后，变成低维稠密的嵌入向量 \(v'\)——稀疏变稠密，语义进向量。</figcaption>
     </figure>
+<div class="merge-text">
+<p>one-hot 有两个硬伤：维度太高（词表动辄几万）且稀疏；更重要的是它不含语义——从向量上看不出"猫"和"狗"比"猫"和"卡车"更相似。解决办法是乘一个可学习的嵌入矩阵 \(W_e\)（\(V \times d\)，\(d\) 通常几十到几百），把稀疏的 one-hot 压成稠密向量：</p>
+<p>\(\text{embedding}(x) = W_e^\top \cdot \text{onehot}(x)\)</p>
+<p>本质是"查表"：one-hot 只有第 \(k\) 位是 1，乘矩阵就是取出第 \(k\) 行——嵌入矩阵即一张可学习的"查词表"。</p>
 <div class="callout key">
         <span class="co-tag">💡 预训练词向量：word2vec 与 GloVe</span>
         <p>嵌入矩阵可以随任务一起训练，也可以直接加载在超大语料上预训练好的词向量（word2vec、GloVe）。训练好的词向量具有神奇的语义几何性质：语义相近的词在向量空间中也相近，甚至存在"国王 − 男人 + 女人 ≈ 女王"这样的类比关系。</p>
     </div>
+</div>
   </div>
 </section>
 <section>
@@ -431,22 +432,16 @@
     </figure>
   </div>
 </section>
-<section class="slide-short">
-  <div class="slide-breadcrumb">第05讲 循环神经网络（RNN） › 3. 实现 RNN 语言模型</div>
-  <div class="slide-title">3.3 输出编码：softmax 概率分布</div>
-  <div class="slide-body">
-<p>输出端是输入端的逆过程：隐含状态 \(h_t\) 先乘一个解码矩阵 \(W'\)，得到词表大小的分数向量，再过 softmax 变成概率分布——概率最大的词就是模型的预测：</p>
-<p>\(P(\text{下一个词} = w) \propto \exp\big(w'^{\top}_w h_t\big)\)</p>
-  </div>
-</section>
 <section>
   <div class="slide-breadcrumb">第05讲 循环神经网络（RNN） › 3. 实现 RNN 语言模型</div>
   <div class="slide-title">3.3 输出编码：softmax 概率分布</div>
-  <div class="slide-body">
+  <div class="slide-body merge-v">
 <figure>
         <img src="images/output_decoding.jpg" alt="隐含状态经解码矩阵得到输出向量" loading="lazy">
         <figcaption>输出解码是输入编码的逆过程：上方输出向量 \(o\) 经解码矩阵 \(W'\) 映射回词表大小的向量，再经 softmax 单热解码为词。</figcaption>
     </figure>
+<p>输出端是输入端的逆过程：隐含状态 \(h_t\) 先乘一个解码矩阵 \(W'\)，得到词表大小的分数向量，再过 softmax 变成概率分布——概率最大的词就是模型的预测：</p>
+<p>\(P(\text{下一个词} = w) \propto \exp\big(w'^{\top}_w h_t\big)\)</p>
 <p>训练时用交叉熵损失让"正确词"的概率越来越大；生成时可以从分布中采样，也可以每步取概率最大的词（贪心解码）——大语言模型的 temperature 参数调节的正是采样分布的"尖锐"程度。</p>
   </div>
 </section>
@@ -489,27 +484,23 @@
     </figure>
   </div>
 </section>
-<section class="slide-short">
-  <div class="slide-breadcrumb">第05讲 循环神经网络（RNN） › 4. 通过时间反向传播（BPTT）</div>
-  <div class="slide-title">4.2 梯度链太长：消失与爆炸</div>
-  <div class="slide-body">
-<p>问题在于：隐含状态的梯度是一条长度为 \(O(T)\) 的连乘链。对线性 RNN 可以严格推出，\(h_t\) 对远处 \(h_1\) 的梯度里含有 \(W_{hh}\) 的 \(T-t\) 次幂：</p>
-<p>\(\dfrac{\partial h_T}{\partial h_t} = \big(W_{hh}^{\top}\big)^{T-t}\)</p>
-<p>矩阵连乘 \(T\) 次，数值上只有两种命运——特征值小于 1 时梯度指数级消失（远处的历史学不到）；大于 1 时指数级爆炸（梯度冲上天，训练发散）。同时长链还要在内存里缓存所有中间值，开销巨大：</p>
-  </div>
-</section>
 <section>
   <div class="slide-breadcrumb">第05讲 循环神经网络（RNN） › 4. 通过时间反向传播（BPTT）</div>
   <div class="slide-title">4.2 梯度链太长：消失与爆炸</div>
-  <div class="slide-body">
+  <div class="slide-body merge-h dense">
 <figure>
         <img src="images/grad_chain.jpg" alt="BPTT 梯度沿时间链回传" loading="lazy">
         <figcaption>BPTT 的梯度链：损失对每个时刻的参数都有贡献，梯度沿"输出—解释—观测"三条链回传，越往早期传，连乘项越多，数值越不稳定。</figcaption>
     </figure>
+<div class="merge-text">
+<p>问题在于：隐含状态的梯度是一条长度为 \(O(T)\) 的连乘链。对线性 RNN 可以严格推出，\(h_t\) 对远处 \(h_1\) 的梯度里含有 \(W_{hh}\) 的 \(T-t\) 次幂：</p>
+<p>\(\dfrac{\partial h_T}{\partial h_t} = \big(W_{hh}^{\top}\big)^{T-t}\)</p>
+<p>矩阵连乘 \(T\) 次，数值上只有两种命运——特征值小于 1 时梯度指数级消失（远处的历史学不到）；大于 1 时指数级爆炸（梯度冲上天，训练发散）。同时长链还要在内存里缓存所有中间值，开销巨大：</p>
 <div class="callout warn">
         <span class="co-tag">⚠️ 注意</span>
         <p>这就是第 03 讲"梯度消失/爆炸"在序列模型中的放大版。第 03 讲的对策（合适初始化、归一化）之外，RNN 还有两个专属武器：梯度剪裁和截断 BPTT。</p>
     </div>
+</div>
   </div>
 </section>
 <section>
@@ -593,43 +584,35 @@
 <section>
   <div class="slide-breadcrumb">第05讲 循环神经网络（RNN） › 5. 门控循环单元（GRU）</div>
   <div class="slide-title">5.2 重置门与更新门</div>
-  <div class="slide-body">
-<p>两个门的计算方式与普通 RNN 单元相同，只是激活函数换成 sigmoid（把输出压到 0~1）：</p>
-<p>\(R_t = \sigma\big(W_{xr} x_t + W_{hr} h_{t-1} + b_r\big)\)</p>
-<p>\(Z_t = \sigma\big(W_{xz} x_t + W_{hz} h_{t-1} + b_z\big)\)</p>
-<p>其中 \(R_t\) 是重置门（reset gate），\(Z_t\) 是更新门（update gate）。它们的输入都是"当前词 + 上一时刻记忆"，但各有一套独立的权重，因此能学会不同的开关策略。</p>
-  </div>
-</section>
-<section>
-  <div class="slide-breadcrumb">第05讲 循环神经网络（RNN） › 5. 门控循环单元（GRU）</div>
-  <div class="slide-title">5.2 重置门与更新门</div>
-  <div class="slide-body">
+  <div class="slide-body merge-h">
 <figure>
         <img src="images/gru_gates.jpg" alt="GRU 的重置门与更新门" loading="lazy">
         <figcaption>GRU 单元内部：输入 \(X_t\) 与上一时刻隐含状态 \(H_{t-1}\) 分别经两个全连接层 + sigmoid，得到重置门 \(R_t\) 和更新门 \(Z_t\)（图中"复制/连结"表示向量拼接与逐元素运算）。</figcaption>
     </figure>
+<div class="merge-text">
+<p>两个门的计算方式与普通 RNN 单元相同，只是激活函数换成 sigmoid（把输出压到 0~1）：</p>
+<p>\(R_t = \sigma\big(W_{xr} x_t + W_{hr} h_{t-1} + b_r\big)\)</p>
+<p>\(Z_t = \sigma\big(W_{xz} x_t + W_{hz} h_{t-1} + b_z\big)\)</p>
+<p>其中 \(R_t\) 是重置门（reset gate），\(Z_t\) 是更新门（update gate）。它们的输入都是"当前词 + 上一时刻记忆"，但各有一套独立的权重，因此能学会不同的开关策略。</p>
+</div>
   </div>
 </section>
 <section>
   <div class="slide-breadcrumb">第05讲 循环神经网络（RNN） › 5. 门控循环单元（GRU）</div>
   <div class="slide-title">5.3 候选隐含状态与状态更新</div>
-  <div class="slide-body">
+  <div class="slide-body merge-h dense">
+<figure>
+        <img src="images/gru_full.jpg" alt="GRU 完整计算流程" loading="lazy">
+        <figcaption>GRU 的完整计算：重置门控制候选状态对旧记忆的依赖，更新门在新旧状态之间插值得到 \(H_t\)。两个门的开关策略全部从数据中学出。</figcaption>
+    </figure>
+<div class="merge-text">
 <p>两个门各司其职——重置门参与计算"候选"记忆：</p>
 <p>\(\tilde{h}_t = \tanh\big(W_{xh} x_t + (R_t \odot h_{t-1})\, W_{hh} + b_h\big)\)</p>
 <p>\(\odot\) 是逐元素乘法。当 \(R_t \to 0\) 时，上一时刻的记忆被"重置"掉，\(\tilde{h}_t\) 几乎只看当前输入（相当于从头开始记）；当 \(R_t \to 1\) 时，就是普通 RNN 的算法。</p>
 <p>更新门负责在新旧记忆之间做"加权平均"：</p>
 <p>\(h_t = Z_t \odot h_{t-1} + (1 - Z_t) \odot \tilde{h}_t\)</p>
 <p>当 \(Z_t \to 1\)：完全保留旧记忆，当前输入被忽略（"这里不重要，跳过去"）；当 \(Z_t \to 0\)：完全采用新的候选状态。正是这种"按元素插值"的设计，让 GRU 能把某些重要信息原封不动地保存很多步——\(Z \to 1\) 的通道让回传因子接近 1，梯度消失的衰减链被绕开。</p>
-  </div>
-</section>
-<section>
-  <div class="slide-breadcrumb">第05讲 循环神经网络（RNN） › 5. 门控循环单元（GRU）</div>
-  <div class="slide-title">5.3 候选隐含状态与状态更新</div>
-  <div class="slide-body">
-<figure>
-        <img src="images/gru_full.jpg" alt="GRU 完整计算流程" loading="lazy">
-        <figcaption>GRU 的完整计算：重置门控制候选状态对旧记忆的依赖，更新门在新旧状态之间插值得到 \(H_t\)。两个门的开关策略全部从数据中学出。</figcaption>
-    </figure>
+</div>
   </div>
 </section>
 <section class="slide-short">
@@ -667,7 +650,12 @@
 <section>
   <div class="slide-breadcrumb">第05讲 循环神经网络（RNN） › 6. 长短期记忆网络（LSTM）</div>
   <div class="slide-title">6.1 三个门</div>
-  <div class="slide-body">
+  <div class="slide-body merge-h dense">
+<figure>
+        <img src="images/lstm_gates.jpg" alt="LSTM 的遗忘门、输入门、输出门" loading="lazy">
+        <figcaption>LSTM 的三个门：遗忘门、输入门、输出门并排计算，都由当前输入 \(X_t\) 与上一时刻隐含状态 \(H_{t-1}\) 驱动，sigmoid 输出 0~1 的开关。</figcaption>
+    </figure>
+<div class="merge-text">
 <p>长短期记忆网络（Long Short-Term Memory，LSTM）比 GRU 出现得更早（1997 年 Hochreiter &amp; Schmidhuber），设计也更精细：它有三个门，并且把"记忆"拆成两条线——记忆细胞 \(C_t\)（长期记忆的主干道）和隐含状态 \(h_t\)（对外输出）：</p>
 <div class="tbl-wrap">
         <table>
@@ -678,17 +666,8 @@
         </table>
     </div>
 <p>三个门的计算方式与 GRU 相同（输入 \(x_t\) 与 \(h_{t-1}\)，sigmoid 激活），各有一套独立权重：</p>
-  </div>
-</section>
-<section>
-  <div class="slide-breadcrumb">第05讲 循环神经网络（RNN） › 6. 长短期记忆网络（LSTM）</div>
-  <div class="slide-title">6.1 三个门</div>
-  <div class="slide-body">
 <p>\(F_t, I_t, O_t = \sigma\big(W_{xf} x_t + W_{hf} h_{t-1} + b_f\big)\ \cdots\)（三套参数同理）</p>
-<figure>
-        <img src="images/lstm_gates.jpg" alt="LSTM 的遗忘门、输入门、输出门" loading="lazy">
-        <figcaption>LSTM 的三个门：遗忘门、输入门、输出门并排计算，都由当前输入 \(X_t\) 与上一时刻隐含状态 \(H_{t-1}\) 驱动，sigmoid 输出 0~1 的开关。</figcaption>
-    </figure>
+</div>
   </div>
 </section>
 <section>
@@ -703,25 +682,21 @@
     </figure>
   </div>
 </section>
-<section class="slide-short">
-  <div class="slide-breadcrumb">第05讲 循环神经网络（RNN） › 6. 长短期记忆网络（LSTM）</div>
-  <div class="slide-title">6.2 记忆细胞与隐含状态</div>
-  <div class="slide-body">
-<p>然后记忆细胞做"选择性遗忘 + 选择性写入"：</p>
-<p>\(C_t = F_t \odot C_{t-1} + I_t \odot \tilde{C}_t\)</p>
-<p>这又是一个按元素插值：遗忘门决定旧记忆留多少，输入门决定新内容写多少。只要遗忘门保持接近 1，早期信息就能沿记忆细胞几乎无损地传很远——这条"高速公路"是 LSTM 抗梯度消失的核心设计（\(C_t\) 专职记忆、不直接对外，比 GRU 的通道更纯粹）。</p>
-  </div>
-</section>
 <section>
   <div class="slide-breadcrumb">第05讲 循环神经网络（RNN） › 6. 长短期记忆网络（LSTM）</div>
   <div class="slide-title">6.2 记忆细胞与隐含状态</div>
-  <div class="slide-body">
+  <div class="slide-body merge-h dense">
 <figure>
         <img src="images/lstm_cell.jpg" alt="LSTM 记忆细胞的更新" loading="lazy">
         <figcaption>记忆细胞的更新：\(C_{t-1}\) 经遗忘门衰减，候选记忆 \(\tilde{C}_t\) 经输入门筛选，两者相加得到新的记忆细胞 \(C_t\)。</figcaption>
     </figure>
+<div class="merge-text">
+<p>然后记忆细胞做"选择性遗忘 + 选择性写入"：</p>
+<p>\(C_t = F_t \odot C_{t-1} + I_t \odot \tilde{C}_t\)</p>
+<p>这又是一个按元素插值：遗忘门决定旧记忆留多少，输入门决定新内容写多少。只要遗忘门保持接近 1，早期信息就能沿记忆细胞几乎无损地传很远——这条"高速公路"是 LSTM 抗梯度消失的核心设计（\(C_t\) 专职记忆、不直接对外，比 GRU 的通道更纯粹）。</p>
 <p>最后，输出门决定把记忆的哪部分"公布"为隐含状态：</p>
 <p>\(h_t = O_t \odot \tanh(C_t)\)</p>
+</div>
   </div>
 </section>
 <section>
