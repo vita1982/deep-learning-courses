@@ -509,7 +509,7 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
   <div class="slide-body">
 <div class="callout key">
         <span class="co-tag">💡 提示</span>
-        <p>"批量维度"几乎总是张量的第 0 维。注意 PyTorch 的图像张量采用 NCHW 顺序（批量 × 通道 × 高 × 宽）：看到形状 (32, 3, 224, 224)，要立刻读出：32 张图片，每张 3 通道、224×224 像素。上表按"高 × 宽 × 通道"（NHWC，TensorFlow 惯例）书写是为了便于从图像直觉理解，两种顺序只是通道维摆放位置不同。</p>
+        <p>"批量维度"几乎总是张量的第 0 维。注意 PyTorch 的图像张量采用 NCHW 顺序（批量 × 通道 × 高 × 宽）：看到形状 (32, 3, 224, 224)，要立刻读出：32 张图片，每张 3 通道、224×224 像素。前一页的表格按"高 × 宽 × 通道"（NHWC，TensorFlow 惯例）书写，是为了便于从图像直觉理解，两种顺序只是通道维摆放位置不同。</p>
     </div>
   </div>
 </section>
@@ -817,7 +817,7 @@ z += b              # 最后加上偏置 b，得到 z = w·x + b</pre>
     </figure>
 <p>以单层网络的平方损失为例：</p>
 <p>\[z = (\langle \mathbf{w}, \mathbf{x} \rangle - y)^2 \qquad \xrightarrow{\text{分解}} \qquad a = \langle \mathbf{w}, \mathbf{x} \rangle,\quad b = a - y,\quad z = b^2\]</p>
-<p>把每一步基本运算画成节点、依赖关系画成有向边，就得到计算图（computational graph）——一张有向无环图（DAG）：</p>
+<p>把每一步基本运算画成节点、依赖关系画成有向边，就得到上方图中所示的计算图（computational graph）——一张有向无环图（DAG）。</p>
   </div>
 </section>
 <section>
