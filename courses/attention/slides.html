@@ -829,7 +829,7 @@ $$P_{i,\,2j} = \sin\!\big(i / 10000^{2j/d}\big), \qquad P_{i,\,2j+1} = \cos\!\bi
 <ul>
         <li><strong>生成任务怎么工作</strong>：文本生成（如 GPT 续写）是一个词一个词往外蹦——先猜第 1 个词、再猜第 2 个……；</li>
         <li><strong>陷阱</strong>：不加限制时，预测第 \(t\) 个词的自注意力会直接看到第 \(t{+}1, t{+}2, \dots\) 的词——相当于考试时偷看后面的答案，模型根本不用学预测；</li>
-        <li><strong>解决办法：因果掩码（causal mask）</strong>——① 预测第 \(t\) 个位置只能看 \(1 \sim t-1\) 的已生成历史词；② 当前第 \(t\) 个位置的输入作为 query 去查询；③ 未来位置的注意力分数强行设为 \(-\infty\)，softmax 后权重 = 0，<strong>未来完全看不见</strong>；</li>
+        <li><strong>解决办法：因果掩码（causal mask）</strong>——① 预测第 \(t\) 个位置的输出只能使用 \(1 \sim t\) 的键和值（历史词 + 当前词自身）；② 当前第 \(t\) 个位置的输入作为 query 去查询；③ 未来位置的注意力分数强行设为 \(-\infty\)，softmax 后权重 = 0，<strong>未来完全看不见</strong>；</li>
         <li>这就是 GPT 等大语言模型用的<strong>因果自注意力</strong>：保证"顺序生成、绝不偷看未来"。</li>
     </ul>
   </div>
@@ -839,9 +839,9 @@ $$P_{i,\,2j} = \sin\!\big(i / 10000^{2j/d}\big), \qquad P_{i,\,2j+1} = \cos\!\bi
   <div class="slide-title">5.7 示意图怎么读：预测第 t 个词只看历史</div>
   <div class="slide-body">
 <ul>
-        <li>蓝框 = self-attention 计算；<strong>keys / values 来自位置 \(1, 2, \dots, t-1\)</strong> 这些已经存在的词；</li>
+        <li>蓝框 = self-attention 计算；<strong>keys / values 来自位置 \(1, 2, \dots, t\)</strong> 这些已经出现的词（含当前词自身）；</li>
         <li><strong>query = 当前第 \(t\) 个词</strong>——用现在这个词去查询、关注前面的历史词；右边的未来是空的、看不见；</li>
-        <li>一句话：预测第 \(t\) 个位置的输出，只拿 \(t\) 之前的 K、V 来计算。</li>
+        <li>一句话：预测第 \(t\) 个位置的输出，只拿 \(t\) 及之前的 K、V 来计算。</li>
     </ul>
 <figure>
         <img src="images/masked_attention.jpg" alt="带掩码的自注意力预测" loading="lazy">
