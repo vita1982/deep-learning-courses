@@ -174,6 +174,33 @@
     .mx input, .mx .mx-cell { width: 44px; height: 38px; font-size: 13px; }
 }
 </style>
+<style id="merge-layout-css">
+/* ===== 图文同页合并布局：图与其讲解文字同页 ===== */
+.slide-body.merge-h { display: flex; gap: 26px; align-items: flex-start; }
+.slide-body.merge-h > figure { flex: 0 0 44%; margin: 0; text-align: center; }
+.slide-body.merge-h > figure img { max-height: 440px !important; }
+.slide-body.merge-h > figure figcaption { text-align: left; }
+.slide-body.merge-h .merge-text { flex: 1; min-width: 0; font-size: 19px; line-height: 1.62; }
+.slide-body.merge-h .merge-text p { margin: 0 0 10px; }
+.slide-body.merge-h .merge-text ul, .slide-body.merge-h .merge-text ol { margin: 0 0 10px 1.25em; }
+.slide-body.merge-h .merge-text table { font-size: 16px; }
+.slide-body.merge-h .merge-text .callout { font-size: 16px; margin: 10px 0; }
+.slide-body.merge-h .merge-text .callout p { font-size: 16px; }
+.slide-body.merge-h.dense .merge-text { font-size: 18px; line-height: 1.55; }
+.slide-body.merge-v > figure { margin: 0 0 14px; }
+.slide-body.merge-v > figure img { max-height: 250px !important; }
+.slide-body.merge-v > .fig-row { display: flex; gap: 24px; justify-content: center; align-items: flex-start; margin: 0 0 14px; }
+.slide-body.merge-v > .fig-row figure { flex: 1; margin: 0; }
+.slide-body.merge-v > .fig-row figure img { max-height: 250px !important; }
+.slide-body.merge-v.tight > figure img { max-height: 185px !important; }
+.slide-body.merge-v.tight > .fig-row figure img { max-height: 185px !important; }
+.slide-body.merge-v.tight table { font-size: 16px; }
+</style>
+<style id="merge-fix-css">
+.slide-body.merge-h .fig-col { flex: 0 0 44%; display: flex; flex-direction: column; gap: 10px; }
+.slide-body.merge-h .fig-col figure { margin: 0; text-align: center; }
+.slide-body.merge-h .fig-col figure img { max-height: 185px !important; }
+</style>
 </head>
 <body>
 <div class="reveal">
@@ -186,7 +213,7 @@
 <section>
   <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 目录</div>
   <div class="slide-title">📋 本讲目录</div>
-  <div class="slide-body toc-list"><ol><li><a href="#/3" style="color:#1E40AF;text-decoration:none;">1. 回顾：单隐含层网络</a></li><li><a href="#/9" style="color:#1E40AF;text-decoration:none;">2. 卷积神经网络概述</a></li><li><a href="#/14" style="color:#1E40AF;text-decoration:none;">3. 卷积运算基础</a></li><li><a href="#/25" style="color:#1E40AF;text-decoration:none;">4. 二维卷积层</a></li><li><a href="#/28" style="color:#1E40AF;text-decoration:none;">5. 填充与步幅</a></li><li><a href="#/38" style="color:#1E40AF;text-decoration:none;">6. 多输入输出通道</a></li><li><a href="#/46" style="color:#1E40AF;text-decoration:none;">7. 1×1 卷积层</a></li><li><a href="#/51" style="color:#1E40AF;text-decoration:none;">8. 池化层</a></li><li><a href="#/62" style="color:#1E40AF;text-decoration:none;">9. Why CNN？—— 卷积神经网络的核心优势</a></li><li><a href="#/68" style="color:#1E40AF;text-decoration:none;">10. 代表性卷积神经网络</a></li><li><a href="#/76" style="color:#1E40AF;text-decoration:none;">11. 核心公式速查</a></li><li><a href="#/79" style="color:#1E40AF;text-decoration:none;">12. 总结与思考</a></li></ol></div>
+  <div class="slide-body toc-list"><ol><li><a href="#/3" style="color:#1E40AF;text-decoration:none;">1. 回顾：单隐含层网络</a></li><li><a href="#/7" style="color:#1E40AF;text-decoration:none;">2. 卷积神经网络概述</a></li><li><a href="#/11" style="color:#1E40AF;text-decoration:none;">3. 卷积运算基础</a></li><li><a href="#/19" style="color:#1E40AF;text-decoration:none;">4. 二维卷积层</a></li><li><a href="#/22" style="color:#1E40AF;text-decoration:none;">5. 填充与步幅</a></li><li><a href="#/29" style="color:#1E40AF;text-decoration:none;">6. 多输入输出通道</a></li><li><a href="#/36" style="color:#1E40AF;text-decoration:none;">7. 1×1 卷积层</a></li><li><a href="#/41" style="color:#1E40AF;text-decoration:none;">8. 池化层</a></li><li><a href="#/51" style="color:#1E40AF;text-decoration:none;">9. Why CNN？—— 卷积神经网络的核心优势</a></li><li><a href="#/56" style="color:#1E40AF;text-decoration:none;">10. 代表性卷积神经网络</a></li><li><a href="#/64" style="color:#1E40AF;text-decoration:none;">11. 核心公式速查</a></li><li><a href="#/67" style="color:#1E40AF;text-decoration:none;">12. 总结与思考</a></li></ol></div>
 </section>
 <section class="slide-short">
   <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 课前导入</div>
@@ -208,20 +235,15 @@
 <section>
   <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 1. 回顾：单隐含层网络</div>
   <div class="slide-title">1.1 单隐含层网络的结构</div>
-  <div class="slide-body">
-<p>在介绍卷积神经网络之前，我们先回顾一下前馈神经网络中的单隐含层网络。</p>
+  <div class="slide-body merge-h dense">
 <figure>
         <img src="images/typora_single_layer.png" alt="单隐含层网络结构" loading="lazy">
         <figcaption>单隐含层网络结构</figcaption>
     </figure>
+<div class="merge-text"><p>在介绍卷积神经网络之前，我们先回顾一下前馈神经网络中的单隐含层网络。</p>
+
 <p>它的数学表达为：</p>
 <p>\(\mathbf{h} = \sigma(\mathbf{W}\mathbf{x} + \mathbf{b})\)</p>
-  </div>
-</section>
-<section class="slide-short">
-  <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 1. 回顾：单隐含层网络</div>
-  <div class="slide-title">1.1 单隐含层网络的结构</div>
-  <div class="slide-body">
 <p>其中：</p>
 <ul>
         <li>\(\mathbf{x}\) 是输入向量</li>
@@ -230,17 +252,19 @@
         <li>\(\sigma\) 是激活函数（如 ReLU、Sigmoid 等）</li>
         <li>\(\mathbf{h}\) 是隐含层的输出</li>
     </ul>
-  </div>
+</div>
+</div>
 </section>
 <section>
   <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 1. 回顾：单隐含层网络</div>
   <div class="slide-title">1.2 图像输入带来的参数爆炸</div>
-  <div class="slide-body">
-<p>当我们将图像作为输入时，问题就出现了。以 CIFAR-10 数据集中的图像为例：</p>
+  <div class="slide-body merge-h dense">
 <figure>
         <img src="images/typora_params_explosion.png" alt="图像输入参数爆炸" loading="lazy">
         <figcaption>图像输入参数爆炸</figcaption>
     </figure>
+<div class="merge-text"><p>当我们将图像作为输入时，问题就出现了。以 CIFAR-10 数据集中的图像为例：</p>
+
 <ul>
         <li>图像尺寸：32 × 32 像素</li>
         <li>颜色通道：3（RGB）</li>
@@ -250,18 +274,13 @@
 <ul>
         <li>权重参数数量 = 3,072 × 100 = 307,200 个</li>
     </ul>
-  </div>
-</section>
-<section class="slide-short">
-  <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 1. 回顾：单隐含层网络</div>
-  <div class="slide-title">1.2 图像输入带来的参数爆炸</div>
-  <div class="slide-body">
 <p>这还只是一个隐含层！如果网络更深、图像更大，参数量会呈指数级增长。</p>
 <div class="callout warn">
         <span class="co-tag">⚠️ 核心问题</span>
         <p>参数量随输入维度爆炸式增长，导致计算开销巨大、容易过拟合。</p>
     </div>
-  </div>
+</div>
+</div>
 </section>
 <section>
   <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 1. 回顾：单隐含层网络</div>
@@ -287,22 +306,15 @@
 <section>
   <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 2. 卷积神经网络概述</div>
   <div class="slide-title">2.1 什么是 CNN？</div>
-  <div class="slide-body">
-<p>卷积神经网络（Convolutional Neural Networks，CNN）是一类专门为处理网格化数据（如图像）而设计的深度神经网络。其核心思想是使用卷积运算替代全连接层中的矩阵乘法。</p>
-<figure>
+  <div class="slide-body merge-v">
+<div class="fig-row"><figure>
         <img src="images/p4_cnn_overview.jpeg" alt="CNN概览1" loading="lazy">
         <figcaption>CNN 概览</figcaption>
-    </figure>
-  </div>
-</section>
-<section>
-  <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 2. 卷积神经网络概述</div>
-  <div class="slide-title">2.1 什么是 CNN？</div>
-  <div class="slide-body">
-<figure>
+    </figure><figure>
         <img src="images/p5_cnn_structure.jpeg" alt="CNN结构" loading="lazy">
         <figcaption>CNN 结构</figcaption>
-    </figure>
+    </figure></div>
+<p>卷积神经网络（Convolutional Neural Networks，CNN）是一类专门为处理网格化数据（如图像）而设计的深度神经网络。其核心思想是使用卷积运算替代全连接层中的矩阵乘法。</p>
   </div>
 </section>
 <section class="slide-short">
@@ -369,7 +381,12 @@
 <section>
   <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 3. 卷积运算基础</div>
   <div class="slide-title">3.2 互相关与卷积</div>
-  <div class="slide-body">
+  <div class="slide-body merge-h dense">
+<figure>
+        <img src="images/conv_cross_corr_autocorr.png" alt="卷积 vs 互相关 vs 自相关对比" loading="lazy">
+        <figcaption>卷积（Convolution）vs 互相关（Cross-correlation）vs 自相关（Autocorrelation）对比</figcaption>
+    </figure>
+<div class="merge-text">
 <p>在数学上，有两个密切相关的概念需要区分：</p>
 <p><strong>2-D 互相关（Cross-Correlation）— 深度学习实际使用</strong></p>
 <p>\(h(i,j) = \sum_{a}\sum_{b} X(i+a,\ j+b) \cdot K(a,b)\)</p>
@@ -377,21 +394,12 @@
 <p><strong>2-D 卷积（Convolution）— 严格数学定义</strong></p>
 <p>\(h(i,j) = \sum_{a}\sum_{b} X(i-a,\ j-b) \cdot K(a,b)\)</p>
 <p>核翻转180°后滑动计算。</p>
-  </div>
-</section>
-<section>
-  <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 3. 卷积运算基础</div>
-  <div class="slide-title">3.2 互相关与卷积</div>
-  <div class="slide-body">
-<figure>
-        <img src="images/conv_cross_corr_autocorr.png" alt="卷积 vs 互相关 vs 自相关对比" loading="lazy">
-        <figcaption>卷积（Convolution）vs 互相关（Cross-correlation）vs 自相关（Autocorrelation）对比</figcaption>
-    </figure>
 <div class="callout key">
         <span class="co-tag">🔑 深度学习中的约定</span>
         <p>实际使用的是"互相关"运算，但习惯上仍称其为"卷积"。因为翻转操作不改变特征提取能力，省去翻转可以节省计算开销。</p>
     </div>
-<p><strong>深入理解：互相关 vs 卷积 vs 自相关</strong>——这三种运算密切相关但各有不同用途。根据上图中的对比：</p>
+<p><strong>深入理解：互相关 vs 卷积 vs 自相关</strong>——这三种运算密切相关但各有不同用途。根据左图的对比，下一页逐项展开：</p>
+</div>
   </div>
 </section>
 <section>
@@ -433,32 +441,19 @@
 <section>
   <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 3. 卷积运算基础</div>
   <div class="slide-title">3.3 二维交叉相关计算实例</div>
-  <div class="slide-body">
-<p>输入为 3×3 矩阵，核为 2×2 矩阵。</p>
-<figure>
+  <div class="slide-body merge-h dense">
+<div class="fig-col"><figure>
         <img src="images/p9_cross_correlation.jpeg" alt="交叉相关1" loading="lazy">
         <figcaption>交叉相关示例（1）</figcaption>
-    </figure>
-  </div>
-</section>
-<section>
-  <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 3. 卷积运算基础</div>
-  <div class="slide-title">3.3 二维交叉相关计算实例</div>
-  <div class="slide-body">
-<figure>
+    </figure><figure>
         <img src="images/p9_cross_correlation2.jpeg" alt="交叉相关2" loading="lazy">
         <figcaption>交叉相关示例（2）</figcaption>
-    </figure>
+    </figure></div>
+<div class="merge-text"><p>输入为 3×3 矩阵，核为 2×2 矩阵。</p>
 <p>输入矩阵 X：</p>
 <p class="muted">[0 1 2]<br>[3 4 5]<br>[6 7 8]</p>
 <p>核矩阵 K：</p>
 <p class="muted">[0 1]<br>[2 3]</p>
-  </div>
-</section>
-<section>
-  <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 3. 卷积运算基础</div>
-  <div class="slide-title">3.3 二维交叉相关计算实例</div>
-  <div class="slide-body">
 <p>计算过程（核在输入上滑动，每个位置逐元素相乘再求和）：</p>
 <div class="tbl-wrap">
         <table>
@@ -471,7 +466,8 @@
     </div>
 <p>输出矩阵 Y：</p>
 <p class="muted">[19 25]<br>[37 43]</p>
-  </div>
+</div>
+</div>
 </section>
 <section>
   <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 3. 卷积运算基础</div>
@@ -566,23 +562,16 @@
 <section>
   <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 5. 填充与步幅</div>
   <div class="slide-title">5.1 填充（Padding）</div>
-  <div class="slide-body">
-<p><strong>为什么需要填充？</strong>卷积运算会使输出尺寸变小。例如，3×3 输入用 2×2 核卷积得到 2×2 输出。经过多层卷积后，特征图会不断缩小，最终可能"消失"。</p>
-<p><strong>解决方案</strong>：在输入周围添加额外的行/列（通常填充 0）。</p>
-<figure>
+  <div class="slide-body merge-v">
+<div class="fig-row"><figure>
         <img src="images/p13_12.jpeg" alt="填充示意图1" loading="lazy">
         <figcaption>填充示意图（1）</figcaption>
-    </figure>
-  </div>
-</section>
-<section>
-  <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 5. 填充与步幅</div>
-  <div class="slide-title">5.1 填充（Padding）</div>
-  <div class="slide-body">
-<figure>
+    </figure><figure>
         <img src="images/p13_13.jpeg" alt="填充示意图2" loading="lazy">
         <figcaption>填充示意图（2）</figcaption>
-    </figure>
+    </figure></div>
+<p><strong>为什么需要填充？</strong>卷积运算会使输出尺寸变小。例如，3×3 输入用 2×2 核卷积得到 2×2 输出。经过多层卷积后，特征图会不断缩小，最终可能"消失"。</p>
+<p><strong>解决方案</strong>：在输入周围添加额外的行/列（通常填充 0）。</p>
   </div>
 </section>
 <section>
@@ -613,39 +602,26 @@
 <section>
   <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 5. 填充与步幅</div>
   <div class="slide-title">5.2 步幅（Stride）</div>
-  <div class="slide-body">
-<p>步幅是卷积核在输入上滑动时的步长。默认步幅为 1（每次移动 1 个像素）。</p>
-<figure>
+  <div class="slide-body merge-v">
+<div class="fig-row"><figure>
         <img src="images/p16_14.jpeg" alt="步幅示意" loading="lazy">
         <figcaption>步幅示意</figcaption>
-    </figure>
-  </div>
-</section>
-<section>
-  <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 5. 填充与步幅</div>
-  <div class="slide-title">5.2 步幅（Stride）</div>
-  <div class="slide-body">
-<figure>
+    </figure><figure>
         <img src="images/stride_example.png" alt="步幅实例：高度步幅3，宽度步幅2" loading="lazy">
         <figcaption>步幅实例：5×5 填充输入 + 2×2 卷积核，高度步幅 s_h=3，宽度步幅 s_w=2 → 输出 2×2。步幅越大，跳过的区域越多，输出越小。</figcaption>
-    </figure>
+    </figure></div>
+<p>步幅是卷积核在输入上滑动时的步长。默认步幅为 1（每次移动 1 个像素）。</p>
   </div>
 </section>
 <section>
   <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 5. 填充与步幅</div>
   <div class="slide-title">5.2 步幅（Stride）</div>
-  <div class="slide-body">
+  <div class="slide-body merge-v">
 <figure>
         <img src="images/stride_v2.gif" alt="步幅动图演示" loading="lazy">
         <figcaption>动图演示：同样 2×2 的核，但窗口不再逐格滑动——高度方向每次跳 3 格、宽度方向每次跳 2 格，4 次就扫完 5×5 输入，输出缩小为 2×2。增大步幅是除池化外另一种"降采样"手段。</figcaption>
     </figure>
 <p>步幅后的输出尺寸：</p>
-  </div>
-</section>
-<section class="slide-short">
-  <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 5. 填充与步幅</div>
-  <div class="slide-title">5.2 步幅（Stride）</div>
-  <div class="slide-body">
 <p>\(\left\lfloor \frac{n_h - k_h + p_h + s_h}{s_h} \right\rfloor \times \left\lfloor \frac{n_w - k_w + p_w + s_w}{s_w} \right\rfloor\)</p>
 <p>其中 \(s_h\) 和 \(s_w\) 分别是高度和宽度的步幅。</p>
   </div>
@@ -708,23 +684,18 @@
     </ul>
   </div>
 </section>
-<section class="slide-short">
-  <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 6. 多输入输出通道</div>
-  <div class="slide-title">6.1 多个输入通道</div>
-  <div class="slide-body">
-<p>多输入通道卷积公式：</p>
-<p>\(\mathbf{Y} = \sum_{c=0}^{c_i-1} \mathbf{X}(c,:,:) \star \mathbf{W}(c,:,:)\)</p>
-<p>计算实例：</p>
-  </div>
-</section>
 <section>
   <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 6. 多输入输出通道</div>
   <div class="slide-title">6.1 多个输入通道</div>
-  <div class="slide-body">
+  <div class="slide-body merge-h">
 <figure>
         <img src="images/multi_channel_conv.png" alt="多输入通道卷积计算实例：每个通道都有一个卷积核，结果是所有通道卷积结果的和" loading="lazy">
         <figcaption>多输入通道卷积计算实例：每个通道都有一个卷积核（共 c_i 个），结果是所有通道卷积结果的和，输出只有一个通道。</figcaption>
     </figure>
+<div class="merge-text">
+<p>多输入通道卷积公式：</p>
+<p>\(\mathbf{Y} = \sum_{c=0}^{c_i-1} \mathbf{X}(c,:,:) \star \mathbf{W}(c,:,:)\)</p>
+<p>计算实例：</p>
 <ul>
         <li>通道1卷积：1×1 + 2×2 + 4×3 + 5×4 = 37</li>
         <li>通道2卷积：0×0 + 1×1 + 3×2 + 4×3 = 19</li>
@@ -734,6 +705,7 @@
         <span class="co-tag">🔑 关键</span>
         <p>无论有多少输入通道，单核卷积输出只有一个通道！</p>
     </div>
+</div>
   </div>
 </section>
 <section>
@@ -981,17 +953,12 @@
 <section>
   <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 8. 池化层</div>
   <div class="slide-title">8.3 池化层的填充、步幅和通道</div>
-  <div class="slide-body">
+  <div class="slide-body merge-h">
 <figure>
         <img src="images/p32_28.jpeg" alt="池化层特性" loading="lazy">
         <figcaption>池化层特性</figcaption>
     </figure>
-  </div>
-</section>
-<section>
-  <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 8. 池化层</div>
-  <div class="slide-title">8.3 池化层的填充、步幅和通道</div>
-  <div class="slide-body">
+<div class="merge-text">
 <div class="tbl-wrap">
         <table>
             <tr><th>特性</th><th>说明</th></tr>
@@ -1005,6 +972,7 @@
         <span class="co-tag">🔑 初学者理解</span>
         <p>卷积层把多通道"融合"成新通道（通道数由核个数决定）；池化层则"各管各的"，通道数不变、只压缩空间尺寸。改变通道数靠卷积（或 1×1 卷积），缩小特征图靠池化或步幅卷积——分工明确。</p>
     </div>
+</div>
   </div>
 </section>
 <section class="slide-short">
@@ -1027,19 +995,15 @@
 <section>
   <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 9. Why CNN？—— 卷积神经网络的核心优势</div>
   <div class="slide-title">9.1 权值共享</div>
-  <div class="slide-body">
-<p>卷积核可以看作一种"模板"，同一个模板在图像的各个位置滑动检测。</p>
+  <div class="slide-body merge-h">
 <figure>
         <img src="images/p34_29.jpeg" alt="权值共享" loading="lazy">
         <figcaption>权值共享示意</figcaption>
     </figure>
+<div class="merge-text">
+<p>卷积核可以看作一种"模板"，同一个模板在图像的各个位置滑动检测。</p>
+
 <p>参数量 = \(c_o \times c_i \times k_h \times k_w\)（与输入图像大小无关！）</p>
-  </div>
-</section>
-<section>
-  <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 9. Why CNN？—— 卷积神经网络的核心优势</div>
-  <div class="slide-title">9.1 权值共享</div>
-  <div class="slide-body">
 <div class="tbl-wrap">
         <table>
             <tr><th>网络类型</th><th>参数量（32×32×3 图像输入，示意对比）</th></tr>
@@ -1051,6 +1015,7 @@
         <span class="co-tag">✅ 结论</span>
         <p>参数量减少了约 178 倍！这就是 CNN 能在普通 GPU 上训练、而同等全连接网络根本放不下的原因。</p>
     </div>
+</div>
   </div>
 </section>
 <section>
@@ -1301,39 +1266,6 @@
 </div>
 </div>
 <div class="slide-hint">←→ 翻页 · 双击图片放大 · P 画笔标注 · F 全屏 · Esc 总览</div>
-<!-- DL-SECVIS:BEGIN upto=6 -->
-<script>
-/* 本讲部分开放：仅显示前 6 节的幻灯片（scripts/set_section_visibility.py） */
-(function () {
-    var UPTO = 6;
-    var container = document.querySelector('.reveal .slides');
-    if (!container) return;
-    var cut = false;
-    /* children 是动态集合，先快照成静态数组再遍历删除，否则会跳元素 */
-    var kids = Array.prototype.slice.call(container.children);
-    kids.forEach(function (s) {
-        if (cut) { s.parentNode.removeChild(s); return; }
-        var dn = s.querySelector('.divider-num');
-        if (dn) {
-            var n = parseInt(dn.textContent.trim(), 10);
-            if (!isNaN(n) && n > UPTO) { cut = true; s.parentNode.removeChild(s); }
-        }
-    });
-    Array.prototype.forEach.call(document.querySelectorAll('.toc-list ol li'), function (li) {
-        var m = li.textContent.trim().match(/^(\d+)\s*[.、]/);
-        if (m && parseInt(m[1], 10) > UPTO) { li.parentNode.removeChild(li); }
-    });
-    var notice = document.createElement('section');
-    notice.innerHTML = '<div class="slide-body" style="display:flex;flex-direction:column;'
-        + 'justify-content:center;align-items:center;height:100%;text-align:center;">'
-        + '<div style="font-size:44px;">📘</div>'
-        + '<div style="font-size:32px;margin-top:22px;color:#1E293B;font-weight:bold;">本讲后续章节将随课程进度开放</div>'
-        + '<div style="font-size:20px;margin-top:18px;color:#64748B;">目前开放至第 ' + UPTO
-        + ' 节，后续内容将在课堂上讲解后开放。</div></div>';
-    container.appendChild(notice);
-})();
-</script>
-<!-- DL-SECVIS:END -->
 <script src="../../assets/reveal/reveal.js"></script>
 <script>
 Reveal.initialize({
