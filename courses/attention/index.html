@@ -634,6 +634,7 @@
         <img src="images/bert_finetune.jpg" alt="NLP 与 CV 中的迁移学习对比" loading="lazy">
         <figcaption>NLP 与 CV 的迁移学习完全对齐：预训练模型充当"特征提取器"（Layer 1 … L−1），新任务只需加一个"分类器"输出层——NLP 侧如情感分类（"我喜欢这个电影 → 0/1"），CV 侧如识别猫。</figcaption>
     </figure>
+    <p><strong>类比 CV 来理解这个范式</strong>：BERT 的多层编码器就是一个强大的<strong>特征提取器</strong>；新任务只需要在最后加一个输出层（Output layer）。例子：情感分类——输入句子，输出 0/1 代表负面/正面。</p>
     <div class="tbl-wrap">
         <table>
             <thead><tr><th>版本</th><th>Transformer 块数</th><th>隐含大小</th><th>注意力头数</th><th>参数量</th></tr></thead>
@@ -643,7 +644,25 @@
             </tbody>
         </table>
     </div>
-    <p>因为编码器是<strong>双向</strong>的（每个位置能看到整句），BERT 的上下文表示远优于单向语言模型，一经发布就横扫 11 项 NLP 基准任务。它的预训练任务也颇有创意——<strong>掩码语言模型</strong>（随机遮住 15% 的词让模型猜，类似完形填空）和<strong>下一句预测</strong>。</p>
+    <p>读这张表：<strong>隐含大小</strong> = 每个词向量的维度；<strong>多头注意力</strong> = 多个注意力头并行，捕捉不同的语义关系。</p>
+    <p><strong>BERT 强在哪？</strong>编码器是<strong>双向自注意力（无掩码）</strong>：句子里任意一个词，既能看左边、也能看右边的所有词。对比 GPT：GPT 是单向，只能看左边历史，用来<strong>生成</strong>；BERT 双向，用来<strong>理解</strong>句子。因此 BERT 的上下文表示远优于单向语言模型，一经发布就横扫 11 项 NLP 基准任务。</p>
+    <p><strong>两个预训练任务（训练时的两个"小游戏"）</strong>：</p>
+    <ul>
+        <li><strong>① MLM 掩码语言模型（完形填空）</strong>：随机遮住句子里 15% 的词，用 [MASK] 盖住，让模型猜遮住的词是什么——强迫模型利用<strong>左右两边</strong>的上下文，这正是"双向"能力的核心来源；</li>
+        <li><strong>② NSP 下一句预测</strong>：给模型两句文本，判断第二句是不是原文中紧跟在第一句后面的那句话——学习<strong>句子之间</strong>的关联。</li>
+    </ul>
+    <p><strong>整条逻辑串起来</strong>：word2vec 是静态词向量，不区分语境、没有顺序；单向语言模型只能往左看、看不到后文——缺点太多。BERT 只用 Encoder、双向注意力，通过 MLM + NSP 预训练；之后所有分类、实体识别等任务只需简单微调，效果暴涨——NLP 正式进入预训练时代。</p>
+    <p><strong>对比回顾（和前面学的串起来）</strong>：</p>
+    <div class="tbl-wrap">
+        <table>
+            <thead><tr><th>模型</th><th>架构取舍</th><th>方向</th><th>擅长任务</th></tr></thead>
+            <tbody>
+                <tr><td><strong>原版 Transformer</strong></td><td>Encoder + Decoder</td><td>编码器双向理解 + 解码器单向生成</td><td>机器翻译</td></tr>
+                <tr><td><strong>GPT</strong></td><td>只用 Decoder + 因果掩码</td><td>单向（只看左边）</td><td>文本生成</td></tr>
+                <tr><td><strong>BERT</strong></td><td>只用 Encoder</td><td>双向无掩码（左右都看）</td><td>理解句子：分类、抽取</td></tr>
+            </tbody>
+        </table>
+    </div>
     <div class="callout hist">
         <span class="co-tag">📍 历史坐标</span>
         <p>Transformer（2017）→ BERT（2018，编码器路线，理解任务）→ GPT 系列（解码器路线，生成任务）→ ChatGPT/大语言模型时代。我们今天站在的"大模型"潮头，技术地基正是本讲的注意力机制。</p>
