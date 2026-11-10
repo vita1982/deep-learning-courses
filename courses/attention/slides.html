@@ -185,7 +185,7 @@
 <section>
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 目录</div>
   <div class="slide-title">📋 本讲目录</div>
-  <div class="slide-body toc-list"><ol><li><a href="#/3" style="color:#1E40AF;text-decoration:none;">1. 注意力机制：从心理学到机器学习</a></li><li><a href="#/8" style="color:#1E40AF;text-decoration:none;">2. 注意力池化：从非参数到参数化</a></li><li><a href="#/17" style="color:#1E40AF;text-decoration:none;">3. Seq2Seq 中的注意力</a></li><li><a href="#/25" style="color:#1E40AF;text-decoration:none;">4. 自注意力（Self-Attention）</a></li><li><a href="#/33" style="color:#1E40AF;text-decoration:none;">5. Transformer：完全建立在注意力上的架构</a></li><li><a href="#/56" style="color:#1E40AF;text-decoration:none;">6. BERT：预训练时代的开幕</a></li><li><a href="#/60" style="color:#1E40AF;text-decoration:none;">7. 本讲小结与自测</a></li></ol></div>
+  <div class="slide-body toc-list"><ol><li><a href="#/3" style="color:#1E40AF;text-decoration:none;">1. 注意力机制：从心理学到机器学习</a></li><li><a href="#/8" style="color:#1E40AF;text-decoration:none;">2. 注意力池化：从非参数到参数化</a></li><li><a href="#/17" style="color:#1E40AF;text-decoration:none;">3. Seq2Seq 中的注意力</a></li><li><a href="#/25" style="color:#1E40AF;text-decoration:none;">4. 自注意力（Self-Attention）</a></li><li><a href="#/33" style="color:#1E40AF;text-decoration:none;">5. Transformer：完全建立在注意力上的架构</a></li><li><a href="#/56" style="color:#1E40AF;text-decoration:none;">6. BERT：预训练时代的开幕</a></li><li><a href="#/62" style="color:#1E40AF;text-decoration:none;">7. 本讲小结与自测</a></li></ol></div>
 </section>
 <section class="slide-short">
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 课前导入</div>
@@ -926,11 +926,12 @@ $$P_{i,\,2j} = \sin\!\big(i / 10000^{2j/d}\big), \qquad P_{i,\,2j+1} = \cos\!\bi
         <img src="images/bert_finetune.jpg" alt="NLP 与 CV 中的迁移学习对比" loading="lazy">
         <figcaption>NLP 与 CV 的迁移学习完全对齐：预训练模型充当"特征提取器"（Layer 1 … L−1），新任务只需加一个"分类器"输出层——NLP 侧如情感分类（"我喜欢这个电影 → 0/1"），CV 侧如识别猫。</figcaption>
     </figure>
+<p>类比 CV：BERT 多层编码器 = <strong>特征提取器</strong>，新任务只需最后加一个输出层——如情感分类：输入句子、输出 0/1（负面/正面）。</p>
   </div>
 </section>
 <section>
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 6. BERT：预训练时代的开幕</div>
-  <div class="slide-title">6.2 BERT 的动机与架构</div>
+  <div class="slide-title">6.2 两个版本与"BERT 强在哪"</div>
   <div class="slide-body">
 <div class="tbl-wrap">
         <table>
@@ -941,10 +942,42 @@ $$P_{i,\,2j} = \sin\!\big(i / 10000^{2j/d}\big), \qquad P_{i,\,2j+1} = \cos\!\bi
             </tbody>
         </table>
     </div>
-<p>因为编码器是<strong>双向</strong>的（每个位置能看到整句），BERT 的上下文表示远优于单向语言模型，一经发布就横扫 11 项 NLP 基准任务。它的预训练任务也颇有创意——<strong>掩码语言模型</strong>（随机遮住 15% 的词让模型猜，类似完形填空）和<strong>下一句预测</strong>。</p>
+<p>读表：<strong>隐含大小</strong> = 每个词向量的维度；<strong>多头注意力</strong> = 多个头并行，捕捉不同语义关系。</p>
+<ul>
+        <li><strong>BERT 强在哪</strong>：编码器是<strong>双向自注意力（无掩码）</strong>——任意一个词既能看左边、也能看右边所有词；</li>
+        <li>对比 GPT：单向、只能看左边历史 → 生成；BERT 双向 → 理解句子。一发布即横扫 11 项 NLP 基准。</li>
+    </ul>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 6. BERT：预训练时代的开幕</div>
+  <div class="slide-title">6.2 两个预训练任务（训练时的两个"小游戏"）</div>
+  <div class="slide-body">
+<ul>
+        <li><strong>① MLM 掩码语言模型（完形填空）</strong>：随机遮住句子里 15% 的词、用 [MASK] 盖住，让模型猜遮住的词——强迫模型利用<strong>左右两边</strong>的上下文，这正是"双向"能力的核心来源；</li>
+        <li><strong>② NSP 下一句预测</strong>：给两句文本，判断第二句是不是原文中紧跟第一句的那句——学习<strong>句子之间</strong>的关联；</li>
+        <li>与 5.7 对照：生成模型用因果掩码<strong>不许看未来</strong>；BERT 做理解，故意遮住中间、用两边猜。</li>
+    </ul>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 6. BERT：预训练时代的开幕</div>
+  <div class="slide-title">6.2 逻辑主线与三种架构对比</div>
+  <div class="slide-body">
+<p>word2vec 静态词向量（不区分语境、无顺序）→ 单向语言模型（只能往左看）→ 缺点太多 → <strong>BERT：只用 Encoder + 双向注意力，MLM+NSP 预训练</strong> → 分类、实体识别等任务简单微调即可，NLP 正式进入预训练时代。</p>
+<div class="tbl-wrap">
+        <table>
+            <thead><tr><th>模型</th><th>架构取舍</th><th>方向</th><th>擅长任务</th></tr></thead>
+            <tbody>
+                <tr><td><strong>原版 Transformer</strong></td><td>Encoder + Decoder</td><td>双向理解 + 单向生成</td><td>机器翻译</td></tr>
+                <tr><td><strong>GPT</strong></td><td>只用 Decoder + 因果掩码</td><td>单向</td><td>文本生成</td></tr>
+                <tr><td><strong>BERT</strong></td><td>只用 Encoder</td><td>双向无掩码</td><td>理解：分类、抽取</td></tr>
+            </tbody>
+        </table>
+    </div>
 <div class="callout hist">
         <span class="co-tag">📍 历史坐标</span>
-        <p>Transformer（2017）→ BERT（2018，编码器路线，理解任务）→ GPT 系列（解码器路线，生成任务）→ ChatGPT/大语言模型时代。我们今天站在的"大模型"潮头，技术地基正是本讲的注意力机制。</p>
+        <p>Transformer（2017）→ BERT（2018，编码器路线，理解任务）→ GPT 系列（解码器路线，生成任务）→ ChatGPT/大语言模型时代。</p>
     </div>
   </div>
 </section>
