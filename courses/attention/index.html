@@ -559,12 +559,12 @@
     <p><strong>为什么需要掩码？</strong>先看生成任务是怎么工作的：文本生成（比如 GPT 续写句子）是<strong>一个词一个词往外蹦</strong>——先猜第 1 个词，再猜第 2 个、第 3 个……这里有个陷阱：如果不加限制，模型预测第 \(t\) 个词时，自注意力会直接看到后面第 \(t+1\)、第 \(t+2\)……的词——<strong>相当于考试时直接偷看后面的答案</strong>，模型根本不用学怎么预测。</p>
     <p><strong>解决办法：因果掩码（causal mask）</strong>，规则三条：</p>
     <ul>
-        <li>预测第 \(t\) 个位置的词时，只能看位置 \(1 \sim t-1\) 这些<strong>已经生成的历史词</strong>；</li>
+        <li>预测第 \(t\) 个位置的输出时，只能使用位置 \(1 \sim t\) 的键和值——<strong>历史词加上当前词自身</strong>，更靠后的全部屏蔽；</li>
         <li>当前第 \(t\) 个位置的输入作为 <strong>query</strong>（查询）去匹配历史词；</li>
         <li>未来位置的注意力分数<strong>强行设为 \(-\infty\)</strong>——经过 softmax 后 \(-\infty\) 变成 0，即<strong>未来词的权重 = 0，完全看不见</strong>。</li>
     </ul>
     <p>这就是 GPT 等大语言模型使用的<strong>因果自注意力</strong>：保证"顺序生成、绝不偷看未来"。</p>
-    <p><strong>示意图怎么读</strong>：蓝色框是 self-attention 计算。<strong>keys 和 values 来自位置 \(1, 2, \dots, t-1\)</strong> 这些已经存在的词；<strong>query 是当前第 \(t\) 个词</strong>。含义：用现在这个词去查询、关注前面已经生成的历史词——右边的未来是空的、看不见。一句话：预测第 \(t\) 个位置的输出，只拿 \(t\) 之前的 K、V 来计算。</p>
+    <p><strong>示意图怎么读</strong>：蓝色框是 self-attention 计算。<strong>keys 和 values 来自位置 \(1, 2, \dots, t\)</strong> 这些已经出现的词（含当前词自身）；<strong>query 是当前第 \(t\) 个词</strong>。含义：用现在这个词去查询、关注前面已经生成的历史词——右边的未来是空的、看不见。一句话：预测第 \(t\) 个位置的输出，只拿 \(t\) 及之前的 K、V 来计算。</p>
     <figure>
         <img src="images/masked_attention.jpg" alt="带掩码的自注意力预测" loading="lazy">
         <figcaption>带掩码的自注意力：预测时刻 \(t\) 的输出时，只能使用 \(t\) 及之前的键和值。这就是 GPT 类生成模型的"因果掩码"。</figcaption>
