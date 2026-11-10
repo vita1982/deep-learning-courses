@@ -155,6 +155,33 @@
 @media print { #anno-canvas, #anno-toggle, #anno-bar { display: none !important; } }
 </style>
     
+<style id="merge-layout-css">
+/* ===== 图文同页合并布局：图与其讲解文字同页 ===== */
+.slide-body.merge-h { display: flex; gap: 26px; align-items: flex-start; }
+.slide-body.merge-h > figure { flex: 0 0 44%; margin: 0; text-align: center; }
+.slide-body.merge-h > figure img { max-height: 440px !important; }
+.slide-body.merge-h > figure figcaption { text-align: left; }
+.slide-body.merge-h .merge-text { flex: 1; min-width: 0; font-size: 19px; line-height: 1.62; }
+.slide-body.merge-h .merge-text p { margin: 0 0 10px; }
+.slide-body.merge-h .merge-text ul, .slide-body.merge-h .merge-text ol { margin: 0 0 10px 1.25em; }
+.slide-body.merge-h .merge-text table { font-size: 16px; }
+.slide-body.merge-h .merge-text .callout { font-size: 16px; margin: 10px 0; }
+.slide-body.merge-h .merge-text .callout p { font-size: 16px; }
+.slide-body.merge-h.dense .merge-text { font-size: 18px; line-height: 1.55; }
+.slide-body.merge-v > figure { margin: 0 0 14px; }
+.slide-body.merge-v > figure img { max-height: 250px !important; }
+.slide-body.merge-v > .fig-row { display: flex; gap: 24px; justify-content: center; align-items: flex-start; margin: 0 0 14px; }
+.slide-body.merge-v > .fig-row figure { flex: 1; margin: 0; }
+.slide-body.merge-v > .fig-row figure img { max-height: 250px !important; }
+.slide-body.merge-v.tight > figure img { max-height: 185px !important; }
+.slide-body.merge-v.tight > .fig-row figure img { max-height: 185px !important; }
+.slide-body.merge-v.tight table { font-size: 16px; }
+</style>
+<style id="merge-fix-css">
+.slide-body.merge-h .fig-col { flex: 0 0 44%; display: flex; flex-direction: column; gap: 10px; }
+.slide-body.merge-h .fig-col figure { margin: 0; text-align: center; }
+.slide-body.merge-h .fig-col figure img { max-height: 185px !important; }
+</style>
 </head>
 <body>
 <div class="reveal">
@@ -167,7 +194,7 @@
 <section>
   <div class="slide-breadcrumb">第03讲 深度神经网络 › 目录</div>
   <div class="slide-title">📋 本讲目录</div>
-  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 线性回归：从房价预测开始</a></li><li><a href="#/13" style="color:#1E40AF;text-decoration:none;">2. 基础优化：梯度下降</a></li><li><a href="#/20" style="color:#1E40AF;text-decoration:none;">3. softmax 回归：从回归到分类</a></li><li><a href="#/36" style="color:#1E40AF;text-decoration:none;">4. 感知机与多层感知机</a></li><li><a href="#/52" style="color:#1E40AF;text-decoration:none;">5. 模型选择与泛化</a></li><li><a href="#/60" style="color:#1E40AF;text-decoration:none;">6. 正则化：权重衰减与丢弃法</a></li><li><a href="#/65" style="color:#1E40AF;text-decoration:none;">7. 正反向传播与数值稳定性</a></li><li><a href="#/74" style="color:#1E40AF;text-decoration:none;">8. 本讲小结</a></li><li><a href="#/80" style="color:#1E40AF;text-decoration:none;">9. 综合实验环节</a></li></ol></div>
+  <div class="slide-body toc-list"><ol><li><a href="#/2" style="color:#1E40AF;text-decoration:none;">1. 线性回归：从房价预测开始</a></li><li><a href="#/12" style="color:#1E40AF;text-decoration:none;">2. 基础优化：梯度下降</a></li><li><a href="#/18" style="color:#1E40AF;text-decoration:none;">3. softmax 回归：从回归到分类</a></li><li><a href="#/31" style="color:#1E40AF;text-decoration:none;">4. 感知机与多层感知机</a></li><li><a href="#/44" style="color:#1E40AF;text-decoration:none;">5. 模型选择与泛化</a></li><li><a href="#/51" style="color:#1E40AF;text-decoration:none;">6. 正则化：权重衰减与丢弃法</a></li><li><a href="#/56" style="color:#1E40AF;text-decoration:none;">7. 正反向传播与数值稳定性</a></li><li><a href="#/64" style="color:#1E40AF;text-decoration:none;">8. 本讲小结</a></li><li><a href="#/70" style="color:#1E40AF;text-decoration:none;">9. 综合实验环节</a></li></ol></div>
 </section>
 <section class="section-divider">
   <div class="divider-num">1</div>
@@ -183,23 +210,17 @@
 <p><strong>假设 2：售价是关键因素的加权总和</strong>——估计价格 \(\hat{y} = w_1 x_1 + w_2 x_2 + w_3 x_3 + b\)，其中权重 \(w_1, w_2, w_3\) 和偏差 \(b\) 稍后通过数据确定。权重为正表示该因素抬升房价，权重越大影响越强。</p>
   </div>
 </section>
-<section class="slide-short">
-  <div class="slide-breadcrumb">第03讲 深度神经网络 › 1. 线性回归：从房价预测开始</div>
-  <div class="slide-title">1.2 线性方法就是一个单层神经网络</div>
-  <div class="slide-body">
-<p>把上面的模型推广到 \(d\) 维输入：线性方法有 \(d\) 个权重和一个偏差，输出是输入的加权总和：</p>
-<p>\[\mathbf{x} = [x_1, x_2, \ldots, x_d]^\top, \quad \mathbf{w} = [w_1, w_2, \ldots, w_d]^\top, \quad \hat{y} = w_1 x_1 + w_2 x_2 + \cdots + w_d x_d + b = \mathbf{w}^\top \mathbf{x} + b\]</p>
-<p>把这个计算画成网络图，你会发现它就是一个单层神经网络：</p>
-  </div>
-</section>
 <section>
   <div class="slide-breadcrumb">第03讲 深度神经网络 › 1. 线性回归：从房价预测开始</div>
   <div class="slide-title">1.2 线性方法就是一个单层神经网络</div>
-  <div class="slide-body">
+  <div class="slide-body merge-v">
 <figure>
         <img src="images/single_layer_nn.jpg" alt="线性回归等价于单层神经网络" loading="lazy">
         <figcaption>输入层的每个特征 \(x_1, x_2, \ldots, x_d\) 都连接到唯一的输出 \(o_1\)，每条连线对应一个权重。这就是线性回归的神经网络视角——堆叠更多这样的层，就得到深层神经网络。</figcaption>
     </figure>
+<p>把上面的模型推广到 \(d\) 维输入：线性方法有 \(d\) 个权重和一个偏差，输出是输入的加权总和：</p>
+<p>\[\mathbf{x} = [x_1, x_2, \ldots, x_d]^\top, \quad \mathbf{w} = [w_1, w_2, \ldots, w_d]^\top, \quad \hat{y} = w_1 x_1 + w_2 x_2 + \cdots + w_d x_d + b = \mathbf{w}^\top \mathbf{x} + b\]</p>
+<p>把这个计算画成网络图，你会发现它就是一个单层神经网络：</p>
   </div>
 </section>
 <section class="slide-short">
@@ -295,8 +316,12 @@
 <section>
   <div class="slide-breadcrumb">第03讲 深度神经网络 › 2. 基础优化：梯度下降</div>
   <div class="slide-title">2.1 梯度下降算法</div>
-  <div class="slide-body">
-<p>对凸的损失曲面（想象一个碗），当前位置的梯度指向"上坡最陡"的方向，那么沿着负梯度方向走一小步，损失一定下降。梯度下降把这一直觉变成迭代算法：</p>
+  <div class="slide-body merge-h dense">
+<figure>
+        <img src="images/gd_descent.gif" alt="梯度下降动图：沿负梯度方向逐步逼近最小值" loading="lazy">
+        <figcaption>梯度下降动画：每一步在当前位置计算梯度 \(2w\)，沿负梯度方向走 \(\eta \cdot 2w\) 的一步——越接近谷底梯度越小，步子也自动变小，这就是它能"刚好停住"的原因。</figcaption>
+    </figure>
+<div class="merge-text"><p>对凸的损失曲面（想象一个碗），当前位置的梯度指向"上坡最陡"的方向，那么沿着负梯度方向走一小步，损失一定下降。梯度下降把这一直觉变成迭代算法：</p>
 <ol>
         <li>随机选择一个起点 \(\mathbf{w}_0\)；</li>
         <li>重复更新：\(\mathbf{w}_t = \mathbf{w}_{t-1} - \eta \, \nabla_{\mathbf{w}}\, \ell(\mathbf{w}_{t-1})\)，其中 \(t = 1, 2, 3, \ldots\)</li>
@@ -309,18 +334,8 @@
             <tr><td>学习率 \(\eta\)</td><td>一个超参数，指定每一步沿梯度方向走多远</td></tr>
         </table>
     </div>
-  </div>
-</section>
-<section>
-  <div class="slide-breadcrumb">第03讲 深度神经网络 › 2. 基础优化：梯度下降</div>
-  <div class="slide-title">2.1 梯度下降算法</div>
-  <div class="slide-body">
-<p>用最简单的函数 \(f(w) = w^2\) 看梯度下降如何一步步逼近最优点（学习率 \(\eta = 0.2\)）：</p>
-<figure>
-        <img src="images/gd_descent.gif" alt="梯度下降动图：沿负梯度方向逐步逼近最小值" loading="lazy">
-        <figcaption>梯度下降动画：每一步在当前位置计算梯度 \(2w\)，沿负梯度方向走 \(\eta \cdot 2w\) 的一步——越接近谷底梯度越小，步子也自动变小，这就是它能"刚好停住"的原因。</figcaption>
-    </figure>
-  </div>
+</div>
+</div>
 </section>
 <section>
   <div class="slide-breadcrumb">第03讲 深度神经网络 › 2. 基础优化：梯度下降</div>
@@ -402,7 +417,11 @@
 <section>
   <div class="slide-breadcrumb">第03讲 深度神经网络 › 3. softmax 回归：从回归到分类</div>
   <div class="slide-title">3.1 回归与分类：两类基本问题</div>
-  <div class="slide-body">
+  <div class="slide-body merge-v">
+<figure>
+        <img src="images/mnist_samples.jpg" alt="MNIST 手写数字样本" loading="lazy">
+        <figcaption>MNIST：28×28 灰度手写数字图像，10 个类别，是分类任务的"hello world"。</figcaption>
+    </figure>
 <div class="tbl-wrap">
         <table>
             <tr><th>任务</th><th>输出</th><th>典型例子</th></tr>
@@ -410,16 +429,6 @@
             <tr><td>分类</td><td>预测离散类别</td><td>MNIST 手写数字分类（10 类）、ImageNet 自然物体分类（1000 类）</td></tr>
         </table>
     </div>
-  </div>
-</section>
-<section>
-  <div class="slide-breadcrumb">第03讲 深度神经网络 › 3. softmax 回归：从回归到分类</div>
-  <div class="slide-title">3.1 回归与分类：两类基本问题</div>
-  <div class="slide-body">
-<figure>
-        <img src="images/mnist_samples.jpg" alt="MNIST 手写数字样本" loading="lazy">
-        <figcaption>MNIST：28×28 灰度手写数字图像，10 个类别，是分类任务的"hello world"。</figcaption>
-    </figure>
   </div>
 </section>
 <section>
@@ -436,19 +445,15 @@
 <section>
   <div class="slide-breadcrumb">第03讲 深度神经网络 › 3. softmax 回归：从回归到分类</div>
   <div class="slide-title">3.2 从单个输出到多个输出</div>
-  <div class="slide-body">
-<p>回归只需一个连续输出；分类则需要每个类别一个置信度分数。以 4 个输入特征、3 个类别为例，给每个类别各配一套权重和偏差：</p>
-<p>\[\begin{aligned} o_1 &= x_1 w_{11} + x_2 w_{21} + x_3 w_{31} + x_4 w_{41} + b_1 \\ o_2 &= x_1 w_{12} + x_2 w_{22} + x_3 w_{32} + x_4 w_{42} + b_2 \\ o_3 &= x_1 w_{13} + x_2 w_{23} + x_3 w_{33} + x_4 w_{43} + b_3 \end{aligned} \qquad\Longleftrightarrow\qquad \mathbf{o} = \mathbf{W}^\top \mathbf{x} + \mathbf{b}\]</p>
-  </div>
-</section>
-<section class="slide-short">
-  <div class="slide-breadcrumb">第03讲 深度神经网络 › 3. softmax 回归：从回归到分类</div>
-  <div class="slide-title">3.2 从单个输出到多个输出</div>
-  <div class="slide-body">
+  <div class="slide-body merge-h dense">
 <figure>
         <img src="images/multi_output_layer.jpg" alt="多输出全连接层" loading="lazy">
         <figcaption>多输出全连接层：每个输入连接到每个输出。最终预测类别取分数最大者：\(\hat{y} = \arg\max_i o_i\)。</figcaption>
     </figure>
+<div class="merge-text">
+<p>回归只需一个连续输出；分类则需要每个类别一个置信度分数。以 4 个输入特征、3 个类别为例，给每个类别各配一套权重和偏差：</p>
+<p>\[\begin{aligned} o_1 &= x_1 w_{11} + x_2 w_{21} + x_3 w_{31} + x_4 w_{41} + b_1 \\ o_2 &= x_1 w_{12} + x_2 w_{22} + x_3 w_{32} + x_4 w_{42} + b_2 \\ o_3 &= x_1 w_{13} + x_2 w_{23} + x_3 w_{33} + x_4 w_{43} + b_3 \end{aligned} \qquad\Longleftrightarrow\qquad \mathbf{o} = \mathbf{W}^\top \mathbf{x} + \mathbf{b}\]</p>
+</div>
   </div>
 </section>
 <section class="slide-short">
@@ -531,22 +536,18 @@
     </div>
   </div>
 </section>
-<section class="slide-short">
-  <div class="slide-breadcrumb">第03讲 深度神经网络 › 3. softmax 回归：从回归到分类</div>
-  <div class="slide-title">3.6 逻辑回归：二分类的特例</div>
-  <div class="slide-body">
-<p>逻辑回归（Logistic Regression）是 softmax 回归在二分类下的特例：用 sigmoid 函数把线性输出压缩到 \((0, 1)\) 区间，解释为"属于正类的概率"，再用交叉熵（对数损失）训练：</p>
-<p>\[z = \mathbf{w}^\top \mathbf{x} + b, \qquad \hat{y} = \sigma(z) = \frac{1}{1 + e^{-z}}, \qquad \ell(y, \hat{y}) = -\left[ y \log \hat{y} + (1-y) \log (1 - \hat{y}) \right]\]</p>
-  </div>
-</section>
 <section>
   <div class="slide-breadcrumb">第03讲 深度神经网络 › 3. softmax 回归：从回归到分类</div>
   <div class="slide-title">3.6 逻辑回归：二分类的特例</div>
-  <div class="slide-body">
+  <div class="slide-body merge-h">
 <figure>
         <img src="images/logistic_neuron.jpg" alt="逻辑回归神经元结构" loading="lazy">
         <figcaption>逻辑回归的计算单元：输入加权和 \(z = \mathbf{w}^\top\mathbf{x} + b\)，再经 sigmoid 得到概率输出 \(a = \hat{y}\)。名字里虽有"回归"，它做的却是分类。</figcaption>
     </figure>
+<div class="merge-text">
+<p>逻辑回归（Logistic Regression）是 softmax 回归在二分类下的特例：用 sigmoid 函数把线性输出压缩到 \((0, 1)\) 区间，解释为"属于正类的概率"，再用交叉熵（对数损失）训练：</p>
+<p>\[z = \mathbf{w}^\top \mathbf{x} + b, \qquad \hat{y} = \sigma(z) = \frac{1}{1 + e^{-z}}, \qquad \ell(y, \hat{y}) = -\left[ y \log \hat{y} + (1-y) \log (1 - \hat{y}) \right]\]</p>
+</div>
   </div>
 </section>
 <section>
@@ -620,18 +621,13 @@
 <section>
   <div class="slide-breadcrumb">第03讲 深度神经网络 › 4. 感知机与多层感知机</div>
   <div class="slide-title">4.2 XOR 问题：感知机的阿喀琉斯之踵</div>
-  <div class="slide-body">
-<p>1969 年，Minsky 与 Papert 在《Perceptrons》一书中指出：感知机无法学习 XOR（异或）问题。原因很根本——单个感知机只能画出一条直线（线性分离器）来分割两类样本，而 XOR 的四个样本点（分属两类）根本不存在这样的直线。</p>
+  <div class="slide-body merge-h dense">
 <figure>
         <img src="images/xor_linearly_inseparable.jpg" alt="XOR 问题线性不可分示意图" loading="lazy">
-        <figcaption>XOR 线性不可分：输出 0（蓝）和输出 1（红）的点各据一条对角线，单层感知机只能画一条直线，无论怎么画都不能把两类点完全分开。（下表中 + 对应 1、− 对应 0，与上图的 0/1 表示等价。）</figcaption>
+        <figcaption>XOR 线性不可分：输出 0（蓝）和输出 1（红）的点各据一条对角线，单层感知机只能画一条直线，无论怎么画都不能把两类点完全分开。（右表中 + 对应 1、− 对应 0，与左图的 0/1 表示等价。）</figcaption>
     </figure>
-  </div>
-</section>
-<section>
-  <div class="slide-breadcrumb">第03讲 深度神经网络 › 4. 感知机与多层感知机</div>
-  <div class="slide-title">4.2 XOR 问题：感知机的阿喀琉斯之踵</div>
-  <div class="slide-body">
+<div class="merge-text">
+<p>1969 年，Minsky 与 Papert 在《Perceptrons》一书中指出：感知机无法学习 XOR（异或）问题。原因很根本——单个感知机只能画出一条直线（线性分离器）来分割两类样本，而 XOR 的四个样本点（分属两类）根本不存在这样的直线。</p>
 <div class="tbl-wrap">
         <table>
             <tr><th>\(x_1\)</th><th>\(x_2\)</th><th>XOR 输出</th><th>能否线性分割</th></tr>
@@ -645,44 +641,38 @@
         <span class="co-tag">⚠️ 历史影响</span>
         <p>XOR 问题的证明沉重打击了第一代神经网络研究，是 1970~80 年代"AI 寒冬"的成因之一。破解之道正是给网络加隐藏层。</p>
     </div>
-  </div>
-</section>
-<section class="slide-short">
-  <div class="slide-breadcrumb">第03讲 深度神经网络 › 4. 感知机与多层感知机</div>
-  <div class="slide-title">4.3 多层感知机：加一层就能学 XOR</div>
-  <div class="slide-body">
-<p>XOR 可以分解为简单逻辑运算的组合：\(y = (x_1\ \text{AND}\ (\text{NOT}\ x_2))\ \text{OR}\ ((\text{NOT}\ x_1)\ \text{AND}\ x_2)\)。每个 NOT / AND / OR 都可以由一个感知机实现——把几个感知机分层连接，让第一层的输出作为第二层的输入，XOR 就迎刃而解。这就是多层感知机（MLP, Multi-Layer Perceptron）的思想来源。</p>
+</div>
   </div>
 </section>
 <section>
   <div class="slide-breadcrumb">第03讲 深度神经网络 › 4. 感知机与多层感知机</div>
   <div class="slide-title">4.3 几何视角：两条线组合出 XOR</div>
-  <div class="slide-body">
-<p>隐藏单元 1 画竖线（左侧记 +），隐藏单元 2 画横线（上侧记 +）；两符号<strong>相乘</strong>得 + − − +，乘积为 + 的恰好只有正类点（1、4 号），输出层再对乘积做一次线性分割即可。乘积是非线性运算——这正是 4.5 节"为什么必须是非线性激活函数"的伏笔。</p>
+  <div class="slide-body merge-h dense">
 <figure>
         <img src="images/xor_mlp_learning.png" alt="多层感知机学习 XOR 的几何示意" loading="lazy">
         <figcaption>学习 XOR（引自《动手学深度学习》课件）：两条分割线对应两个隐藏单元；符号表的乘积行 + − − + 恰好分出正类；右下为 2-2-1 网络结构。</figcaption>
     </figure>
+<div class="merge-text">
+<p>XOR 可以分解为简单逻辑运算的组合：\(y = (x_1\ \text{AND}\ (\text{NOT}\ x_2))\ \text{OR}\ ((\text{NOT}\ x_1)\ \text{AND}\ x_2)\)。每个 NOT / AND / OR 都可以由一个感知机实现——把几个感知机分层连接，让第一层的输出作为第二层的输入，XOR 就迎刃而解。这就是多层感知机（MLP, Multi-Layer Perceptron）的思想来源。</p>
+<p>隐藏单元 1 画竖线（左侧记 +），隐藏单元 2 画横线（上侧记 +）；两符号<strong>相乘</strong>得 + − − +，乘积为 + 的恰好只有正类点（1、4 号），输出层再对乘积做一次线性分割即可。乘积是非线性运算——这正是 4.5 节"为什么必须是非线性激活函数"的伏笔。</p>
+</div>
   </div>
 </section>
 <section>
   <div class="slide-breadcrumb">第03讲 深度神经网络 › 4. 感知机与多层感知机</div>
   <div class="slide-title">4.4 单隐藏层网络</div>
-  <div class="slide-body">
-<p>在输入与输出之间插入一个含 \(m\) 个神经元的隐藏层（隐藏层大小 \(m\) 是一个超参数）：</p>
+  <div class="slide-body merge-h">
 <figure>
         <img src="images/single_hidden_layer.jpg" alt="单隐藏层神经网络" loading="lazy">
         <figcaption>单隐藏层全连接网络：4 个输入 → 5 个隐藏单元 → 1 个输出。注意输入到隐藏层是"全连接"的——每个隐藏单元都接收全部输入。</figcaption>
     </figure>
+<div class="merge-text">
+<p>在输入与输出之间插入一个含 \(m\) 个神经元的隐藏层（隐藏层大小 \(m\) 是一个超参数）：</p>
+
 <p>数学上，整个网络是三步复合：</p>
-  </div>
-</section>
-<section class="slide-short">
-  <div class="slide-breadcrumb">第03讲 深度神经网络 › 4. 感知机与多层感知机</div>
-  <div class="slide-title">4.4 单隐藏层网络</div>
-  <div class="slide-body">
 <p>\[\text{输入：} \mathbf{x} \in \mathbb{R}^{n} \qquad \text{隐藏层：} \mathbf{h} = \sigma(\mathbf{W}_1^\top \mathbf{x} + \mathbf{b}_1) \qquad \text{输出：} \hat{y} = \mathbf{w}_2^\top \mathbf{h} + b_2\]</p>
 <p>其中 \(\sigma\) 是一个逐元素作用的激活函数。</p>
+</div>
   </div>
 </section>
 <section>
@@ -820,19 +810,15 @@
 <section>
   <div class="slide-breadcrumb">第03讲 深度神经网络 › 5. 模型选择与泛化</div>
   <div class="slide-title">5.4 欠拟合与过拟合</div>
-  <div class="slide-body">
-<p>同一批数据点，用三种不同复杂度的模型去拟合，效果天差地别：</p>
+  <div class="slide-body merge-h">
 <figure>
         <img src="images/underfit_overfit.jpg" alt="欠拟合、正常与过拟合示意" loading="lazy">
         <figcaption>左：欠拟合——模型太简单（一条水平线），连训练数据都拟合不了；中：正常——恰好的复杂度，平滑地穿过数据；右：过拟合——模型过于复杂，把每个噪声点都"记住"了，曲线七拐八弯，对新数据的预测反而很差。</figcaption>
     </figure>
+<div class="merge-text">
+<p>同一批数据点，用三种不同复杂度的模型去拟合，效果天差地别：</p>
+
 <p>把模型复杂度与数据复杂度放在一起看：</p>
-  </div>
-</section>
-<section>
-  <div class="slide-breadcrumb">第03讲 深度神经网络 › 5. 模型选择与泛化</div>
-  <div class="slide-title">5.4 欠拟合与过拟合</div>
-  <div class="slide-body">
 <div class="tbl-wrap">
         <table>
             <tr><th></th><th>数据复杂度低</th><th>数据复杂度高</th></tr>
@@ -844,6 +830,7 @@
         <span class="co-tag">🔑 初学者理解</span>
         <p>过拟合和欠拟合都不是绝对的，而是"模型能力"与"数据难度"相对不匹配的结果。同一个模型，放在简单数据上可能过拟合，放在复杂数据上可能刚刚好。</p>
     </div>
+</div>
   </div>
 </section>
 <section>
@@ -953,13 +940,19 @@
 <section>
   <div class="slide-breadcrumb">第03讲 深度神经网络 › 7. 正反向传播与数值稳定性</div>
   <div class="slide-title">7.1 逐节点走一遍：梯度怎么回流</div>
-  <div class="slide-body">
+  <div class="slide-body merge-h dense">
+<figure>
+        <img src="images/comp_graph_sigmoid_gate.jpg" alt="含 sigmoid 门的计算图与反向传播" loading="lazy">
+        <figcaption>前向（绿）与反向（红）在一图：sigmoid 门的局部导数有简洁公式 \(\frac{d\sigma}{dx} = (1-\sigma)\sigma = 0.73 \times 0.27 \approx 0.2\)，上游梯度 1.0 经过 sigmoid 门后变为 0.20，再逐节点向前分配。看懂这张图，就看懂了反向传播的全部机制。</figcaption>
+    </figure>
+<div class="merge-text">
 <p>读图约定：<strong>绿色数字 = 前向值，红色数字 = 反向梯度</strong>。前向：\(w_0 x_0 + w_1 x_1 + w_2 = 2\times(-1)+(-3)\times(-2)+(-3) = 1\)，sigmoid 输出 \(\sigma(1) \approx 0.73\)。反向从最右端梯度 1.0 出发，每过一个门都做"局部导数 × 上游梯度"：</p>
 <ul>
         <li><strong>sigmoid 门</strong>：\(\frac{d\sigma}{dx} = (1-\sigma)\sigma = 0.73 \times 0.27 \approx 0.2\)，梯度 \(1.0 \to 0.20\)；</li>
         <li><strong>加法门</strong>：梯度原样分发，\(w_0 x_0\)、\(w_1 x_1\)、\(w_2\) 各得 0.20；</li>
         <li><strong>乘法门</strong>：输入交换取值再乘上游梯度——\(w_0\) 收 \(x_0 \times 0.20 = -0.20\)，\(x_0\) 收 \(w_0 \times 0.20 = 0.40\)。</li>
     </ul>
+</div>
   </div>
 </section>
 <section>
@@ -988,7 +981,12 @@
 <section>
   <div class="slide-breadcrumb">第03讲 深度神经网络 › 7. 正反向传播与数值稳定性</div>
   <div class="slide-title">7.3 深度网络的两个数值问题：梯度爆炸与梯度消失</div>
-  <div class="slide-body">
+  <div class="slide-body merge-h">
+<figure>
+        <img src="images/sigmoid_gradient.jpg" alt="sigmoid 函数及其梯度曲线" loading="lazy">
+        <figcaption>sigmoid（蓝）与其导数（橙）：导数 \(\sigma'(x) = \sigma(x)(1-\sigma(x))\) 的最大值只有 0.25，且输入稍大就趋近 0。几十层连乘下来，梯度被压得荡然无存。</figcaption>
+    </figure>
+<div class="merge-text">
 <div class="tbl-wrap">
         <table>
             <tr><th>问题</th><th>数值示例</th><th>后果</th></tr>
@@ -997,20 +995,11 @@
         </table>
     </div>
 <p>梯度消失最典型的元凶是 sigmoid 激活函数：</p>
-  </div>
-</section>
-<section>
-  <div class="slide-breadcrumb">第03讲 深度神经网络 › 7. 正反向传播与数值稳定性</div>
-  <div class="slide-title">7.3 深度网络的两个数值问题：梯度爆炸与梯度消失</div>
-  <div class="slide-body">
-<figure>
-        <img src="images/sigmoid_gradient.jpg" alt="sigmoid 函数及其梯度曲线" loading="lazy">
-        <figcaption>sigmoid（蓝）与其导数（橙）：导数 \(\sigma'(x) = \sigma(x)(1-\sigma(x))\) 的最大值只有 0.25，且输入稍大就趋近 0。几十层连乘下来，梯度被压得荡然无存。</figcaption>
-    </figure>
 <div class="callout warn">
         <span class="co-tag">⚠️ 梯度消失的实际危害</span>
         <p>16 位浮点下，梯度小于 \(2^{-24} \approx 5.96 \times 10^{-8}\) 就等于 0。此时无论怎么调学习率，底层训练基本无效，只有顶层在学习——网络"更深"反而可能更差。</p>
     </div>
+</div>
   </div>
 </section>
 <section>
@@ -1094,19 +1083,15 @@
 <section>
   <div class="slide-breadcrumb">第03讲 深度神经网络 › 9. 综合实验环节</div>
   <div class="slide-title">9.1 综合实验：两隐藏层网络识别 MNIST</div>
-  <div class="slide-body">
+  <div class="slide-body merge-h dense">
 <figure>
         <img src="images/mnist_grid.jpg" alt="MNIST 手写数字样本网格" loading="lazy">
         <figcaption>MNIST 数据集：70,000 张 28×28 灰度手写数字图像，训练/测试按 60,000 : 10,000 划分（Yann LeCun 等收集，深度学习领域的标准基准）。</figcaption>
     </figure>
+<div class="merge-text">
 <p>把本讲的所有零件组装起来，完整走一遍"从数据到模型"：</p>
-  </div>
-</section>
-<section>
-  <div class="slide-breadcrumb">第03讲 深度神经网络 › 9. 综合实验环节</div>
-  <div class="slide-title">9.1 综合实验：两隐藏层网络识别 MNIST</div>
-  <div class="slide-body">
 <table><tr><th>组件</th><th>本案例中的选择</th></tr><tbody><tr><td>输入</td><td>图像展平为 \(\mathbf{X} = [x_1, x_2, \ldots, x_{784}]\)（28 × 28 = 784 维）</td></tr><tr><td>网络结构</td><td>\(\mathbf{h}_1 = \max(\mathbf{X}\mathbf{W}_1 + \mathbf{b}_1, 0)\)，\(\mathbf{h}_2 = \max(\mathbf{h}_1\mathbf{W}_2 + \mathbf{b}_2, 0)\)，\(\mathbf{h}_3 = \mathbf{h}_2\mathbf{W}_3 + \mathbf{b}_3\)——两个 ReLU 隐藏层 + 线性输出层</td></tr><tr><td>输出与类别</td><td>10 维输出经 softmax 得概率，\(\hat{y} = \arg\max\)，类别 \(Y \in \{0, 1, \ldots, 9\}\)</td></tr></tbody></table>
+</div>
   </div>
 </section>
 <section>
