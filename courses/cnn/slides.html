@@ -721,17 +721,24 @@
 </section>
 <section>
   <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 6. 多输入输出通道</div>
-  <div class="slide-title">6.2 多个输出通道</div>
-  <div class="slide-body">
-<p>要获得多个输出通道，需要使用多个三维卷积核。</p>
+  <div class="slide-title">6.2 多个输出通道：一个核组对应一个输出通道</div>
+  <div class="slide-body merge-h dense">
 <figure>
         <img src="images/p25_20.jpeg" alt="多输出通道" loading="lazy">
-        <figcaption>多输出通道卷积示意</figcaption>
+        <figcaption>多输出通道卷积示意：每个核组（含 \(c_i\) 个二维核）独立产出一个输出通道；\(c_o\) 个核组 → \(c_o\) 个输出通道。</figcaption>
     </figure>
+<div class="merge-text">
+<p>6.1 中，一个三维核只产出一个输出通道。要得到 \(c_o\) 个输出通道，就准备 \(c_o\) 个核组——<strong>一一对应</strong>。分清"核"的三个层次：</p>
 <ul>
-        <li>卷积核 \(\mathbf{W}\)：\(c_o \times c_i \times k_h \times k_w\)（\(c_o\) 个输出通道）</li>
-        <li>每个输出通道 \(\mathbf{O}_i = \mathbf{X} \star \mathbf{W}(i,:,:,:)\)</li>
+        <li><strong>二维核</strong> \(k_h \times k_w\)：只在一个输入通道上滑动；</li>
+        <li><strong>核组（三维核）</strong> \(c_i \times k_h \times k_w\)：每个输入通道配一个二维核，求和后<strong>产出一个输出通道</strong>；</li>
+        <li><strong>四维核张量</strong> \(\mathbf{W}\)：\(c_o \times c_i \times k_h \times k_w\)，即 \(c_o\) 个核组的堆叠，\(\mathbf{O}_i = \mathbf{X} \star \mathbf{W}(i,:,:,:)\)。</li>
     </ul>
+<div class="callout key">
+        <span class="co-tag">🔑 关键</span>
+        <p>一个卷积核组 ⇔ 一个输出通道；核组间参数独立、各学一种模式。参数量例：\(c_i=3\)、\(c_o=6\)、3×3 核 → \(6\times3\times3\times3=162\)。</p>
+    </div>
+</div>
   </div>
 </section>
 <section>
