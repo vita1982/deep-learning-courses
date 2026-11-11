@@ -469,16 +469,32 @@
         <figcaption>多输入通道卷积动画：核 1 只在通道 1 上滑动，核 2 只在通道 2 上滑动，同一位置的两个加权和相加，才得到输出的一个元素——输入通道数只影响"要加几项"，不影响输出的通道数。</figcaption>
     </figure>
 
-    <h3><span class="sec-no">6.2</span>多个输出通道</h3>
-    <p>要获得多个输出通道，需要使用多个三维卷积核。</p>
+    <h3><span class="sec-no">6.2</span>多个输出通道：一个卷积核组对应一个输出通道</h3>
+    <p>回顾 6.1 的结论：无论输入有多少个通道，<strong>一个三维卷积核做完"逐通道卷积再求和"之后，只产出一个输出通道</strong>。所以要获得多个输出通道，就要准备多个这样的三维卷积核——<strong>有几个三维核，就有几个输出通道，二者严格一一对应</strong>。为表述清晰，本节把一个三维核称为一个<strong>卷积核组</strong>。</p>
     <figure>
         <img src="images/p25_20.jpeg" alt="多输出通道" loading="lazy">
-        <figcaption>多输出通道卷积示意</figcaption>
+        <figcaption>多输出通道卷积示意：每个核组（含 \(c_i\) 个二维核）独立地产出一个输出通道，\(c_o\) 个核组得到 \(c_o\) 个输出通道。</figcaption>
     </figure>
+    <p>把"核"的三个层次分清楚，对应关系就一目了然：</p>
     <ul>
-        <li>卷积核 \(\mathbf{W}\)：\(c_o \times c_i \times k_h \times k_w\)（\(c_o\) 个输出通道）</li>
-        <li>每个输出通道 \(\mathbf{O}_i = \mathbf{X} \star \mathbf{W}(i,:,:,:)\)</li>
+        <li><strong>二维核</strong>（\(k_h \times k_w\)）：最小单元，只在一个输入通道上滑动；</li>
+        <li><strong>卷积核组（三维核）</strong>（\(c_i \times k_h \times k_w\)）：由 \(c_i\) 个二维核组成，每个输入通道配一个，各通道卷积结果求和后<strong>产出一个输出通道</strong>；</li>
+        <li><strong>四维核张量</strong> \(\mathbf{W}\)（\(c_o \times c_i \times k_h \times k_w\)）：把 \(c_o\) 个核组堆叠在一起，\(c_o\) 就是输出通道数；每个输出通道 \(\mathbf{O}_i = \mathbf{X} \star \mathbf{W}(i,:,:,:)\)。</li>
     </ul>
+    <p>对应关系与计算方式（以 \(c_i=2\)、\(c_o=3\) 为例）：</p>
+    <table>
+        <thead><tr><th>输出通道</th><th>由谁产生</th><th>计算</th></tr></thead>
+        <tbody>
+            <tr><td>通道 1</td><td>核组 1：\(\mathbf{W}(0,:,:,:)\)</td><td>\(\mathbf{O}_1=\sum_{c}\mathbf{X}(c,:,:)\star\mathbf{W}(0,c,:,:)\)</td></tr>
+            <tr><td>通道 2</td><td>核组 2：\(\mathbf{W}(1,:,:,:)\)</td><td>\(\mathbf{O}_2=\sum_{c}\mathbf{X}(c,:,:)\star\mathbf{W}(1,c,:,:)\)</td></tr>
+            <tr><td>通道 3</td><td>核组 3：\(\mathbf{W}(2,:,:,:)\)</td><td>\(\mathbf{O}_3=\sum_{c}\mathbf{X}(c,:,:)\star\mathbf{W}(2,c,:,:)\)</td></tr>
+        </tbody>
+    </table>
+    <div class="callout key">
+        <span class="co-tag">🔑 关键</span>
+        <p><strong>一个卷积核组 ⇔ 一个输出通道。</strong>核组内部：每个输入通道配一个二维核，各通道结果求和；核组之间：参数完全独立，各自学习一种模式。输出通道数 \(c_o\) 只取决于核组的个数，与输入通道数 \(c_i\) 无关——\(c_i\) 只决定每个核组"有多厚"。</p>
+    </div>
+    <p><strong>参数量核算</strong>：输入 \(c_i=3\)、要 \(c_o=6\) 个输出通道、核大小 3×3，则需要 6 个核组，每组含 3 个 3×3 二维核，参数量共 \(6\times3\times3\times3=162\)（另加 6 个偏置）。</p>
     <p>每个输出通道可以识别一种特定的模式，例如：</p>
     <ul>
         <li>通道1：检测水平边缘</li>
@@ -1121,32 +1137,6 @@
 
 </div><!-- /page -->
 
-<!-- DL-SECVIS:BEGIN upto=6 -->
-<script>
-/* 本讲部分开放：仅显示前 6 节，后续小节随课程进度开放（scripts/set_section_visibility.py） */
-(function () {
-    var UPTO = 6;
-    var secs = document.querySelectorAll('section.chapter');
-    var last = null;
-    Array.prototype.forEach.call(secs, function (s) {
-        var numEl = s.querySelector('.chapter-num');
-        var n = numEl ? parseInt(numEl.textContent.trim(), 10) : NaN;
-        if (!isNaN(n) && n > UPTO) { s.parentNode.removeChild(s); }
-        else { last = s; }
-    });
-    if (last) {
-        var card = document.createElement('div');
-        card.style.cssText = 'margin:28px auto 8px;max-width:860px;background:#F1F5F9;border:1px dashed #94A3B8;'
-            + 'border-radius:14px;padding:30px 36px;text-align:center;font-family:Microsoft YaHei,sans-serif;';
-        card.innerHTML = '<div style="font-size:30px;">📘</div>'
-            + '<div style="margin-top:10px;font-size:17px;font-weight:bold;color:#1E293B;">本讲后续章节将随课程进度开放</div>'
-            + '<div style="margin-top:8px;font-size:14px;color:#64748B;line-height:1.8;">'
-            + '目前开放至第 ' + UPTO + ' 节，后续小节将在课堂上讲解后开放，请按课程安排学习。</div>';
-        last.insertAdjacentElement('afterend', card);
-    }
-})();
-</script>
-<!-- DL-SECVIS:END -->
 <script src="../../assets/katex/katex.min.js"></script>
 <script src="../../assets/katex/auto-render.min.js"></script>
 <script>
