@@ -213,7 +213,7 @@
 <section>
   <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 目录</div>
   <div class="slide-title">📋 本讲目录</div>
-  <div class="slide-body toc-list"><ol><li><a href="#/3" style="color:#1E40AF;text-decoration:none;">1. 回顾：单隐含层网络</a></li><li><a href="#/7" style="color:#1E40AF;text-decoration:none;">2. 卷积神经网络概述</a></li><li><a href="#/11" style="color:#1E40AF;text-decoration:none;">3. 卷积运算基础</a></li><li><a href="#/19" style="color:#1E40AF;text-decoration:none;">4. 二维卷积层</a></li><li><a href="#/22" style="color:#1E40AF;text-decoration:none;">5. 填充与步幅</a></li><li><a href="#/29" style="color:#1E40AF;text-decoration:none;">6. 多输入输出通道</a></li><li><a href="#/36" style="color:#1E40AF;text-decoration:none;">7. 1×1 卷积层</a></li><li><a href="#/43" style="color:#1E40AF;text-decoration:none;">8. 池化层</a></li><li><a href="#/53" style="color:#1E40AF;text-decoration:none;">9. Why CNN？—— 卷积神经网络的核心优势</a></li><li><a href="#/58" style="color:#1E40AF;text-decoration:none;">10. 代表性卷积神经网络</a></li><li><a href="#/66" style="color:#1E40AF;text-decoration:none;">11. 核心公式速查</a></li><li><a href="#/69" style="color:#1E40AF;text-decoration:none;">12. 总结与思考</a></li></ol></div>
+  <div class="slide-body toc-list"><ol><li><a href="#/3" style="color:#1E40AF;text-decoration:none;">1. 回顾：单隐含层网络</a></li><li><a href="#/7" style="color:#1E40AF;text-decoration:none;">2. 卷积神经网络概述</a></li><li><a href="#/11" style="color:#1E40AF;text-decoration:none;">3. 卷积运算基础</a></li><li><a href="#/19" style="color:#1E40AF;text-decoration:none;">4. 二维卷积层</a></li><li><a href="#/22" style="color:#1E40AF;text-decoration:none;">5. 填充与步幅</a></li><li><a href="#/29" style="color:#1E40AF;text-decoration:none;">6. 多输入输出通道</a></li><li><a href="#/36" style="color:#1E40AF;text-decoration:none;">7. 1×1 卷积层</a></li><li><a href="#/43" style="color:#1E40AF;text-decoration:none;">8. 池化层</a></li><li><a href="#/51" style="color:#1E40AF;text-decoration:none;">9. Why CNN？—— 卷积神经网络的核心优势</a></li><li><a href="#/56" style="color:#1E40AF;text-decoration:none;">10. 代表性卷积神经网络</a></li><li><a href="#/64" style="color:#1E40AF;text-decoration:none;">11. 核心公式速查</a></li><li><a href="#/67" style="color:#1E40AF;text-decoration:none;">12. 总结与思考</a></li></ol></div>
 </section>
 <section class="slide-short">
   <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 课前导入</div>
@@ -857,47 +857,24 @@
 </section>
 <section>
   <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 8. 池化层</div>
-  <div class="slide-title">8.1 为什么需要池化层？</div>
-  <div class="slide-body">
-<p>卷积层对位置是敏感的——输入图像的微小偏移可能导致输出显著变化。<strong>实验设定</strong>：输入 X 前两列为 1（一条竖线）；卷积核 K = [1, −1]（1×2，检测垂直边缘）；窗口 = 核每次覆盖的相邻两格，Y(i,j) = X(i,j) − X(i,j+1)。</p>
-  </div>
-</section>
-<section>
-  <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 8. 池化层</div>
-  <div class="slide-title">8.1 亲手验算：移位前后输出对比</div>
-  <div class="slide-body">
-<div class="tbl-wrap">
+  <div class="slide-title">8.1 为什么需要池化层？——亲手验算"位置敏感"</div>
+  <div class="slide-body merge-h dense">
+<div class="tbl-wrap" style="flex:0 0 47%;margin:0;">
         <table>
-            <tr><th style="width:130px;"></th><th>输入（4×5，竖线 = 两列 1）</th><th>卷积输出（4×4）</th></tr>
-            <tr><td><strong>移位前</strong></td><td><div style="font-family:Consolas,monospace;font-size:14.5px;line-height:1.7;text-align:center;">1&nbsp;&nbsp;1&nbsp;&nbsp;0&nbsp;&nbsp;0&nbsp;&nbsp;0<br>1&nbsp;&nbsp;1&nbsp;&nbsp;0&nbsp;&nbsp;0&nbsp;&nbsp;0<br>1&nbsp;&nbsp;1&nbsp;&nbsp;0&nbsp;&nbsp;0&nbsp;&nbsp;0<br>1&nbsp;&nbsp;1&nbsp;&nbsp;0&nbsp;&nbsp;0&nbsp;&nbsp;0</div></td><td><div style="font-family:Consolas,monospace;font-size:14.5px;line-height:1.7;text-align:center;">0&nbsp;&nbsp;<strong style="color:#DC2626;">1</strong>&nbsp;&nbsp;0&nbsp;&nbsp;0<br>0&nbsp;&nbsp;<strong style="color:#DC2626;">1</strong>&nbsp;&nbsp;0&nbsp;&nbsp;0<br>0&nbsp;&nbsp;<strong style="color:#DC2626;">1</strong>&nbsp;&nbsp;0&nbsp;&nbsp;0<br>0&nbsp;&nbsp;<strong style="color:#DC2626;">1</strong>&nbsp;&nbsp;0&nbsp;&nbsp;0</div></td></tr>
-            <tr><td><strong>右移 1 像素</strong></td><td><div style="font-family:Consolas,monospace;font-size:14.5px;line-height:1.7;text-align:center;">0&nbsp;&nbsp;1&nbsp;&nbsp;1&nbsp;&nbsp;0&nbsp;&nbsp;0<br>0&nbsp;&nbsp;1&nbsp;&nbsp;1&nbsp;&nbsp;0&nbsp;&nbsp;0<br>0&nbsp;&nbsp;1&nbsp;&nbsp;1&nbsp;&nbsp;0&nbsp;&nbsp;0<br>0&nbsp;&nbsp;1&nbsp;&nbsp;1&nbsp;&nbsp;0&nbsp;&nbsp;0</div></td><td><div style="font-family:Consolas,monospace;font-size:14.5px;line-height:1.7;text-align:center;"><strong style="color:#DC2626;">−1</strong>&nbsp;&nbsp;0&nbsp;&nbsp;<strong style="color:#DC2626;">1</strong>&nbsp;&nbsp;0<br><strong style="color:#DC2626;">−1</strong>&nbsp;&nbsp;0&nbsp;&nbsp;<strong style="color:#DC2626;">1</strong>&nbsp;&nbsp;0<br><strong style="color:#DC2626;">−1</strong>&nbsp;&nbsp;0&nbsp;&nbsp;<strong style="color:#DC2626;">1</strong>&nbsp;&nbsp;0<br><strong style="color:#DC2626;">−1</strong>&nbsp;&nbsp;0&nbsp;&nbsp;<strong style="color:#DC2626;">1</strong>&nbsp;&nbsp;0</div></td></tr>
+            <tr><th style="width:104px;"></th><th>输入（4×5，竖线 = 两列 1）</th><th>卷积输出（4×4）</th></tr>
+            <tr><td><strong>移位前</strong></td><td><div style="font-family:Consolas,monospace;font-size:13.5px;line-height:1.55;text-align:center;">1&nbsp;&nbsp;1&nbsp;&nbsp;0&nbsp;&nbsp;0&nbsp;&nbsp;0<br>1&nbsp;&nbsp;1&nbsp;&nbsp;0&nbsp;&nbsp;0&nbsp;&nbsp;0<br>1&nbsp;&nbsp;1&nbsp;&nbsp;0&nbsp;&nbsp;0&nbsp;&nbsp;0<br>1&nbsp;&nbsp;1&nbsp;&nbsp;0&nbsp;&nbsp;0&nbsp;&nbsp;0</div></td><td><div style="font-family:Consolas,monospace;font-size:13.5px;line-height:1.55;text-align:center;">0&nbsp;&nbsp;<strong style="color:#DC2626;">1</strong>&nbsp;&nbsp;0&nbsp;&nbsp;0<br>0&nbsp;&nbsp;<strong style="color:#DC2626;">1</strong>&nbsp;&nbsp;0&nbsp;&nbsp;0<br>0&nbsp;&nbsp;<strong style="color:#DC2626;">1</strong>&nbsp;&nbsp;0&nbsp;&nbsp;0<br>0&nbsp;&nbsp;<strong style="color:#DC2626;">1</strong>&nbsp;&nbsp;0&nbsp;&nbsp;0</div></td></tr>
+            <tr><td><strong>右移 1 像素</strong></td><td><div style="font-family:Consolas,monospace;font-size:13.5px;line-height:1.55;text-align:center;">0&nbsp;&nbsp;1&nbsp;&nbsp;1&nbsp;&nbsp;0&nbsp;&nbsp;0<br>0&nbsp;&nbsp;1&nbsp;&nbsp;1&nbsp;&nbsp;0&nbsp;&nbsp;0<br>0&nbsp;&nbsp;1&nbsp;&nbsp;1&nbsp;&nbsp;0&nbsp;&nbsp;0<br>0&nbsp;&nbsp;1&nbsp;&nbsp;1&nbsp;&nbsp;0&nbsp;&nbsp;0</div></td><td><div style="font-family:Consolas,monospace;font-size:13.5px;line-height:1.55;text-align:center;"><strong style="color:#DC2626;">−1</strong>&nbsp;&nbsp;0&nbsp;&nbsp;<strong style="color:#DC2626;">1</strong>&nbsp;&nbsp;0<br><strong style="color:#DC2626;">−1</strong>&nbsp;&nbsp;0&nbsp;&nbsp;<strong style="color:#DC2626;">1</strong>&nbsp;&nbsp;0<br><strong style="color:#DC2626;">−1</strong>&nbsp;&nbsp;0&nbsp;&nbsp;<strong style="color:#DC2626;">1</strong>&nbsp;&nbsp;0<br><strong style="color:#DC2626;">−1</strong>&nbsp;&nbsp;0&nbsp;&nbsp;<strong style="color:#DC2626;">1</strong>&nbsp;&nbsp;0</div></td></tr>
         </table>
     </div>
-<p>移位前：输出第 2 列亮起（检测到竖线）；仅右移 1 像素，响应位置全变；竖线完全移出图像则输出全 0——这就是"位置敏感"。</p>
-  </div>
-</section>
-<section>
-  <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 8. 池化层</div>
-  <div class="slide-title">8.1 课件示例：移位前 vs 移位后</div>
-  <div class="slide-body">
-<div style="display:flex;gap:18px;align-items:flex-start;">
-        <figure style="flex:1;margin:0;">
-            <img src="images/p29_24.jpeg" alt="池化动机-X" loading="lazy">
-            <figcaption>移位前：竖线在窗口内，卷积输出非零（检测到了边缘）</figcaption>
-        </figure>
-        <figure style="flex:1;margin:0;">
-            <img src="images/p29_25.jpeg" alt="池化动机-Y" loading="lazy">
-            <figcaption>移位后：同一根竖线右移 1 像素、离开窗口，卷积输出变成 0（图中矩阵是输入，"输出"指卷积结果）</figcaption>
-        </figure>
-    </div>
-<ul>
-        <li>同一物体的照片，可能因为拍摄角度、光照、位置变化而不同</li>
-        <li>卷积核检测垂直边缘时，1 像素的移位可能使输出从非 0 变为 0（或反之）——输出对位置非常敏感</li>
-    </ul>
+<div class="merge-text">
+<p><strong>实验设定</strong>：输入 X 前两列为 1（一条竖线）；核 K = [1, −1]（1×2，检测"由亮变暗"的垂直边缘），窗口每次右滑 1 格：Y(i,j) = X(i,j) − X(i,j+1)。</p>
+<p><strong>逐格验算</strong>：窗口盖住 (1, 1) 得 0；盖住第 2、3 列 (1, 0) 得 1 → 左表输出第 2 列亮起，含义是"这里检测到一条竖线"。</p>
+<p><strong>"位置敏感"问题在哪</strong>：响应跟着竖线移动本身没错——<strong>真正的问题在下游</strong>：对后续层来说，竖线在第 2 列和第 3 列是两幅完全不同的输入图案，同一结论要按位置各学一遍；竖线移出画面，输出全 0，目标凭空消失。<strong>同一特征换个位置，网络就可能认不出来</strong>——而我们希望不管竖线在哪一列，都给出"有一条竖线"的相同判断。</p>
 <div class="callout warn">
         <span class="co-tag">⚠️ 核心需求</span>
-        <p>我们关心的是图像里<strong>有没有</strong>竖线，而不是它在第几列——需要一定程度的平移不变性。<strong>解决方案：池化层（Pooling Layer）</strong>：每个小窗口只保留最显著的响应（如最大值），竖线挪一两格，池化结果不变。</p>
+        <p>我们关心的是图像里<strong>有没有</strong>竖线，而不是它在第几列——需要一定程度的平移不变性。<strong>解决方案：池化层（Pooling Layer）</strong>——每个小窗口只保留最显著的响应（如最大值），竖线挪一两格，池化结果不变。</p>
     </div>
+</div>
   </div>
 </section>
 <section>
@@ -910,7 +887,7 @@
         <figcaption>2-D 最大池化</figcaption>
     </figure>
 <ul>
-        <li>例：2×2 窗口，步幅为 2 → 输出空间尺寸减半</li>
+        <li>例（对应上图）：3×3 输入、2×2 窗口、步幅为 1 → 输出 2×2</li>
         <li>窗口内计算：max(0, 1, 3, 4) = 4</li>
     </ul>
   </div>
