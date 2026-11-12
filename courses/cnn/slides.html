@@ -213,7 +213,7 @@
 <section>
   <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 目录</div>
   <div class="slide-title">📋 本讲目录</div>
-  <div class="slide-body toc-list"><ol><li><a href="#/3" style="color:#1E40AF;text-decoration:none;">1. 回顾：单隐含层网络</a></li><li><a href="#/7" style="color:#1E40AF;text-decoration:none;">2. 卷积神经网络概述</a></li><li><a href="#/11" style="color:#1E40AF;text-decoration:none;">3. 卷积运算基础</a></li><li><a href="#/19" style="color:#1E40AF;text-decoration:none;">4. 二维卷积层</a></li><li><a href="#/22" style="color:#1E40AF;text-decoration:none;">5. 填充与步幅</a></li><li><a href="#/29" style="color:#1E40AF;text-decoration:none;">6. 多输入输出通道</a></li><li><a href="#/36" style="color:#1E40AF;text-decoration:none;">7. 1×1 卷积层</a></li><li><a href="#/41" style="color:#1E40AF;text-decoration:none;">8. 池化层</a></li><li><a href="#/51" style="color:#1E40AF;text-decoration:none;">9. Why CNN？—— 卷积神经网络的核心优势</a></li><li><a href="#/56" style="color:#1E40AF;text-decoration:none;">10. 代表性卷积神经网络</a></li><li><a href="#/64" style="color:#1E40AF;text-decoration:none;">11. 核心公式速查</a></li><li><a href="#/67" style="color:#1E40AF;text-decoration:none;">12. 总结与思考</a></li></ol></div>
+  <div class="slide-body toc-list"><ol><li><a href="#/3" style="color:#1E40AF;text-decoration:none;">1. 回顾：单隐含层网络</a></li><li><a href="#/7" style="color:#1E40AF;text-decoration:none;">2. 卷积神经网络概述</a></li><li><a href="#/11" style="color:#1E40AF;text-decoration:none;">3. 卷积运算基础</a></li><li><a href="#/19" style="color:#1E40AF;text-decoration:none;">4. 二维卷积层</a></li><li><a href="#/22" style="color:#1E40AF;text-decoration:none;">5. 填充与步幅</a></li><li><a href="#/29" style="color:#1E40AF;text-decoration:none;">6. 多输入输出通道</a></li><li><a href="#/36" style="color:#1E40AF;text-decoration:none;">7. 1×1 卷积层</a></li><li><a href="#/43" style="color:#1E40AF;text-decoration:none;">8. 池化层</a></li><li><a href="#/53" style="color:#1E40AF;text-decoration:none;">9. Why CNN？—— 卷积神经网络的核心优势</a></li><li><a href="#/58" style="color:#1E40AF;text-decoration:none;">10. 代表性卷积神经网络</a></li><li><a href="#/66" style="color:#1E40AF;text-decoration:none;">11. 核心公式速查</a></li><li><a href="#/69" style="color:#1E40AF;text-decoration:none;">12. 总结与思考</a></li></ol></div>
 </section>
 <section class="slide-short">
   <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 课前导入</div>
@@ -802,25 +802,51 @@
         <span class="co-tag">💡 深入理解：1×1 卷积的关键洞察</span>
         <p>1×1 卷积的核心优势在于：不改变空间尺寸，只做通道间的线性变换。可以把它理解为"给每个像素点单独做了一次矩阵乘法"。</p>
     </div>
-<p>与 3×3 卷积的本质区别：</p>
   </div>
 </section>
 <section>
   <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 7. 1×1 卷积层</div>
-  <div class="slide-title">7.3 主要用途</div>
+  <div class="slide-title">7.3 通道数变换：升维 / 降维</div>
+  <div class="slide-body">
+<p>1×1 卷积就是 <code>Conv2d(C_in, C_out, kernel_size=1)</code>——与 3×3 卷积是<strong>同一个 Conv2d 类</strong>，完全遵守第 6 章的规则：<strong>核组数 = \(c_o\)，每组含 \(c_i\) 个 1×1 小核</strong>。输出通道想设多少就设多少：少于输入即<strong>降维</strong>，多于输入即<strong>升维</strong>。</p>
+<p><strong>验算例 1（降维）</strong> <code>Conv2d(256, 64, 1)</code>：64 组核 × 每组 256 个 1×1 小核；参数量 \(64\times256\times1^2=16384\) → 256 通道压成 64 通道。<strong>ResNet 瓶颈块</strong>：先 1×1 压通道 → 跑 3×3 → 再 1×1 升回，3×3 的参数量和计算量大减。</p>
+<p><strong>验算例 2（升维）</strong> <code>Conv2d(64, 256, 1)</code>：256 组核 × 每组 64 个 1×1 小核 → 64 通道扩成 256 通道，把特征映射到更高维的特征空间，增强表达能力。</p>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 7. 1×1 卷积层</div>
+  <div class="slide-title">7.3 升降维为什么不用 3×3 卷积？</div>
+  <div class="slide-body">
+<ul>
+        <li><strong>参数量差 9 倍（最主要原因）</strong>：\(\text{Params}=c_o\times c_i\times k^2\)。同样 256→64：1×1 为 16384，3×3 为 147456，FLOPs 也约 9 倍；</li>
+        <li><strong>额外引入空间融合</strong>：3×3 感受野为 3，会强制融合周边像素；只想做通道重组时（如注意力模块的通道映射）这是多余操作，还更易过拟合；</li>
+        <li><strong>改变特征图尺寸</strong>：不加 padding 会缩小 H、W；加了 padding 尺寸不变，但 9 倍计算量依旧。</li>
+    </ul>
+<p><strong>何时反而用 3×3</strong>：同时要通道变换 + 提取局部纹理时（如基础残差块 <code>Conv2d(64,128,3,padding=1)</code>）。设计思想是<strong>分工拆分</strong>：1×1 管通道、3×3 管空间。</p>
+<div class="callout key">
+        <span class="co-tag">🔑 对比 concat 拼接</span>
+        <p>1×1 卷积 = 可学习的通道加权融合，通道可升可降；concat = 无学习的直接堆叠，通道只涨不降，反复 concat 会让参数量爆炸。</p>
+    </div>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第04讲 卷积神经网络（CNN） › 7. 1×1 卷积层</div>
+  <div class="slide-title">7.3 主要用途：与 3×3 卷积的本质区别</div>
   <div class="slide-body">
 <div class="tbl-wrap">
         <table>
             <tr><th>维度</th><th>3×3 卷积</th><th>1×1 卷积</th></tr>
             <tr><td>空间感受野</td><td>看当前像素 + 周围 8 个邻居（空间特征提取）</td><td>只看当前像素自己（不做空间特征提取）</td></tr>
             <tr><td>通道操作</td><td>跨通道融合（如果 \(c_i &gt; 1\)）</td><td>只做通道间线性组合（混合不同通道信息）</td></tr>
-            <tr><td>参数数目</td><td>\(c_o \times c_i \times 3 \times 3\)（较多）</td><td>\(c_o \times c_i\)（很少，少了一个 \(k_h \times k_w\) 因子）</td></tr>
-            <tr><td>典型场景</td><td>空间特征提取（边缘、纹理等）</td><td>通道数变换、跨通道信息融合</td></tr>
+            <tr><td>参数数目</td><td>\(c_o \times c_i \times 3 \times 3\)，如 256→64 需 147456</td><td>\(c_o \times c_i\)，如 256→64 仅需 16384（少 9 倍）</td></tr>
+            <tr><td>空间尺寸</td><td>不加 padding 会缩小 H、W</td><td>保持不变</td></tr>
+            <tr><td>典型场景</td><td>空间特征提取（边缘、纹理等）</td><td>通道数变换、跨通道信息融合、瓶颈降维</td></tr>
+            <tr><td>网络分工</td><td>空间 + 通道一起操作</td><td>纯通道维度操作</td></tr>
         </table>
     </div>
 <div class="callout try">
         <span class="co-tag">💡 提示</span>
-        <p>1×1 卷积虽简单，但功能强大，被广泛应用于 ResNet、Inception 等现代网络架构中——ResNet 用它升降维以控制计算量，Inception 用它融合不同尺度的特征。</p>
+        <p>1×1 卷积虽简单，但功能强大，被广泛应用于 ResNet、Inception 等现代网络架构中——ResNet 用它升降维以控制计算量，Inception 用它融合不同尺度的特征。二者是<strong>互补关系，不是替代关系</strong>。</p>
     </div>
   </div>
 </section>
