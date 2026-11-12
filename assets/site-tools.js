@@ -57,7 +57,7 @@
 
     /* ---------- 站内搜索 ---------- */
     document.getElementById('dl-btn-search').addEventListener('click', function () {
-        var mask = openModal('<h3>🔍 站内搜索（第 01–04 章讲义）</h3>'
+        var mask = openModal('<h3>🔍 站内搜索（第 01–06 章讲义）</h3>'
             + '<input id="dl-search-input" type="text" placeholder="输入关键词，如：梯度下降 / 卷积 / softmax…">'
             + '<div id="dl-search-res" style="margin-top:10px;"></div>');
         var input = mask.querySelector('#dl-search-input');
