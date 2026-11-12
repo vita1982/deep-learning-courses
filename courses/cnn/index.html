@@ -606,7 +606,7 @@
             <tr><td><strong>右移 1 像素</strong></td><td><div style="font-family:Consolas,monospace;font-size:14.5px;line-height:1.7;text-align:center;">0&nbsp;&nbsp;1&nbsp;&nbsp;1&nbsp;&nbsp;0&nbsp;&nbsp;0<br>0&nbsp;&nbsp;1&nbsp;&nbsp;1&nbsp;&nbsp;0&nbsp;&nbsp;0<br>0&nbsp;&nbsp;1&nbsp;&nbsp;1&nbsp;&nbsp;0&nbsp;&nbsp;0<br>0&nbsp;&nbsp;1&nbsp;&nbsp;1&nbsp;&nbsp;0&nbsp;&nbsp;0</div></td><td><div style="font-family:Consolas,monospace;font-size:14.5px;line-height:1.7;text-align:center;"><strong style="color:#DC2626;">−1</strong>&nbsp;&nbsp;0&nbsp;&nbsp;<strong style="color:#DC2626;">1</strong>&nbsp;&nbsp;0<br><strong style="color:#DC2626;">−1</strong>&nbsp;&nbsp;0&nbsp;&nbsp;<strong style="color:#DC2626;">1</strong>&nbsp;&nbsp;0<br><strong style="color:#DC2626;">−1</strong>&nbsp;&nbsp;0&nbsp;&nbsp;<strong style="color:#DC2626;">1</strong>&nbsp;&nbsp;0<br><strong style="color:#DC2626;">−1</strong>&nbsp;&nbsp;0&nbsp;&nbsp;<strong style="color:#DC2626;">1</strong>&nbsp;&nbsp;0</div></td></tr>
         </table>
     </div>
-    <p><strong>逐格验算</strong>（以移位前为例）：窗口盖住前两格 (1, 1) 时 \(1\times1+1\times(-1)=0\)；盖住第 2、3 列 (1, 0) 时 \(1\times1+0\times(-1)=1\)——输出的第 2 列亮起，含义是"这里检测到一条竖线"。</p>
+    <p><strong>逐格验算</strong>（以移位前为例）：窗口盖住第 1、2 列时，两格的值是 (1, 1)，得 \(1\times1+1\times(-1)=0\)——注意这两格都在竖线内部，没有"由亮变暗"的变化，所以没有响应；窗口右移一格、盖住第 2、3 列时，两格的值是 (1, 0)，得 \(1\times1+0\times(-1)=1\)——这里恰好是竖线从有到无的边界，于是输出的第 2 列亮起，含义是"这里检测到竖线的右边缘"。</p>
     <p><strong>"位置敏感"到底敏感在哪、问题又是什么？</strong>竖线右移 1 像素、响应跟着跑到别的列——响应随位置移动本身并没有错，<strong>真正的问题在下游</strong>：对后续网络层来说，"竖线在第 2 列"和"竖线在第 3 列"是两幅完全不同的输入图案，同一个识别结论要按位置各学一遍；若竖线继续移动直至完全移出图像，输出直接变成全 0，等于目标凭空消失。也就是说，<strong>同一个特征只是换了个位置，网络就可能认不出来</strong>——而我们希望的是：不管竖线出现在哪一列，网络都应给出"这里有一条竖线"的相同判断。</p>
     <ul>
         <li>同一物体的照片，可能因为拍摄角度、光照、位置变化而不同；</li>
