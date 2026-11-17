@@ -56,28 +56,6 @@
     <link rel="stylesheet" href="../../assets/katex/katex.min.css">
     <link rel="stylesheet" href="../../assets/course.css">
     <script src="../../assets/course.js" defer></script>
-<!-- DL-LOCK:BEGIN -->
-<script src="../../assets/progress.js"></script>
-<script>
-/* 本章尚未开放：locked 时用不透明遮罩盖住全部内容（配置在 assets/progress.js） */
-(function () {
-    try { if ((window.DL_PROGRESS || {})['rnn'] !== 'locked') return; } catch (e) { return; }
-    var st = document.createElement('style');
-    st.textContent = 'body{visibility:hidden}';
-    document.head.appendChild(st);
-    document.addEventListener('DOMContentLoaded', function () {
-        var d = document.createElement('div');
-        d.id = 'dl-chapter-lock';
-        d.style.cssText = 'position:fixed;inset:0;z-index:999999;background:#F1F5F9;'
-            + 'display:flex;align-items:center;justify-content:center;font-family:Microsoft YaHei,sans-serif;';
-        d.innerHTML = '<div style="background:#fff;border-radius:16px;padding:48px 44px;max-width:520px;width:88vw;box-sizing:border-box;text-align:center;box-shadow:0 10px 40px rgba(15,23,42,.12);"><div style="font-size:44px;">🔒</div><h1 style="margin:14px 0 8px;font-size:22px;color:#1E293B;">第05讲 · 循环神经网络</h1><p style="margin:0 0 8px;font-size:16px;color:#2563EB;font-weight:bold;">本讲尚未开放</p><p style="margin:0 0 24px;font-size:14px;color:#64748B;line-height:1.8;">本讲内容将随课程进度开放，开放前暂时无法阅读。<br>已上过的章节会完整开放，请按课程安排学习。</p><a href="../../index.html" style="display:inline-block;padding:10px 28px;background:#2563EB;color:#fff;text-decoration:none;border-radius:8px;font-size:15px;">返回课程首页</a></div>';
-        document.body.appendChild(d);
-        document.body.style.overflow = 'hidden';
-        document.body.style.visibility = 'visible';
-    });
-})();
-</script>
-<!-- DL-LOCK:END -->
 </head>
 <body>
 
@@ -134,8 +112,8 @@
 
     <h3><span class="sec-no">1.2</span>隐变量模型：用隐含状态总结过去</h3>
     <p>要让模型拥有"记忆"，一个自然的想法是：引入一个隐含状态（hidden state）\(h_t\)，它在每个时刻把"目前为止看到的一切"总结成一个向量：</p>
-    <p>\(h_t = f(h_{t-1},\, x_{t-1})\)</p>
-    <p>第 \(t\) 时刻的隐含状态由上一时刻的隐含状态 \(h_{t-1}\) 和上一时刻的输入 \(x_{t-1}\) 共同决定。这样，信息就像接力棒一样沿时间一棒一棒传下去——\(h_t\) 里压缩着 \(x_1, x_2, \ldots, x_{t-1}\) 的全部相关历史。</p>
+    <p>\(h_t = f(h_{t-1},\, x_t)\)</p>
+    <p>第 \(t\) 时刻的隐含状态由上一时刻的隐含状态 \(h_{t-1}\) 和<strong>当前时刻的输入</strong> \(x_t\) 共同决定。这样，信息就像接力棒一样沿时间一棒一棒传下去——\(h_t\) 里压缩着 \(x_1, x_2, \ldots, x_t\) 的全部相关历史。</p>
     <figure>
         <img src="images/hidden_state_flow.jpg" alt="隐含状态沿时间接力传递" loading="lazy">
         <figcaption>隐含状态的"接力"：\(h_1\) 综合第一段输入，\(h_2\) 在 \(h_1\) 基础上综合第二段……信息沿时间向后传递，网络据此逐步"理解"并给出"回应"。</figcaption>
@@ -145,11 +123,10 @@
     <p>把上面的想法加上可学习的参数，就是循环神经网络（Recurrent Neural Network，RNN）。每个时间步做两件事：</p>
     <p><strong>RNN 的两个更新</strong></p>
     <p>① 隐含状态更新（记忆）：</p>
-    <p>\(h_t = \phi\big(W_{hh} h_{t-1} + W_{hx} x_{t-1} + b_h\big)\)</p>
+    <p>\(h_t = \phi\big(W_{hh} h_{t-1} + W_{hx} x_t + b_h\big)\)</p>
     <p>② 输出更新（观察）：</p>
     <p>\(o_t = W_{ho}\, h_t + b_o\)</p>
-    <p>其中 \(\phi\) 是非线性激活函数（常用 tanh）。注意 \(W_{hh} h_{t-1}\) 这一项——它把上一时刻的记忆带了进来；去掉它，网络就退化成普通的 MLP。</p>
-    <p class="muted">注：本节沿用"用 \(t-1\) 时刻输入更新 \(t\) 时刻状态"的下标约定；第三章起与多数教材一致，把当前输入记为 \(x_t\)。两者仅下标平移，含义相同。</p>
+    <p>其中 \(\phi\) 是非线性激活函数（常用 tanh）。\(W_{hx} x_t\) 把<strong>当前输入</strong>的信息注入进来，\(W_{hh} h_{t-1}\) 把上一时刻的记忆带进来；去掉后一项，网络就退化成普通的 MLP。</p>
     <figure>
         <img src="images/rnn_structure.jpg" alt="RNN 结构：输入、隐含状态、输出三层" loading="lazy">
         <figcaption>RNN 的结构：输入 \(x\) 经嵌入后与上一时刻的隐含状态拼接，乘权重矩阵得到新的隐含状态 \(h_t\)，再向上得到输出。所有时间步共享同一组权重——这是 RNN 能处理任意长度序列的关键。</figcaption>
