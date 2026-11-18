@@ -187,7 +187,7 @@
 <section>
   <div class="slide-breadcrumb">第05讲 循环神经网络（RNN） › 目录</div>
   <div class="slide-title">📋 本讲目录</div>
-  <div class="slide-body toc-list"><ol><li><a href="#/3" style="color:#1E40AF;text-decoration:none;">1. 从序列数据到循环神经网络</a></li><li><a href="#/10" style="color:#1E40AF;text-decoration:none;">2. 语言模型与困惑度</a></li><li><a href="#/16" style="color:#1E40AF;text-decoration:none;">3. 实现 RNN 语言模型</a></li><li><a href="#/22" style="color:#1E40AF;text-decoration:none;">4. 通过时间反向传播（BPTT）</a></li><li><a href="#/30" style="color:#1E40AF;text-decoration:none;">5. 门控循环单元（GRU）</a></li><li><a href="#/35" style="color:#1E40AF;text-decoration:none;">6. 长短期记忆网络（LSTM）</a></li><li><a href="#/42" style="color:#1E40AF;text-decoration:none;">7. 双向与深度循环神经网络</a></li><li><a href="#/46" style="color:#1E40AF;text-decoration:none;">8. 本讲小结与自测</a></li></ol></div>
+  <div class="slide-body toc-list"><ol><li><a href="#/3" style="color:#1E40AF;text-decoration:none;">1. 从序列数据到循环神经网络</a></li><li><a href="#/10" style="color:#1E40AF;text-decoration:none;">2. 语言模型与困惑度</a></li><li><a href="#/17" style="color:#1E40AF;text-decoration:none;">3. 实现 RNN 语言模型</a></li><li><a href="#/23" style="color:#1E40AF;text-decoration:none;">4. 通过时间反向传播（BPTT）</a></li><li><a href="#/31" style="color:#1E40AF;text-decoration:none;">5. 门控循环单元（GRU）</a></li><li><a href="#/36" style="color:#1E40AF;text-decoration:none;">6. 长短期记忆网络（LSTM）</a></li><li><a href="#/43" style="color:#1E40AF;text-decoration:none;">7. 双向与深度循环神经网络</a></li><li><a href="#/47" style="color:#1E40AF;text-decoration:none;">8. 本讲小结与自测</a></li></ol></div>
 </section>
 <section class="slide-short">
   <div class="slide-breadcrumb">第05讲 循环神经网络（RNN） › 课前导入</div>
@@ -395,6 +395,23 @@
 <div class="callout hist">
         <span class="co-tag">📐 等号何时成立</span>
         <p>只有一种情况取到 PPL = 1：每一步都满足 \(P(x_t \mid x_{&lt;t}) = 1\)，即模型每一步都把全部概率给了正确词，此时 \(\log 1 = 0\)，PPL \(= e^0 = 1\)。这就是"1 代表完美模型"的数学依据。</p>
+    </div>
+  </div>
+</section>
+<section>
+  <div class="slide-breadcrumb">第05讲 循环神经网络（RNN） › 2. 语言模型与困惑度</div>
+  <div class="slide-title">2.2 困惑度：为什么先平均再取指数</div>
+  <div class="slide-body">
+<p><strong>搭场景</strong>：两个句子，模型每一步的预测水平完全一样——每个正确词都给概率 0.5：</p>
+<ul style="margin:4px 0 8px 28px;">
+    <li>短句 A：只有 1 个词（\(n=1\)），总负对数损失 \(= -\log 0.5 \approx 0.693\)</li>
+    <li>长句 B：有 2 个词（\(n=2\)），总负对数损失 \(= -\log 0.5 - \log 0.5 \approx 1.386\)</li>
+</ul>
+<p><strong>直接比总和会误判</strong>：\(0.693 &lt; 1.386\)，看似"模型在短句上厉害得多"；但每步猜词难度其实完全相同（都是二选一），只是长句词多，累加损失自然更大。</p>
+<p><strong>除以 \(n\) 求平均后</strong>：A \(= 0.693 \div 1 = 0.693\)，B \(= 1.386 \div 2 = 0.693\)，再取 exp，两个 PPL 都等于 2——这才公平。</p>
+<div class="callout key">
+        <span class="co-tag">🔑 一句话记住</span>
+        <p>就像考试比"平均分"而不是"总分"：考 1 题得 10 分与考 2 题共 20 分，水平一样。负对数总和 = 总分，除以 \(n\) 之后 = 平均分。</p>
     </div>
   </div>
 </section>
