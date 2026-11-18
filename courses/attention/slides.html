@@ -173,6 +173,13 @@
 .slide-body.merge-v > .fig-row { display: flex; gap: 24px; justify-content: center; align-items: flex-start; margin: 0 0 14px; }
 .slide-body.merge-v > .fig-row figure { flex: 1; margin: 0; }
 .slide-body.merge-v > .fig-row figure img { max-height: 250px !important; }
+/* 合并页中的紧凑实验卡片 */
+.lab-compact .lab-title { font-size: 18px !important; }
+.lab-compact .lab-sub, .lab-compact .lab-hint { font-size: 13.5px !important; }
+.lab-compact .lab-body { padding: 10px 14px !important; }
+.lab-compact .ctl { font-size: 14px !important; }
+.lab-compact .lab-note { font-size: 13.5px !important; padding: 8px 14px; }
+.lab-compact .bars { font-size: 14px; }
 </style>
 </head>
 <body>
@@ -186,7 +193,7 @@
 <section>
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 目录</div>
   <div class="slide-title">📋 本讲目录</div>
-  <div class="slide-body toc-list"><ol><li><a href="#/3" style="color:#1E40AF;text-decoration:none;">1. 注意力机制：从心理学到机器学习</a></li><li><a href="#/6" style="color:#1E40AF;text-decoration:none;">2. 注意力池化：从非参数到参数化</a></li><li><a href="#/13" style="color:#1E40AF;text-decoration:none;">3. Seq2Seq 中的注意力</a></li><li><a href="#/20" style="color:#1E40AF;text-decoration:none;">4. 自注意力（Self-Attention）</a></li><li><a href="#/27" style="color:#1E40AF;text-decoration:none;">5. Transformer：完全建立在注意力上的架构</a></li><li><a href="#/49" style="color:#1E40AF;text-decoration:none;">6. BERT：预训练时代的开幕</a></li><li><a href="#/55" style="color:#1E40AF;text-decoration:none;">7. 本讲小结与自测</a></li></ol></div>
+  <div class="slide-body toc-list"><ol><li><a href="#/3" style="color:#1E40AF;text-decoration:none;">1. 注意力机制：从心理学到机器学习</a></li><li><a href="#/6" style="color:#1E40AF;text-decoration:none;">2. 注意力池化：从非参数到参数化</a></li><li><a href="#/12" style="color:#1E40AF;text-decoration:none;">3. Seq2Seq 中的注意力</a></li><li><a href="#/19" style="color:#1E40AF;text-decoration:none;">4. 自注意力（Self-Attention）</a></li><li><a href="#/26" style="color:#1E40AF;text-decoration:none;">5. Transformer：完全建立在注意力上的架构</a></li><li><a href="#/48" style="color:#1E40AF;text-decoration:none;">6. BERT：预训练时代的开幕</a></li><li><a href="#/54" style="color:#1E40AF;text-decoration:none;">7. 本讲小结与自测</a></li></ol></div>
 </section>
 <section class="slide-short">
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 课前导入</div>
@@ -317,11 +324,12 @@
 </div>
   </div>
 </section>
-<section class="slide-short">
+<section>
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 2. 注意力池化：从非参数到参数化</div>
-  <div class="slide-title">2.3 注意力分数的两种主流设计</div>
-  <div class="slide-body">
-<div class="lab" id="lab-softmax">
+  <div class="slide-title">2.3 互动实验与解读：缩放点积注意力实验室</div>
+  <div class="slide-body merge-h dense">
+<div class="lab-compact" style="flex:0 0 52%;min-width:0;">
+<div class="lab" id="lab-softmax" style="margin:0;">
         <div class="lab-head">
             <span class="lab-badge">互动实验</span>
             <div class="lab-title">缩放点积注意力实验室</div>
@@ -339,22 +347,20 @@
                 <label class="switch"><input type="checkbox" id="use-scale" checked> 除以 √dₖ 缩放</label>
             </div>
             <div class="bars" id="softmax-bars"></div>
-            <p class="muted" style="font-size:14.5px;" id="softmax-out"></p>
+            <p class="muted" style="font-size:14px;" id="softmax-out"></p>
         </div>
         <div class="lab-note" id="softmax-note"></div>
     </div>
-  </div>
-</section>
-<section>
-  <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 2. 注意力池化：从非参数到参数化</div>
-  <div class="slide-title">2.3 实验解读：缩放点积注意力实验室</div>
-  <div class="slide-body">
+</div>
+<div class="merge-text">
+<p><strong>实验在做什么</strong>：滑块设定原始分数 q·kᵢ，softmax 归一化成权重，输出 = 三个 value 的加权组合。</p>
 <ul>
-        <li><strong>实验在做什么</strong>：滑块设定原始分数 q·kᵢ，softmax 归一化成权重，输出 = 三个 value（猫 (1,0)、狗 (0,1)、汽车 (1,1)）的加权组合。</li>
-        <li><strong>结果怎么读</strong>：分数 2.6 / 1.0 / 0.0、dₖ = 32、不缩放 → e<sup>2.6</sup>≈13.46、e<sup>1</sup>≈2.72、e<sup>0</sup>=1 → 权重 0.784 / 0.158 / 0.058，输出 (0.842, 0.216)——"主要是猫，带一点狗和汽车"。</li>
-        <li><strong>打开缩放对比</strong>：分数先除以 √32 ≈ 5.66 → 0.46 / 0.18 / 0 → 权重平缓为约 0.42 / 0.32 / 0.26，不再赢家通吃。</li>
-        <li><strong>两个性质</strong>：权重和恒为 1，输出是 value 的凸组合，不会凭空创造内容；softmax 是"软"argmax——分数差距越大越接近"只取最高分"。</li>
+        <li><strong>结果怎么读</strong>：分数 2.6 / 1.0 / 0.0、dₖ = 32、不缩放 → 权重 0.784 / 0.158 / 0.058，输出 ≈ (0.842, 0.216)——"主要是猫，带一点狗和汽车"；</li>
+        <li><strong>打开缩放对比</strong>：分数先除以 √32 ≈ 5.66 → 0.46 / 0.18 / 0 → 权重平缓为约 0.42 / 0.32 / 0.26，不再赢家通吃；</li>
+        <li><strong>性质①</strong>：权重和恒为 1，输出是 value 的凸组合，不会凭空创造内容；</li>
+        <li><strong>性质②</strong>：softmax 是"软"argmax——分数差距越大，越接近"只取最高分"。</li>
     </ul>
+</div>
   </div>
 </section>
 <section class="section-divider">
@@ -624,14 +630,21 @@ $$\mathbf{y}_i = f\big(\mathbf{x}_i,\ (\mathbf{x}_1, \mathbf{x}_1), \ldots, (\ma
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 5. Transformer：完全建立在注意力上的架构</div>
   <div class="slide-title">5.3 多头注意力机制</div>
   <div class="slide-body merge-v">
-<p>一次注意力只能在一个表示空间里找相似。多头注意力把 query、key、value 用 \(h\) 组不同的线性投影变换到 \(h\) 个子空间，各自独立做注意力，再把结果拼接后做一次投影：</p>
-<div style="display:flex;gap:36px;align-items:center;justify-content:center;flex-wrap:wrap;margin:4px 0;">
-<p style="margin:0;">$$\mathbf{o}^{(i)} = \mathrm{attention}\big(W_q^{(i)} \mathbf{q},\ W_k^{(i)} \mathbf{k},\ W_v^{(i)} \mathbf{v}\big),\quad i = 1, \ldots, h$$</p>
+<p style="margin:0 0 10px;">一次注意力只能在一个表示空间里找相似。<strong>多头注意力</strong>用 \(h\) 组不同的投影把 Q / K / V 变换到 \(h\) 个子空间，各自独立做注意力——类似 CNN 用多个卷积核，从多个角度同时审视序列。</p>
+<div style="display:flex;gap:30px;align-items:center;margin:0 0 6px;">
+<ol style="flex:1.05;margin:0 0 0 1.3em;font-size:19px;line-height:1.7;">
+        <li><strong>① 分头</strong>：第 \(i\) 个头用自己的投影矩阵 \(W_q^{(i)}, W_k^{(i)}, W_v^{(i)}\) 变换 Q / K / V，独立做一次注意力（右式一）；</li>
+        <li><strong>② 拼接</strong>：把 \(h\) 个头的输出 \(\mathbf{o}^{(1)}, \ldots, \mathbf{o}^{(h)}\) 拼成一个大向量；</li>
+        <li><strong>③ 融合</strong>：拼接结果再乘输出投影 \(W_o\)，把各头看到的信息整合成最终输出（右式二）。</li>
+    </ol>
+<div style="flex:1;min-width:0;">
+<p style="margin:0 0 8px;">$$\mathbf{o}^{(i)} = \mathrm{attention}\big(W_q^{(i)} \mathbf{q},\ W_k^{(i)} \mathbf{k},\ W_v^{(i)} \mathbf{v}\big),\quad i = 1, \ldots, h$$</p>
 <p style="margin:0;">$$\mathbf{o} = W_o \begin{bmatrix} \mathbf{o}^{(1)} \\ \vdots \\ \mathbf{o}^{(h)} \end{bmatrix}$$</p>
 </div>
+</div>
 <figure style="margin:2px 0 0;">
-        <img src="images/multihead.jpg" alt="多头注意力：多组 Dense 投影加注意力后拼接" loading="lazy" style="max-height:255px;width:auto;">
-        <figcaption>多头注意力：Q / K / V 经 \(h\) 组独立 Dense 投影，各自做注意力后拼接，再过一次 Dense。</figcaption>
+        <img src="images/multihead.jpg" alt="多头注意力：多组 Dense 投影加注意力后拼接" loading="lazy" style="max-height:225px;width:auto;">
+        <figcaption>多头注意力结构：左侧 \(h\) 组独立 Dense 投影对应"① 分头"，中间各头独立做注意力，右侧拼接与最后的 Dense 对应"② 拼接、③ 融合"。</figcaption>
     </figure>
   </div>
 </section>
