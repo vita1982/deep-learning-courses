@@ -506,11 +506,17 @@
 <section>
   <div class="slide-breadcrumb">第05讲 循环神经网络（RNN） › 4. 通过时间反向传播（BPTT）</div>
   <div class="slide-title">4.1 沿时间展开的计算图</div>
-  <div class="slide-body">
+  <div class="slide-body merge-h dense">
 <figure>
         <img src="images/rnn_compgraph.jpg" alt="RNN 的计算图" loading="lazy">
-        <figcaption>RNN 的计算图：\(x_t\)、\(h_t\)、\(o_t\) 是变量节点，阴影块是共享参数。梯度要沿 \(h_t \to h_{t-1} \to \cdots\) 一路回传到序列开头；同一参数的梯度是其全部时间步贡献之和。</figcaption>
+        <figcaption>RNN 的计算图：\(x_t\)、\(h_t\)、\(o_t\) 是变量节点，阴影块是共享参数；梯度沿 \(h_t \to h_{t-1} \to \cdots\) 回传，同一参数的梯度是全部时间步贡献之和。</figcaption>
     </figure>
+<div class="merge-text">
+<p><strong>图中符号</strong>：\(x_1, x_2, x_3\) 为三个时刻的输入，\(h_0\) 为初始隐状态（一般置 0），\(h_1, h_2, h_3\) 为各时刻隐状态，\(o_1, o_2, o_3\) 为输出得分，\(y_1, y_2, y_3\) 为真实标签，\(L\) 为总损失；\(W_{hx}, W_{hh}\) 是循环单元参数，\(W_{oh}\) 是输出层参数——<strong>全部时刻共享同一套</strong>。</p>
+<p><strong>① 前向计算（从左往右）</strong>：\(h_t = \sigma(W_{hx} x_t + W_{hh} h_{t-1})\)，即 \(x_1\) 与 \(h_0\) 算出 \(h_1\)，\(x_2\) 与 \(h_1\) 算出 \(h_2\)，\(x_3\) 与 \(h_2\) 算出 \(h_3\)；再过输出层 \(o_t = W_{oh} h_t\) 得各时刻预测。</p>
+<p><strong>② 损失（逐时刻汇总）</strong>：每个时刻用 \(o_t\) 与 \(y_t\) 算单步损失（如交叉熵），求和得总损失 \(L = L_1(o_1,y_1) + L_2(o_2,y_2) + L_3(o_3,y_3)\)。</p>
+<p><strong>③ 反向传播（从右往左）</strong>：\(L\) 先传给 \(o_1, o_2, o_3\) 再传给 \(h_1, h_2, h_3\)，随后沿时间链 \(\nabla h_3 \Rightarrow \nabla h_2 \Rightarrow \nabla h_1\) 回传；各时刻梯度叠加，更新同一套 \(W_{hx}, W_{hh}, W_{oh}\)。</p>
+</div>
   </div>
 </section>
 <section>
