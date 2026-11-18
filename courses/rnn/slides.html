@@ -810,12 +810,18 @@
 <section>
   <div class="slide-breadcrumb">第05讲 循环神经网络（RNN） › 7. 双向与深度循环神经网络</div>
   <div class="slide-title">7.3 深度 RNN</div>
-  <div class="slide-body">
-<p>RNN 也可以像 MLP 一样往深里堆：第一个 RNN 层的输出序列作为第二个 RNN 层的输入，依此类推。每层学到的特征抽象程度不同——底层捕捉局部模式（词组），高层捕捉更长程的结构（句法、语义）：</p>
+  <div class="slide-body merge-h dense">
 <figure>
         <img src="images/deep_rnn.jpg" alt="深度 RNN 结构" loading="lazy">
-        <figcaption>深度 RNN：\(H_t^{(1)}\)、\(H_t^{(2)}\) … 多层隐含状态沿"时间"和"深度"两个维度传播。注意它与 BPTT 的"深"不同——那是同一层沿时间展开的深，这是真正堆叠多层的深。</figcaption>
+        <figcaption>深度 RNN：多层隐含状态沿"时间"和"深度"两个维度传播；与 BPTT 的"深"不同——那是同一层沿时间展开的深，这是真正堆叠多层的深。</figcaption>
     </figure>
+<div class="merge-text">
+<p><strong>一句话核心</strong>：横向 = 时间维度（\(t=1,2,\ldots,T\)），纵向 = 深度维度（第 1 层…第 \(L\) 层上下堆叠）。</p>
+<p><strong>符号</strong>：\(x_1, \ldots, x_T\) 为底层输入序列；\(H_t^{(l)}\) 为第 \(l\) 层在时刻 \(t\) 的隐状态；\(o_1, \ldots, o_T\) 为顶层输出序列。</p>
+<p><strong>数据流两个方向</strong>：① 横向（时间）：同层内部 \(H_{t-1}^{(l)} \to H_t^{(l)}\)，层内是 RNN 循环、<strong>层内参数共享</strong>；② 纵向（深度）：上一层同时刻输出 = 下一层该时刻输入 \(H_t^{(1)} \to H_t^{(2)} \to \cdots\)，即第 1 层整串输出序列直接作为第 2 层输入。</p>
+<p><strong>计算关系</strong>：\(H_t^{(1)} = \mathrm{RNN}_1(H_{t-1}^{(1)}, x_t)\)，一般地 \(H_t^{(l)} = \mathrm{RNN}_l(H_{t-1}^{(l)}, H_t^{(l-1)})\)；<strong>每层独立一套参数，层间不共享</strong>（与层内时间步共享区分开）。</p>
+<p><strong>特征分层（NLP 例子）</strong>：底层抓局部浅层特征（词组、n-gram）；高层基于底层特征学更长距离的句法、语义结构。</p>
+</div>
   </div>
 </section>
 <section class="section-divider">
