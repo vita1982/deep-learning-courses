@@ -544,6 +544,26 @@
         <img src="images/deep_rnn.jpg" alt="深度 RNN 结构" loading="lazy">
         <figcaption>深度 RNN：\(H_t^{(1)}\)、\(H_t^{(2)}\) … 多层隐含状态沿"时间"和"深度"两个维度传播。注意它与 BPTT 的"深"不同——那是同一层沿时间展开的深，这是真正堆叠多层的深。</figcaption>
     </figure>
+    <p><strong>对照这张图，把数据流看清楚。</strong>一句话核心：<strong>横向是时间维度</strong>（时序先后 \(t=1,2,3,\ldots,T\)），<strong>纵向是深度维度</strong>（RNN 堆叠的层数，第 1 层、第 2 层……第 \(L\) 层）。再次强调与 BPTT 的"深"区分——那只是单层 RNN 沿时间拉开，这里是实实在在把多个独立 RNN 层上下堆起来。</p>
+    <p><strong>图中符号</strong>：</p>
+    <ul>
+        <li>\(x_1, x_2, \ldots, x_T\)：原始输入序列（底层输入）</li>
+        <li>\(H_t^{(1)}\)：第 1 层 RNN 在时刻 \(t\) 的隐状态；\(H_t^{(2)}\)：第 2 层的；\(H_t^{(L)}\)：第 \(L\) 层（顶层）的</li>
+        <li>\(o_1, o_2, \ldots, o_T\)：顶层输出序列</li>
+    </ul>
+    <p><strong>数据流沿两个方向走</strong>：</p>
+    <ol>
+        <li><strong>横向（时间方向）</strong>：同一层内部，隐状态向右传递 \(H_{t-1}^{(l)} \to H_t^{(l)}\)——这就是 RNN 本身的时序记忆，每层内部依然是 RNN 循环，<strong>每层内部参数共享</strong>；</li>
+        <li><strong>纵向（深度方向）</strong>：上一层同一时刻的输出，作为下一层该时刻的输入 \(H_t^{(1)} \to H_t^{(2)} \to H_t^{(3)} \cdots\)——第 1 层的整串输出序列，直接当作第 2 层的输入序列。</li>
+    </ol>
+    <p><strong>计算关系</strong>：</p>
+    <p>\(H_t^{(1)} = \mathrm{RNN}_1(H_{t-1}^{(1)},\, x_t)\)，\(\;H_t^{(2)} = \mathrm{RNN}_2(H_{t-1}^{(2)},\, H_t^{(1)})\)，一般地 \(H_t^{(l)} = \mathrm{RNN}_l(H_{t-1}^{(l)},\, H_t^{(l-1)})\)</p>
+    <p>注意：<strong>每一层 RNN 都有自己独立的一套参数，层与层之间参数不共享</strong>——这与"单层 RNN 内部各时间步参数共享"是两回事，要区分开。</p>
+    <p><strong>为什么要堆多层？（NLP 例子）</strong>不同层学到不同抽象程度的特征：</p>
+    <ul>
+        <li><strong>底层 RNN（第 1 层）</strong>：抓局部、浅层特征，比如词组、n-gram；</li>
+        <li><strong>高层 RNN（第 2、3 层）</strong>：基于底层特征，学习更长距离的句法、语义结构。</li>
+    </ul>
 </section>
 
 <!-- ==================== 第八章 ==================== -->
