@@ -56,28 +56,6 @@
     <link rel="stylesheet" href="../../assets/katex/katex.min.css">
     <link rel="stylesheet" href="../../assets/course.css">
     <script src="../../assets/course.js" defer></script>
-<!-- DL-LOCK:BEGIN -->
-<script src="../../assets/progress.js"></script>
-<script>
-/* 本章尚未开放：locked 时用不透明遮罩盖住全部内容（配置在 assets/progress.js） */
-(function () {
-    try { if ((window.DL_PROGRESS || {})['attention'] !== 'locked') return; } catch (e) { return; }
-    var st = document.createElement('style');
-    st.textContent = 'body{visibility:hidden}';
-    document.head.appendChild(st);
-    document.addEventListener('DOMContentLoaded', function () {
-        var d = document.createElement('div');
-        d.id = 'dl-chapter-lock';
-        d.style.cssText = 'position:fixed;inset:0;z-index:999999;background:#F1F5F9;'
-            + 'display:flex;align-items:center;justify-content:center;font-family:Microsoft YaHei,sans-serif;';
-        d.innerHTML = '<div style="background:#fff;border-radius:16px;padding:48px 44px;max-width:520px;width:88vw;box-sizing:border-box;text-align:center;box-shadow:0 10px 40px rgba(15,23,42,.12);"><div style="font-size:44px;">🔒</div><h1 style="margin:14px 0 8px;font-size:22px;color:#1E293B;">第06讲 · 注意力机制与Transformer</h1><p style="margin:0 0 8px;font-size:16px;color:#2563EB;font-weight:bold;">本讲尚未开放</p><p style="margin:0 0 24px;font-size:14px;color:#64748B;line-height:1.8;">本讲内容将随课程进度开放，开放前暂时无法阅读。<br>已上过的章节会完整开放，请按课程安排学习。</p><a href="../../index.html" style="display:inline-block;padding:10px 28px;background:#2563EB;color:#fff;text-decoration:none;border-radius:8px;font-size:15px;">返回课程首页</a></div>';
-        document.body.appendChild(d);
-        document.body.style.overflow = 'hidden';
-        document.body.style.visibility = 'visible';
-    });
-})();
-</script>
-<!-- DL-LOCK:END -->
 </head>
 <body>
 
@@ -278,7 +256,7 @@
         <li><strong>编码器顶层循环层 → Attention</strong>（向上的箭头）：编码器最后一个循环层在<strong>所有时间步</strong>的输出送入 Attention，充当 key 和 value——这就是"记忆库"。取最高层，是因为它包含最完整的上下文信息；</li>
         <li><strong>解码器顶层循环层 → Attention</strong>（从右上弯回来的那根）：解码器上一时刻的隐含状态送入 Attention 充当 query——含义是"我正准备生成下一个词，该看源句的哪里？"。Attention 拿它与记忆库中每个 key 算相似度、softmax 归一化成权重、对 value 加权求和，得到上下文向量；</li>
         <li><strong>Attention → 解码器第一个循环层</strong>（从 Attention 弯到右侧底部的那根）：检索出的上下文向量与当前目标词的嵌入<strong>拼接</strong>后送入——解码器每生成一个词，输入里既有"刚生成的词"，又有"刚从源句检索到的相关内容"。上面各层照常堆叠，顶端 Dense 输出词表概率；</li>
-        <li><strong>编码器各层 → 解码器各层</strong>（每层中间的横向箭头）：循环层开工前都需要一个初始状态（默认是全零向量）；这里的做法是把编码器第 1 层读完整句后的隐含状态设为解码器第 1 层的初始状态，第 2 层对第 2 层……<strong>逐层对应</strong>。注意区分两个概念：<strong>最终隐含状态 = 每一层在时间轴上最后一步的状态</strong>（n 层共 n 个向量），而记忆库 = 最顶层在<strong>所有时间步</strong>的输出序列；最顶层的最终状态恰好就是记忆库里的最后一个向量，但用于初始化的是全部 n 层的最终状态。这是一次性传递的"全局概览"，与注意力"每步按需检索细节"的通路互补，各司其职。</li>
+        <li><strong>编码器各层 → 解码器各层</strong>（每层中间的横向箭头，n 层就有 n 条）：这是 Seq2Seq 的<strong>"桥梁"</strong>。循环层开工前都需要一个初始状态（默认是全零向量）；这里的做法是把<strong>编码器第 i 层的最终隐状态传给解码器第 i 层，作为它的初始隐状态</strong>——第 1 层对第 1 层、第 2 层对第 2 层……<strong>逐层对应</strong>，保证解码器的每一层都从编码器对应层"接手"源句子的压缩表示，而不是只有最顶层在传递信息。注意区分两个概念：<strong>最终隐含状态 = 每一层在时间轴上最后一步的状态</strong>（n 层共 n 个向量），走的就是这些横向箭头；而<strong>记忆库 = 最顶层在所有时间步的输出序列</strong>，走的是通向 Attention 的箭头；最顶层的最终状态恰好就是记忆库里的最后一个向量，但用于初始化的是全部 n 层的最终状态。前者是一次性传递的"全局概览"，与注意力"每步按需检索细节"的通路互补，各司其职。</li>
     </ol>
     <p><strong>串成一个时间步看</strong>（以生成 "le" 为例）：解码器上一时刻的状态作为 query 进入 Attention（箭头②）→ 查询记忆库（箭头①提供的数据），权重大概率压在 "world" 上 → 加权得到上下文向量 → 与 "bonjour" 的嵌入拼接（箭头③）→ 逐层向上经 Dense 输出概率 → 挑出 "le"。<strong>每个解码步骤都重新走一遍这个过程，各有各的权重分布——这就是"对齐"。</strong></p>
 
