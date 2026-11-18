@@ -193,6 +193,16 @@
     <h3><span class="sec-no">2.2</span>困惑度：语言模型的成绩单</h3>
     <p>如何衡量语言模型的好坏？用平均交叉熵：对一个长度为 \(n\) 的序列，计算模型给每个真实词分配的概率的负对数平均值。但直接比较交叉熵不直观，NLP 中习惯取它的指数，称为困惑度（perplexity）：</p>
     <p>\(\mathrm{PPL} = \exp\!\Big(-\dfrac{1}{n} \displaystyle\sum_{t=1}^{n} \log P(x_t \mid x_{&lt;t})\Big)\)</p>
+    <div class="callout try">
+        <span class="co-tag">🧮 动手算一算</span>
+        <p><strong>例子 1：完美模型，PPL = 1</strong>。假设序列只有 1 个词（\(n=1\)），模型看到上文后把全部概率都给了正确词，即 \(P=1\)：</p>
+        <p>\(\mathrm{PPL} = \exp\big(-\tfrac{1}{1}\log 1\big) = \exp(0) = e^0 = 1\)</p>
+        <p>模型一点都不犹豫，直接锁定正确词——这就是 PPL = 1 的含义。</p>
+        <p><strong>例子 2：二选一，猜对概率 0.5</strong>（仍取 \(n=1\)）。模型在两个候选词之间犹豫，给正确词的概率 \(P=0.5\)：</p>
+        <p>\(\mathrm{PPL} = \exp(-\log 0.5) = \exp(\log 2) = 2\)</p>
+        <p>PPL = 2，正好对应"平均在 2 个候选里犹豫"——和直觉解释完全对上。</p>
+        <p>最关键的一条规律：<strong>\(P = \dfrac{1}{k} \;\Rightarrow\; \mathrm{PPL} = k\)</strong>。如果模型只给正确词 \(\dfrac{1}{20}\) 的概率，PPL 就是 20——相当于在 20 个词里盲猜。</p>
+    </div>
     <div class="tbl-wrap">
         <table>
             <tr><th>困惑度取值</th><th>含义</th></tr>
@@ -204,6 +214,17 @@
     <div class="callout key">
         <span class="co-tag">🔑 初学者理解</span>
         <p>困惑度 20 大致相当于"模型每预测一个词，都好像要在 20 个候选里猜一个"。它把交叉熵换算成了更人话的"平均有效选择数"。</p>
+    </div>
+    <div class="callout hist">
+        <span class="co-tag">📐 为什么 PPL 不可能小于 1</span>
+        <p>从公式和概率的性质一步步推：</p>
+        <ol style="margin:6px 0 6px 22px;">
+            <li>概率的取值范围是 \(0 &lt; P \le 1\)，所以 \(\log P \le 0\)（对数函数的性质）；</li>
+            <li>前面带上负号：\(-\log P \ge 0\)；</li>
+            <li>求和、再除以 \(n\) 取平均之后，括号里整体仍然 \(\ge 0\)；</li>
+            <li>\(\exp(\cdot)\) 是单调递增函数，所以 \(\mathrm{PPL} = \exp(\ge 0) \ge e^0 = 1\)。</li>
+        </ol>
+        <p>只有一种情况取到等号：每一步都满足 \(P(x_t \mid x_{&lt;t}) = 1\)，即模型每一步都把全部概率给了正确词，此时 \(\log 1 = 0\)，PPL \(= e^0 = 1\)。这就是"1 代表完美模型"的数学依据。</p>
     </div>
     <p>为什么要先取平均再取指数？因为不同长度的文本无法直接比较总对数似然——短文本的总损失天然更小。除以序列长度 \(n\) 做归一化后，长短文本的成绩才有可比性。</p>
 </section>
