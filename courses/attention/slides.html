@@ -623,11 +623,15 @@ $$\mathbf{y}_i = f\big(\mathbf{x}_i,\ (\mathbf{x}_1, \mathbf{x}_1), \ldots, (\ma
 <section>
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 5. Transformer：完全建立在注意力上的架构</div>
   <div class="slide-title">5.3 多头注意力机制</div>
-  <div class="slide-body">
+  <div class="slide-body merge-v">
 <p>一次注意力只能在一个表示空间里找相似。多头注意力把 query、key、value 用 \(h\) 组不同的线性投影变换到 \(h\) 个子空间，各自独立做注意力，再把结果拼接后做一次投影：</p>
-<figure>
-        <img src="images/multihead.jpg" alt="多头注意力：多组 Dense 投影加注意力后拼接" loading="lazy">
-        <figcaption>多头注意力结构：Queries / Keys / Values 分别经过 \(h\) 组独立的 Dense 投影，各自做 Attention，输出经 Concat 拼接后再过一次 Dense。</figcaption>
+<div style="display:flex;gap:36px;align-items:center;justify-content:center;flex-wrap:wrap;margin:4px 0;">
+<p style="margin:0;">$$\mathbf{o}^{(i)} = \mathrm{attention}\big(W_q^{(i)} \mathbf{q},\ W_k^{(i)} \mathbf{k},\ W_v^{(i)} \mathbf{v}\big),\quad i = 1, \ldots, h$$</p>
+<p style="margin:0;">$$\mathbf{o} = W_o \begin{bmatrix} \mathbf{o}^{(1)} \\ \vdots \\ \mathbf{o}^{(h)} \end{bmatrix}$$</p>
+</div>
+<figure style="margin:2px 0 0;">
+        <img src="images/multihead.jpg" alt="多头注意力：多组 Dense 投影加注意力后拼接" loading="lazy" style="max-height:255px;width:auto;">
+        <figcaption>多头注意力：Q / K / V 经 \(h\) 组独立 Dense 投影，各自做注意力后拼接，再过一次 Dense。</figcaption>
     </figure>
   </div>
 </section>
