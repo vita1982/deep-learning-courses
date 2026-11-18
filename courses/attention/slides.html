@@ -174,24 +174,6 @@
 .slide-body.merge-v > .fig-row figure { flex: 1; margin: 0; }
 .slide-body.merge-v > .fig-row figure img { max-height: 250px !important; }
 </style>
-<!-- DL-LOCK:BEGIN -->
-<script src="../../assets/progress.js"></script>
-<script>
-/* 本章尚未开放：locked 时用提示页替换幻灯片全部内容（配置在 assets/progress.js） */
-(function () {
-    try { if ((window.DL_PROGRESS || {})['attention'] !== 'locked') return; } catch (e) { return; }
-    var st = document.createElement('style');
-    st.textContent = 'body{visibility:hidden}';
-    document.head.appendChild(st);
-    document.addEventListener('DOMContentLoaded', function () {
-        document.body.innerHTML = '<div style="min-height:100vh;display:flex;align-items:center;'
-            + 'justify-content:center;background:#F1F5F9;font-family:Microsoft YaHei,sans-serif;visibility:visible;">'
-            + '<div style="background:#fff;border-radius:16px;padding:48px 44px;max-width:520px;width:88vw;box-sizing:border-box;text-align:center;box-shadow:0 10px 40px rgba(15,23,42,.12);"><div style="font-size:44px;">🔒</div><h1 style="margin:14px 0 8px;font-size:22px;color:#1E293B;">第06讲 · 注意力机制与Transformer</h1><p style="margin:0 0 8px;font-size:16px;color:#2563EB;font-weight:bold;">本讲尚未开放</p><p style="margin:0 0 24px;font-size:14px;color:#64748B;line-height:1.8;">本讲内容将随课程进度开放，开放前暂时无法阅读。<br>已上过的章节会完整开放，请按课程安排学习。</p><a href="../../index.html" style="display:inline-block;padding:10px 28px;background:#2563EB;color:#fff;text-decoration:none;border-radius:8px;font-size:15px;">返回课程首页</a></div></div>';
-        document.body.style.visibility = 'visible';
-    });
-})();
-</script>
-<!-- DL-LOCK:END -->
 </head>
 <body>
 <div class="reveal">
@@ -279,6 +261,7 @@
     </figure>
 <div class="merge-text">
 <p>给定数据 \((x_i, y_i)\)，要对查询 \(x\) 做预测：平均池化直接取 \(\frac{1}{n}\sum y_i\) 太粗糙。60 年代提出的 Nadaraya-Watson 核回归按"距离越近权重越大"加权：</p>
+<p>$$f(x) = \sum_{i=1}^{n} \mathrm{softmax}\!\Big(-\tfrac{1}{2}(x - x_i)^2\Big)\, y_i$$</p>
 <p>其中 \(-\frac{1}{2}(x-x_i)^2\) 来自高斯核 \(K(u)=\frac{1}{\sqrt{2\pi}}\exp(-\frac{u^2}{2})\)。把式子拆开看：\(x\) 是 query，\(x_i\) 是 key，\(y_i\) 是 value——<strong>核回归就是最早的注意力池化</strong>：离查询越近的样本，其值被采纳得越多。</p>
 </div>
   </div>
@@ -288,6 +271,7 @@
   <div class="slide-title">2.2 参数化注意力：引入可学习的 w</div>
   <div class="slide-body">
 <p>非参数方案的权重完全由距离决定，不够灵活。在注意力分数里引入可学习参数 \(w\)，让模型自己学会"什么样的相似才重要"：</p>
+<p>$$f(x) = \sum_{i=1}^{n} \mathrm{softmax}\!\Big(-\tfrac{1}{2}\big((x - x_i)\, w\big)^2\Big)\, y_i$$</p>
 <p>多了参数 \(w\)，模型就能通过训练调整不同特征维度的重要程度——这是从"核回归"走向"可学习注意力"的第一步。</p>
   </div>
 </section>
