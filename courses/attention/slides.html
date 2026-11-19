@@ -537,14 +537,15 @@ $$\mathbf{y}_i = f\big(\mathbf{x}_i,\ (\mathbf{x}_1, \mathbf{x}_1), \ldots, (\ma
 <section>
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 4. 自注意力（Self-Attention）</div>
   <div class="slide-title">4.2 与 CNN、RNN 对比</div>
-  <div class="slide-body merge-h dense wrap">
-<figure>
-        <img src="images/cnn_rnn_attn_compare.jpg" alt="CNN、RNN、自注意力的计算路径对比" loading="lazy" style="max-height:390px !important;">
+  <div class="slide-body">
+<figure style="margin:0 0 10px;text-align:center;">
+        <img src="images/cnn_rnn_attn_compare.jpg" alt="CNN、RNN、自注意力的计算路径对比" loading="lazy" style="max-height:235px !important;width:auto;">
         <figcaption>三种结构对比：CNN 靠堆叠卷积层逐层扩大感受野；RNN 必须逐步传递信息；自注意力任意两个位置一步直达。</figcaption>
     </figure>
-<div class="merge-text" style="font-size:16.5px;line-height:1.5;">
+<div style="display:flex;gap:26px;align-items:flex-start;">
+<div style="flex:0 0 46%;min-width:0;">
 <div class="tbl-wrap">
-        <table>
+        <table style="font-size:16px;">
             <thead><tr><th></th><th>CNN</th><th>RNN</th><th>自注意力</th></tr></thead>
             <tbody>
                 <tr><td><strong>计算复杂度（每层）</strong></td><td>\(O(k \cdot n \cdot d^2)\)</td><td>\(O(n \cdot d^2)\)</td><td>\(O(n^2 \cdot d)\)</td></tr>
@@ -553,17 +554,20 @@ $$\mathbf{y}_i = f\big(\mathbf{x}_i,\ (\mathbf{x}_1, \mathbf{x}_1), \ldots, (\ma
             </tbody>
         </table>
     </div>
-<p style="margin:8px 0 4px;"><strong>逐格解读</strong>（n=序列长度，d=向量维度，k=核宽）：</p>
-<ul>
+<div class="callout key" style="margin:12px 0 0;font-size:16px;">
+        <span class="co-tag">🔑 初学者理解</span>
+        <p style="font-size:16px;">RNN 像排队传话，队尾的话要一个一个传过来；自注意力像开会，每个人直接和所有人对话——效率高了，但人太多（序列太长）时会场也会拥挤。</p>
+    </div>
+</div>
+<div style="flex:1;min-width:0;font-size:16.5px;line-height:1.55;">
+<p style="margin:0 0 4px;"><strong>逐格解读</strong>（n=序列长度，d=向量维度，k=核宽）：</p>
+<ul style="margin:0 0 0 1.25em;">
         <li><strong>计算复杂度</strong>：CNN \(O(knd^2)\)（宽 \(k\) 卷积、\(d\)→\(d\) 通道、乘 \(n\) 个位置）；RNN \(O(nd^2)\)（每步 \(d^2\) 矩阵乘、乘 \(n\) 步）；自注意力 \(O(n^2d)\)（\(n\) 个 query × \(n\) 个 key 的 \(d\) 维点积）——<strong>平方项来自"两两比对"</strong>；</li>
         <li><strong>并行度</strong>：CNN 与自注意力各位置互不依赖、可同时算；RNN 第 \(t\) 步必须等第 \(t-1\) 步，串行是结构宿命；</li>
         <li><strong>最长路径</strong>（任意两位置交换信息要几步，决定长距离依赖难易）：CNN 一层只看约 \(k\) 个邻居、跨句要堆 \(O(n/k)\) 层；RNN 沿链条最多 \(n-1\) 步；自注意力一步直达 \(O(1)\)；</li>
         <li><strong>谁更贵看 \(n\) 与 \(d\)</strong>：\(d\) 大 \(n\) 短时三者相当；序列上万时 \(n^2\) 项使自注意力最贵——换来"一步直达 + 全并行"。</li>
     </ul>
-<div class="callout key" style="margin:8px 0 0;">
-        <span class="co-tag">🔑 初学者理解</span>
-        <p>RNN 像排队传话，队尾的话要一个一个传过来；自注意力像开会，每个人直接和所有人对话——效率高了，但人太多（序列太长）时会场也会拥挤。</p>
-    </div>
+</div>
 </div>
 <div class="sum-strip">
 <div class="sum-title">💡 一句话总结对比</div>
