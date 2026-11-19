@@ -973,7 +973,12 @@ $$y = \mathrm{LayerNorm}\big(x + F(x)\big)$$
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 6. BERT：预训练时代的开幕</div>
   <div class="slide-title">6.2 逻辑主线与三种架构对比</div>
   <div class="slide-body">
-<p>word2vec 静态词向量（不区分语境、无顺序）→ 单向语言模型（只能往左看）→ 缺点太多 → <strong>BERT：只用 Encoder + 双向注意力，MLM+NSP 预训练</strong> → 分类、实体识别等任务简单微调即可，NLP 正式进入预训练时代。</p>
+<ol style="margin:2px 0 8px 22px;font-size:15px;line-height:1.5;">
+    <li><strong>word2vec（静态词向量）</strong>：不区分语境、不含词序——"苹果"不分水果和公司；</li>
+    <li><strong>单向语言模型</strong>：能结合语境，但只能从左往右看，看不到后文；</li>
+    <li><strong>共同短板 → BERT 的方案</strong>：只用 Encoder + 双向注意力，让每个词同时看到左右两边；再用 MLM + NSP 在海量语料上预训练；</li>
+    <li><strong>用法</strong>：预训练一次，分类、实体识别等下游任务只需加个输出层微调——NLP 正式进入"预训练 + 微调"时代。</li>
+</ol>
 <div class="tbl-wrap">
         <table>
             <thead><tr><th>模型</th><th>架构取舍</th><th>方向</th><th>擅长任务</th></tr></thead>
