@@ -170,7 +170,7 @@
 .slide-body.merge-h.dense .merge-text { font-size: 18px; line-height: 1.55; }
 /* 允许左右布局底部再放一条通栏总结条 */
 .slide-body.merge-h.wrap { flex-wrap: wrap; }
-.sum-strip { flex: 0 0 100%; margin-top: 6px; background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 10px; padding: 8px 16px; font-size: 17px; }
+.sum-strip { flex: 0 0 100%; margin-top: 0; background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 10px; padding: 5px 14px; font-size: 14.5px; }
 .sum-strip .sum-title { font-weight: bold; color: #1E40AF; margin-bottom: 2px; }
 .sum-strip .sum-cols { display: flex; gap: 22px; }
 .sum-strip .sum-cols > div { flex: 1; line-height: 1.5; }
@@ -395,7 +395,7 @@
 </div>
   </div>
 </section>
-<section>
+<section style="padding-top:34px;">
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 3. Seq2Seq 中的注意力</div>
   <div class="slide-title">3.2 加入注意力的 seq2seq</div>
   <div class="slide-body">
@@ -496,7 +496,7 @@ $$\mathbf{y}_i = f\big(\mathbf{x}_i,\ (\mathbf{x}_1, \mathbf{x}_1), \ldots, (\ma
 <p><strong>为什么每个位置要复制成三份？</strong>同一向量 \(\mathbf{x}_i\) 在不同时刻扮演三种角色：算自己的输出时当 <strong>query</strong>（发问"全句谁和我最相关？"）；别人算输出时当 <strong>key</strong>（挂出"标签"供比对）；内容本身当 <strong>value</strong>（被加权汇入别人的新表示）。每个位置既是查询者又是被查询者——这就是"自"的含义。每个 \(\mathbf{y}_i\) 都融合了全序列与 \(\mathbf{x}_i\) 最相关的信息。</p>
   </div>
 </section>
-<section>
+<section style="padding-top:34px;">
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 4. 自注意力（Self-Attention）</div>
   <div class="slide-title">4.1 图解与例子：一个位置如何更新</div>
   <div class="slide-body merge-h dense">
@@ -504,9 +504,8 @@ $$\mathbf{y}_i = f\big(\mathbf{x}_i,\ (\mathbf{x}_1, \mathbf{x}_1), \ldots, (\ma
         <img src="images/self_attention.jpg" alt="自注意力结构" loading="lazy">
         <figcaption>自注意力：keys、values、queries 全部来自同一序列，每个位置的输出都是对全序列加权汇聚的结果。所有位置两两计算，可以完全并行——不必像 RNN 那样逐词等待。</figcaption>
     </figure>
-<div class="merge-text">
-
-<p><strong>对照左图</strong>：下方每个方框是序列中一个位置的输入向量；分叉出的 3 根箭头 = 复制成 keys、values、queries 三份；蓝色块内完成所有位置两两比对（共 n×n 次）与加权求和；上方输出框是各位置融合全句信息后的新表示 \(\mathbf{y}_i\)。</p>
+<div class="merge-text" style="font-size:16px;line-height:1.48;">
+<p style="margin-top:0;"><strong>对照左图</strong>：下方每个方框是序列中一个位置的输入向量；分叉出的 3 根箭头 = 复制成 keys、values、queries 三份；蓝色块内完成所有位置两两比对（共 n×n 次）与加权求和；上方输出框是各位置融合全句信息后的新表示 \(\mathbf{y}_i\)。</p>
 <p><strong>用"它"走一遍</strong>：query = "它"的词向量 → 与全句 9 个 key 逐一比对 → "动物"得分最高 → softmax 后"动物"的 value 占最大权重 → "它"的新表示融入"动物"的语义——<strong>指代关系被自动建立</strong>。所有位置同时完成同样的更新，完全并行。</p>
 <div class="callout key">
         <span class="co-tag">🔑 与 3.2 节的区别 + 预告</span>
@@ -515,11 +514,11 @@ $$\mathbf{y}_i = f\big(\mathbf{x}_i,\ (\mathbf{x}_1, \mathbf{x}_1), \ldots, (\ma
 </div>
   </div>
 </section>
-<section class="slide-short">
+<section class="slide-short" style="padding-top:34px;">
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 4. 自注意力（Self-Attention）</div>
   <div class="slide-title">4.1 自己关注自己</div>
   <div class="slide-body">
-<div class="lab" id="lab-selfattn">
+<div class="lab-compact"><div class="lab" id="lab-selfattn" style="margin:0;">
         <div class="lab-head">
             <span class="lab-badge">互动实验</span>
             <div class="lab-title">自注意力流向：每个词在关注谁</div>
@@ -531,21 +530,21 @@ $$\mathbf{y}_i = f\big(\mathbf{x}_i,\ (\mathbf{x}_1, \mathbf{x}_1), \ldots, (\ma
             <div class="bars" id="sa-bars"></div>
         </div>
         <div class="lab-note">点击 <b>"它"</b>：权重最大的词是 <b>"动物"</b>——模型自己学会了指代消解，没有人告诉它语法规则。</div>
-    </div>
+    </div></div>
   </div>
 </section>
-<section>
+<section style="padding-top:34px;">
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 4. 自注意力（Self-Attention）</div>
   <div class="slide-title">4.2 与 CNN、RNN 对比</div>
   <div class="slide-body">
 <figure style="margin:0 0 10px;text-align:center;">
-        <img src="images/cnn_rnn_attn_compare.jpg" alt="CNN、RNN、自注意力的计算路径对比" loading="lazy" style="max-height:235px !important;width:auto;">
+        <img src="images/cnn_rnn_attn_compare.jpg" alt="CNN、RNN、自注意力的计算路径对比" loading="lazy" style="max-height:142px !important;width:auto;">
         <figcaption>三种结构对比：CNN 靠堆叠卷积层逐层扩大感受野；RNN 必须逐步传递信息；自注意力任意两个位置一步直达。</figcaption>
     </figure>
 <div style="display:flex;gap:26px;align-items:flex-start;">
 <div style="flex:0 0 46%;min-width:0;">
 <div class="tbl-wrap">
-        <table style="font-size:16px;">
+        <table style="font-size:14.5px;">
             <thead><tr><th></th><th>CNN</th><th>RNN</th><th>自注意力</th></tr></thead>
             <tbody>
                 <tr><td><strong>计算复杂度（每层）</strong></td><td>\(O(k \cdot n \cdot d^2)\)</td><td>\(O(n \cdot d^2)\)</td><td>\(O(n^2 \cdot d)\)</td></tr>
@@ -554,12 +553,12 @@ $$\mathbf{y}_i = f\big(\mathbf{x}_i,\ (\mathbf{x}_1, \mathbf{x}_1), \ldots, (\ma
             </tbody>
         </table>
     </div>
-<div class="callout key" style="margin:12px 0 0;font-size:16px;">
+<div class="callout key" style="margin:8px 0 0;font-size:14.5px;">
         <span class="co-tag">🔑 初学者理解</span>
-        <p style="font-size:16px;">RNN 像排队传话，队尾的话要一个一个传过来；自注意力像开会，每个人直接和所有人对话——效率高了，但人太多（序列太长）时会场也会拥挤。</p>
+        <p style="font-size:14.5px;margin:0;">RNN 像排队传话，队尾的话要一个一个传过来；自注意力像开会，每个人直接和所有人对话——效率高了，但人太多（序列太长）时会场也会拥挤。</p>
     </div>
 </div>
-<div style="flex:1;min-width:0;font-size:16.5px;line-height:1.55;">
+<div style="flex:1;min-width:0;font-size:14.2px;line-height:1.4;">
 <p style="margin:0 0 4px;"><strong>逐格解读</strong>（n=序列长度，d=向量维度，k=核宽）：</p>
 <ul style="margin:0 0 0 1.25em;">
         <li><strong>计算复杂度</strong>：CNN \(O(knd^2)\)（宽 \(k\) 卷积、\(d\)→\(d\) 通道、乘 \(n\) 个位置）；RNN \(O(nd^2)\)（每步 \(d^2\) 矩阵乘、乘 \(n\) 步）；自注意力 \(O(n^2d)\)（\(n\) 个 query × \(n\) 个 key 的 \(d\) 维点积）——<strong>平方项来自"两两比对"</strong>；</li>
@@ -584,10 +583,10 @@ $$\mathbf{y}_i = f\big(\mathbf{x}_i,\ (\mathbf{x}_1, \mathbf{x}_1), \ldots, (\ma
   <div class="divider-title">Transformer：完全建立在注意力上的架构</div>
   <div class="divider-lede"><p class="chapter-lede">2017 年《Attention Is All You Need》干脆彻底抛弃循环与卷积，只用注意力搭建整个模型。逐块拆解这座大厦。</p></div>
 </section>
-<section>
+<section style="padding-top:34px;">
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 5. Transformer：完全建立在注意力上的架构</div>
   <div class="slide-title">5.1 自注意力机制：并行，但丢失顺序</div>
-  <div class="slide-body">
+  <div class="slide-body" style="font-size:20px;">
 <p>2017 年那篇著名论文的标题就叫《Attention Is All You Need》——"你只需要注意力"：把循环和卷积整个抛弃，只用注意力搭建模型。自注意力块的做法是：把每个输入同时复制为键、值和查询，用 \(n\) 个输入生成 \(n\) 个输出。这带来两个直接影响：</p>
 <ul>
         <li><strong>① 好处——可以并行</strong>：\(n\) 个输出彼此没有先后依赖，一次性全部算出，不像 RNN 必须逐个时间步串行展开；</li>
@@ -595,15 +594,15 @@ $$\mathbf{y}_i = f\big(\mathbf{x}_i,\ (\mathbf{x}_1, \mathbf{x}_1), \ldots, (\ma
     </ul>
 <p>可是语言的顺序是命根子——"我打他"和"他打我"不能是一回事。<strong>这个漏洞怎么补？先记住这个问题，5.6 节的位置编码就是答案。</strong></p>
 <figure>
-        <img src="images/self_attn_block.jpg" alt="自注意力：每个输入同时作为键、值、查询" loading="lazy">
+        <img src="images/self_attn_block.jpg" alt="自注意力：每个输入同时作为键、值、查询" loading="lazy" style="max-height:195px !important;width:auto;">
         <figcaption>自注意力机制：每个位置的输入被同时复制为 keys、values、queries，一次性并行算出所有输出——但框图里没有出现任何"第几个位置"的信息。</figcaption>
     </figure>
   </div>
 </section>
-<section>
+<section style="padding-top:34px;">
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 5. Transformer：完全建立在注意力上的架构</div>
   <div class="slide-title">5.2 Transformer 模型架构</div>
-  <div class="slide-body">
+  <div class="slide-body" style="font-size:21px;">
 <p>Transformer 仍然是编码器—解码器架构，但循环层被整个换掉。注意力集中在 <strong>3 个地方</strong>：</p>
 <ul>
         <li><strong>编码器自注意力</strong>：源句内部互相关注，理解上下文；</li>
@@ -611,7 +610,7 @@ $$\mathbf{y}_i = f\big(\mathbf{x}_i,\ (\mathbf{x}_1, \mathbf{x}_1), \ldots, (\ma
         <li><strong>编码器—解码器注意力</strong>：解码器拿 query 去查询编码器的输出（对齐源句），编码器状态传递到解码器的每一块。</li>
     </ul>
 <figure>
-        <img src="images/transformer_arch.jpg" alt="seq2seq+注意力 与 Transformer 架构对比" loading="lazy">
+        <img src="images/transformer_arch.jpg" alt="seq2seq+注意力 与 Transformer 架构对比" loading="lazy" style="max-height:215px !important;width:auto;">
         <figcaption>左：seq2seq+注意力（循环层 + 注意力）。右：Transformer 的变换器块——编码器、解码器各堆叠 \(n\) 个相同的块，块内是"多头注意力 → Add &amp; Norm → 位置前馈网络 → Add &amp; Norm"；底部嵌入层之外加入位置编码来补充顺序信息。</figcaption>
     </figure>
   </div>
@@ -635,33 +634,33 @@ $$\mathbf{y}_i = f\big(\mathbf{x}_i,\ (\mathbf{x}_1, \mathbf{x}_1), \ldots, (\ma
 </div>
   </div>
 </section>
-<section>
+<section style="padding-top:34px;">
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 5. Transformer：完全建立在注意力上的架构</div>
   <div class="slide-title">5.3 多头注意力机制</div>
-  <div class="slide-body merge-v">
+  <div class="slide-body merge-v" style="font-size:20px;">
 <p style="margin:0 0 10px;">一次注意力只能在一个表示空间里找相似，但"相关"有很多种——<strong>语法相关、指代相关、位置相关</strong>。多头注意力的办法：把 query、key、value 用 \(h\) 组不同的线性投影变换到 \(h\) 个子空间，各自独立做一次注意力，再把 \(h\) 份输出拼接起来做一次投影——类似 CNN 用多个卷积核，从多个角度同时审视序列。</p>
 <div style="display:flex;gap:30px;align-items:center;margin:0 0 6px;">
-<ol style="flex:1.05;margin:0 0 0 1.3em;font-size:19px;line-height:1.7;">
+<ol style="flex:1.05;margin:0 0 0 1.3em;font-size:17px;line-height:1.5;">
         <li><strong>① 分头</strong>：第 \(i\) 个头用自己的投影矩阵 \(W_q^{(i)}, W_k^{(i)}, W_v^{(i)}\) 变换 Q / K / V，独立做一次注意力（右式一）；</li>
         <li><strong>② 拼接</strong>：把 \(h\) 个头的输出 \(\mathbf{o}^{(1)}, \ldots, \mathbf{o}^{(h)}\) 拼成一个大向量；</li>
         <li><strong>③ 融合</strong>：拼接结果再乘输出投影 \(W_o\)，把各头看到的信息整合成最终输出（右式二）。</li>
     </ol>
 <div style="flex:1;min-width:0;">
-<p style="margin:0 0 8px;">$$\mathbf{o}^{(i)} = \mathrm{attention}\big(W_q^{(i)} \mathbf{q},\ W_k^{(i)} \mathbf{k},\ W_v^{(i)} \mathbf{v}\big),\quad i = 1, \ldots, h$$</p>
-<p style="margin:0;">$$\mathbf{o} = W_o \begin{bmatrix} \mathbf{o}^{(1)} \\ \vdots \\ \mathbf{o}^{(h)} \end{bmatrix}$$</p>
+<p style="margin:0 0 8px;font-size:15px;">$$\mathbf{o}^{(i)} = \mathrm{attention}\big(W_q^{(i)} \mathbf{q},\ W_k^{(i)} \mathbf{k},\ W_v^{(i)} \mathbf{v}\big),\quad i = 1, \ldots, h$$</p>
+<p style="margin:0;font-size:15px;">$$\mathbf{o} = W_o \begin{bmatrix} \mathbf{o}^{(1)} \\ \vdots \\ \mathbf{o}^{(h)} \end{bmatrix}$$</p>
 </div>
 </div>
 <figure style="margin:2px 0 0;">
-        <img src="images/multihead.jpg" alt="多头注意力：多组 Dense 投影加注意力后拼接" loading="lazy" style="max-height:225px;width:auto;">
+        <img src="images/multihead.jpg" alt="多头注意力：多组 Dense 投影加注意力后拼接" loading="lazy" style="max-height:185px;width:auto;">
         <figcaption>多头注意力结构：左侧 \(h\) 组独立 Dense 投影对应"① 分头"，中间各头独立做注意力，右侧拼接与最后的 Dense 对应"② 拼接、③ 融合"。</figcaption>
     </figure>
   </div>
 </section>
-<section class="slide-short">
+<section class="slide-short" style="padding-top:34px;">
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 5. Transformer：完全建立在注意力上的架构</div>
   <div class="slide-title">5.3 多头注意力机制</div>
   <div class="slide-body">
-<div class="lab" id="lab-heads">
+<div class="lab-compact"><div class="lab" id="lab-heads" style="margin:0;">
         <div class="lab-head">
             <span class="lab-badge">互动实验</span>
             <div class="lab-title">不同的头，看不同的地方</div>
@@ -673,7 +672,7 @@ $$\mathbf{y}_i = f\big(\mathbf{x}_i,\ (\mathbf{x}_1, \mathbf{x}_1), \ldots, (\ma
             <div class="bars" id="head-bars"></div>
         </div>
         <div class="lab-note">一个头可能关注<b>语法搭配</b>，另一个头关注<b>指代关系</b>，还有头关注<b>位置远近</b>——多头让模型同时从多个角度审视序列，类似 CNN 用多个卷积核提取多种模式。</div>
-    </div>
+    </div></div>
   </div>
 </section>
 <section>
@@ -707,17 +706,17 @@ $$y = \mathrm{LayerNorm}\big(x + F(x)\big)$$
     </figure>
   </div>
 </section>
-<section>
+<section style="padding-top:34px;">
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 5. Transformer：完全建立在注意力上的架构</div>
   <div class="slide-title">5.5 一、Add：残差连接（呼应第04讲 ResNet）</div>
-  <div class="slide-body">
+  <div class="slide-body" style="font-size:20px;">
 <ul>
         <li><strong>公式</strong>：\(y = x + F(x)\)——\(x\) 是子层原始输入，\(F(x)\) 是子层学到的变换，只负责学<strong>修正量</strong>；输入 \(x\) 经恒等旁路原样传回，与子层输出相加（下图中绕过子层、汇入 ⊕ 的绿色旁路箭头）；</li>
         <li><strong>作用 ① 防梯度消失与退化</strong>：网络很深时，子层直接学恒等映射很难；残差让子层只学"差量"——最坏情况 \(F(x) \to 0\)，模型等价于 \(y = x\)，<strong>至少不会变坏</strong>；</li>
         <li><strong>作用 ② 梯度直连通路</strong>：\(\partial y/\partial x = I + \partial F/\partial x\)——单位矩阵 \(I\) 是一条不衰减的直连通路，梯度沿该通路回传、不会逐层衰减。Transformer 能堆几十层的核心原因之一。</li>
     </ul>
 <figure style="margin:2px 0 0;">
-        <img src="images/residual_grad.png" alt="残差连接的前向与反向梯度通路" loading="lazy" style="max-height:265px;width:auto;">
+        <img src="images/residual_grad.png" alt="残差连接的前向与反向梯度通路" loading="lazy" style="max-height:225px;width:auto;">
         <figcaption>左：前向时 \(x\) 经恒等旁路直达输出，子层只学差量；右：反向时梯度沿恒等通路 \(I\) 不衰减回传（红色），与经子层的 \(\partial F/\partial x\) 支路相加。</figcaption>
     </figure>
   </div>
@@ -802,7 +801,7 @@ $$P_{i,\,2j} = \sin\!\big(i / 10000^{2j/d}\big), \qquad P_{i,\,2j+1} = \cos\!\bi
         <li><strong>固定一个位置，竖着看一根竖线</strong>（如第 10 个词）：颜色组合独一无二 = 该位置的专属"二维码"——模型一看便知"这是第 10 号位置"。</li>
     </ul>
 <figure>
-        <img src="images/positional_encoding.png" alt="正余弦位置编码热力图" loading="lazy">
+        <img src="images/positional_encoding.png" alt="正余弦位置编码热力图" loading="lazy" style="max-height:215px !important;width:auto;">
         <figcaption>位置编码热力图（50 个位置 × 128 维）。</figcaption>
     </figure>
   </div>
