@@ -479,7 +479,7 @@
     </figure>
 <div class="callout key">
         <span class="co-tag">📐 输出尺寸公式</span>
-        <p>输出尺寸 = 输入尺寸 − 核尺寸 + 1，即对于 \(n_h \times n_w\) 的输入和 \(k_h \times k_w\) 的核，输出为 \((n_h - k_h + 1) \times (n_w - k_w + 1)\)。</p>
+        <p><strong>输出尺寸 = (输入尺寸 − 核尺寸 + 2×填充) ÷ 步长 + 1</strong>，即 \((n + 2p - k) / s + 1\)（\(p\) 为每侧填充圈数、\(s\) 为步幅；不能整除时向下取整）；不填充、步幅 1 时退化为 \(n - k + 1\)。</p>
     </div>
   </div>
 </section>
