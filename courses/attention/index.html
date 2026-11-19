@@ -414,7 +414,7 @@
     </ol>
 
     <h3><span class="sec-no">5.3</span>多头注意力机制</h3>
-    <p>一次注意力只能在一个表示空间里找相似。多头注意力把 query、key、value 用 \(h\) 组不同的线性投影变换到 \(h\) 个子空间，各自独立做注意力，再把结果拼接后做一次投影：</p>
+    <p>一次注意力只能在一个表示空间里找相似，但"相关"有很多种——<strong>语法相关、指代相关、位置相关</strong>。多头注意力的办法：把 query、key、value 用 \(h\) 组不同的线性投影变换到 \(h\) 个子空间，各自独立做一次注意力，再把 \(h\) 份输出拼接起来做一次投影：</p>
     $$\mathbf{o}^{(i)} = \mathrm{attention}\big(W_q^{(i)} \mathbf{q},\ W_k^{(i)} \mathbf{k},\ W_v^{(i)} \mathbf{v}\big),\quad i = 1, \ldots, h$$
     $$\mathbf{o} = W_o \begin{bmatrix} \mathbf{o}^{(1)} \\ \vdots \\ \mathbf{o}^{(h)} \end{bmatrix}$$
     <figure>
