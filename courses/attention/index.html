@@ -461,12 +461,20 @@
     <p>它包裹在<strong>每一个子层</strong>（多头注意力、位置前馈 FFN）外面，是能堆几十层 Transformer 的关键。两个组件分工明确：<strong>Add = 残差连接</strong>，<strong>Norm = 层归一化（Layer Normalization）</strong>。</p>
     $$y = \mathrm{LayerNorm}\big(x + F(x)\big)$$
     <p>其中 \(F(x)\) 就是子层（注意力模块 / FFN 模块）；次序是<strong>先残差相加、再做 LayerNorm</strong>（Post-LN 结构，原始论文版本）。</p>
+    <figure>
+        <img src="images/addnorm_flow.png" alt="Add & Norm 数据流示意图" loading="lazy">
+        <figcaption>Add &amp; Norm 数据流：子层输出 \(F(x)\) 与输入 \(x\) 经恒等旁路相加（⊕），再做层归一化——每个子层外都套着同样的一层。</figcaption>
+    </figure>
     <p><strong>一、Add：残差连接</strong>（第 04 讲 ResNet 的跳跃连接），公式 \(y = x + F(x)\)：</p>
     <ul>
         <li>\(x\) 是子层的原始输入，\(F(x)\) 是注意力或 FFN 学到的变换——它只负责学<strong>修正量</strong>。直观理解：输入 \(x\) 经恒等旁路原样传回，与子层输出相加（结构图中绕过蓝色子层、汇入 ⊕ 的弯箭头）；</li>
         <li><strong>作用 ① 防止梯度消失与退化</strong>：网络很深时，让子层直接学恒等映射很难；残差让子层只需学"差量"——最坏情况子层学不到东西，\(F(x) \to 0\)，模型等价于 \(y = x\)，<strong>至少不会变坏</strong>；</li>
         <li><strong>作用 ② 梯度直连通路</strong>：求导 \(\partial y/\partial x = I + \partial F(x)/\partial x\)——单位矩阵 \(I\) 就是一条<strong>不衰减的直连梯度通路</strong>，反向传播时梯度沿该通路直接回传，不会因多层堆叠而逐层衰减。这就是 Transformer 可以堆叠几十层的核心原因之一。</li>
     </ul>
+    <figure>
+        <img src="images/residual_grad.png" alt="残差连接的前向与反向梯度通路" loading="lazy">
+        <figcaption>左：前向时 \(x\) 经恒等旁路直达输出，子层只学差量；右：反向时梯度沿恒等通路 \(I\) 不衰减回传（红色），与经子层的 \(\partial F/\partial x\) 支路相加。</figcaption>
+    </figure>
     <p><strong>二、Norm：层归一化（LayerNorm）</strong>。和已学过的 BatchNorm 对比来看：</p>
     <ul>
         <li><strong>LayerNorm（Transformer 用的）</strong>：沿<strong>最后一维（特征维）</strong>算均值、方差——<code>X.mean(axis=-1)</code>，对单独一个样本、单独一个位置的特征向量做归一化；不管序列长短、批量大小怎么变都稳定；</li>
