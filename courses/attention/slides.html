@@ -639,7 +639,7 @@ $$\mathbf{y}_i = f\big(\mathbf{x}_i,\ (\mathbf{x}_1, \mathbf{x}_1), \ldots, (\ma
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 5. Transformer：完全建立在注意力上的架构</div>
   <div class="slide-title">5.3 多头注意力机制</div>
   <div class="slide-body merge-v">
-<p style="margin:0 0 10px;">一次注意力只能在一个表示空间里找相似。<strong>多头注意力</strong>用 \(h\) 组不同的投影把 Q / K / V 变换到 \(h\) 个子空间，各自独立做注意力——类似 CNN 用多个卷积核，从多个角度同时审视序列。</p>
+<p style="margin:0 0 10px;">一次注意力只能在一个表示空间里找相似，但"相关"有很多种——<strong>语法相关、指代相关、位置相关</strong>。多头注意力的办法：把 query、key、value 用 \(h\) 组不同的线性投影变换到 \(h\) 个子空间，各自独立做一次注意力，再把 \(h\) 份输出拼接起来做一次投影——类似 CNN 用多个卷积核，从多个角度同时审视序列。</p>
 <div style="display:flex;gap:30px;align-items:center;margin:0 0 6px;">
 <ol style="flex:1.05;margin:0 0 0 1.3em;font-size:19px;line-height:1.7;">
         <li><strong>① 分头</strong>：第 \(i\) 个头用自己的投影矩阵 \(W_q^{(i)}, W_k^{(i)}, W_v^{(i)}\) 变换 Q / K / V，独立做一次注意力（右式一）；</li>
