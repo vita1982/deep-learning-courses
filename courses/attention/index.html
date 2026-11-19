@@ -639,7 +639,13 @@
         <li><strong>② 下一句预测（NSP）</strong>：给模型两句文本，判断第二句是不是原文中紧跟在第一句后面的那句话——学习<strong>句子之间</strong>的关联。</li>
     </ul>
     <p>先在海量语料上预训练吸收语言知识，下游任务只需加一个输出层微调——<strong>NLP 从此进入"预训练 + 微调"时代</strong>。</p>
-    <p><strong>整条逻辑串起来</strong>：word2vec 是静态词向量，不区分语境、没有顺序；单向语言模型只能往左看、看不到后文——缺点太多。BERT 只用 Encoder、双向注意力，通过 MLM + NSP 预训练；之后所有分类、实体识别等任务只需简单微调，效果暴涨——NLP 正式进入预训练时代。</p>
+    <p><strong>整条逻辑串起来</strong>：</p>
+    <ol>
+        <li><strong>word2vec（静态词向量）</strong>：不区分语境、不含词序——"苹果"不分水果和公司；</li>
+        <li><strong>单向语言模型</strong>：能结合语境，但只能从左往右看，看不到后文；</li>
+        <li><strong>共同短板 → BERT 的方案</strong>：只用 Encoder、双向注意力，让每个词同时看到左右两边；再用 MLM + NSP 在海量语料上预训练；</li>
+        <li><strong>用法</strong>：预训练一次，分类、实体识别等下游任务只需加个输出层微调——NLP 正式进入"预训练 + 微调"时代。</li>
+    </ol>
     <p><strong>对比回顾（和前面学的串起来）</strong>：</p>
     <div class="tbl-wrap">
         <table>
