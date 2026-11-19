@@ -588,11 +588,12 @@ $$\mathbf{y}_i = f\big(\mathbf{x}_i,\ (\mathbf{x}_1, \mathbf{x}_1), \ldots, (\ma
   <div class="slide-breadcrumb">第06讲 注意力机制与 Transformer › 5. Transformer：完全建立在注意力上的架构</div>
   <div class="slide-title">5.1 自注意力机制：并行，但丢失顺序</div>
   <div class="slide-body">
-<p>自注意力要用 \(n\) 个输入生成 \(n\) 个输出，做法是把每个输入同时复制为键、值和查询。这带来两个直接影响：</p>
+<p>2017 年那篇著名论文的标题就叫《Attention Is All You Need》——"你只需要注意力"：把循环和卷积整个抛弃，只用注意力搭建模型。自注意力块的做法是：把每个输入同时复制为键、值和查询，用 \(n\) 个输入生成 \(n\) 个输出。这带来两个直接影响：</p>
 <ul>
-        <li><strong>不保留顺序信息</strong>：每个位置的输出只跟随词本身，与它在序列中的位置无关（置换不变性）；</li>
-        <li><strong>可以并行计算</strong>：\(n\) 个输出之间没有先后依赖，不像 RNN 必须逐个时间步串行展开。</li>
+        <li><strong>① 好处——可以并行</strong>：\(n\) 个输出彼此没有先后依赖，一次性全部算出，不像 RNN 必须逐个时间步串行展开；</li>
+        <li><strong>② 代价——不保留顺序信息</strong>：每个位置的输出只跟词本身有关，跟它站在第几个位置无关。把句子的词序打乱，自注意力算出的结果集合完全一样——这叫<strong>置换不变性</strong>。</li>
     </ul>
+<p>可是语言的顺序是命根子——"我打他"和"他打我"不能是一回事。<strong>这个漏洞怎么补？先记住这个问题，5.6 节的位置编码就是答案。</strong></p>
 <figure>
         <img src="images/self_attn_block.jpg" alt="自注意力：每个输入同时作为键、值、查询" loading="lazy">
         <figcaption>自注意力机制：每个位置的输入被同时复制为 keys、values、queries，一次性并行算出所有输出——但框图里没有出现任何"第几个位置"的信息。</figcaption>
