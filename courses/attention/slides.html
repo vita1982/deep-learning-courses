@@ -701,6 +701,10 @@ $$\mathbf{y}_i = f\big(\mathbf{x}_i,\ (\mathbf{x}_1, \mathbf{x}_1), \ldots, (\ma
 <p>它包裹在<strong>每一个子层</strong>（多头注意力、位置前馈 FFN）外面，是能堆几十层 Transformer 的关键。两个组件分工明确：<strong>Add = 残差连接</strong>，<strong>Norm = 层归一化（Layer Normalization）</strong>。</p>
 $$y = \mathrm{LayerNorm}\big(x + F(x)\big)$$
 <p>\(F(x)\) 就是子层（注意力模块 / FFN 模块）；次序是<strong>先残差相加、再做 LayerNorm</strong>（Post-LN 结构，原始论文版本）。</p>
+<figure style="margin:6px 0 0;">
+        <img src="images/addnorm_flow.png" alt="Add & Norm 数据流示意图" loading="lazy" style="max-height:255px;width:auto;">
+        <figcaption>Add &amp; Norm 数据流：子层输出 \(F(x)\) 与输入 \(x\) 经恒等旁路相加（⊕），再做层归一化——每个子层外都套着同样的一层。</figcaption>
+    </figure>
   </div>
 </section>
 <section>
@@ -712,6 +716,10 @@ $$y = \mathrm{LayerNorm}\big(x + F(x)\big)$$
         <li><strong>作用 ① 防梯度消失与退化</strong>：网络很深时，子层直接学恒等映射很难；残差让子层只学"差量"——最坏情况 \(F(x) \to 0\)，模型等价于 \(y = x\)，<strong>至少不会变坏</strong>；</li>
         <li><strong>作用 ② 梯度直连通路</strong>：\(\partial y/\partial x = I + \partial F/\partial x\)——单位矩阵 \(I\) 是一条不衰减的直连通路，梯度沿该通路回传、不会逐层衰减。Transformer 能堆几十层的核心原因之一。</li>
     </ul>
+<figure style="margin:2px 0 0;">
+        <img src="images/residual_grad.png" alt="残差连接的前向与反向梯度通路" loading="lazy" style="max-height:265px;width:auto;">
+        <figcaption>左：前向时 \(x\) 经恒等旁路直达输出，子层只学差量；右：反向时梯度沿恒等通路 \(I\) 不衰减回传（红色），与经子层的 \(\partial F/\partial x\) 支路相加。</figcaption>
+    </figure>
   </div>
 </section>
 <section>
